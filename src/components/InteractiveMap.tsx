@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -13,7 +12,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
   const map = useRef<mapboxgl.Map | null>(null);
   const [lng, setLng] = useState(2.3488);
   const [lat, setLat] = useState(46.6034);
-  const [zoom, setZoom] = useState(6);
+  const [zoom, setZoom] = useState(4);
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -25,7 +24,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/light-v11',
       center: [lng, lat],
-      zoom: zoom
+      zoom: 4
     });
 
     // Add navigation controls
