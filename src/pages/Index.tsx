@@ -1,16 +1,8 @@
-
 import React, { useState } from 'react';
 import { Search, MapPin, Droplets, AlertTriangle, TrendingUp, Leaf, Award, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SearchBar from '@/components/SearchBar';
-import QualityMap from '@/components/QualityMap';
-import WaterQualityCard from '@/components/WaterQualityCard';
-import BottleComparison from '@/components/BottleComparison';
-import PollutantIndex from '@/components/PollutantIndex';
 
 const Index = () => {
   const [selectedCity, setSelectedCity] = useState<string>('');
@@ -30,10 +22,10 @@ const Index = () => {
               </h1>
             </div>
             <nav className="hidden md:flex items-center space-x-6">
-              <a href="#carte" className="text-gray-600 hover:text-blue-600 transition-colors">Carte</a>
-              <a href="#diagnostic" className="text-gray-600 hover:text-blue-600 transition-colors">Diagnostic</a>
-              <a href="#bouteilles" className="text-gray-600 hover:text-blue-600 transition-colors">vs Bouteilles</a>
-              <a href="#polluants" className="text-gray-600 hover:text-blue-600 transition-colors">Polluants</a>
+              <a href="/carte" className="text-gray-600 hover:text-blue-600 transition-colors">Carte</a>
+              <a href="/diagnostic" className="text-gray-600 hover:text-blue-600 transition-colors">Diagnostic</a>
+              <a href="/bouteilles" className="text-gray-600 hover:text-blue-600 transition-colors">vs Bouteilles</a>
+              <a href="/polluants" className="text-gray-600 hover:text-blue-600 transition-colors">Polluants</a>
             </nav>
           </div>
         </div>
@@ -54,6 +46,56 @@ const Index = () => {
             
             <div className="mb-12">
               <SearchBar onCitySelect={setSelectedCity} />
+              {selectedCity && (
+                <div className="mt-4 max-w-md mx-auto">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-blue-800">
+                      <MapPin className="w-4 h-4 inline mr-2" />
+                      Recherche pour : {selectedCity}
+                    </p>
+                    <div className="mt-2">
+                      <a 
+                        href="/diagnostic" 
+                        className="text-blue-600 hover:text-blue-800 font-medium underline"
+                      >
+                        Voir le diagnostic complet →
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Access Buttons */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+              <a href="/carte" className="group">
+                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 border border-blue-100 hover:shadow-lg transition-all group-hover:scale-105">
+                  <MapPin className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                  <div className="text-lg font-bold text-blue-600">Carte</div>
+                  <div className="text-sm text-gray-600">Nationale</div>
+                </div>
+              </a>
+              <a href="/diagnostic" className="group">
+                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 border border-green-100 hover:shadow-lg transition-all group-hover:scale-105">
+                  <Search className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                  <div className="text-lg font-bold text-green-600">Diagnostic</div>
+                  <div className="text-sm text-gray-600">Personnalisé</div>
+                </div>
+              </a>
+              <a href="/bouteilles" className="group">
+                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 border border-orange-100 hover:shadow-lg transition-all group-hover:scale-105">
+                  <TrendingUp className="w-8 h-8 text-orange-600 mx-auto mb-2" />
+                  <div className="text-lg font-bold text-orange-600">vs Bouteilles</div>
+                  <div className="text-sm text-gray-600">Comparaison</div>
+                </div>
+              </a>
+              <a href="/polluants" className="group">
+                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 border border-purple-100 hover:shadow-lg transition-all group-hover:scale-105">
+                  <AlertTriangle className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+                  <div className="text-lg font-bold text-purple-600">Polluants</div>
+                  <div className="text-sm text-gray-600">Index</div>
+                </div>
+              </a>
             </div>
 
             {/* Stats */}
@@ -76,64 +118,6 @@ const Index = () => {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Main Content Tabs */}
-      <section className="py-12 px-4">
-        <div className="container mx-auto">
-          <Tabs defaultValue="carte" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 bg-white border border-gray-200">
-              <TabsTrigger value="carte" className="flex items-center space-x-2">
-                <MapPin className="w-4 h-4" />
-                <span>Carte nationale</span>
-              </TabsTrigger>
-              <TabsTrigger value="diagnostic" className="flex items-center space-x-2">
-                <Search className="w-4 h-4" />
-                <span>Diagnostic</span>
-              </TabsTrigger>
-              <TabsTrigger value="bouteilles" className="flex items-center space-x-2">
-                <TrendingUp className="w-4 h-4" />
-                <span>vs Bouteilles</span>
-              </TabsTrigger>
-              <TabsTrigger value="polluants" className="flex items-center space-x-2">
-                <AlertTriangle className="w-4 h-4" />
-                <span>Polluants</span>
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="carte" className="mt-8">
-              <QualityMap />
-            </TabsContent>
-
-            <TabsContent value="diagnostic" className="mt-8">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div>
-                  <h3 className="text-2xl font-bold mb-6">Diagnostic personnalisé</h3>
-                  <div className="space-y-4">
-                    <SearchBar onCitySelect={setSelectedCity} placeholder="Entrez votre adresse..." />
-                    {selectedCity && (
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <p className="text-blue-800">
-                          <MapPin className="w-4 h-4 inline mr-2" />
-                          Recherche pour : {selectedCity}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <WaterQualityCard city={selectedCity || "Paris"} />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="bouteilles" className="mt-8">
-              <BottleComparison />
-            </TabsContent>
-
-            <TabsContent value="polluants" className="mt-8">
-              <PollutantIndex />
-            </TabsContent>
-          </Tabs>
         </div>
       </section>
 
