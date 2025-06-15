@@ -5,11 +5,10 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface InteractiveMapProps {
-  selectedPollutant?: string;
   showWaterSources?: boolean;
 }
 
-const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, showWaterSources = true }) => {
+const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [lng, setLng] = useState(2.3488);
@@ -32,7 +31,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
     // Add navigation controls
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-    // Water quality data with pollutant levels
+    // Water quality data
     const waterQualityData = [
       { 
         name: 'Paris', 
@@ -40,8 +39,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
         quality: 'B', 
         score: 85, 
         source: 'Seine et Marne', 
-        region: 'ile-de-france',
-        pollutants: { nitrates: 15, pesticides: 0.08, trihalomethanes: 25, plomb: 2, fluorures: 0.5, arsenic: 1 }
+        region: 'ile-de-france'
       },
       { 
         name: 'Lyon', 
@@ -49,8 +47,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
         quality: 'A', 
         score: 92, 
         source: 'Sources montagne', 
-        region: 'auvergne-rhone-alpes',
-        pollutants: { nitrates: 8, pesticides: 0.02, trihalomethanes: 15, plomb: 1, fluorures: 0.3, arsenic: 0.5 }
+        region: 'auvergne-rhone-alpes'
       },
       { 
         name: 'Marseille', 
@@ -58,8 +55,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
         quality: 'B', 
         score: 78, 
         source: 'Eaux souterraines', 
-        region: 'occitanie',
-        pollutants: { nitrates: 22, pesticides: 0.12, trihalomethanes: 35, plomb: 3, fluorures: 0.8, arsenic: 2 }
+        region: 'occitanie'
       },
       { 
         name: 'Toulouse', 
@@ -67,8 +63,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
         quality: 'C', 
         score: 72, 
         source: 'Eaux souterraines', 
-        region: 'occitanie',
-        pollutants: { nitrates: 28, pesticides: 0.15, trihalomethanes: 42, plomb: 4, fluorures: 1.0, arsenic: 2.5 }
+        region: 'occitanie'
       },
       { 
         name: 'Nice', 
@@ -76,8 +71,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
         quality: 'B', 
         score: 81, 
         source: 'Sources montagne', 
-        region: 'auvergne-rhone-alpes',
-        pollutants: { nitrates: 12, pesticides: 0.05, trihalomethanes: 20, plomb: 2, fluorures: 0.4, arsenic: 1 }
+        region: 'auvergne-rhone-alpes'
       },
       { 
         name: 'Nantes', 
@@ -85,8 +79,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
         quality: 'A', 
         score: 90, 
         source: 'Nappes phréatiques', 
-        region: 'nouvelle-aquitaine',
-        pollutants: { nitrates: 10, pesticides: 0.03, trihalomethanes: 18, plomb: 1, fluorures: 0.3, arsenic: 0.8 }
+        region: 'nouvelle-aquitaine'
       },
       { 
         name: 'Strasbourg', 
@@ -94,8 +87,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
         quality: 'A', 
         score: 89, 
         source: 'Eaux de surface', 
-        region: 'grand-est',
-        pollutants: { nitrates: 9, pesticides: 0.04, trihalomethanes: 16, plomb: 1, fluorures: 0.35, arsenic: 0.6 }
+        region: 'grand-est'
       },
       { 
         name: 'Montpellier', 
@@ -103,8 +95,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
         quality: 'C', 
         score: 75, 
         source: 'Eaux souterraines', 
-        region: 'occitanie',
-        pollutants: { nitrates: 25, pesticides: 0.14, trihalomethanes: 38, plomb: 3, fluorures: 0.9, arsenic: 2.2 }
+        region: 'occitanie'
       },
       { 
         name: 'Bordeaux', 
@@ -112,8 +103,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
         quality: 'A', 
         score: 88, 
         source: 'Nappes phréatiques', 
-        region: 'nouvelle-aquitaine',
-        pollutants: { nitrates: 11, pesticides: 0.06, trihalomethanes: 19, plomb: 2, fluorures: 0.4, arsenic: 1.2 }
+        region: 'nouvelle-aquitaine'
       },
       { 
         name: 'Lille', 
@@ -121,28 +111,9 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
         quality: 'B', 
         score: 83, 
         source: 'Nappes de craie', 
-        region: 'hauts-de-france',
-        pollutants: { nitrates: 18, pesticides: 0.09, trihalomethanes: 28, plomb: 2, fluorures: 0.6, arsenic: 1.5 }
+        region: 'hauts-de-france'
       }
     ];
-
-    // Filter data based on selected pollutant
-    const filteredData = selectedPollutant === 'all' || !selectedPollutant 
-      ? waterQualityData 
-      : waterQualityData.filter(city => {
-          const pollutantKey = selectedPollutant as keyof typeof city.pollutants;
-          const pollutantValue = city.pollutants[pollutantKey];
-          // Filter cities where the selected pollutant is above average levels
-          const thresholds = {
-            nitrates: 20,
-            pesticides: 0.1,
-            trihalomethanes: 30,
-            plomb: 2.5,
-            fluorures: 0.7,
-            arsenic: 1.8
-          };
-          return pollutantValue > thresholds[pollutantKey];
-        });
 
     // Define water source zones with polygons
     const waterSourceZones = [
@@ -254,8 +225,8 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
       }
     };
 
-    // Add markers for filtered cities
-    filteredData.forEach(city => {
+    // Add markers for all cities
+    waterQualityData.forEach(city => {
       // Create marker element
       const el = document.createElement('div');
       el.className = 'marker';
@@ -267,18 +238,13 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
       el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
       el.style.cursor = 'pointer';
 
-      // Create popup with pollutant information
-      const pollutantInfo = selectedPollutant && selectedPollutant !== 'all' 
-        ? `<p class="text-sm text-gray-600">${selectedPollutant.charAt(0).toUpperCase() + selectedPollutant.slice(1)}: ${city.pollutants[selectedPollutant as keyof typeof city.pollutants]}${getPollutantUnit(selectedPollutant)}</p>`
-        : '';
-
+      // Create popup
       const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
         `<div class="p-2">
           <h3 class="font-bold text-lg">${city.name}</h3>
           <p class="text-sm text-gray-600">Qualité: <span class="font-medium" style="color: ${getMarkerColor(city.quality)}">${city.quality}</span></p>
           <p class="text-sm text-gray-600">Score: ${city.score}/100</p>
           <p class="text-sm text-gray-600">Source: ${city.source}</p>
-          ${pollutantInfo}
         </div>`
       );
 
@@ -302,19 +268,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
     return () => {
       map.current?.remove();
     };
-  }, [selectedPollutant, showWaterSources]);
-
-  const getPollutantUnit = (pollutant: string) => {
-    switch (pollutant) {
-      case 'nitrates': return ' mg/L';
-      case 'pesticides': return ' mg/L';
-      case 'trihalomethanes': return ' µg/L';
-      case 'plomb': return ' µg/L';
-      case 'fluorures': return ' mg/L';
-      case 'arsenic': return ' µg/L';
-      default: return '';
-    }
-  };
+  }, [showWaterSources]);
 
   return (
     <Card>
@@ -326,13 +280,6 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ selectedPollutant, show
               Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
             </div>
           </div>
-          {selectedPollutant && selectedPollutant !== 'all' && (
-            <div className="absolute top-4 right-4 bg-orange-600/90 backdrop-blur-sm rounded-lg p-3 shadow-lg text-white">
-              <div className="text-sm font-medium">
-                Filtre: {selectedPollutant.charAt(0).toUpperCase() + selectedPollutant.slice(1)}
-              </div>
-            </div>
-          )}
           {!showWaterSources && (
             <div className="absolute bottom-4 right-4 bg-gray-600/90 backdrop-blur-sm rounded-lg p-2 shadow-lg text-white">
               <div className="text-xs">
