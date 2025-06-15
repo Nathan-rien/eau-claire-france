@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Filter, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,16 +12,20 @@ const QualityMap = () => {
 
   // Mock data for demonstration
   const regions = [
-    { id: 'ile-de-france', name: 'Île-de-France', quality: 'B', cities: 1276, alerts: 2 },
-    { id: 'auvergne-rhone-alpes', name: 'Auvergne-Rhône-Alpes', quality: 'A', cities: 4032, alerts: 0 },
-    { id: 'nouvelle-aquitaine', name: 'Nouvelle-Aquitaine', quality: 'B', cities: 4356, alerts: 1 },
-    { id: 'occitanie', name: 'Occitanie', quality: 'C', cities: 4448, alerts: 5 },
-    { id: 'hauts-de-france', name: 'Hauts-de-France', quality: 'B', cities: 3789, alerts: 3 },
-    { id: 'grand-est', name: 'Grand Est', quality: 'A', cities: 5133, alerts: 1 },
+    { id: 'ile-de-france', name: 'Île-de-France', quality: 'B', cities: 1276, alerts: 2, waterSource: 'Seine et Marne' },
+    { id: 'auvergne-rhone-alpes', name: 'Auvergne-Rhône-Alpes', quality: 'A', cities: 4032, alerts: 0, waterSource: 'Sources montagne' },
+    { id: 'nouvelle-aquitaine', name: 'Nouvelle-Aquitaine', quality: 'B', cities: 4356, alerts: 1, waterSource: 'Nappes phréatiques' },
+    { id: 'occitanie', name: 'Occitanie', quality: 'C', cities: 4448, alerts: 5, waterSource: 'Eaux souterraines' },
+    { id: 'hauts-de-france', name: 'Hauts-de-France', quality: 'B', cities: 3789, alerts: 3, waterSource: 'Nappes de craie' },
+    { id: 'grand-est', name: 'Grand Est', quality: 'A', cities: 5133, alerts: 1, waterSource: 'Eaux de surface' },
   ];
 
   const pollutants = [
     'Nitrates', 'Pesticides', 'Trihalométhanes', 'Plomb', 'Fluorures', 'Arsenic'
+  ];
+
+  const waterSources = [
+    'Seine et Marne', 'Sources montagne', 'Nappes phréatiques', 'Eaux souterraines', 'Nappes de craie', 'Eaux de surface'
   ];
 
   const getQualityColor = (quality: string) => {
@@ -45,6 +50,12 @@ const QualityMap = () => {
     }
   };
 
+  // Filter regions based on selected criteria
+  const filteredRegions = regions.filter(region => {
+    const regionMatch = selectedRegion === 'all' || region.id === selectedRegion;
+    return regionMatch;
+  });
+
   return (
     <div className="space-y-6">
       {/* Filters */}
@@ -56,7 +67,7 @@ const QualityMap = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">Région</label>
               <Select value={selectedRegion} onValueChange={setSelectedRegion}>
@@ -89,51 +100,25 @@ const QualityMap = () => {
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Source d'eau</label>
+              <Select value="all" onValueChange={() => {}}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Toutes les sources" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Toutes les sources</SelectItem>
+                  {waterSources.map(source => (
+                    <SelectItem key={source} value={source.toLowerCase()}>
+                      {source}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
-
-      {/* Interactive Map */}
-      <InteractiveMap />
-
-      {/* Regional Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {regions.map(region => (
-          <Card key={region.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">{region.name}</CardTitle>
-                <Badge className={`${getQualityColor(region.quality)} text-white`}>
-                  {region.quality}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Qualité moyenne</span>
-                  <span className="font-medium">{getQualityLabel(region.quality)}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Communes</span>
-                  <span className="font-medium">{region.cities.toLocaleString()}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Alertes actives</span>
-                  <div className="flex items-center space-x-1">
-                    {region.alerts > 0 && (
-                      <AlertTriangle className="w-4 h-4 text-orange-500" />
-                    )}
-                    <span className={`font-medium ${region.alerts > 0 ? 'text-orange-600' : 'text-green-600'}`}>
-                      {region.alerts}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
 
       {/* Legend */}
       <Card>
@@ -162,6 +147,52 @@ const QualityMap = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Interactive Map */}
+      <InteractiveMap selectedRegion={selectedRegion} selectedPollutant={selectedPollutant} />
+
+      {/* Regional Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredRegions.map(region => (
+          <Card key={region.id} className="hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">{region.name}</CardTitle>
+                <Badge className={`${getQualityColor(region.quality)} text-white`}>
+                  {region.quality}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Qualité moyenne</span>
+                  <span className="font-medium">{getQualityLabel(region.quality)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Source d'eau</span>
+                  <span className="font-medium">{region.waterSource}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Communes</span>
+                  <span className="font-medium">{region.cities.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Alertes actives</span>
+                  <div className="flex items-center space-x-1">
+                    {region.alerts > 0 && (
+                      <AlertTriangle className="w-4 h-4 text-orange-500" />
+                    )}
+                    <span className={`font-medium ${region.alerts > 0 ? 'text-orange-600' : 'text-green-600'}`}>
+                      {region.alerts}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 };
