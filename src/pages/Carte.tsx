@@ -26,6 +26,7 @@ const Carte = () => {
               <a href="/diagnostic" className="text-gray-600 hover:text-blue-600 transition-colors">Diagnostic</a>
               <a href="/bouteilles" className="text-gray-600 hover:text-blue-600 transition-colors">vs Bouteilles</a>
               <a href="/polluants" className="text-gray-600 hover:text-blue-600 transition-colors">Polluants</a>
+              <a href="/login" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Connexion</a>
             </nav>
           </div>
         </div>

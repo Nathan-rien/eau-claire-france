@@ -1,14 +1,21 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
 
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: https://infoeau.fr/sitemap.xml
+
+# Crawl-delay pour éviter la surcharge
+Crawl-delay: 1
+
+# Bloquer l'accès aux pages d'administration
+Disallow: /login
+Disallow: /dashboard
+
+# Permettre l'indexation de toutes les pages publiques
+Allow: /
+Allow: /carte
+Allow: /diagnostic
+Allow: /alertes
+Allow: /bouteilles
+Allow: /polluants

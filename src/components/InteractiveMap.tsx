@@ -12,8 +12,8 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [lng, setLng] = useState(2.3488);
-  const [lat, setLat] = useState(48.8534);
-  const [zoom, setZoom] = useState(5.5);
+  const [lat, setLat] = useState(46.6034);
+  const [zoom, setZoom] = useState(6);
 
   useEffect(() => {
     if (!mapContainer.current) return;
