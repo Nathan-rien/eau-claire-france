@@ -8,74 +8,218 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const BottleComparison = () => {
-  const [selectedBrand, setSelectedBrand] = useState<string>('evian');
+  const [selectedBrand, setSelectedBrand] = useState<string>('cristaline');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // Mock data for bottled water brands
+  // Données réelles des eaux en bouteille issues du CSV
   const bottledWaters = [
+    {
+      id: 'cristaline',
+      name: 'Cristaline',
+      type: 'Eau de source',
+      source: 'Diverses (multi-sources régionales)',
+      price: 0.2,
+      co2: 0.25,
+      composition: {
+        nitrates: 6.8,
+        sodium: 5.1,
+        calcium: 90.0,
+        magnesium: 7.0,
+        residusSec: 330
+      },
+      producer: 'Sources Alma',
+      packaging: 'Plastique'
+    },
     {
       id: 'evian',
       name: 'Evian',
       type: 'Eau minérale naturelle',
-      source: 'Évian-les-Bains (74)',
-      price: 0.45,
+      source: 'Évian-les-Bains (Haute-Savoie)',
+      price: 0.65,
       co2: 0.35,
       composition: {
         nitrates: 3.8,
         sodium: 6.5,
-        calcium: 80,
-        magnesium: 26,
-        residusSec: 309
-      }
+        calcium: 80.0,
+        magnesium: 26.0,
+        residusSec: 345
+      },
+      producer: 'Danone',
+      packaging: 'Plastique / Verre'
     },
     {
       id: 'vittel',
       name: 'Vittel',
       type: 'Eau minérale naturelle',
-      source: 'Vittel (88)',
-      price: 0.42,
+      source: 'Vittel (Vosges)',
+      price: 0.55,
       co2: 0.32,
       composition: {
-        nitrates: 4.4,
-        sodium: 7.3,
-        calcium: 94,
-        magnesium: 20,
-        residusSec: 841
-      }
+        nitrates: 4.2,
+        sodium: 8.4,
+        calcium: 240.0,
+        magnesium: 42.0,
+        residusSec: 900
+      },
+      producer: 'Nestlé Waters',
+      packaging: 'Plastique / Verre'
     },
     {
-      id: 'cristaline',
-      name: 'Cristaline',
-      type: 'Eau de source',
-      source: 'Multiples sources',
-      price: 0.25,
-      co2: 0.28,
+      id: 'volvic',
+      name: 'Volvic',
+      type: 'Eau minérale naturelle',
+      source: 'Volvic (Puy-de-Dôme)',
+      price: 0.6,
+      co2: 0.3,
       composition: {
-        nitrates: 2.1,
-        sodium: 11.2,
-        calcium: 68,
-        magnesium: 18,
-        residusSec: 285
-      }
+        nitrates: 7.0,
+        sodium: 11.6,
+        calcium: 12.0,
+        magnesium: 8.0,
+        residusSec: 130
+      },
+      producer: 'Danone',
+      packaging: 'Plastique'
     },
     {
       id: 'contrex',
       name: 'Contrex',
       type: 'Eau minérale naturelle',
-      source: 'Contrexéville (88)',
-      price: 0.55,
+      source: 'Contrexéville (Vosges)',
+      price: 0.75,
       co2: 0.38,
       composition: {
-        nitrates: 2.7,
-        sodium: 9.1,
-        calcium: 486,
-        magnesium: 84,
+        nitrates: 0.7,
+        sodium: 9.4,
+        calcium: 468.0,
+        magnesium: 74.5,
         residusSec: 2078
-      }
+      },
+      producer: 'Nestlé Waters',
+      packaging: 'Plastique'
+    },
+    {
+      id: 'hepar',
+      name: 'Hépar',
+      type: 'Eau minérale naturelle',
+      source: 'Vittel (Vosges)',
+      price: 0.7,
+      co2: 0.4,
+      composition: {
+        nitrates: 2.6,
+        sodium: 10.0,
+        calcium: 549.0,
+        magnesium: 119.0,
+        residusSec: 2510
+      },
+      producer: 'Nestlé Waters',
+      packaging: 'Plastique'
+    },
+    {
+      id: 'st-yorre',
+      name: 'St-Yorre',
+      type: 'Eau minérale naturelle gazeuse',
+      source: 'Saint-Yorre (Allier)',
+      price: 0.55,
+      co2: 0.33,
+      composition: {
+        nitrates: 0.3,
+        sodium: 1700.0,
+        calcium: 160.0,
+        magnesium: 80.0,
+        residusSec: 4774
+      },
+      producer: 'Neptune',
+      packaging: 'Plastique'
+    },
+    {
+      id: 'quezac',
+      name: 'Quézac',
+      type: 'Eau minérale naturelle gazeuse',
+      source: 'Quézac (Lozère)',
+      price: 0.6,
+      co2: 0.35,
+      composition: {
+        nitrates: 0.2,
+        sodium: 100.0,
+        calcium: 90.0,
+        magnesium: 15.0,
+        residusSec: 1100
+      },
+      producer: 'Ogeu',
+      packaging: 'Verre / Plastique'
+    },
+    {
+      id: 'la-salvetat',
+      name: 'La Salvetat',
+      type: 'Eau minérale naturelle gazeuse',
+      source: 'La Salvetat-sur-Agout (Hérault)',
+      price: 0.5,
+      co2: 0.28,
+      composition: {
+        nitrates: 0.6,
+        sodium: 10.0,
+        calcium: 50.0,
+        magnesium: 10.0,
+        residusSec: 400
+      },
+      producer: 'Nestlé Waters',
+      packaging: 'Plastique'
+    },
+    {
+      id: 'chateldon',
+      name: 'Chateldon',
+      type: 'Eau minérale naturelle gazeuse',
+      source: 'Chateldon (Puy-de-Dôme)',
+      price: 1.5,
+      co2: 0.45,
+      composition: {
+        nitrates: 0.5,
+        sodium: 150.0,
+        calcium: 150.0,
+        magnesium: 20.0,
+        residusSec: 2000
+      },
+      producer: 'Société des Eaux de Chateldon',
+      packaging: 'Verre'
+    },
+    {
+      id: 'mont-roucous',
+      name: 'Mont Roucous',
+      type: 'Eau minérale naturelle',
+      source: 'Lacaune (Tarn)',
+      price: 0.5,
+      co2: 0.26,
+      composition: {
+        nitrates: 1.2,
+        sodium: 3.1,
+        calcium: 2.5,
+        magnesium: 0.9,
+        residusSec: 22
+      },
+      producer: 'Sources Mont Roucous',
+      packaging: 'Plastique'
+    },
+    {
+      id: 'thonon',
+      name: 'Thonon',
+      type: 'Eau minérale naturelle',
+      source: 'Thonon-les-Bains (Haute-Savoie)',
+      price: 0.45,
+      co2: 0.27,
+      composition: {
+        nitrates: 2.1,
+        sodium: 5.0,
+        calcium: 60.0,
+        magnesium: 5.0,
+        residusSec: 300
+      },
+      producer: 'Neptune',
+      packaging: 'Plastique'
     }
   ];
 
-  // Mock tap water data for comparison
+  // Données de l'eau du robinet pour comparaison
   const tapWater = {
     name: 'Eau du robinet (Paris)',
     price: 0.004,
@@ -88,6 +232,13 @@ const BottleComparison = () => {
       residusSec: 280
     }
   };
+
+  // Filtrer les eaux selon la recherche
+  const filteredWaters = bottledWaters.filter(water =>
+    water.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    water.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    water.producer.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const selectedWater = bottledWaters.find(w => w.id === selectedBrand) || bottledWaters[0];
 
@@ -122,7 +273,7 @@ const BottleComparison = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {bottledWaters.map(water => (
+                  {filteredWaters.map(water => (
                     <SelectItem key={water.id} value={water.id}>
                       {water.name} - {water.type}
                     </SelectItem>
@@ -215,7 +366,9 @@ const BottleComparison = () => {
           <CardContent>
             <div className="space-y-4">
               <div className="text-sm text-gray-600 mb-2">
-                Source: {selectedWater.source}
+                <div>Source: {selectedWater.source}</div>
+                <div>Producteur: {selectedWater.producer}</div>
+                <div>Conditionnement: {selectedWater.packaging}</div>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
@@ -253,6 +406,10 @@ const BottleComparison = () => {
                   <div className="flex justify-between">
                     <span>Magnésium:</span>
                     <span className="font-medium">{selectedWater.composition.magnesium}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Résidus secs:</span>
+                    <span className="font-medium">{selectedWater.composition.residusSec}</span>
                   </div>
                 </div>
               </div>
