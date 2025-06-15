@@ -2,6 +2,7 @@
 import React from 'react';
 import { AlertTriangle, Droplets } from 'lucide-react';
 import PollutantIndex from '@/components/PollutantIndex';
+import Footer from '@/components/Footer';
 
 const Polluants = () => {
   return (
@@ -29,7 +30,6 @@ const Polluants = () => {
         </div>
       </header>
 
-      {/* Page Content */}
       <section className="py-12 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-8">
@@ -45,6 +45,8 @@ const Polluants = () => {
           <PollutantIndex />
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };

@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
-import { MapPin, Filter, Droplets, AlertTriangle } from 'lucide-react';
+import { Filter, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import InteractiveMap from './InteractiveMap';
 
 const QualityMap = () => {
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
@@ -94,34 +93,8 @@ const QualityMap = () => {
         </CardContent>
       </Card>
 
-      {/* Map Placeholder */}
-      <Card>
-        <CardContent className="p-0">
-          <div className="h-96 bg-gradient-to-br from-blue-100 to-green-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 opacity-20">
-              <svg viewBox="0 0 800 600" className="w-full h-full">
-                {/* Simplified France outline */}
-                <path
-                  d="M200,150 L250,120 L300,130 L350,140 L400,160 L450,180 L500,200 L520,250 L510,300 L480,350 L450,400 L400,450 L350,480 L300,490 L250,480 L200,450 L150,400 L120,350 L130,300 L140,250 Z"
-                  fill="rgba(59, 130, 246, 0.3)"
-                  stroke="rgba(59, 130, 246, 0.6)"
-                  strokeWidth="2"
-                />
-              </svg>
-            </div>
-            <div className="text-center z-10">
-              <MapPin className="w-16 h-16 text-blue-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">Carte Interactive</h3>
-              <p className="text-gray-600 mb-4">
-                Visualisation de la qualité de l'eau par région
-              </p>
-              <Button className="bg-gradient-to-r from-blue-500 to-green-500">
-                Voir la carte complète
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Interactive Map */}
+      <InteractiveMap />
 
       {/* Regional Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

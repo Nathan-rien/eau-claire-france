@@ -2,6 +2,7 @@
 import React from 'react';
 import { TrendingUp, Droplets } from 'lucide-react';
 import BottleComparison from '@/components/BottleComparison';
+import Footer from '@/components/Footer';
 
 const Bouteilles = () => {
   return (
@@ -29,7 +30,6 @@ const Bouteilles = () => {
         </div>
       </header>
 
-      {/* Page Content */}
       <section className="py-12 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-8">
@@ -45,6 +45,8 @@ const Bouteilles = () => {
           <BottleComparison />
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };

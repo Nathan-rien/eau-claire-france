@@ -2,6 +2,7 @@
 import React from 'react';
 import { MapPin, Droplets } from 'lucide-react';
 import QualityMap from '@/components/QualityMap';
+import Footer from '@/components/Footer';
 
 const Carte = () => {
   return (
@@ -29,7 +30,6 @@ const Carte = () => {
         </div>
       </header>
 
-      {/* Page Content */}
       <section className="py-12 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-8">
@@ -45,6 +45,8 @@ const Carte = () => {
           <QualityMap />
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };

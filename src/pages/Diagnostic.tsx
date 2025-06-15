@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Search, MapPin, Droplets } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import WaterQualityCard from '@/components/WaterQualityCard';
+import Footer from '@/components/Footer';
 
 const Diagnostic = () => {
   const [selectedCity, setSelectedCity] = useState<string>('');
@@ -32,7 +33,6 @@ const Diagnostic = () => {
         </div>
       </header>
 
-      {/* Page Content */}
       <section className="py-12 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-8">
@@ -66,6 +66,8 @@ const Diagnostic = () => {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };
