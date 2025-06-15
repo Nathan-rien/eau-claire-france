@@ -22,6 +22,7 @@ const Carte = () => {
             <nav className="hidden md:flex items-center space-x-6">
               <a href="/" className="text-gray-600 hover:text-blue-600 transition-colors">Accueil</a>
               <a href="/carte" className="text-blue-600 font-medium">Carte</a>
+              <a href="/alertes" className="text-gray-600 hover:text-blue-600 transition-colors">Alertes</a>
               <a href="/diagnostic" className="text-gray-600 hover:text-blue-600 transition-colors">Diagnostic</a>
               <a href="/bouteilles" className="text-gray-600 hover:text-blue-600 transition-colors">vs Bouteilles</a>
               <a href="/polluants" className="text-gray-600 hover:text-blue-600 transition-colors">Polluants</a>

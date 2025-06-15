@@ -43,23 +43,6 @@ const QualityMap = () => {
 
   return (
     <div className="space-y-6">
-      {/* Water Sources Toggle */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Visualisation des sources d'eau</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant={showWaterSources ? "default" : "outline"}
-            onClick={() => setShowWaterSources(!showWaterSources)}
-            className="flex items-center justify-center space-x-2"
-          >
-            {showWaterSources ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-            <span>{showWaterSources ? 'Masquer les zones de provenance' : 'Afficher les zones de provenance'}</span>
-          </Button>
-        </CardContent>
-      </Card>
-
       {/* Legend */}
       <Card>
         <CardHeader>
@@ -85,6 +68,23 @@ const QualityMap = () => {
               </div>
             ))}
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Water Sources Toggle */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Visualisation des sources d'eau</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Button
+            variant={showWaterSources ? "default" : "outline"}
+            onClick={() => setShowWaterSources(!showWaterSources)}
+            className="flex items-center justify-center space-x-2"
+          >
+            {showWaterSources ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            <span>{showWaterSources ? 'Masquer les zones de provenance' : 'Afficher les zones de provenance'}</span>
+          </Button>
         </CardContent>
       </Card>
 
@@ -124,7 +124,13 @@ const QualityMap = () => {
                       <AlertTriangle className="w-4 h-4 text-orange-500" />
                     )}
                     <span className={`font-medium ${region.alerts > 0 ? 'text-orange-600' : 'text-green-600'}`}>
-                      {region.alerts}
+                      {region.alerts > 0 ? (
+                        <a href="/alertes" className="hover:underline">
+                          {region.alerts}
+                        </a>
+                      ) : (
+                        region.alerts
+                      )}
                     </span>
                   </div>
                 </div>
