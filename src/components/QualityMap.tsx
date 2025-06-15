@@ -1,14 +1,15 @@
 
 import React, { useState } from 'react';
-import { Filter, AlertTriangle } from 'lucide-react';
+import { Filter, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import InteractiveMap from './InteractiveMap';
 
 const QualityMap = () => {
-  const [selectedRegion, setSelectedRegion] = useState<string>('all');
   const [selectedPollutant, setSelectedPollutant] = useState<string>('all');
+  const [showWaterSources, setShowWaterSources] = useState<boolean>(true);
 
   // Mock data for demonstration
   const regions = [
@@ -22,10 +23,6 @@ const QualityMap = () => {
 
   const pollutants = [
     'Nitrates', 'Pesticides', 'Trihalométhanes', 'Plomb', 'Fluorures', 'Arsenic'
-  ];
-
-  const waterSources = [
-    'Seine et Marne', 'Sources montagne', 'Nappes phréatiques', 'Eaux souterraines', 'Nappes de craie', 'Eaux de surface'
   ];
 
   const getQualityColor = (quality: string) => {
@@ -50,76 +47,8 @@ const QualityMap = () => {
     }
   };
 
-  // Filter regions based on selected criteria
-  const filteredRegions = regions.filter(region => {
-    const regionMatch = selectedRegion === 'all' || region.id === selectedRegion;
-    return regionMatch;
-  });
-
   return (
     <div className="space-y-6">
-      {/* Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Filter className="w-5 h-5" />
-            <span>Filtres de visualisation</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Région</label>
-              <Select value={selectedRegion} onValueChange={setSelectedRegion}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Toutes les régions" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Toutes les régions</SelectItem>
-                  {regions.map(region => (
-                    <SelectItem key={region.id} value={region.id}>
-                      {region.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Polluant</label>
-              <Select value={selectedPollutant} onValueChange={setSelectedPollutant}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Tous les polluants" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tous les polluants</SelectItem>
-                  {pollutants.map(pollutant => (
-                    <SelectItem key={pollutant} value={pollutant.toLowerCase()}>
-                      {pollutant}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Source d'eau</label>
-              <Select value="all" onValueChange={() => {}}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Toutes les sources" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Toutes les sources</SelectItem>
-                  {waterSources.map(source => (
-                    <SelectItem key={source} value={source.toLowerCase()}>
-                      {source}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Legend */}
       <Card>
         <CardHeader>
@@ -148,12 +77,53 @@ const QualityMap = () => {
         </CardContent>
       </Card>
 
+      {/* Filters */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Filter className="w-5 h-5" />
+            <span>Filtres de visualisation</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Polluant</label>
+              <Select value={selectedPollutant} onValueChange={setSelectedPollutant}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Tous les polluants" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les polluants</SelectItem>
+                  {pollutants.map(pollutant => (
+                    <SelectItem key={pollutant} value={pollutant.toLowerCase()}>
+                      {pollutant}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Provenance des sources d'eau</label>
+              <Button
+                variant={showWaterSources ? "default" : "outline"}
+                onClick={() => setShowWaterSources(!showWaterSources)}
+                className="w-full flex items-center justify-center space-x-2"
+              >
+                {showWaterSources ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                <span>{showWaterSources ? 'Masquer les zones' : 'Afficher les zones'}</span>
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Interactive Map */}
-      <InteractiveMap selectedRegion={selectedRegion} selectedPollutant={selectedPollutant} />
+      <InteractiveMap selectedPollutant={selectedPollutant} showWaterSources={showWaterSources} />
 
       {/* Regional Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredRegions.map(region => (
+        {regions.map(region => (
           <Card key={region.id} className="hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
