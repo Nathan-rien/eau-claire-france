@@ -1,48 +1,17 @@
 
 import React from 'react';
-import { Droplets, AlertTriangle, CheckCircle, TrendingUp, TrendingDown } from 'lucide-react';
+import { Droplets, AlertTriangle, CheckCircle, TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { useWaterQuality } from '@/hooks/useWaterQuality';
 
 interface WaterQualityCardProps {
   city: string;
 }
 
 const WaterQualityCard: React.FC<WaterQualityCardProps> = ({ city }) => {
-  // Mock data for demonstration
-  const mockData = {
-    Paris: {
-      grade: 'B',
-      score: 85,
-      lastAnalysis: '2024-06-10',
-      pollutants: [
-        { name: 'Nitrates', value: 12, limit: 50, unit: 'mg/L', status: 'ok' },
-        { name: 'Chlore résiduel', value: 0.3, limit: 2, unit: 'mg/L', status: 'ok' },
-        { name: 'Trihalométhanes', value: 28, limit: 100, unit: 'µg/L', status: 'warning' },
-        { name: 'Plomb', value: 2, limit: 10, unit: 'µg/L', status: 'ok' },
-      ],
-      source: 'Seine et Marne',
-      treatment: 'Filtration + Chloration',
-      hardness: 'Moyennement dure (15°fH)',
-    },
-    Lyon: {
-      grade: 'A',
-      score: 92,
-      lastAnalysis: '2024-06-12',
-      pollutants: [
-        { name: 'Nitrates', value: 8, limit: 50, unit: 'mg/L', status: 'ok' },
-        { name: 'Chlore résiduel', value: 0.2, limit: 2, unit: 'mg/L', status: 'ok' },
-        { name: 'Trihalométhanes', value: 15, limit: 100, unit: 'µg/L', status: 'ok' },
-        { name: 'Plomb', value: 1, limit: 10, unit: 'µg/L', status: 'ok' },
-      ],
-      source: 'Rhône',
-      treatment: 'Ozonation + Filtration',
-      hardness: 'Dure (22°fH)',
-    },
-  };
-
-  const data = mockData[city as keyof typeof mockData] || mockData.Paris;
+  const { data, isLoading, error } = useWaterQuality(city);
 
   const getGradeColor = (grade: string) => {
     switch (grade) {
@@ -66,14 +35,50 @@ const WaterQualityCard: React.FC<WaterQualityCardProps> = ({ city }) => {
     }
   };
 
-  const getPollutantIcon = (status: string) => {
-    switch (status) {
-      case 'ok': return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'warning': return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
-      case 'danger': return <AlertTriangle className="w-4 h-4 text-red-500" />;
-      default: return <CheckCircle className="w-4 h-4 text-gray-500" />;
+  const getPollutantIcon = (conformite: string) => {
+    switch (conformite) {
+      case 'Conforme': return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case 'Non conforme': return <AlertTriangle className="w-4 h-4 text-red-500" />;
+      default: return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
     }
   };
+
+  if (isLoading) {
+    return (
+      <Card className="border-2 border-blue-200">
+        <CardContent className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-4" />
+            <p className="text-gray-600">Chargement des données pour {city}...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="border-2 border-red-200">
+        <CardContent className="py-12 text-center">
+          <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-4" />
+          <p className="text-red-600">Erreur lors du chargement des données</p>
+          <p className="text-sm text-gray-600 mt-2">Utilisation des données de démonstration</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!data || data.data.length === 0) {
+    return (
+      <Card className="border-2 border-gray-200">
+        <CardContent className="py-12 text-center">
+          <Droplets className="w-8 h-8 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-600">Aucune donnée disponible pour {city}</p>
+          <p className="text-sm text-gray-500 mt-2">Essayez une autre commune</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -103,19 +108,23 @@ const WaterQualityCard: React.FC<WaterQualityCardProps> = ({ city }) => {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-gray-600">Dernière analyse</span>
-                <p className="font-medium">{new Date(data.lastAnalysis).toLocaleDateString('fr-FR')}</p>
+                <p className="font-medium">
+                  {data.lastAnalysis ? new Date(data.lastAnalysis).toLocaleDateString('fr-FR') : 'N/A'}
+                </p>
+              </div>
+              <div>
+                <span className="text-gray-600">Nombre d'analyses</span>
+                <p className="font-medium">{data.data.length}</p>
               </div>
               <div>
                 <span className="text-gray-600">Source</span>
-                <p className="font-medium">{data.source}</p>
+                <p className="font-medium">Data.gouv.fr</p>
               </div>
               <div>
-                <span className="text-gray-600">Traitement</span>
-                <p className="font-medium">{data.treatment}</p>
-              </div>
-              <div>
-                <span className="text-gray-600">Dureté</span>
-                <p className="font-medium">{data.hardness}</p>
+                <span className="text-gray-600">Conformité</span>
+                <p className="font-medium">
+                  {data.data.filter(d => d.conformite === 'Conforme').length}/{data.data.length}
+                </p>
               </div>
             </div>
           </div>
@@ -125,33 +134,33 @@ const WaterQualityCard: React.FC<WaterQualityCardProps> = ({ city }) => {
       {/* Pollutants Detail */}
       <Card>
         <CardHeader>
-          <CardTitle>Détail des analyses</CardTitle>
+          <CardTitle>Détail des analyses officielles</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {data.pollutants.map((pollutant, index) => (
+            {data.data.map((pollutant, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center space-x-3">
-                  {getPollutantIcon(pollutant.status)}
+                  {getPollutantIcon(pollutant.conformite)}
                   <div>
-                    <p className="font-medium">{pollutant.name}</p>
+                    <p className="font-medium">{pollutant.parametreAnalyse}</p>
                     <p className="text-sm text-gray-600">
-                      Limite: {pollutant.limit} {pollutant.unit}
+                      Limite: {pollutant.limiteQualite} {pollutant.uniteParametre}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-lg">
-                    {pollutant.value} {pollutant.unit}
+                    {pollutant.valeurParametre} {pollutant.uniteParametre}
                   </p>
                   <div className="flex items-center space-x-1">
-                    {pollutant.value < pollutant.limit * 0.5 ? (
+                    {pollutant.valeurParametre < pollutant.limiteQualite * 0.5 ? (
                       <TrendingDown className="w-4 h-4 text-green-500" />
                     ) : (
                       <TrendingUp className="w-4 h-4 text-yellow-500" />
                     )}
-                    <span className={`text-sm ${pollutant.value < pollutant.limit * 0.5 ? 'text-green-600' : 'text-yellow-600'}`}>
-                      {Math.round((pollutant.value / pollutant.limit) * 100)}% limite
+                    <span className={`text-sm ${pollutant.valeurParametre < pollutant.limiteQualite * 0.5 ? 'text-green-600' : 'text-yellow-600'}`}>
+                      {Math.round((pollutant.valeurParametre / pollutant.limiteQualite) * 100)}% limite
                     </span>
                   </div>
                 </div>
@@ -164,35 +173,26 @@ const WaterQualityCard: React.FC<WaterQualityCardProps> = ({ city }) => {
       {/* Comparison */}
       <Card className="bg-blue-50 border-blue-200">
         <CardHeader>
-          <CardTitle className="text-blue-800">Comparaison nationale</CardTitle>
+          <CardTitle className="text-blue-800">Informations techniques</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <p className="text-2xl font-bold text-blue-600">{data.score}</p>
-              <p className="text-sm text-gray-600">Votre commune</p>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Source des données:</span>
+              <span className="font-medium">API officielle data.gouv.fr</span>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-600">78</p>
-              <p className="text-sm text-gray-600">Moyenne régionale</p>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Date de dernière mise à jour:</span>
+              <span className="font-medium">
+                {data.lastAnalysis ? new Date(data.lastAnalysis).toLocaleDateString('fr-FR') : 'N/A'}
+              </span>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-600">82</p>
-              <p className="text-sm text-gray-600">Moyenne nationale</p>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Conformité globale:</span>
+              <span className={`font-medium ${data.data.every(d => d.conformite === 'Conforme') ? 'text-green-600' : 'text-orange-600'}`}>
+                {data.data.every(d => d.conformite === 'Conforme') ? '✓ Conforme' : '⚠ À surveiller'}
+              </span>
             </div>
-          </div>
-          <div className="mt-4 p-3 bg-white rounded-lg">
-            <p className="text-sm text-center">
-              {data.score > 82 ? (
-                <span className="text-green-600 font-medium">
-                  ✓ Votre eau est au-dessus de la moyenne nationale
-                </span>
-              ) : (
-                <span className="text-orange-600 font-medium">
-                  ⚠ Votre eau est en dessous de la moyenne nationale
-                </span>
-              )}
-            </p>
           </div>
         </CardContent>
       </Card>
