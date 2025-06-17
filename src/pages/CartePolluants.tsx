@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { MapPin, AlertTriangle } from 'lucide-react';
-import QualityMap from '@/components/QualityMap';
+import PollutantMap from '@/components/PollutantMap';
 import Layout from '@/components/Layout';
 
 const CartePolluants = () => {
@@ -21,7 +21,7 @@ const CartePolluants = () => {
               </p>
             </div>
             
-            <QualityMap />
+            <PollutantMap />
             
             <div className="mt-8 text-center">
               <div className="bg-white rounded-lg p-6 shadow-lg max-w-2xl mx-auto">
