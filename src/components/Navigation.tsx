@@ -17,7 +17,8 @@ const Navigation = () => {
 
   const navigationItems = [
     { href: '/', label: 'Accueil' },
-    { href: '/carte', label: 'Carte' },
+    { href: '/carte', label: 'Carte des eaux' },
+    { href: '/carte-polluants', label: 'Carte polluants' },
     { href: '/diagnostic', label: 'Diagnostic' },
     { href: '/bouteilles', label: 'Bouteilles' },
     { href: '/polluants', label: 'Polluants' },
@@ -40,13 +41,13 @@ const Navigation = () => {
 
           {/* Navigation Menu */}
           <NavigationMenu>
-            <NavigationMenuList className="flex-wrap">
+            <NavigationMenuList className="flex-wrap gap-1">
               {navigationItems.map((item) => (
                 <NavigationMenuItem key={item.href}>
                   <NavigationMenuLink
                     asChild
                     className={cn(
-                      "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+                      "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-2 py-2 text-xs md:text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50",
                       location.pathname === item.href && "bg-accent text-accent-foreground"
                     )}
                   >

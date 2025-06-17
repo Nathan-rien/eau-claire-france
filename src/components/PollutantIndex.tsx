@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AlertTriangle, Info, Search, TrendingUp, TrendingDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -262,8 +261,10 @@ const PollutantIndex = () => {
                     <span className="text-gray-600">Prévalence: </span>
                     <span className="font-medium">{pollutant.prevalence}% des réseaux</span>
                   </div>
-                  <Button size="sm" variant="outline">
-                    Voir sur la carte
+                  <Button size="sm" variant="outline" asChild>
+                    <a href="/carte-polluants">
+                      Voir sur la carte
+                    </a>
                   </Button>
                 </div>
               </div>

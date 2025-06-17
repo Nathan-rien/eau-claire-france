@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { analyticsService } from "@/services/analyticsService";
 import Index from "./pages/Index";
 import Carte from "./pages/Carte";
+import CartePolluants from "./pages/CartePolluants";
 import Alertes from "./pages/Alertes";
 import Diagnostic from "./pages/Diagnostic";
 import Bouteilles from "./pages/Bouteilles";
@@ -33,6 +34,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/carte" element={<Carte />} />
+            <Route path="/carte-polluants" element={<CartePolluants />} />
             <Route path="/alertes" element={<Alertes />} />
             <Route path="/diagnostic" element={<Diagnostic />} />
             <Route path="/bouteilles" element={<Bouteilles />} />

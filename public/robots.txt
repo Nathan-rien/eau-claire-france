@@ -15,6 +15,7 @@ Disallow: /dashboard
 # Permettre l'indexation de toutes les pages publiques
 Allow: /
 Allow: /carte
+Allow: /carte-polluants
 Allow: /diagnostic
 Allow: /alertes
 Allow: /bouteilles
