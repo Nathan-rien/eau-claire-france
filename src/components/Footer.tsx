@@ -22,27 +22,27 @@ const Footer = () => {
           <div>
             <h5 className="font-semibold mb-3">Données</h5>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><a href="#" className="hover:text-white transition-colors">Sources</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Méthodologie</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">API publique</a></li>
+              <li><a href="/sources" className="hover:text-white transition-colors">Sources</a></li>
+              <li><a href="/methodologie" className="hover:text-white transition-colors">Méthodologie</a></li>
+              <li><a href="/api-publique" className="hover:text-white transition-colors">API publique</a></li>
             </ul>
           </div>
           
           <div>
             <h5 className="font-semibold mb-3">Informations</h5>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><a href="#" className="hover:text-white transition-colors">À propos</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Mentions légales</a></li>
+              <li><a href="/a-propos" className="hover:text-white transition-colors">À propos</a></li>
+              <li><a href="/contact" className="hover:text-white transition-colors">Contact</a></li>
+              <li><a href="/mentions-legales" className="hover:text-white transition-colors">Mentions légales</a></li>
             </ul>
           </div>
           
           <div>
             <h5 className="font-semibold mb-3">Conformité</h5>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><a href="#" className="hover:text-white transition-colors">RGPD</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Accessibilité</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Open Data</a></li>
+              <li><a href="/rgpd" className="hover:text-white transition-colors">RGPD</a></li>
+              <li><a href="/accessibilite" className="hover:text-white transition-colors">Accessibilité</a></li>
+              <li><a href="/open-data" className="hover:text-white transition-colors">Open Data</a></li>
             </ul>
           </div>
         </div>

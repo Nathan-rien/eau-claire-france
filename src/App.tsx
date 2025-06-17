@@ -15,6 +15,12 @@ import Bouteilles from "./pages/Bouteilles";
 import Polluants from "./pages/Polluants";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Sources from "./pages/Sources";
+import Methodologie from "./pages/Methodologie";
+import ApiPublique from "./pages/ApiPublique";
+import APropos from "./pages/APropos";
+import Contact from "./pages/Contact";
+import MentionsLegales from "./pages/MentionsLegales";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +47,12 @@ const App = () => {
             <Route path="/polluants" element={<Polluants />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/sources" element={<Sources />} />
+            <Route path="/methodologie" element={<Methodologie />} />
+            <Route path="/api-publique" element={<ApiPublique />} />
+            <Route path="/a-propos" element={<APropos />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/mentions-legales" element={<MentionsLegales />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
