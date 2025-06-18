@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,6 +21,9 @@ import APropos from "./pages/APropos";
 import Contact from "./pages/Contact";
 import MentionsLegales from "./pages/MentionsLegales";
 import NotFound from "./pages/NotFound";
+import RGPD from "./pages/RGPD";
+import Accessibilite from "./pages/Accessibilite";
+import OpenData from "./pages/OpenData";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +55,9 @@ const App = () => {
             <Route path="/a-propos" element={<APropos />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
+            <Route path="/rgpd" element={<RGPD />} />
+            <Route path="/accessibilite" element={<Accessibilite />} />
+            <Route path="/open-data" element={<OpenData />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
