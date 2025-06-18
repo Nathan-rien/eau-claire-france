@@ -28,46 +28,46 @@ const WaterComparisonCard: React.FC<WaterComparisonCardProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Droplets className={`w-6 h-6 ${iconColor}`} />
-            <span>{water.name}</span>
+            <Droplets className={`w-5 h-5 md:w-6 md:h-6 ${iconColor}`} />
+            <span className="text-sm md:text-base">{water.name}</span>
           </div>
           {isTapWater ? (
-            <Badge className="bg-green-500 text-white">Recommandée</Badge>
+            <Badge className="bg-green-500 text-white text-xs">Recommandée</Badge>
           ) : (
-            <Badge variant="outline">{(water as WaterData).type}</Badge>
+            <Badge variant="outline" className="text-xs">{(water as WaterData).type}</Badge>
           )}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {!isTapWater && selectedWater && (
-            <div className="text-sm text-gray-600 mb-2">
+            <div className="text-xs md:text-sm text-gray-600 mb-2 space-y-1">
               <div>Source: {selectedWater.source}</div>
               <div>Producteur: {selectedWater.producer}</div>
               <div>Conditionnement: {selectedWater.packaging}</div>
             </div>
           )}
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-3 bg-white rounded-lg">
-              <Euro className={`w-8 h-8 ${iconColor} mx-auto mb-2`} />
-              <p className={`text-2xl font-bold ${priceColor}`}>
+          <div className="grid grid-cols-2 gap-2 md:gap-4">
+            <div className="text-center p-2 md:p-3 bg-white rounded-lg">
+              <Euro className={`w-6 h-6 md:w-8 md:h-8 ${iconColor} mx-auto mb-2`} />
+              <p className={`text-lg md:text-2xl font-bold ${priceColor}`}>
                 {isTapWater ? water.price.toFixed(3) : water.price.toFixed(2)}€
               </p>
-              <p className="text-sm text-gray-600">par litre</p>
+              <p className="text-xs md:text-sm text-gray-600">par litre</p>
             </div>
-            <div className="text-center p-3 bg-white rounded-lg">
-              <Leaf className={`w-8 h-8 ${iconColor} mx-auto mb-2`} />
-              <p className={`text-2xl font-bold ${priceColor}`}>
+            <div className="text-center p-2 md:p-3 bg-white rounded-lg">
+              <Leaf className={`w-6 h-6 md:w-8 md:h-8 ${iconColor} mx-auto mb-2`} />
+              <p className={`text-lg md:text-2xl font-bold ${priceColor}`}>
                 {isTapWater ? water.co2.toFixed(3) : water.co2.toFixed(2)}
               </p>
-              <p className="text-sm text-gray-600">kg CO₂/L</p>
+              <p className="text-xs md:text-sm text-gray-600">kg CO₂/L</p>
             </div>
           </div>
           
-          <div className="bg-white rounded-lg p-4">
-            <h4 className="font-medium mb-3">Composition (mg/L)</h4>
-            <div className="grid grid-cols-2 gap-2 text-sm">
+          <div className="bg-white rounded-lg p-3 md:p-4">
+            <h4 className="font-medium mb-3 text-sm md:text-base">Composition (mg/L)</h4>
+            <div className="grid grid-cols-2 gap-2 text-xs md:text-sm">
               <div className="flex justify-between">
                 <span>Nitrates:</span>
                 <span className="font-medium">{water.composition.nitrates}</span>
@@ -85,7 +85,7 @@ const WaterComparisonCard: React.FC<WaterComparisonCardProps> = ({
                 <span className="font-medium">{water.composition.magnesium}</span>
               </div>
               {!isTapWater && (
-                <div className="flex justify-between">
+                <div className="flex justify-between col-span-2">
                   <span>Résidus secs:</span>
                   <span className="font-medium">{water.composition.residusSec}</span>
                 </div>
