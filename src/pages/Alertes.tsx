@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Layout from '@/components/Layout';
+import AlertSubscriptionForm from '@/components/AlertSubscriptionForm';
 
 const Alertes = () => {
   // Mock data for active alerts
@@ -172,6 +173,9 @@ const Alertes = () => {
                 Consultez les alertes en cours concernant la qualité de l'eau potable dans les différentes régions de France.
               </p>
             </div>
+
+            {/* Formulaire d'abonnement aux alertes */}
+            <AlertSubscriptionForm />
 
             {/* Summary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
