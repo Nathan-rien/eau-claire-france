@@ -20,7 +20,7 @@ const Navigation = () => {
     { href: '/carte', label: 'Carte des eaux' },
     { href: '/carte-polluants', label: 'Carte polluants' },
     { href: '/diagnostic', label: 'Diagnostic' },
-    { href: '/bouteilles', label: 'Bouteilles' },
+    { href: '/bouteilles', label: 'Robinet vs Bouteilles' },
     { href: '/polluants', label: 'Polluants' },
     { href: '/alertes', label: 'Alertes' },
   ];

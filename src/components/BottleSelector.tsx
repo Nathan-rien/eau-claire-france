@@ -57,7 +57,7 @@ const BottleSelector: React.FC<BottleSelectorProps> = ({
             <div className="flex flex-wrap gap-2">
               {selectedBottles.map(bottle => (
                 <Badge key={bottle.id} variant="secondary" className="flex items-center space-x-1">
-                  <span>{bottle.marque} {bottle.nom_bouteille}</span>
+                  <span>{bottle.marque === bottle.nom_bouteille ? bottle.marque : `${bottle.marque} ${bottle.nom_bouteille}`}</span>
                   <button
                     onClick={() => onBottleRemove(bottle.id)}
                     className="ml-1 hover:bg-red-100 rounded-full p-1"
@@ -122,7 +122,9 @@ const BottleSelector: React.FC<BottleSelectorProps> = ({
                 onClick={() => selectedBottles.length < 3 && onBottleAdd(bottle)}
               >
                 <div className="flex-1">
-                  <div className="font-medium">{bottle.marque} - {bottle.nom_bouteille}</div>
+                  <div className="font-medium">
+                    {bottle.marque === bottle.nom_bouteille ? bottle.marque : `${bottle.marque} - ${bottle.nom_bouteille}`}
+                  </div>
                   <div className="text-sm text-gray-600">
                     {bottle.type_eau} • {bottle.format} • {bottle.source}
                   </div>

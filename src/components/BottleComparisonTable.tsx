@@ -64,14 +64,14 @@ const BottleComparisonTable: React.FC<BottleComparisonTableProps> = ({
         onRemoveFavorite(bottle.id);
         toast({
           title: "Retiré des favoris",
-          description: `${bottle.marque} ${bottle.nom_bouteille} a été retiré de vos favoris.`
+          description: `${bottle.marque === bottle.nom_bouteille ? bottle.marque : `${bottle.marque} ${bottle.nom_bouteille}`} a été retiré de vos favoris.`
         });
       }
     } else {
       onToggleFavorite(bottle);
       toast({
         title: "Ajouté aux favoris",
-        description: `${bottle.marque} ${bottle.nom_bouteille} a été ajouté à vos favoris.`
+        description: `${bottle.marque === bottle.nom_bouteille ? bottle.marque : `${bottle.marque} ${bottle.nom_bouteille}`} a été ajouté à vos favoris.`
       });
     }
   };
@@ -311,27 +311,27 @@ const BottleComparisonTable: React.FC<BottleComparisonTableProps> = ({
                 <div><strong>Prix :</strong> {tapWaterComparison.prix_moyen_litre.toFixed(3)}€/L</div>
                 <div><strong>Nitrates :</strong> 
                   <span className={interpretNitrates(tapWaterComparison.nitrates_mgL).className}>
-                    {tapWaterComparison.nitrates_mgL} mg/L {interpretNitrates(tapWaterComparison.nitrates_mgL).label}
+                    {' '}{tapWaterComparison.nitrates_mgL} mg/L {interpretNitrates(tapWaterComparison.nitrates_mgL).label}
                   </span>
                 </div>
                 <div><strong>Calcium :</strong> 
                   <span className={interpretCalcium(tapWaterComparison.calcium_mgL).className}>
-                    {tapWaterComparison.calcium_mgL} mg/L {interpretCalcium(tapWaterComparison.calcium_mgL).label}
+                    {' '}{tapWaterComparison.calcium_mgL} mg/L {interpretCalcium(tapWaterComparison.calcium_mgL).label}
                   </span>
                 </div>
                 <div><strong>Magnésium :</strong> 
                   <span className={interpretMagnesium(tapWaterComparison.magnesium_mgL).className}>
-                    {tapWaterComparison.magnesium_mgL} mg/L {interpretMagnesium(tapWaterComparison.magnesium_mgL).label}
+                    {' '}{tapWaterComparison.magnesium_mgL} mg/L {interpretMagnesium(tapWaterComparison.magnesium_mgL).label}
                   </span>
                 </div>
                 <div><strong>Sodium :</strong> 
                   <span className={interpretSodium(tapWaterComparison.sodium_mgL).className}>
-                    {tapWaterComparison.sodium_mgL} mg/L {interpretSodium(tapWaterComparison.sodium_mgL).label}
+                    {' '}{tapWaterComparison.sodium_mgL} mg/L {interpretSodium(tapWaterComparison.sodium_mgL).label}
                   </span>
                 </div>
                 <div><strong>pH :</strong> 
                   <span className={interpretPH(tapWaterComparison.pH).className}>
-                    {tapWaterComparison.pH} {interpretPH(tapWaterComparison.pH).label}
+                    {' '}{tapWaterComparison.pH} {interpretPH(tapWaterComparison.pH).label}
                   </span>
                 </div>
                 <div><strong>CO₂ :</strong> {tapWaterComparison.impact_carbone_gCO2L}g/L</div>
@@ -345,7 +345,7 @@ const BottleComparisonTable: React.FC<BottleComparisonTableProps> = ({
           <Card key={bottle.id}>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>{bottle.marque} - {bottle.nom_bouteille}</span>
+                <span>{bottle.marque === bottle.nom_bouteille ? bottle.marque : `${bottle.marque} - ${bottle.nom_bouteille}`}</span>
                 {onToggleFavorite && isFavorite && (
                   <Button
                     size="sm"
@@ -368,32 +368,32 @@ const BottleComparisonTable: React.FC<BottleComparisonTableProps> = ({
                 <div><strong>Prix :</strong> {bottle.prix_moyen_litre.toFixed(2)}€/L</div>
                 <div><strong>Nitrates :</strong> 
                   <span className={interpretNitrates(bottle.nitrates_mgL).className}>
-                    {bottle.nitrates_mgL} mg/L {interpretNitrates(bottle.nitrates_mgL).label}
+                    {' '}{bottle.nitrates_mgL} mg/L {interpretNitrates(bottle.nitrates_mgL).label}
                   </span>
                 </div>
                 <div><strong>Résidu sec :</strong> 
                   <span className={interpretResiduSec(bottle.residu_sec_mgL).className}>
-                    {bottle.residu_sec_mgL} mg/L {interpretResiduSec(bottle.residu_sec_mgL).label}
+                    {' '}{bottle.residu_sec_mgL} mg/L {interpretResiduSec(bottle.residu_sec_mgL).label}
                   </span>
                 </div>
                 <div><strong>Calcium :</strong> 
                   <span className={interpretCalcium(bottle.calcium_mgL).className}>
-                    {bottle.calcium_mgL} mg/L {interpretCalcium(bottle.calcium_mgL).label}
+                    {' '}{bottle.calcium_mgL} mg/L {interpretCalcium(bottle.calcium_mgL).label}
                   </span>
                 </div>
                 <div><strong>Magnésium :</strong> 
                   <span className={interpretMagnesium(bottle.magnesium_mgL).className}>
-                    {bottle.magnesium_mgL} mg/L {interpretMagnesium(bottle.magnesium_mgL).label}
+                    {' '}{bottle.magnesium_mgL} mg/L {interpretMagnesium(bottle.magnesium_mgL).label}
                   </span>
                 </div>
                 <div><strong>Sodium :</strong> 
                   <span className={interpretSodium(bottle.sodium_mgL).className}>
-                    {bottle.sodium_mgL} mg/L {interpretSodium(bottle.sodium_mgL).label}
+                    {' '}{bottle.sodium_mgL} mg/L {interpretSodium(bottle.sodium_mgL).label}
                   </span>
                 </div>
                 <div><strong>pH :</strong> 
                   <span className={interpretPH(bottle.pH).className}>
-                    {bottle.pH} {interpretPH(bottle.pH).label}
+                    {' '}{bottle.pH} {interpretPH(bottle.pH).label}
                   </span>
                 </div>
                 <div><strong>Emballage :</strong> {bottle.emballage}</div>
