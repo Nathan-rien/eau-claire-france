@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Euro, Droplets, Leaf, ExternalLink } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +5,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BottleWaterData, tapWaterComparison } from '@/data/bottleComparisonData';
+import { 
+  interpretNitrates, 
+  interpretResiduSec, 
+  interpretCalcium, 
+  interpretMagnesium, 
+  interpretSodium, 
+  interpretPH 
+} from '@/utils/nutritionalInterpretation';
 
 interface BottleComparisonTableProps {
   selectedBottles: BottleWaterData[];
@@ -113,39 +120,69 @@ const BottleComparisonTable: React.FC<BottleComparisonTableProps> = ({
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Nitrates (mg/L)</TableCell>
-                    {allItems.map((item, index) => (
-                      <TableCell key={index} className="text-center">{item.nitrates_mgL}</TableCell>
-                    ))}
+                    {allItems.map((item, index) => {
+                      const interpretation = interpretNitrates(item.nitrates_mgL);
+                      return (
+                        <TableCell key={index} className={`text-center ${interpretation.className}`}>
+                          {item.nitrates_mgL} {interpretation.label}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Résidu sec (mg/L)</TableCell>
-                    {allItems.map((item, index) => (
-                      <TableCell key={index} className="text-center">{item.residu_sec_mgL}</TableCell>
-                    ))}
+                    {allItems.map((item, index) => {
+                      const interpretation = interpretResiduSec(item.residu_sec_mgL);
+                      return (
+                        <TableCell key={index} className={`text-center ${interpretation.className}`}>
+                          {item.residu_sec_mgL} {interpretation.label}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Calcium (mg/L)</TableCell>
-                    {allItems.map((item, index) => (
-                      <TableCell key={index} className="text-center">{item.calcium_mgL}</TableCell>
-                    ))}
+                    {allItems.map((item, index) => {
+                      const interpretation = interpretCalcium(item.calcium_mgL);
+                      return (
+                        <TableCell key={index} className={`text-center ${interpretation.className}`}>
+                          {item.calcium_mgL} {interpretation.label}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Magnésium (mg/L)</TableCell>
-                    {allItems.map((item, index) => (
-                      <TableCell key={index} className="text-center">{item.magnesium_mgL}</TableCell>
-                    ))}
+                    {allItems.map((item, index) => {
+                      const interpretation = interpretMagnesium(item.magnesium_mgL);
+                      return (
+                        <TableCell key={index} className={`text-center ${interpretation.className}`}>
+                          {item.magnesium_mgL} {interpretation.label}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Sodium (mg/L)</TableCell>
-                    {allItems.map((item, index) => (
-                      <TableCell key={index} className="text-center">{item.sodium_mgL}</TableCell>
-                    ))}
+                    {allItems.map((item, index) => {
+                      const interpretation = interpretSodium(item.sodium_mgL);
+                      return (
+                        <TableCell key={index} className={`text-center ${interpretation.className}`}>
+                          {item.sodium_mgL} {interpretation.label}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">pH</TableCell>
-                    {allItems.map((item, index) => (
-                      <TableCell key={index} className="text-center">{item.pH}</TableCell>
-                    ))}
+                    {allItems.map((item, index) => {
+                      const interpretation = interpretPH(item.pH);
+                      return (
+                        <TableCell key={index} className={`text-center ${interpretation.className}`}>
+                          {item.pH} {interpretation.label}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                   {!showTapWater && (
                     <>
@@ -238,11 +275,31 @@ const BottleComparisonTable: React.FC<BottleComparisonTableProps> = ({
             <CardContent>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div><strong>Prix:</strong> {tapWaterComparison.prix_moyen_litre.toFixed(3)}€/L</div>
-                <div><strong>Nitrates:</strong> {tapWaterComparison.nitrates_mgL} mg/L</div>
-                <div><strong>Calcium:</strong> {tapWaterComparison.calcium_mgL} mg/L</div>
-                <div><strong>Magnésium:</strong> {tapWaterComparison.magnesium_mgL} mg/L</div>
-                <div><strong>Sodium:</strong> {tapWaterComparison.sodium_mgL} mg/L</div>
-                <div><strong>pH:</strong> {tapWaterComparison.pH}</div>
+                <div><strong>Nitrates:</strong> 
+                  <span className={interpretNitrates(tapWaterComparison.nitrates_mgL).className}>
+                    {tapWaterComparison.nitrates_mgL} mg/L {interpretNitrates(tapWaterComparison.nitrates_mgL).label}
+                  </span>
+                </div>
+                <div><strong>Calcium:</strong> 
+                  <span className={interpretCalcium(tapWaterComparison.calcium_mgL).className}>
+                    {tapWaterComparison.calcium_mgL} mg/L {interpretCalcium(tapWaterComparison.calcium_mgL).label}
+                  </span>
+                </div>
+                <div><strong>Magnésium:</strong> 
+                  <span className={interpretMagnesium(tapWaterComparison.magnesium_mgL).className}>
+                    {tapWaterComparison.magnesium_mgL} mg/L {interpretMagnesium(tapWaterComparison.magnesium_mgL).label}
+                  </span>
+                </div>
+                <div><strong>Sodium:</strong> 
+                  <span className={interpretSodium(tapWaterComparison.sodium_mgL).className}>
+                    {tapWaterComparison.sodium_mgL} mg/L {interpretSodium(tapWaterComparison.sodium_mgL).label}
+                  </span>
+                </div>
+                <div><strong>pH:</strong> 
+                  <span className={interpretPH(tapWaterComparison.pH).className}>
+                    {tapWaterComparison.pH} {interpretPH(tapWaterComparison.pH).label}
+                  </span>
+                </div>
                 <div><strong>CO₂:</strong> {tapWaterComparison.impact_carbone_gCO2L}g/L</div>
                 <div><strong>Éco-score:</strong> <Badge className={getEcoScoreColor(tapWaterComparison.ecoscore)}>{tapWaterComparison.ecoscore}</Badge></div>
               </div>
@@ -260,12 +317,36 @@ const BottleComparisonTable: React.FC<BottleComparisonTableProps> = ({
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div><strong>Source:</strong> {bottle.source}</div>
                 <div><strong>Prix:</strong> {bottle.prix_moyen_litre.toFixed(2)}€/L</div>
-                <div><strong>Nitrates:</strong> {bottle.nitrates_mgL} mg/L</div>
-                <div><strong>Résidu sec:</strong> {bottle.residu_sec_mgL} mg/L</div>
-                <div><strong>Calcium:</strong> {bottle.calcium_mgL} mg/L</div>
-                <div><strong>Magnésium:</strong> {bottle.magnesium_mgL} mg/L</div>
-                <div><strong>Sodium:</strong> {bottle.sodium_mgL} mg/L</div>
-                <div><strong>pH:</strong> {bottle.pH}</div>
+                <div><strong>Nitrates:</strong> 
+                  <span className={interpretNitrates(bottle.nitrates_mgL).className}>
+                    {bottle.nitrates_mgL} mg/L {interpretNitrates(bottle.nitrates_mgL).label}
+                  </span>
+                </div>
+                <div><strong>Résidu sec:</strong> 
+                  <span className={interpretResiduSec(bottle.residu_sec_mgL).className}>
+                    {bottle.residu_sec_mgL} mg/L {interpretResiduSec(bottle.residu_sec_mgL).label}
+                  </span>
+                </div>
+                <div><strong>Calcium:</strong> 
+                  <span className={interpretCalcium(bottle.calcium_mgL).className}>
+                    {bottle.calcium_mgL} mg/L {interpretCalcium(bottle.calcium_mgL).label}
+                  </span>
+                </div>
+                <div><strong>Magnésium:</strong> 
+                  <span className={interpretMagnesium(bottle.magnesium_mgL).className}>
+                    {bottle.magnesium_mgL} mg/L {interpretMagnesium(bottle.magnesium_mgL).label}
+                  </span>
+                </div>
+                <div><strong>Sodium:</strong> 
+                  <span className={interpretSodium(bottle.sodium_mgL).className}>
+                    {bottle.sodium_mgL} mg/L {interpretSodium(bottle.sodium_mgL).label}
+                  </span>
+                </div>
+                <div><strong>pH:</strong> 
+                  <span className={interpretPH(bottle.pH).className}>
+                    {bottle.pH} {interpretPH(bottle.pH).label}
+                  </span>
+                </div>
                 <div><strong>Emballage:</strong> {bottle.emballage}</div>
                 <div><strong>Recyclable:</strong> 
                   <Badge className={`ml-1 ${bottle.recyclable === 'Oui' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>

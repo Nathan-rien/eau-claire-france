@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -100,4 +101,18 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Nutritional values styling */
+.value-good {
+  color: #2ecc71;
+  font-weight: bold;
+}
+
+.value-warn {
+  color: #f39c12;
+}
+
+.value-bad {
+  color: #e74c3c;
 }

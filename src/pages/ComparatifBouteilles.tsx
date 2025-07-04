@@ -8,6 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import Layout from '@/components/Layout';
 import BottleSelector from '@/components/BottleSelector';
 import BottleComparisonTable from '@/components/BottleComparisonTable';
+import NutritionalGuide from '@/components/NutritionalGuide';
 import { BottleWaterData, getUniqueBottles } from '@/data/bottleComparisonData';
 
 const ComparatifBouteilles = () => {
@@ -103,6 +104,9 @@ const ComparatifBouteilles = () => {
                 impact environnemental et plus encore.
               </p>
             </div>
+
+            {/* Encart pédagogique */}
+            <NutritionalGuide />
 
             {/* Contrôles */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
