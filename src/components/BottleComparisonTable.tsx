@@ -1,9 +1,11 @@
+
 import React from 'react';
-import { Euro, Droplets, Leaf, ExternalLink } from 'lucide-react';
+import { Euro, Droplets, Leaf, Heart, HeartIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { toast } from '@/hooks/use-toast';
 import { BottleWaterData, tapWaterComparison } from '@/data/bottleComparisonData';
 import { 
   interpretNitrates, 
@@ -17,11 +19,19 @@ import {
 interface BottleComparisonTableProps {
   selectedBottles: BottleWaterData[];
   showTapWater: boolean;
+  onToggleFavorite?: (bottle: BottleWaterData) => void;
+  onRemoveFavorite?: (bottleId: number) => void;
+  isFavorite?: (bottleId: number) => boolean;
+  showFavoriteControls?: boolean;
 }
 
 const BottleComparisonTable: React.FC<BottleComparisonTableProps> = ({
   selectedBottles,
-  showTapWater
+  showTapWater,
+  onToggleFavorite,
+  onRemoveFavorite,
+  isFavorite,
+  showFavoriteControls = false
 }) => {
   if (selectedBottles.length === 0) {
     return (
@@ -43,6 +53,26 @@ const BottleComparisonTable: React.FC<BottleComparisonTableProps> = ({
       case 'D': return 'bg-orange-100 text-orange-800';
       case 'E': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const handleToggleFavorite = (bottle: BottleWaterData) => {
+    if (!onToggleFavorite || !isFavorite) return;
+    
+    if (isFavorite(bottle.id)) {
+      if (onRemoveFavorite) {
+        onRemoveFavorite(bottle.id);
+        toast({
+          title: "Retiré des favoris",
+          description: `${bottle.marque} ${bottle.nom_bouteille} a été retiré de vos favoris.`
+        });
+      }
+    } else {
+      onToggleFavorite(bottle);
+      toast({
+        title: "Ajouté aux favoris",
+        description: `${bottle.marque} ${bottle.nom_bouteille} a été ajouté à vos favoris.`
+      });
     }
   };
 
@@ -241,18 +271,22 @@ const BottleComparisonTable: React.FC<BottleComparisonTableProps> = ({
                   </TableRow>
                   {!showTapWater && (
                     <TableRow>
-                      <TableCell className="font-medium">Fiche détaillée</TableCell>
+                      <TableCell className="font-medium">Favoris</TableCell>
                       {selectedBottles.map(bottle => (
                         <TableCell key={bottle.id} className="text-center">
-                          {bottle.url_fiche ? (
-                            <Button size="sm" variant="outline" asChild>
-                              <a href={bottle.url_fiche} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="w-3 h-3 mr-1" />
-                                Voir
-                              </a>
+                          {onToggleFavorite && isFavorite && (
+                            <Button
+                              size="sm"
+                              variant={isFavorite(bottle.id) ? "default" : "outline"}
+                              onClick={() => handleToggleFavorite(bottle)}
+                            >
+                              {isFavorite(bottle.id) ? (
+                                <Heart className="w-3 h-3 mr-1 fill-current" />
+                              ) : (
+                                <HeartIcon className="w-3 h-3 mr-1" />
+                              )}
+                              {isFavorite(bottle.id) ? "Retiré" : "Ajouter"}
                             </Button>
-                          ) : (
-                            <span className="text-gray-400">N/A</span>
                           )}
                         </TableCell>
                       ))}
@@ -274,34 +308,34 @@ const BottleComparisonTable: React.FC<BottleComparisonTableProps> = ({
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-3 text-sm">
-                <div><strong>Prix:</strong> {tapWaterComparison.prix_moyen_litre.toFixed(3)}€/L</div>
-                <div><strong>Nitrates:</strong> 
+                <div><strong>Prix :</strong> {tapWaterComparison.prix_moyen_litre.toFixed(3)}€/L</div>
+                <div><strong>Nitrates :</strong> 
                   <span className={interpretNitrates(tapWaterComparison.nitrates_mgL).className}>
                     {tapWaterComparison.nitrates_mgL} mg/L {interpretNitrates(tapWaterComparison.nitrates_mgL).label}
                   </span>
                 </div>
-                <div><strong>Calcium:</strong> 
+                <div><strong>Calcium :</strong> 
                   <span className={interpretCalcium(tapWaterComparison.calcium_mgL).className}>
                     {tapWaterComparison.calcium_mgL} mg/L {interpretCalcium(tapWaterComparison.calcium_mgL).label}
                   </span>
                 </div>
-                <div><strong>Magnésium:</strong> 
+                <div><strong>Magnésium :</strong> 
                   <span className={interpretMagnesium(tapWaterComparison.magnesium_mgL).className}>
                     {tapWaterComparison.magnesium_mgL} mg/L {interpretMagnesium(tapWaterComparison.magnesium_mgL).label}
                   </span>
                 </div>
-                <div><strong>Sodium:</strong> 
+                <div><strong>Sodium :</strong> 
                   <span className={interpretSodium(tapWaterComparison.sodium_mgL).className}>
                     {tapWaterComparison.sodium_mgL} mg/L {interpretSodium(tapWaterComparison.sodium_mgL).label}
                   </span>
                 </div>
-                <div><strong>pH:</strong> 
+                <div><strong>pH :</strong> 
                   <span className={interpretPH(tapWaterComparison.pH).className}>
                     {tapWaterComparison.pH} {interpretPH(tapWaterComparison.pH).label}
                   </span>
                 </div>
-                <div><strong>CO₂:</strong> {tapWaterComparison.impact_carbone_gCO2L}g/L</div>
-                <div><strong>Éco-score:</strong> <Badge className={getEcoScoreColor(tapWaterComparison.ecoscore)}>{tapWaterComparison.ecoscore}</Badge></div>
+                <div><strong>CO₂ :</strong> {tapWaterComparison.impact_carbone_gCO2L}g/L</div>
+                <div><strong>Éco-score :</strong> <Badge className={getEcoScoreColor(tapWaterComparison.ecoscore)}>{tapWaterComparison.ecoscore}</Badge></div>
               </div>
             </CardContent>
           </Card>
@@ -310,59 +344,76 @@ const BottleComparisonTable: React.FC<BottleComparisonTableProps> = ({
         {selectedBottles.map(bottle => (
           <Card key={bottle.id}>
             <CardHeader>
-              <CardTitle>{bottle.marque} - {bottle.nom_bouteille}</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                <span>{bottle.marque} - {bottle.nom_bouteille}</span>
+                {onToggleFavorite && isFavorite && (
+                  <Button
+                    size="sm"
+                    variant={isFavorite(bottle.id) ? "default" : "outline"}
+                    onClick={() => handleToggleFavorite(bottle)}
+                  >
+                    {isFavorite(bottle.id) ? (
+                      <Heart className="w-3 h-3 fill-current" />
+                    ) : (
+                      <HeartIcon className="w-3 h-3" />
+                    )}
+                  </Button>
+                )}
+              </CardTitle>
               <div className="text-sm text-gray-600">{bottle.type_eau} • {bottle.format}</div>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-3 text-sm">
-                <div><strong>Source:</strong> {bottle.source}</div>
-                <div><strong>Prix:</strong> {bottle.prix_moyen_litre.toFixed(2)}€/L</div>
-                <div><strong>Nitrates:</strong> 
+                <div><strong>Source :</strong> {bottle.source}</div>
+                <div><strong>Prix :</strong> {bottle.prix_moyen_litre.toFixed(2)}€/L</div>
+                <div><strong>Nitrates :</strong> 
                   <span className={interpretNitrates(bottle.nitrates_mgL).className}>
                     {bottle.nitrates_mgL} mg/L {interpretNitrates(bottle.nitrates_mgL).label}
                   </span>
                 </div>
-                <div><strong>Résidu sec:</strong> 
+                <div><strong>Résidu sec :</strong> 
                   <span className={interpretResiduSec(bottle.residu_sec_mgL).className}>
                     {bottle.residu_sec_mgL} mg/L {interpretResiduSec(bottle.residu_sec_mgL).label}
                   </span>
                 </div>
-                <div><strong>Calcium:</strong> 
+                <div><strong>Calcium :</strong> 
                   <span className={interpretCalcium(bottle.calcium_mgL).className}>
                     {bottle.calcium_mgL} mg/L {interpretCalcium(bottle.calcium_mgL).label}
                   </span>
                 </div>
-                <div><strong>Magnésium:</strong> 
+                <div><strong>Magnésium :</strong> 
                   <span className={interpretMagnesium(bottle.magnesium_mgL).className}>
                     {bottle.magnesium_mgL} mg/L {interpretMagnesium(bottle.magnesium_mgL).label}
                   </span>
                 </div>
-                <div><strong>Sodium:</strong> 
+                <div><strong>Sodium :</strong> 
                   <span className={interpretSodium(bottle.sodium_mgL).className}>
                     {bottle.sodium_mgL} mg/L {interpretSodium(bottle.sodium_mgL).label}
                   </span>
                 </div>
-                <div><strong>pH:</strong> 
+                <div><strong>pH :</strong> 
                   <span className={interpretPH(bottle.pH).className}>
                     {bottle.pH} {interpretPH(bottle.pH).label}
                   </span>
                 </div>
-                <div><strong>Emballage:</strong> {bottle.emballage}</div>
-                <div><strong>Recyclable:</strong> 
+                <div><strong>Emballage :</strong> {bottle.emballage}</div>
+                <div><strong>Recyclable :</strong> 
                   <Badge className={`ml-1 ${bottle.recyclable === 'Oui' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                     {bottle.recyclable}
                   </Badge>
                 </div>
-                <div><strong>CO₂:</strong> {bottle.impact_carbone_gCO2L}g/L</div>
-                <div><strong>Éco-score:</strong> <Badge className={getEcoScoreColor(bottle.ecoscore)}>{bottle.ecoscore}</Badge></div>
+                <div><strong>CO₂ :</strong> {bottle.impact_carbone_gCO2L}g/L</div>
+                <div><strong>Éco-score :</strong> <Badge className={getEcoScoreColor(bottle.ecoscore)}>{bottle.ecoscore}</Badge></div>
               </div>
-              {bottle.url_fiche && (
+              {showFavoriteControls && onRemoveFavorite && (
                 <div className="mt-4">
-                  <Button size="sm" variant="outline" asChild>
-                    <a href={bottle.url_fiche} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="w-3 h-3 mr-1" />
-                      Voir la fiche détaillée
-                    </a>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onRemoveFavorite(bottle.id)}
+                  >
+                    <Heart className="w-3 h-3 mr-1 fill-current" />
+                    Retirer des favoris
                   </Button>
                 </div>
               )}

@@ -1,10 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { TrendingUp, Share2, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
+import { useFavorites } from '@/hooks/useFavorites';
 import Layout from '@/components/Layout';
 import BottleSelector from '@/components/BottleSelector';
 import BottleComparisonTable from '@/components/BottleComparisonTable';
@@ -15,6 +16,7 @@ const ComparatifBouteilles = () => {
   const [selectedBottles, setSelectedBottles] = useState<BottleWaterData[]>([]);
   const [showTapWater, setShowTapWater] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const { favorites, addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
 
   // Charger les bouteilles depuis l'URL au démarrage
   useEffect(() => {
@@ -108,54 +110,87 @@ const ComparatifBouteilles = () => {
             {/* Encart pédagogique */}
             <NutritionalGuide />
 
-            {/* Contrôles */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="tap-water"
-                  checked={showTapWater}
-                  onCheckedChange={setShowTapWater}
+            {/* Onglets */}
+            <Tabs defaultValue="comparison" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-8">
+                <TabsTrigger value="comparison">Comparaison</TabsTrigger>
+                <TabsTrigger value="favorites">Favoris ({favorites.length})</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="comparison">
+                {/* Contrôles */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="tap-water"
+                      checked={showTapWater}
+                      onCheckedChange={setShowTapWater}
+                    />
+                    <label htmlFor="tap-water" className="text-sm font-medium">
+                      Comparer avec l'eau du robinet
+                    </label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleReset}
+                      disabled={selectedBottles.length === 0 && !showTapWater}
+                    >
+                      <RotateCcw className="w-4 h-4 mr-2" />
+                      Réinitialiser
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleShare}
+                      disabled={selectedBottles.length === 0}
+                    >
+                      <Share2 className="w-4 h-4 mr-2" />
+                      Partager
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Sélecteur de bouteilles */}
+                <BottleSelector
+                  selectedBottles={selectedBottles}
+                  onBottleAdd={handleBottleAdd}
+                  onBottleRemove={handleBottleRemove}
                 />
-                <label htmlFor="tap-water" className="text-sm font-medium">
-                  Comparer avec l'eau du robinet
-                </label>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleReset}
-                  disabled={selectedBottles.length === 0 && !showTapWater}
-                >
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Réinitialiser
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleShare}
-                  disabled={selectedBottles.length === 0}
-                >
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Partager
-                </Button>
-              </div>
-            </div>
 
-            {/* Sélecteur de bouteilles */}
-            <BottleSelector
-              selectedBottles={selectedBottles}
-              onBottleAdd={handleBottleAdd}
-              onBottleRemove={handleBottleRemove}
-            />
+                {/* Tableau de comparaison */}
+                <BottleComparisonTable
+                  selectedBottles={selectedBottles}
+                  showTapWater={showTapWater}
+                  onToggleFavorite={addToFavorites}
+                  onRemoveFavorite={removeFromFavorites}
+                  isFavorite={isFavorite}
+                />
+              </TabsContent>
 
-            {/* Tableau de comparaison */}
-            <BottleComparisonTable
-              selectedBottles={selectedBottles}
-              showTapWater={showTapWater}
-            />
+              <TabsContent value="favorites">
+                {favorites.length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500">Aucune bouteille en favori pour le moment.</p>
+                    <p className="text-sm text-gray-400 mt-2">
+                      Ajoutez des bouteilles en favoris depuis l'onglet Comparaison.
+                    </p>
+                  </div>
+                ) : (
+                  <BottleComparisonTable
+                    selectedBottles={favorites}
+                    showTapWater={false}
+                    onToggleFavorite={addToFavorites}
+                    onRemoveFavorite={removeFromFavorites}
+                    isFavorite={isFavorite}
+                    showFavoriteControls={true}
+                  />
+                )}
+              </TabsContent>
+            </Tabs>
           </div>
         </section>
       </div>
