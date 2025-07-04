@@ -1,0 +1,365 @@
+
+export interface BottleWaterData {
+  id: number;
+  marque: string;
+  nom_bouteille: string;
+  type_eau: string;
+  format: string;
+  source: string;
+  prix_moyen_litre: number;
+  nitrates_mgL: number;
+  residu_sec_mgL: number;
+  calcium_mgL: number;
+  magnesium_mgL: number;
+  sodium_mgL: number;
+  pH: number;
+  emballage: string;
+  recyclable: string;
+  consigne: string;
+  impact_carbone_gCO2L: number;
+  ecoscore: string;
+  url_fiche?: string;
+}
+
+export const bottleWaterDatabase: BottleWaterData[] = [
+  {
+    id: 1,
+    marque: "Cristaline",
+    nom_bouteille: "Cristaline",
+    type_eau: "Eau de source",
+    format: "1.5L",
+    source: "Multiples sources",
+    prix_moyen_litre: 0.22,
+    nitrates_mgL: 2.6,
+    residu_sec_mgL: 331,
+    calcium_mgL: 58,
+    magnesium_mgL: 8.0,
+    sodium_mgL: 5.5,
+    pH: 6.5,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 130,
+    ecoscore: "C",
+    url_fiche: "https://www.cristaline.fr"
+  },
+  {
+    id: 2,
+    marque: "Evian",
+    nom_bouteille: "Evian Naturel",
+    type_eau: "Eau minérale naturelle",
+    format: "1.5L",
+    source: "Source Cachat",
+    prix_moyen_litre: 0.45,
+    nitrates_mgL: 3.8,
+    residu_sec_mgL: 345,
+    calcium_mgL: 80,
+    magnesium_mgL: 26.0,
+    sodium_mgL: 6.5,
+    pH: 7.2,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 150,
+    ecoscore: "B",
+    url_fiche: "https://www.evian.com/fr"
+  },
+  {
+    id: 3,
+    marque: "Volvic",
+    nom_bouteille: "Volvic",
+    type_eau: "Eau minérale naturelle",
+    format: "1.5L",
+    source: "Volcan d'Auvergne",
+    prix_moyen_litre: 0.43,
+    nitrates_mgL: 6.9,
+    residu_sec_mgL: 130,
+    calcium_mgL: 12,
+    magnesium_mgL: 8.0,
+    sodium_mgL: 11.6,
+    pH: 7.0,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 140,
+    ecoscore: "B",
+    url_fiche: "https://www.volvic.fr"
+  },
+  {
+    id: 4,
+    marque: "Vittel",
+    nom_bouteille: "Vittel",
+    type_eau: "Eau minérale naturelle",
+    format: "1.5L",
+    source: "Vosges",
+    prix_moyen_litre: 0.46,
+    nitrates_mgL: 4.9,
+    residu_sec_mgL: 305,
+    calcium_mgL: 94,
+    magnesium_mgL: 20.0,
+    sodium_mgL: 5.2,
+    pH: 7.5,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 160,
+    ecoscore: "C",
+    url_fiche: "https://www.vittel.fr"
+  },
+  {
+    id: 5,
+    marque: "Contrex",
+    nom_bouteille: "Contrex",
+    type_eau: "Eau minérale naturelle",
+    format: "1.5L",
+    source: "Vosges",
+    prix_moyen_litre: 0.5,
+    nitrates_mgL: 2.7,
+    residu_sec_mgL: 2078,
+    calcium_mgL: 468,
+    magnesium_mgL: 74.5,
+    sodium_mgL: 9.2,
+    pH: 7.4,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 180,
+    ecoscore: "C",
+    url_fiche: "https://www.contrex.fr"
+  },
+  {
+    id: 6,
+    marque: "Hépar",
+    nom_bouteille: "Hépar",
+    type_eau: "Eau minérale naturelle",
+    format: "1.5L",
+    source: "Vosges",
+    prix_moyen_litre: 0.55,
+    nitrates_mgL: 1.5,
+    residu_sec_mgL: 2512,
+    calcium_mgL: 555,
+    magnesium_mgL: 119.0,
+    sodium_mgL: 10.0,
+    pH: 7.4,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 190,
+    ecoscore: "C",
+    url_fiche: "https://www.hepar.fr"
+  },
+  {
+    id: 7,
+    marque: "Courmayeur",
+    nom_bouteille: "Courmayeur",
+    type_eau: "Eau minérale naturelle",
+    format: "1L",
+    source: "Mont-Blanc",
+    prix_moyen_litre: 0.52,
+    nitrates_mgL: 2.0,
+    residu_sec_mgL: 2250,
+    calcium_mgL: 517,
+    magnesium_mgL: 80.0,
+    sodium_mgL: 1.2,
+    pH: 7.3,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 180,
+    ecoscore: "C"
+  },
+  {
+    id: 8,
+    marque: "Mont Roucous",
+    nom_bouteille: "Mont Roucous",
+    type_eau: "Eau minérale naturelle",
+    format: "1.5L",
+    source: "Lacaune",
+    prix_moyen_litre: 0.55,
+    nitrates_mgL: 1.8,
+    residu_sec_mgL: 22,
+    calcium_mgL: 2,
+    magnesium_mgL: 1.0,
+    sodium_mgL: 3.0,
+    pH: 6.0,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 130,
+    ecoscore: "B",
+    url_fiche: "https://www.mont-roucous.com"
+  },
+  {
+    id: 9,
+    marque: "Thonon",
+    nom_bouteille: "Thonon",
+    type_eau: "Eau minérale naturelle",
+    format: "1.5L",
+    source: "Haute-Savoie",
+    prix_moyen_litre: 0.48,
+    nitrates_mgL: 2.5,
+    residu_sec_mgL: 337,
+    calcium_mgL: 76,
+    magnesium_mgL: 18.0,
+    sodium_mgL: 5.6,
+    pH: 7.6,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 150,
+    ecoscore: "B"
+  },
+  {
+    id: 10,
+    marque: "Nestlé Pure Life",
+    nom_bouteille: "Nestlé Pure Life",
+    type_eau: "Eau de source",
+    format: "1.5L",
+    source: "Divers",
+    prix_moyen_litre: 0.3,
+    nitrates_mgL: 2.0,
+    residu_sec_mgL: 250,
+    calcium_mgL: 60,
+    magnesium_mgL: 12.0,
+    sodium_mgL: 4.0,
+    pH: 6.8,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 140,
+    ecoscore: "C",
+    url_fiche: "https://www.nestle-purelife.fr"
+  },
+  {
+    id: 51,
+    marque: "Perrier",
+    nom_bouteille: "Perrier",
+    type_eau: "Eau minérale naturelle gazeuse",
+    format: "1L",
+    source: "Vergèze",
+    prix_moyen_litre: 0.8,
+    nitrates_mgL: 7.3,
+    residu_sec_mgL: 475,
+    calcium_mgL: 147,
+    magnesium_mgL: 3.9,
+    sodium_mgL: 9.6,
+    pH: 5.5,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 170,
+    ecoscore: "C",
+    url_fiche: "https://www.perrier.com"
+  },
+  {
+    id: 52,
+    marque: "Badoit",
+    nom_bouteille: "Badoit Verte",
+    type_eau: "Eau minérale naturelle gazeuse",
+    format: "1L",
+    source: "Saint-Galmier",
+    prix_moyen_litre: 0.82,
+    nitrates_mgL: 5.0,
+    residu_sec_mgL: 1200,
+    calcium_mgL: 190,
+    magnesium_mgL: 85.0,
+    sodium_mgL: 150.0,
+    pH: 6.0,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 190,
+    ecoscore: "C",
+    url_fiche: "https://www.badoit.fr"
+  },
+  {
+    id: 53,
+    marque: "San Pellegrino",
+    nom_bouteille: "San Pellegrino",
+    type_eau: "Eau minérale naturelle gazeuse",
+    format: "1L",
+    source: "Italie",
+    prix_moyen_litre: 1.2,
+    nitrates_mgL: 1.8,
+    residu_sec_mgL: 1109,
+    calcium_mgL: 208,
+    magnesium_mgL: 53.0,
+    sodium_mgL: 44.0,
+    pH: 7.6,
+    emballage: "Verre",
+    recyclable: "Oui",
+    consigne: "Oui",
+    impact_carbone_gCO2L: 230,
+    ecoscore: "C",
+    url_fiche: "https://www.sanpellegrino.com"
+  },
+  {
+    id: 54,
+    marque: "Vichy Célestins",
+    nom_bouteille: "Vichy Célestins",
+    type_eau: "Eau minérale naturelle gazeuse",
+    format: "1.25L",
+    source: "Vichy",
+    prix_moyen_litre: 0.9,
+    nitrates_mgL: 0.5,
+    residu_sec_mgL: 3320,
+    calcium_mgL: 107,
+    magnesium_mgL: 11.0,
+    sodium_mgL: 1172.0,
+    pH: 6.5,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 200,
+    ecoscore: "D",
+    url_fiche: "https://www.vichy-celestins.com"
+  },
+  {
+    id: 55,
+    marque: "Saint-Yorre",
+    nom_bouteille: "Saint-Yorre",
+    type_eau: "Eau minérale naturelle gazeuse",
+    format: "1.25L",
+    source: "Saint-Yorre",
+    prix_moyen_litre: 0.78,
+    nitrates_mgL: 0.3,
+    residu_sec_mgL: 4774,
+    calcium_mgL: 122,
+    magnesium_mgL: 20.0,
+    sodium_mgL: 1708.0,
+    pH: 6.1,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 195,
+    ecoscore: "D",
+    url_fiche: "https://www.saint-yorre.com"
+  }
+];
+
+export const tapWaterComparison = {
+  nom_bouteille: "Eau du robinet (moyenne France)",
+  prix_moyen_litre: 0.004,
+  nitrates_mgL: 12,
+  residu_sec_mgL: 280,
+  calcium_mgL: 90,
+  magnesium_mgL: 8,
+  sodium_mgL: 15,
+  pH: 7.5,
+  impact_carbone_gCO2L: 1,
+  ecoscore: "A"
+};
+
+// Fonction pour obtenir des bouteilles uniques (sans doublons)
+export const getUniqueBottles = (): BottleWaterData[] => {
+  const uniqueBottles = new Map<string, BottleWaterData>();
+  
+  bottleWaterDatabase.forEach(bottle => {
+    const key = `${bottle.marque}-${bottle.nom_bouteille}`;
+    if (!uniqueBottles.has(key)) {
+      uniqueBottles.set(key, bottle);
+    }
+  });
+  
+  return Array.from(uniqueBottles.values());
+};
