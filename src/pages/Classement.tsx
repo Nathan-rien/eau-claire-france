@@ -14,7 +14,7 @@ import { useFavorites } from '@/hooks/useFavorites';
 const Classement = () => {
   const [typeFilter, setTypeFilter] = useState('all');
   const [ecoFilter, setEcoFilter] = useState('all');
-  const [expandedDetails, setExpandedDetails] = useState<number | null>(null);
+  const [expandedDetails, setExpandedDetails] = useState<string | null>(null);
   
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   
@@ -37,7 +37,20 @@ const Classement = () => {
     if (isFavorite(bottle.id)) {
       removeFromFavorites(bottle.id);
     } else {
-      addToFavorites(bottle);
+      // Convert BottleRanking back to WaterData for favorites
+      const waterData = {
+        id: bottle.id,
+        name: bottle.name,
+        type: bottle.type,
+        source: bottle.source,
+        price: bottle.price,
+        co2: bottle.co2,
+        composition: bottle.composition,
+        producer: bottle.producer,
+        packaging: bottle.packaging,
+        volumeAnnuel: bottle.volumeAnnuel
+      };
+      addToFavorites(waterData);
     }
   };
 

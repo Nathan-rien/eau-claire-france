@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import { BottleWaterData } from '@/data/bottleComparisonData';
+import { WaterData } from '@/data/bottleWaterData';
 
 export const useFavorites = () => {
-  const [favorites, setFavorites] = useState<BottleWaterData[]>([]);
+  const [favorites, setFavorites] = useState<WaterData[]>([]);
 
   // Charger les favoris depuis localStorage au démarrage
   useEffect(() => {
@@ -22,7 +22,7 @@ export const useFavorites = () => {
     localStorage.setItem('water-bottle-favorites', JSON.stringify(favorites));
   }, [favorites]);
 
-  const addToFavorites = (bottle: BottleWaterData) => {
+  const addToFavorites = (bottle: WaterData) => {
     setFavorites(prev => {
       const isAlreadyFavorite = prev.some(fav => fav.id === bottle.id);
       if (!isAlreadyFavorite) {
@@ -32,11 +32,11 @@ export const useFavorites = () => {
     });
   };
 
-  const removeFromFavorites = (bottleId: number) => {
+  const removeFromFavorites = (bottleId: string) => {
     setFavorites(prev => prev.filter(fav => fav.id !== bottleId));
   };
 
-  const isFavorite = (bottleId: number) => {
+  const isFavorite = (bottleId: string) => {
     return favorites.some(fav => fav.id === bottleId);
   };
 
