@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Trophy, Star, Info, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
