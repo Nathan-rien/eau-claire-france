@@ -1,7 +1,7 @@
 
-import { BottleWaterData } from '@/data/bottleComparisonData';
+import { WaterData } from '@/data/bottleWaterData';
 
-export interface BottleRanking extends BottleWaterData {
+export interface BottleRanking extends WaterData {
   nutritionalScore: number;
   scoreBreakdown: {
     nitrates: number;
@@ -12,7 +12,7 @@ export interface BottleRanking extends BottleWaterData {
   };
 }
 
-export const calculateNutritionalScore = (bottle: BottleWaterData): BottleRanking => {
+export const calculateNutritionalScore = (bottle: WaterData): BottleRanking => {
   const scores = {
     nitrates: 0,
     residuSec: 0,
@@ -55,7 +55,7 @@ export const calculateNutritionalScore = (bottle: BottleWaterData): BottleRankin
   };
 };
 
-export const rankBottles = (bottles: BottleWaterData[]): BottleRanking[] => {
+export const rankBottles = (bottles: WaterData[]): BottleRanking[] => {
   return bottles
     .map(calculateNutritionalScore)
     .sort((a, b) => b.nutritionalScore - a.nutritionalScore);

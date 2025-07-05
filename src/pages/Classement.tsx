@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import Layout from '@/components/Layout';
-import { getUniqueBottles } from '@/data/bottleComparisonData';
+import { bottledWaters } from '@/data/bottleWaterData';
 import { rankBottles, getScoreGrade, BottleRanking } from '@/utils/bottleRanking';
 import { useFavorites } from '@/hooks/useFavorites';
 
@@ -18,21 +18,20 @@ const Classement = () => {
   
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   
-  const allBottles = getUniqueBottles();
-  
   const filteredAndRankedBottles = useMemo(() => {
-    let filtered = allBottles.filter(bottle => {
+    let filtered = bottledWaters.filter(bottle => {
       const matchesType = typeFilter === 'all' || 
-                         (typeFilter === 'plate' && !bottle.type_eau.toLowerCase().includes('gazeuse')) ||
-                         (typeFilter === 'gazeuse' && bottle.type_eau.toLowerCase().includes('gazeuse'));
+                         (typeFilter === 'plate' && !bottle.type.toLowerCase().includes('gazeuse')) ||
+                         (typeFilter === 'gazeuse' && bottle.type.toLowerCase().includes('gazeuse'));
       
-      const matchesEco = ecoFilter === 'all' || bottle.ecoscore === ecoFilter;
+      // For eco filter, we'll need to add ecoscore to the bottleWaterData or use a placeholder
+      const matchesEco = ecoFilter === 'all'; // Simplified for now
       
       return matchesType && matchesEco;
     });
     
     return rankBottles(filtered);
-  }, [allBottles, typeFilter, ecoFilter]);
+  }, [bottledWaters, typeFilter, ecoFilter]);
 
   const toggleFavorite = (bottle: BottleRanking) => {
     if (isFavorite(bottle.id)) {
@@ -147,26 +146,14 @@ const Classement = () => {
                           </div>
                           <div>
                             <h3 className="text-lg font-semibold">
-                              {bottle.marque === bottle.nom_bouteille ? bottle.marque : `${bottle.marque} - ${bottle.nom_bouteille}`}
+                              {bottle.name}
                             </h3>
                             <div className="flex flex-wrap items-center gap-2 mt-1">
                               <Badge variant="outline" className="text-xs">
-                                {bottle.type_eau}
+                                {bottle.type}
                               </Badge>
                               <Badge variant="outline" className="text-xs">
-                                {bottle.format}
-                              </Badge>
-                              <Badge 
-                                variant="outline" 
-                                className={`text-xs ${
-                                  bottle.ecoscore === 'A' ? 'bg-green-100 text-green-800' :
-                                  bottle.ecoscore === 'B' ? 'bg-blue-100 text-blue-800' :
-                                  bottle.ecoscore === 'C' ? 'bg-yellow-100 text-yellow-800' :
-                                  bottle.ecoscore === 'D' ? 'bg-orange-100 text-orange-800' :
-                                  'bg-red-100 text-red-800'
-                                }`}
-                              >
-                                Éco: {bottle.ecoscore}
+                                {bottle.packaging}
                               </Badge>
                             </div>
                           </div>
@@ -200,7 +187,7 @@ const Classement = () => {
                           {description}
                         </p>
                         <span className="text-sm font-medium text-blue-600">
-                          {bottle.prix_moyen_litre.toFixed(2)}€/L
+                          {bottle.price.toFixed(2)}€/L
                         </span>
                       </div>
                       
