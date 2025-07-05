@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { TrendingUp, Share2, RotateCcw } from 'lucide-react';
+import { TrendingUp, Share2, RotateCcw, Star, Scale } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -110,11 +111,23 @@ const ComparatifBouteilles = () => {
             {/* Encart pédagogique */}
             <NutritionalGuide />
 
-            {/* Onglets */}
+            {/* Onglets améliorés */}
             <Tabs defaultValue="comparison" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="comparison">Comparaison</TabsTrigger>
-                <TabsTrigger value="favorites">Favoris ({favorites.length})</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-8 h-14 bg-gradient-to-r from-blue-50 to-green-50 border-2 border-blue-200">
+                <TabsTrigger 
+                  value="comparison" 
+                  className="flex items-center space-x-2 text-base font-semibold data-[state=active]:bg-white data-[state=active]:shadow-md transition-all duration-200"
+                >
+                  <Scale className="w-5 h-5" />
+                  <span>Comparaison</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="favorites" 
+                  className="flex items-center space-x-2 text-base font-semibold data-[state=active]:bg-white data-[state=active]:shadow-md transition-all duration-200"
+                >
+                  <Star className="w-5 h-5" />
+                  <span>Favoris ({favorites.length})</span>
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="comparison">
@@ -174,8 +187,9 @@ const ComparatifBouteilles = () => {
               <TabsContent value="favorites">
                 {favorites.length === 0 ? (
                   <div className="text-center py-12">
-                    <p className="text-gray-500">Aucune bouteille en favori pour le moment.</p>
-                    <p className="text-sm text-gray-400 mt-2">
+                    <Star className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-lg text-gray-500 mb-2">Aucune bouteille en favori pour le moment.</p>
+                    <p className="text-sm text-gray-400">
                       Ajoutez des bouteilles en favoris depuis l'onglet Comparaison.
                     </p>
                   </div>

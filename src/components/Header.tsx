@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Droplets, Menu, X } from 'lucide-react';
@@ -12,8 +13,9 @@ const Header = () => {
     { href: '/carte', label: 'Carte des eaux' },
     { href: '/carte-polluants', label: 'Carte polluants' },
     { href: '/diagnostic', label: 'Diagnostic' },
-    { href: '/bouteilles', label: 'Bouteilles' },
+    { href: '/bouteilles', label: 'Robinet vs Bouteilles' },
     { href: '/comparatif-bouteilles', label: 'Comparatif' },
+    { href: '/classement', label: 'Classement' },
     { href: '/polluants', label: 'Polluants' },
     { href: '/alertes', label: 'Alertes' },
   ];
