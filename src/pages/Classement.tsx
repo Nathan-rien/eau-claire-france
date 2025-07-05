@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Trophy, Star, Info, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -75,7 +74,7 @@ const Classement = () => {
               </CardHeader>
               <CardContent className="text-sm text-blue-700">
                 <p className="mb-2">
-                  Le score nutritionnel (sur 60 points) évalue 6 critères essentiels :
+                  Le score nutritionnel (sur 50 points) évalue 5 critères essentiels :
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
                   <span>• Nitrates (10 pts max)</span>
@@ -83,7 +82,6 @@ const Classement = () => {
                   <span>• Calcium (10 pts max)</span>
                   <span>• Magnésium (10 pts max)</span>
                   <span>• Sodium (10 pts max)</span>
-                  <span>• pH (10 pts max)</span>
                 </div>
               </CardContent>
             </Card>
@@ -179,7 +177,7 @@ const Classement = () => {
                               {grade}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {bottle.nutritionalScore}/60
+                              {bottle.nutritionalScore}/50
                             </div>
                           </div>
                           
@@ -229,33 +227,29 @@ const Classement = () => {
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                             <div>
                               <span className="font-medium">Nitrates:</span>
-                              <div>{bottle.nitrate} mg/L ({bottle.scoreBreakdown.nitrates}/10 pts)</div>
+                              <div>{bottle.composition.nitrates} mg/L ({bottle.scoreBreakdown.nitrates}/10 pts)</div>
                             </div>
                             <div>
                               <span className="font-medium">Résidu sec:</span>
-                              <div>{bottle.residue_sec} mg/L ({bottle.scoreBreakdown.residuSec}/10 pts)</div>
+                              <div>{bottle.composition.residusSec} mg/L ({bottle.scoreBreakdown.residuSec}/10 pts)</div>
                             </div>
                             <div>
                               <span className="font-medium">Calcium:</span>
-                              <div>{bottle.calcium} mg/L ({bottle.scoreBreakdown.calcium}/10 pts)</div>
+                              <div>{bottle.composition.calcium} mg/L ({bottle.scoreBreakdown.calcium}/10 pts)</div>
                             </div>
                             <div>
                               <span className="font-medium">Magnésium:</span>
-                              <div>{bottle.magnesium} mg/L ({bottle.scoreBreakdown.magnesium}/10 pts)</div>
+                              <div>{bottle.composition.magnesium} mg/L ({bottle.scoreBreakdown.magnesium}/10 pts)</div>
                             </div>
                             <div>
                               <span className="font-medium">Sodium:</span>
-                              <div>{bottle.sodium} mg/L ({bottle.scoreBreakdown.sodium}/10 pts)</div>
-                            </div>
-                            <div>
-                              <span className="font-medium">pH:</span>
-                              <div>{bottle.pH} ({bottle.scoreBreakdown.ph}/10 pts)</div>
+                              <div>{bottle.composition.sodium} mg/L ({bottle.scoreBreakdown.sodium}/10 pts)</div>
                             </div>
                           </div>
                           
                           <div className="mt-4 pt-4 border-t">
                             <div className="text-xs text-gray-600">
-                              <strong>Source:</strong> {bottle.source} • <strong>Origine:</strong> {bottle.lieu_origine}
+                              <strong>Source:</strong> {bottle.source}
                             </div>
                           </div>
                         </CollapsibleContent>

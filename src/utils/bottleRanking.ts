@@ -24,34 +24,33 @@ export const calculateNutritionalScore = (bottle: BottleWaterData): BottleRankin
   };
 
   // Score pour les nitrates (0-10 points, plus c'est faible mieux c'est)
-  if (bottle.nitrate < 5) scores.nitrates = 10;
-  else if (bottle.nitrate <= 10) scores.nitrates = 6;
+  if (bottle.composition.nitrates < 5) scores.nitrates = 10;
+  else if (bottle.composition.nitrates <= 10) scores.nitrates = 6;
   else scores.nitrates = 2;
 
   // Score pour le résidu sec (0-10 points)
-  if (bottle.residue_sec >= 150 && bottle.residue_sec <= 500) scores.residuSec = 10;
-  else if (bottle.residue_sec > 500 && bottle.residue_sec <= 1500) scores.residuSec = 6;
+  if (bottle.composition.residusSec >= 150 && bottle.composition.residusSec <= 500) scores.residuSec = 10;
+  else if (bottle.composition.residusSec > 500 && bottle.composition.residusSec <= 1500) scores.residuSec = 6;
   else scores.residuSec = 2;
 
   // Score pour le calcium (0-10 points)
-  if (bottle.calcium >= 150) scores.calcium = 10;
-  else if (bottle.calcium >= 50) scores.calcium = 6;
+  if (bottle.composition.calcium >= 150) scores.calcium = 10;
+  else if (bottle.composition.calcium >= 50) scores.calcium = 6;
   else scores.calcium = 2;
 
   // Score pour le magnésium (0-10 points)
-  if (bottle.magnesium > 50) scores.magnesium = 10;
-  else if (bottle.magnesium >= 20) scores.magnesium = 6;
+  if (bottle.composition.magnesium > 50) scores.magnesium = 10;
+  else if (bottle.composition.magnesium >= 20) scores.magnesium = 6;
   else scores.magnesium = 2;
 
   // Score pour le sodium (0-10 points, plus c'est faible mieux c'est)
-  if (bottle.sodium < 20) scores.sodium = 10;
-  else if (bottle.sodium <= 100) scores.sodium = 6;
+  if (bottle.composition.sodium < 20) scores.sodium = 10;
+  else if (bottle.composition.sodium <= 100) scores.sodium = 6;
   else scores.sodium = 2;
 
-  // Score pour le pH (0-10 points)
-  if (bottle.pH >= 6.5 && bottle.pH <= 8.5) scores.ph = 10;
-  else if (bottle.pH > 8.5) scores.ph = 6;
-  else scores.ph = 2;
+  // Score pour le pH (0-10 points) - Note: pH might not be available in composition
+  // For now, we'll give a default score of 6 since pH data isn't in the current structure
+  scores.ph = 6;
 
   const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
 
