@@ -9,7 +9,6 @@ export interface BottleRanking extends BottleWaterData {
     calcium: number;
     magnesium: number;
     sodium: number;
-    ph: number;
   };
 }
 
@@ -20,7 +19,6 @@ export const calculateNutritionalScore = (bottle: BottleWaterData): BottleRankin
     calcium: 0,
     magnesium: 0,
     sodium: 0,
-    ph: 0,
   };
 
   // Score pour les nitrates (0-10 points, plus c'est faible mieux c'est)
@@ -48,10 +46,6 @@ export const calculateNutritionalScore = (bottle: BottleWaterData): BottleRankin
   else if (bottle.composition.sodium <= 100) scores.sodium = 6;
   else scores.sodium = 2;
 
-  // Score pour le pH (0-10 points) - Note: pH might not be available in composition
-  // For now, we'll give a default score of 6 since pH data isn't in the current structure
-  scores.ph = 6;
-
   const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
 
   return {
@@ -68,9 +62,9 @@ export const rankBottles = (bottles: BottleWaterData[]): BottleRanking[] => {
 };
 
 export const getScoreGrade = (score: number): { grade: string; color: string; description: string } => {
-  if (score >= 50) return { grade: 'A', color: 'text-green-600', description: 'Excellente qualité nutritionnelle' };
-  if (score >= 40) return { grade: 'B', color: 'text-blue-600', description: 'Très bonne qualité nutritionnelle' };
-  if (score >= 30) return { grade: 'C', color: 'text-yellow-600', description: 'Bonne qualité nutritionnelle' };
-  if (score >= 20) return { grade: 'D', color: 'text-orange-600', description: 'Qualité nutritionnelle moyenne' };
+  if (score >= 45) return { grade: 'A', color: 'text-green-600', description: 'Excellente qualité nutritionnelle' };
+  if (score >= 35) return { grade: 'B', color: 'text-blue-600', description: 'Très bonne qualité nutritionnelle' };
+  if (score >= 25) return { grade: 'C', color: 'text-yellow-600', description: 'Bonne qualité nutritionnelle' };
+  if (score >= 15) return { grade: 'D', color: 'text-orange-600', description: 'Qualité nutritionnelle moyenne' };
   return { grade: 'E', color: 'text-red-600', description: 'Qualité nutritionnelle faible' };
 };
