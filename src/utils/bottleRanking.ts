@@ -22,28 +22,28 @@ export const calculateNutritionalScore = (bottle: BottleWaterData): BottleRankin
   };
 
   // Score pour les nitrates (0-10 points, plus c'est faible mieux c'est)
-  if (bottle.composition.nitrates < 5) scores.nitrates = 10;
-  else if (bottle.composition.nitrates <= 10) scores.nitrates = 6;
+  if (bottle.nitrates < 5) scores.nitrates = 10;
+  else if (bottle.nitrates <= 10) scores.nitrates = 6;
   else scores.nitrates = 2;
 
   // Score pour le résidu sec (0-10 points)
-  if (bottle.composition.residusSec >= 150 && bottle.composition.residusSec <= 500) scores.residuSec = 10;
-  else if (bottle.composition.residusSec > 500 && bottle.composition.residusSec <= 1500) scores.residuSec = 6;
+  if (bottle.residusSec >= 150 && bottle.residusSec <= 500) scores.residuSec = 10;
+  else if (bottle.residusSec > 500 && bottle.residusSec <= 1500) scores.residuSec = 6;
   else scores.residuSec = 2;
 
   // Score pour le calcium (0-10 points)
-  if (bottle.composition.calcium >= 150) scores.calcium = 10;
-  else if (bottle.composition.calcium >= 50) scores.calcium = 6;
+  if (bottle.calcium >= 150) scores.calcium = 10;
+  else if (bottle.calcium >= 50) scores.calcium = 6;
   else scores.calcium = 2;
 
   // Score pour le magnésium (0-10 points)
-  if (bottle.composition.magnesium > 50) scores.magnesium = 10;
-  else if (bottle.composition.magnesium >= 20) scores.magnesium = 6;
+  if (bottle.magnesium > 50) scores.magnesium = 10;
+  else if (bottle.magnesium >= 20) scores.magnesium = 6;
   else scores.magnesium = 2;
 
   // Score pour le sodium (0-10 points, plus c'est faible mieux c'est)
-  if (bottle.composition.sodium < 20) scores.sodium = 10;
-  else if (bottle.composition.sodium <= 100) scores.sodium = 6;
+  if (bottle.sodium < 20) scores.sodium = 10;
+  else if (bottle.sodium <= 100) scores.sodium = 6;
   else scores.sodium = 2;
 
   const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);

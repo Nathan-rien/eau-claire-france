@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Trophy, Star, Info, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -227,23 +228,23 @@ const Classement = () => {
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                             <div>
                               <span className="font-medium">Nitrates:</span>
-                              <div>{bottle.composition.nitrates} mg/L ({bottle.scoreBreakdown.nitrates}/10 pts)</div>
+                              <div>{bottle.nitrates} mg/L ({bottle.scoreBreakdown.nitrates}/10 pts)</div>
                             </div>
                             <div>
                               <span className="font-medium">Résidu sec:</span>
-                              <div>{bottle.composition.residusSec} mg/L ({bottle.scoreBreakdown.residuSec}/10 pts)</div>
+                              <div>{bottle.residusSec} mg/L ({bottle.scoreBreakdown.residuSec}/10 pts)</div>
                             </div>
                             <div>
                               <span className="font-medium">Calcium:</span>
-                              <div>{bottle.composition.calcium} mg/L ({bottle.scoreBreakdown.calcium}/10 pts)</div>
+                              <div>{bottle.calcium} mg/L ({bottle.scoreBreakdown.calcium}/10 pts)</div>
                             </div>
                             <div>
                               <span className="font-medium">Magnésium:</span>
-                              <div>{bottle.composition.magnesium} mg/L ({bottle.scoreBreakdown.magnesium}/10 pts)</div>
+                              <div>{bottle.magnesium} mg/L ({bottle.scoreBreakdown.magnesium}/10 pts)</div>
                             </div>
                             <div>
                               <span className="font-medium">Sodium:</span>
-                              <div>{bottle.composition.sodium} mg/L ({bottle.scoreBreakdown.sodium}/10 pts)</div>
+                              <div>{bottle.sodium} mg/L ({bottle.scoreBreakdown.sodium}/10 pts)</div>
                             </div>
                           </div>
                           
