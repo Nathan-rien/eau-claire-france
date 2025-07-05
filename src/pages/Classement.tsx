@@ -229,11 +229,11 @@ const Classement = () => {
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                             <div>
                               <span className="font-medium">Nitrates:</span>
-                              <div>{bottle.nitrates} mg/L ({bottle.scoreBreakdown.nitrates}/10 pts)</div>
+                              <div>{bottle.nitrate} mg/L ({bottle.scoreBreakdown.nitrates}/10 pts)</div>
                             </div>
                             <div>
                               <span className="font-medium">Résidu sec:</span>
-                              <div>{bottle.residu_sec} mg/L ({bottle.scoreBreakdown.residuSec}/10 pts)</div>
+                              <div>{bottle.residue_sec} mg/L ({bottle.scoreBreakdown.residuSec}/10 pts)</div>
                             </div>
                             <div>
                               <span className="font-medium">Calcium:</span>
@@ -249,13 +249,13 @@ const Classement = () => {
                             </div>
                             <div>
                               <span className="font-medium">pH:</span>
-                              <div>{bottle.ph} ({bottle.scoreBreakdown.ph}/10 pts)</div>
+                              <div>{bottle.pH} ({bottle.scoreBreakdown.ph}/10 pts)</div>
                             </div>
                           </div>
                           
                           <div className="mt-4 pt-4 border-t">
                             <div className="text-xs text-gray-600">
-                              <strong>Source:</strong> {bottle.source} • <strong>Origine:</strong> {bottle.origine}
+                              <strong>Source:</strong> {bottle.source} • <strong>Origine:</strong> {bottle.lieu_origine}
                             </div>
                           </div>
                         </CollapsibleContent>

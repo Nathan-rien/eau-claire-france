@@ -1,6 +1,5 @@
 
 import { BottleWaterData } from '@/data/bottleComparisonData';
-import { interpretNutritionalValue } from './nutritionalInterpretation';
 
 export interface BottleRanking extends BottleWaterData {
   nutritionalScore: number;
@@ -25,13 +24,13 @@ export const calculateNutritionalScore = (bottle: BottleWaterData): BottleRankin
   };
 
   // Score pour les nitrates (0-10 points, plus c'est faible mieux c'est)
-  if (bottle.nitrates < 5) scores.nitrates = 10;
-  else if (bottle.nitrates <= 10) scores.nitrates = 6;
+  if (bottle.nitrate < 5) scores.nitrates = 10;
+  else if (bottle.nitrate <= 10) scores.nitrates = 6;
   else scores.nitrates = 2;
 
   // Score pour le résidu sec (0-10 points)
-  if (bottle.residu_sec >= 150 && bottle.residu_sec <= 500) scores.residuSec = 10;
-  else if (bottle.residu_sec > 500 && bottle.residu_sec <= 1500) scores.residuSec = 6;
+  if (bottle.residue_sec >= 150 && bottle.residue_sec <= 500) scores.residuSec = 10;
+  else if (bottle.residue_sec > 500 && bottle.residue_sec <= 1500) scores.residuSec = 6;
   else scores.residuSec = 2;
 
   // Score pour le calcium (0-10 points)
@@ -50,8 +49,8 @@ export const calculateNutritionalScore = (bottle: BottleWaterData): BottleRankin
   else scores.sodium = 2;
 
   // Score pour le pH (0-10 points)
-  if (bottle.ph >= 6.5 && bottle.ph <= 8.5) scores.ph = 10;
-  else if (bottle.ph > 8.5) scores.ph = 6;
+  if (bottle.pH >= 6.5 && bottle.pH <= 8.5) scores.ph = 10;
+  else if (bottle.pH > 8.5) scores.ph = 6;
   else scores.ph = 2;
 
   const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
