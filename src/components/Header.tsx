@@ -15,7 +15,6 @@ const Header = () => {
     { href: '/diagnostic', label: 'Diagnostic' },
     { href: '/bouteilles', label: 'Robinet vs Bouteilles' },
     { href: '/comparatif-bouteilles', label: 'Comparatif' },
-    { href: '/classement', label: 'Classement' },
     { href: '/polluants', label: 'Polluants' },
     { href: '/alertes', label: 'Alertes' },
   ];
