@@ -18,8 +18,8 @@ export const convertBottleWaterDataToWaterData = (bottle: BottleWaterData): Wate
       residusSec: bottle.residu_sec_mgL
     },
     producer: bottle.marque,
-    packaging: bottle.materiau_emballage,
-    volumeAnnuel: bottle.volume_production_annuel_L || 0
+    packaging: bottle.emballage,
+    volumeAnnuel: 0 // BottleWaterData doesn't have volume info, so default to 0
   };
 };
 
@@ -31,25 +31,17 @@ export const convertWaterDataToBottleWaterData = (favorite: WaterData): BottleWa
     type_eau: favorite.type,
     source: favorite.source,
     format: '1L',
-    materiau_emballage: favorite.packaging,
     prix_moyen_litre: favorite.price,
     nitrates_mgL: favorite.composition.nitrates,
     sodium_mgL: favorite.composition.sodium,
     calcium_mgL: favorite.composition.calcium,
     magnesium_mgL: favorite.composition.magnesium,
     residu_sec_mgL: favorite.composition.residusSec,
-    impact_carbone_gCO2L: favorite.co2 * 1000, // Convert kg to g
-    volume_production_annuel_L: favorite.volumeAnnuel,
-    disponibilite_geographique: 'France',
-    certifications: [],
     pH: 7,
-    tds_mgL: favorite.composition.residusSec,
-    fluorures_mgL: 0,
-    sulfates_mgL: 0,
-    bicarbonates_mgL: 0,
     emballage: favorite.packaging,
     recyclable: 'Oui',
     consigne: 'Non',
+    impact_carbone_gCO2L: favorite.co2 * 1000, // Convert kg to g
     ecoscore: 'C'
   };
 };
