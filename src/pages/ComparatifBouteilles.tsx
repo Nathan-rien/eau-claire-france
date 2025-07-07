@@ -1,54 +1,22 @@
 
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { TrendingUp, Share2, RotateCcw, Star, Scale } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
+import React from 'react';
+import { TrendingUp, Star, Scale } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useBottleComparisonUrl } from '@/hooks/useBottleComparisonUrl';
 import Layout from '@/components/Layout';
 import BottleSelector from '@/components/BottleSelector';
 import BottleComparisonTable from '@/components/BottleComparisonTable';
 import NutritionalGuide from '@/components/NutritionalGuide';
-import { BottleWaterData, getUniqueBottles } from '@/data/bottleComparisonData';
-import { WaterData } from '@/data/bottleWaterData';
+import ComparisonControls from '@/components/ComparisonControls';
+import FavoritesTab from '@/components/FavoritesTab';
+import { BottleWaterData } from '@/data/bottleComparisonData';
+import { convertBottleWaterDataToWaterData } from '@/utils/bottleConversion';
 
 const ComparatifBouteilles = () => {
-  const [selectedBottles, setSelectedBottles] = useState<BottleWaterData[]>([]);
-  const [showTapWater, setShowTapWater] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { selectedBottles, setSelectedBottles, showTapWater, setShowTapWater } = useBottleComparisonUrl();
   const { favorites, addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
-
-  // Charger les bouteilles depuis l'URL au démarrage
-  useEffect(() => {
-    const bottleIds = searchParams.get('bottles');
-    const tapWater = searchParams.get('tapwater') === 'true';
-    
-    if (bottleIds) {
-      const ids = bottleIds.split(',').map(id => parseInt(id.trim()));
-      const uniqueBottles = getUniqueBottles();
-      const loadedBottles = uniqueBottles.filter(bottle => ids.includes(bottle.id));
-      setSelectedBottles(loadedBottles);
-    }
-    
-    setShowTapWater(tapWater);
-  }, [searchParams]);
-
-  // Mettre à jour l'URL quand la sélection change
-  useEffect(() => {
-    const params = new URLSearchParams();
-    
-    if (selectedBottles.length > 0) {
-      params.set('bottles', selectedBottles.map(b => b.id).join(','));
-    }
-    
-    if (showTapWater) {
-      params.set('tapwater', 'true');
-    }
-    
-    setSearchParams(params);
-  }, [selectedBottles, showTapWater, setSearchParams]);
 
   const handleBottleAdd = (bottle: BottleWaterData) => {
     if (selectedBottles.length >= 3) {
@@ -70,48 +38,6 @@ const ComparatifBouteilles = () => {
   const handleReset = () => {
     setSelectedBottles([]);
     setShowTapWater(false);
-    setSearchParams({});
-  };
-
-  const handleShare = async () => {
-    const url = window.location.href;
-    
-    try {
-      await navigator.clipboard.writeText(url);
-      toast({
-        title: "Lien copié !",
-        description: "Le lien de comparaison a été copié dans le presse-papiers."
-      });
-    } catch (error) {
-      console.error('Erreur lors de la copie:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de copier le lien. Copiez l'URL manuellement.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  // Conversion function pour les favorites
-  const convertBottleWaterDataToWaterData = (bottle: BottleWaterData): WaterData => {
-    return {
-      id: bottle.id.toString(),
-      name: bottle.nom_bouteille,
-      type: bottle.type_eau,
-      source: bottle.source || 'Non spécifiée',
-      price: bottle.prix_moyen_litre,
-      co2: bottle.empreinte_carbone_kgCO2L || 0,
-      composition: {
-        nitrates: bottle.nitrates_mgL,
-        sodium: bottle.sodium_mgL,
-        calcium: bottle.calcium_mgL,
-        magnesium: bottle.magnesium_mgL,
-        residusSec: bottle.residu_sec_mgL
-      },
-      producer: bottle.marque,
-      packaging: bottle.materiau_emballage,
-      volumeAnnuel: bottle.volume_production_annuel_L || 0
-    };
   };
 
   const handleToggleFavorite = (bottle: BottleWaterData) => {
@@ -128,38 +54,12 @@ const ComparatifBouteilles = () => {
     return isFavorite(bottleId.toString());
   };
 
-  // Conversion des favoris pour l'affichage
-  const favoritesAsBottleWaterData: BottleWaterData[] = favorites.map(favorite => ({
-    id: parseInt(favorite.id),
-    marque: favorite.producer,
-    nom_bouteille: favorite.name,
-    type_eau: favorite.type,
-    source: favorite.source,
-    format: '1L',
-    materiau_emballage: favorite.packaging,
-    prix_moyen_litre: favorite.price,
-    nitrates_mgL: favorite.composition.nitrates,
-    sodium_mgL: favorite.composition.sodium,
-    calcium_mgL: favorite.composition.calcium,
-    magnesium_mgL: favorite.composition.magnesium,
-    residu_sec_mgL: favorite.composition.residusSec,
-    empreinte_carbone_kgCO2L: favorite.co2,
-    volume_production_annuel_L: favorite.volumeAnnuel,
-    disponibilite_geographique: 'France',
-    certifications: [],
-    ph: 7,
-    tds_mgL: favorite.composition.residusSec,
-    fluorures_mgL: 0,
-    sulfates_mgL: 0,
-    bicarbonates_mgL: 0
-  }));
-
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <section className="py-12 px-4">
           <div className="container mx-auto">
-            {/* En-tête */}
+            {/* Header */}
             <div className="text-center mb-8">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
                 <TrendingUp className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
@@ -171,10 +71,10 @@ const ComparatifBouteilles = () => {
               </p>
             </div>
 
-            {/* Encart pédagogique */}
+            {/* Nutritional Guide */}
             <NutritionalGuide />
 
-            {/* Onglets améliorés */}
+            {/* Enhanced Tabs */}
             <Tabs defaultValue="comparison" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8 h-14 bg-gradient-to-r from-blue-50 to-green-50 border-2 border-blue-200">
                 <TabsTrigger 
@@ -194,50 +94,22 @@ const ComparatifBouteilles = () => {
               </TabsList>
 
               <TabsContent value="comparison">
-                {/* Contrôles */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="tap-water"
-                      checked={showTapWater}
-                      onCheckedChange={setShowTapWater}
-                    />
-                    <label htmlFor="tap-water" className="text-sm font-medium">
-                      Comparer avec l'eau du robinet
-                    </label>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleReset}
-                      disabled={selectedBottles.length === 0 && !showTapWater}
-                    >
-                      <RotateCcw className="w-4 h-4 mr-2" />
-                      Réinitialiser
-                    </Button>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleShare}
-                      disabled={selectedBottles.length === 0}
-                    >
-                      <Share2 className="w-4 h-4 mr-2" />
-                      Partager
-                    </Button>
-                  </div>
-                </div>
+                {/* Controls */}
+                <ComparisonControls
+                  showTapWater={showTapWater}
+                  setShowTapWater={setShowTapWater}
+                  selectedBottlesCount={selectedBottles.length}
+                  onReset={handleReset}
+                />
 
-                {/* Sélecteur de bouteilles */}
+                {/* Bottle Selector */}
                 <BottleSelector
                   selectedBottles={selectedBottles}
                   onBottleAdd={handleBottleAdd}
                   onBottleRemove={handleBottleRemove}
                 />
 
-                {/* Tableau de comparaison */}
+                {/* Comparison Table */}
                 <BottleComparisonTable
                   selectedBottles={selectedBottles}
                   showTapWater={showTapWater}
@@ -248,24 +120,12 @@ const ComparatifBouteilles = () => {
               </TabsContent>
 
               <TabsContent value="favorites">
-                {favorites.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Star className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <p className="text-lg text-gray-500 mb-2">Aucune bouteille en favori pour le moment.</p>
-                    <p className="text-sm text-gray-400">
-                      Ajoutez des bouteilles en favoris depuis l'onglet Comparaison.
-                    </p>
-                  </div>
-                ) : (
-                  <BottleComparisonTable
-                    selectedBottles={favoritesAsBottleWaterData}
-                    showTapWater={false}
-                    onToggleFavorite={handleToggleFavorite}
-                    onRemoveFavorite={(bottleId) => removeFromFavorites(bottleId.toString())}
-                    isFavorite={isBottleFavorite}
-                    showFavoriteControls={true}
-                  />
-                )}
+                <FavoritesTab
+                  favorites={favorites}
+                  onToggleFavorite={handleToggleFavorite}
+                  onRemoveFavorite={(bottleId) => removeFromFavorites(bottleId.toString())}
+                  isFavorite={isBottleFavorite}
+                />
               </TabsContent>
             </Tabs>
           </div>
