@@ -15,6 +15,7 @@ const Header = () => {
     { href: '/diagnostic', label: 'Diagnostic' },
     { href: '/bouteilles', label: 'Robinet vs Bouteilles' },
     { href: '/comparatif-bouteilles', label: 'Comparatif' },
+    { href: '/classement', label: 'Classement' },
     { href: '/polluants', label: 'Polluants' },
     { href: '/alertes', label: 'Alertes' },
   ];
@@ -54,8 +55,9 @@ const Header = () => {
           <div className="lg:hidden">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="lg:hidden p-2">
+                <Button variant="ghost" size="sm" className="lg:hidden p-2 flex items-center space-x-2">
                   <Menu className="h-4 w-4" />
+                  <span className="hidden md:inline text-sm font-medium">Menu</span>
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>

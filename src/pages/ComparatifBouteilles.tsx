@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { TrendingUp, Share2, RotateCcw, Star, Scale } from 'lucide-react';
@@ -12,6 +11,7 @@ import BottleSelector from '@/components/BottleSelector';
 import BottleComparisonTable from '@/components/BottleComparisonTable';
 import NutritionalGuide from '@/components/NutritionalGuide';
 import { BottleWaterData, getUniqueBottles } from '@/data/bottleComparisonData';
+import { WaterData } from '@/data/bottleWaterData';
 
 const ComparatifBouteilles = () => {
   const [selectedBottles, setSelectedBottles] = useState<BottleWaterData[]>([]);
@@ -90,6 +90,68 @@ const ComparatifBouteilles = () => {
       });
     }
   };
+
+  // Conversion function pour les favorites
+  const convertBottleWaterDataToWaterData = (bottle: BottleWaterData): WaterData => {
+    return {
+      id: bottle.id.toString(),
+      name: bottle.nom_bouteille,
+      type: bottle.type_eau,
+      source: bottle.source || 'Non spécifiée',
+      price: bottle.prix_litre,
+      co2: bottle.empreinte_carbone || 0,
+      composition: {
+        nitrates: bottle.nitrates,
+        sodium: bottle.sodium,
+        calcium: bottle.calcium,
+        magnesium: bottle.magnesium,
+        residusSec: bottle.residu_sec
+      },
+      producer: bottle.marque,
+      packaging: bottle.materiau_emballage,
+      volumeAnnuel: bottle.volume_production_annuel || 0
+    };
+  };
+
+  const handleToggleFavorite = (bottle: BottleWaterData) => {
+    const bottleId = bottle.id.toString();
+    if (isFavorite(bottleId)) {
+      removeFromFavorites(bottleId);
+    } else {
+      const waterData = convertBottleWaterDataToWaterData(bottle);
+      addToFavorites(waterData);
+    }
+  };
+
+  const isBottleFavorite = (bottleId: number) => {
+    return isFavorite(bottleId.toString());
+  };
+
+  // Conversion des favoris pour l'affichage
+  const favoritesAsBottleWaterData: BottleWaterData[] = favorites.map(favorite => ({
+    id: parseInt(favorite.id),
+    marque: favorite.producer,
+    nom_bouteille: favorite.name,
+    type_eau: favorite.type,
+    source: favorite.source,
+    format: '1L', // valeur par défaut
+    materiau_emballage: favorite.packaging,
+    prix_litre: favorite.price,
+    nitrates: favorite.composition.nitrates,
+    sodium: favorite.composition.sodium,
+    calcium: favorite.composition.calcium,
+    magnesium: favorite.composition.magnesium,
+    residu_sec: favorite.composition.residusSec,
+    empreinte_carbone: favorite.co2,
+    volume_production_annuel: favorite.volumeAnnuel,
+    disponibilite_geographique: 'France', // valeur par défaut
+    certifications: [], // valeur par défaut
+    ph: 7, // valeur par défaut
+    tds: favorite.composition.residusSec,
+    fluorures: 0, // valeur par défaut
+    sulfates: 0, // valeur par défaut
+    bicarbonates: 0 // valeur par défaut
+  }));
 
   return (
     <Layout>
@@ -178,9 +240,9 @@ const ComparatifBouteilles = () => {
                 <BottleComparisonTable
                   selectedBottles={selectedBottles}
                   showTapWater={showTapWater}
-                  onToggleFavorite={addToFavorites}
-                  onRemoveFavorite={removeFromFavorites}
-                  isFavorite={isFavorite}
+                  onToggleFavorite={handleToggleFavorite}
+                  onRemoveFavorite={(bottleId) => removeFromFavorites(bottleId.toString())}
+                  isFavorite={isBottleFavorite}
                 />
               </TabsContent>
 
@@ -195,11 +257,11 @@ const ComparatifBouteilles = () => {
                   </div>
                 ) : (
                   <BottleComparisonTable
-                    selectedBottles={favorites}
+                    selectedBottles={favoritesAsBottleWaterData}
                     showTapWater={false}
-                    onToggleFavorite={addToFavorites}
-                    onRemoveFavorite={removeFromFavorites}
-                    isFavorite={isFavorite}
+                    onToggleFavorite={handleToggleFavorite}
+                    onRemoveFavorite={(bottleId) => removeFromFavorites(bottleId.toString())}
+                    isFavorite={isBottleFavorite}
                     showFavoriteControls={true}
                   />
                 )}
