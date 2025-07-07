@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { TrendingUp, Share2, RotateCcw, Star, Scale } from 'lucide-react';
@@ -98,18 +99,18 @@ const ComparatifBouteilles = () => {
       name: bottle.nom_bouteille,
       type: bottle.type_eau,
       source: bottle.source || 'Non spécifiée',
-      price: bottle.prix_litre,
-      co2: bottle.empreinte_carbone || 0,
+      price: bottle.prix_moyen_litre,
+      co2: bottle.empreinte_carbone_kgCO2L || 0,
       composition: {
-        nitrates: bottle.nitrates,
-        sodium: bottle.sodium,
-        calcium: bottle.calcium,
-        magnesium: bottle.magnesium,
-        residusSec: bottle.residu_sec
+        nitrates: bottle.nitrates_mgL,
+        sodium: bottle.sodium_mgL,
+        calcium: bottle.calcium_mgL,
+        magnesium: bottle.magnesium_mgL,
+        residusSec: bottle.residu_sec_mgL
       },
       producer: bottle.marque,
       packaging: bottle.materiau_emballage,
-      volumeAnnuel: bottle.volume_production_annuel || 0
+      volumeAnnuel: bottle.volume_production_annuel_L || 0
     };
   };
 
@@ -134,23 +135,23 @@ const ComparatifBouteilles = () => {
     nom_bouteille: favorite.name,
     type_eau: favorite.type,
     source: favorite.source,
-    format: '1L', // valeur par défaut
+    format: '1L',
     materiau_emballage: favorite.packaging,
-    prix_litre: favorite.price,
-    nitrates: favorite.composition.nitrates,
-    sodium: favorite.composition.sodium,
-    calcium: favorite.composition.calcium,
-    magnesium: favorite.composition.magnesium,
-    residu_sec: favorite.composition.residusSec,
-    empreinte_carbone: favorite.co2,
-    volume_production_annuel: favorite.volumeAnnuel,
-    disponibilite_geographique: 'France', // valeur par défaut
-    certifications: [], // valeur par défaut
-    ph: 7, // valeur par défaut
-    tds: favorite.composition.residusSec,
-    fluorures: 0, // valeur par défaut
-    sulfates: 0, // valeur par défaut
-    bicarbonates: 0 // valeur par défaut
+    prix_moyen_litre: favorite.price,
+    nitrates_mgL: favorite.composition.nitrates,
+    sodium_mgL: favorite.composition.sodium,
+    calcium_mgL: favorite.composition.calcium,
+    magnesium_mgL: favorite.composition.magnesium,
+    residu_sec_mgL: favorite.composition.residusSec,
+    empreinte_carbone_kgCO2L: favorite.co2,
+    volume_production_annuel_L: favorite.volumeAnnuel,
+    disponibilite_geographique: 'France',
+    certifications: [],
+    ph: 7,
+    tds_mgL: favorite.composition.residusSec,
+    fluorures_mgL: 0,
+    sulfates_mgL: 0,
+    bicarbonates_mgL: 0
   }));
 
   return (
