@@ -4,6 +4,8 @@ import { Search, MapPin, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { searchAddresses, AddressSuggestion } from '@/services/addressApi';
+import { SecurityService } from '@/services/securityService';
+import { toast } from '@/hooks/use-toast';
 
 interface SearchBarProps {
   onCitySelect: (city: string) => void;
@@ -31,15 +33,28 @@ const SearchBar: React.FC<SearchBarProps> = ({
       return;
     }
 
+    // Check rate limiting
+    if (!SecurityService.checkRateLimit('search', 5000)) { // 5 second limit
+      toast({
+        title: "Trop de recherches",
+        description: "Veuillez attendre avant de rechercher à nouveau.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
     debounceRef.current = setTimeout(async () => {
       try {
-        const results = await searchAddresses(query);
+        // Sanitize input before API call
+        const sanitizedQuery = SecurityService.sanitizeInput(query);
+        const results = await searchAddresses(sanitizedQuery);
         setSuggestions(results);
         setShowSuggestions(true);
       } catch (error) {
         console.error('Erreur lors de la recherche:', error);
         setSuggestions([]);
+        SecurityService.logSecurityEvent('search_error', { query, error });
       } finally {
         setIsLoading(false);
       }
@@ -53,21 +68,38 @@ const SearchBar: React.FC<SearchBarProps> = ({
   }, [query]);
 
   const handleInputChange = (value: string) => {
-    setQuery(value);
+    // Limit input length and sanitize
+    const sanitizedValue = SecurityService.sanitizeInput(value).slice(0, 100);
+    setQuery(sanitizedValue);
   };
 
   const handleSelect = (suggestion: AddressSuggestion) => {
-    setQuery(suggestion.label);
+    const sanitizedLabel = SecurityService.sanitizeInput(suggestion.label);
+    const sanitizedName = SecurityService.sanitizeInput(suggestion.name);
+    
+    setQuery(sanitizedLabel);
     setSuggestions([]);
     setShowSuggestions(false);
-    onCitySelect(suggestion.name);
+    onCitySelect(sanitizedName);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!SecurityService.checkRateLimit('search_submit', 3000)) {
+      toast({
+        title: "Trop de soumissions",
+        description: "Veuillez attendre avant de soumettre à nouveau.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     if (query.trim()) {
-      // Si pas de suggestion sélectionnée, utiliser le texte saisi
-      const cityName = suggestions.length > 0 ? suggestions[0].name : query.trim();
+      const sanitizedQuery = SecurityService.sanitizeInput(query.trim());
+      const cityName = suggestions.length > 0 ? 
+        SecurityService.sanitizeInput(suggestions[0].name) : 
+        sanitizedQuery;
       onCitySelect(cityName);
       setShowSuggestions(false);
     }
@@ -92,6 +124,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             placeholder={placeholder}
             className="pl-10 pr-24 h-11 md:h-12 text-sm md:text-lg border-2 border-blue-200 focus:border-blue-500 rounded-xl w-full"
             autoComplete="off"
+            maxLength={100}
           />
           {isLoading && (
             <Loader2 className="absolute right-20 md:right-24 top-1/2 transform -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 animate-spin text-blue-500" />
@@ -109,7 +142,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
       {showSuggestions && suggestions.length > 0 && (
         <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-          {suggestions.map((suggestion, index) => (
+          {suggestions.slice(0, 5).map((suggestion, index) => (
             <button
               key={suggestion.id || index}
               onClick={() => handleSelect(suggestion)}
@@ -118,9 +151,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
               <div className="flex items-center space-x-2">
                 <MapPin className="w-3 h-3 md:w-4 md:h-4 text-gray-400 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-gray-900 text-sm md:text-base">{suggestion.name}</p>
+                  <p className="font-medium text-gray-900 text-sm md:text-base">
+                    {SecurityService.sanitizeInput(suggestion.name)}
+                  </p>
                   <p className="text-xs md:text-sm text-gray-600">
-                    {suggestion.postcode} - {suggestion.context}
+                    {suggestion.postcode} - {SecurityService.sanitizeInput(suggestion.context)}
                   </p>
                 </div>
               </div>

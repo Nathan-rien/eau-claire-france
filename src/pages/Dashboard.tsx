@@ -1,26 +1,30 @@
 
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Droplets, Users, Eye, Clock, MousePointer, LogOut, TrendingUp, RefreshCw, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const { metrics, refreshMetrics, resetAnalytics } = useAnalytics();
+  const { user, signOut } = useAuth();
 
-  useEffect(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Déconnexion réussie",
+        description: "Vous avez été déconnecté avec succès.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur de déconnexion",
+        description: "Une erreur s'est produite lors de la déconnexion.",
+        variant: "destructive"
+      });
     }
-  }, [navigate]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    navigate('/');
   };
 
   const handleResetAnalytics = () => {
@@ -46,9 +50,12 @@ const Dashboard = () => {
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center">
                 <Droplets className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                InfoEau.fr - Dashboard
-              </h1>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                  InfoEau.fr - Dashboard
+                </h1>
+                <p className="text-sm text-gray-600">Connecté en tant que: {user?.email}</p>
+              </div>
             </div>
             <div className="flex items-center space-x-3">
               <Button onClick={refreshMetrics} variant="outline" size="sm" className="flex items-center space-x-2">
