@@ -15,6 +15,7 @@ import Alertes from "./pages/Alertes";
 import Diagnostic from "./pages/Diagnostic";
 import Bouteilles from "./pages/Bouteilles";
 import ComparatifBouteilles from "./pages/ComparatifBouteilles";
+import ComparatifBouteillesV2 from "./pages/ComparatifBouteillesV2";
 import Classement from "./pages/Classement";
 import Polluants from "./pages/Polluants";
 import Auth from "./pages/Auth";
@@ -60,6 +61,7 @@ const App = () => {
               <Route path="/diagnostic" element={<Diagnostic />} />
               <Route path="/bouteilles" element={<Bouteilles />} />
               <Route path="/comparatif-bouteilles" element={<ComparatifBouteilles />} />
+              <Route path="/comparatif-bouteilles-v2" element={<ComparatifBouteillesV2 />} />
               <Route path="/classement" element={<Classement />} />
               <Route path="/polluants" element={<Polluants />} />
               <Route path="/auth" element={<Auth />} />
