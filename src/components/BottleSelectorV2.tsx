@@ -144,8 +144,8 @@ const BottleSelectorV2: React.FC<BottleSelectorV2Props> = ({
                   </div>
                 </div>
                 {selectedBottles.length < 3 && (
-                  <Button size="sm" variant="outline" className="ml-2 h-8 px-2 text-xs">
-                    +
+                  <Button size="sm" variant="outline" className="ml-2 h-8 px-3 text-xs">
+                    Ajouter
                   </Button>
                 )}
               </div>
