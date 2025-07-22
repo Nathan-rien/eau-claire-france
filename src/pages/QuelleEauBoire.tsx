@@ -59,6 +59,8 @@ const QuelleEauBoire = () => {
     });
     setRecommendations(results);
     setShowResults(true);
+    // Remonter en haut de page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleReset = () => {

@@ -1,23 +1,26 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Droplets, Menu, X } from 'lucide-react';
+import { Droplets, Menu, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Header = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const { language, toggleLanguage, t } = useLanguage();
 
   const navigationItems = [
-    { href: '/carte', label: 'Carte des eaux' },
-    { href: '/carte-polluants', label: 'Carte polluants' },
-    { href: '/diagnostic', label: 'Diagnostic' },
-    { href: '/bouteilles', label: 'Robinet vs Bouteilles' },
-    { href: '/comparatif-bouteilles', label: 'Comparatif' },
-    { href: '/classement', label: 'Classement' },
-    { href: '/polluants', label: 'Polluants' },
-    { href: '/alertes', label: 'Alertes' },
+    { href: '/carte', label: t('nav.map') },
+    { href: '/carte-polluants', label: t('nav.pollutants-map') },
+    { href: '/diagnostic', label: t('nav.diagnostic') },
+    { href: '/quelle-eau-boire', label: t('nav.which-water') },
+    { href: '/bouteilles', label: t('nav.bottles') },
+    { href: '/comparatif-bouteilles', label: t('nav.comparison') },
+    { href: '/classement', label: t('nav.ranking') },
+    { href: '/polluants', label: t('nav.pollutants') },
+    { href: '/alertes', label: t('nav.alerts') },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -51,6 +54,17 @@ const Header = () => {
             ))}
           </nav>
 
+          {/* Language Toggle */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleLanguage}
+            className="hidden lg:flex items-center space-x-1 p-2"
+          >
+            <Languages className="h-4 w-4" />
+            <span className="text-sm font-medium">{language === 'fr' ? 'EN' : 'FR'}</span>
+          </Button>
+
           {/* Mobile Navigation */}
           <div className="lg:hidden">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -83,6 +97,16 @@ const Header = () => {
                       {item.label}
                     </Link>
                   ))}
+                  {/* Language Toggle Mobile */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleLanguage}
+                    className="flex items-center justify-start space-x-2 px-3 py-3 w-full text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground"
+                  >
+                    <Languages className="h-4 w-4" />
+                    <span>{language === 'fr' ? t('language.english') : t('language.french')}</span>
+                  </Button>
                 </div>
               </SheetContent>
             </Sheet>
