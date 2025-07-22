@@ -24,24 +24,33 @@ export const convertBottleWaterDataToWaterData = (bottle: BottleWaterData): Wate
 };
 
 export const convertWaterDataToBottleWaterData = (favorite: WaterData): BottleWaterData => {
+  // Safety check for composition property
+  const composition = favorite.composition || {
+    nitrates: 0,
+    sodium: 0,
+    calcium: 0,
+    magnesium: 0,
+    residusSec: 0
+  };
+
   return {
     id: parseInt(favorite.id),
-    marque: favorite.producer,
+    marque: favorite.producer || 'Non spécifié',
     nom_bouteille: favorite.name,
     type_eau: favorite.type,
     source: favorite.source,
     format: '1L',
-    prix_moyen_litre: favorite.price,
-    nitrates_mgL: favorite.composition.nitrates,
-    sodium_mgL: favorite.composition.sodium,
-    calcium_mgL: favorite.composition.calcium,
-    magnesium_mgL: favorite.composition.magnesium,
-    residu_sec_mgL: favorite.composition.residusSec,
+    prix_moyen_litre: favorite.price || 0,
+    nitrates_mgL: composition.nitrates,
+    sodium_mgL: composition.sodium,
+    calcium_mgL: composition.calcium,
+    magnesium_mgL: composition.magnesium,
+    residu_sec_mgL: composition.residusSec,
     pH: 7,
-    emballage: favorite.packaging,
+    emballage: favorite.packaging || 'Non spécifié',
     recyclable: 'Oui',
     consigne: 'Non',
-    impact_carbone_gCO2L: favorite.co2 * 1000, // Convert kg to g
+    impact_carbone_gCO2L: (favorite.co2 || 0) * 1000, // Convert kg to g
     ecoscore: 'C'
   };
 };
