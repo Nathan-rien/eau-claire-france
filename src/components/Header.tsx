@@ -58,14 +58,15 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Language Selector */}
-          <div className="hidden lg:flex items-center">
+          {/* Right Side - Language & Mobile Menu */}
+          <div className="flex items-center space-x-2">
+            {/* Language Selector - Always visible */}
             <Select value={language} onValueChange={handleLanguageChange}>
               <SelectTrigger className="w-auto border-none bg-transparent px-2 py-1 h-auto">
                 <SelectValue>
                   <div className="flex items-center space-x-1">
                     <span className="text-lg">🇬🇧</span>
-                    <span className="text-sm font-medium">{language === 'fr' ? 'FR' : 'EN'}</span>
+                    <span className="hidden sm:inline text-sm font-medium">{language === 'fr' ? 'FR' : 'EN'}</span>
                     <ChevronDown className="h-3 w-3 opacity-50" />
                   </div>
                 </SelectValue>
@@ -85,70 +86,43 @@ const Header = () => {
                 </SelectItem>
               </SelectContent>
             </Select>
-          </div>
 
-          {/* Mobile Navigation */}
-          <div className="lg:hidden">
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="lg:hidden p-2 flex items-center space-x-2">
-                  <Menu className="h-4 w-4" />
-                  <span className="hidden md:inline text-sm font-medium">Menu</span>
-                  <span className="sr-only">Toggle menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-72 sm:w-80">
-                <div className="flex flex-col space-y-1 mt-6">
-                  <div className="flex items-center space-x-2 mb-6 pb-4 border-b">
-                    <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center">
-                      <Droplets className="w-4 h-4 text-white" />
+            {/* Mobile Navigation */}
+            <div className="lg:hidden">
+              <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="sm" className="lg:hidden p-2 flex items-center space-x-2">
+                    <Menu className="h-4 w-4" />
+                    <span className="hidden md:inline text-sm font-medium">Menu</span>
+                    <span className="sr-only">Toggle menu</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-72 sm:w-80">
+                  <div className="flex flex-col space-y-1 mt-6">
+                    <div className="flex items-center space-x-2 mb-6 pb-4 border-b">
+                      <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center">
+                        <Droplets className="w-4 h-4 text-white" />
+                      </div>
+                      <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                        InfoEau.fr
+                      </span>
                     </div>
-                    <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                      InfoEau.fr
-                    </span>
+                    {navigationItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        to={item.href}
+                        onClick={() => setIsOpen(false)}
+                        className={`block px-3 py-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground ${
+                          isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
                   </div>
-                  {navigationItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      to={item.href}
-                      onClick={() => setIsOpen(false)}
-                      className={`block px-3 py-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground ${
-                        isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                   {/* Language Selector Mobile */}
-                   <div className="px-3 py-3">
-                     <Select value={language} onValueChange={handleLanguageChange}>
-                       <SelectTrigger className="w-full">
-                         <SelectValue>
-                           <div className="flex items-center space-x-2">
-                             <span className="text-lg">🇬🇧</span>
-                             <span className="text-sm font-medium">{language === 'fr' ? 'Français' : 'English'}</span>
-                           </div>
-                         </SelectValue>
-                       </SelectTrigger>
-                       <SelectContent>
-                         <SelectItem value="fr">
-                           <div className="flex items-center space-x-2">
-                             <span className="text-lg">🇫🇷</span>
-                             <span>Français</span>
-                           </div>
-                         </SelectItem>
-                         <SelectItem value="en">
-                           <div className="flex items-center space-x-2">
-                             <span className="text-lg">🇬🇧</span>
-                             <span>English</span>
-                           </div>
-                         </SelectItem>
-                       </SelectContent>
-                     </Select>
-                   </div>
-                </div>
-              </SheetContent>
-            </Sheet>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </div>
       </div>
