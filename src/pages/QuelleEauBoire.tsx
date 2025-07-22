@@ -10,6 +10,8 @@ import Layout from '@/components/Layout';
 import MineralTooltip from '@/components/MineralTooltip';
 import { userProfiles, userIntolerances, userPreferences, UserProfile, UserIntolerance, UserPreference } from '@/data/waterProfiles';
 import { getWaterRecommendations, WaterScore, getMineralColor } from '@/utils/waterRecommendation';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const QuelleEauBoire = () => {
   const [selectedProfiles, setSelectedProfiles] = useState<UserProfile[]>([]);
@@ -71,6 +73,30 @@ const QuelleEauBoire = () => {
     setRecommendations([]);
   };
 
+  const handleExportPDF = async () => {
+    try {
+      const element = document.querySelector('.results-container');
+      if (!element) return;
+
+      const canvas = await html2canvas(element as HTMLElement, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save('recommandations-eau.pdf');
+    } catch (error) {
+      console.error('Erreur lors de l\'export PDF:', error);
+    }
+  };
+
   const hasSelections = selectedProfiles.length > 0 || selectedIntolerances.length > 0 || selectedPreferences.length > 0;
 
   if (showResults) {
@@ -78,7 +104,7 @@ const QuelleEauBoire = () => {
       <Layout>
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
           <section className="py-12 px-4">
-            <div className="container mx-auto max-w-4xl">
+            <div className="container mx-auto max-w-4xl results-container">
               {/* Header */}
               <div className="text-center mb-8">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
@@ -117,7 +143,7 @@ const QuelleEauBoire = () => {
                     <Share2 className="w-4 h-4 mr-2" />
                     Partager
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={handleExportPDF}>
                     <Download className="w-4 h-4 mr-2" />
                     PDF
                   </Button>
