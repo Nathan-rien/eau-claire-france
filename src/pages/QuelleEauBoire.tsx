@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Droplets, CheckCircle, Star, Share2, Download } from 'lucide-react';
+import { Droplets, CheckCircle, Star, Share2, Download, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import Layout from '@/components/Layout';
+import MineralTooltip from '@/components/MineralTooltip';
 import { userProfiles, userIntolerances, userPreferences, UserProfile, UserIntolerance, UserPreference } from '@/data/waterProfiles';
 import { getWaterRecommendations, WaterScore, getMineralColor } from '@/utils/waterRecommendation';
 
@@ -158,38 +160,78 @@ const QuelleEauBoire = () => {
                       </CardHeader>
                       
                       <CardContent>
+                        {/* Pedagogical Summary */}
+                        <div className="mb-4">
+                          <Alert>
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription className="text-sm">
+                              {recommendation.pedagogicalSummary}
+                            </AlertDescription>
+                          </Alert>
+                        </div>
+
                         {/* Composition */}
                         <div className="mb-4">
-                          <h4 className="font-semibold mb-2">Composition (mg/L)</h4>
+                          <h4 className="font-semibold mb-2">Composition détaillée</h4>
                           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
                             <div>
-                              <span className="text-gray-500">Nitrates</span>
+                              <div className="flex items-center">
+                                <span className="text-gray-500">Nitrates</span>
+                                <MineralTooltip 
+                                  mineral="nitrates" 
+                                  value={recommendation.composition.nitrates} 
+                                />
+                              </div>
                               <div className={`font-semibold ${getMineralColor('nitrates', recommendation.composition.nitrates)}`}>
-                                {recommendation.composition.nitrates}
+                                {recommendation.composition.nitrates} mg/L
                               </div>
                             </div>
                             <div>
-                              <span className="text-gray-500">Sodium</span>
+                              <div className="flex items-center">
+                                <span className="text-gray-500">Sodium</span>
+                                <MineralTooltip 
+                                  mineral="sodium" 
+                                  value={recommendation.composition.sodium} 
+                                />
+                              </div>
                               <div className={`font-semibold ${getMineralColor('sodium', recommendation.composition.sodium)}`}>
-                                {recommendation.composition.sodium}
+                                {recommendation.composition.sodium} mg/L
                               </div>
                             </div>
                             <div>
-                              <span className="text-gray-500">Calcium</span>
+                              <div className="flex items-center">
+                                <span className="text-gray-500">Calcium</span>
+                                <MineralTooltip 
+                                  mineral="calcium" 
+                                  value={recommendation.composition.calcium} 
+                                />
+                              </div>
                               <div className={`font-semibold ${getMineralColor('calcium', recommendation.composition.calcium)}`}>
-                                {recommendation.composition.calcium}
+                                {recommendation.composition.calcium} mg/L
                               </div>
                             </div>
                             <div>
-                              <span className="text-gray-500">Magnésium</span>
+                              <div className="flex items-center">
+                                <span className="text-gray-500">Magnésium</span>
+                                <MineralTooltip 
+                                  mineral="magnesium" 
+                                  value={recommendation.composition.magnesium} 
+                                />
+                              </div>
                               <div className={`font-semibold ${getMineralColor('magnesium', recommendation.composition.magnesium)}`}>
-                                {recommendation.composition.magnesium}
+                                {recommendation.composition.magnesium} mg/L
                               </div>
                             </div>
                             <div>
-                              <span className="text-gray-500">Résidu sec</span>
+                              <div className="flex items-center">
+                                <span className="text-gray-500">Résidu sec</span>
+                                <MineralTooltip 
+                                  mineral="residusSec" 
+                                  value={recommendation.composition.residusSec} 
+                                />
+                              </div>
                               <div className={`font-semibold ${getMineralColor('residusSec', recommendation.composition.residusSec)}`}>
-                                {recommendation.composition.residusSec}
+                                {recommendation.composition.residusSec} mg/L
                               </div>
                             </div>
                           </div>

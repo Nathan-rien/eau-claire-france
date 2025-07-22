@@ -11,6 +11,7 @@ export interface WaterScore {
   badgeText: string;
   badgeColor: string;
   reasons: string[];
+  pedagogicalSummary: string;
   composition: {
     nitrates: number;
     sodium: number;
@@ -29,6 +30,31 @@ export interface RecommendationFilters {
   preferences: UserPreference[];
 }
 
+function generatePedagogicalSummary(water: typeof bottledWaters[0], filters: RecommendationFilters): string {
+  const composition = water.composition;
+  const profiles = filters.profiles.map(p => p.name.toLowerCase()).join(', ');
+  const summary: string[] = [];
+
+  // Analyze composition
+  if (composition.sodium <= 20) summary.push("faible en sodium");
+  else if (composition.sodium >= 50) summary.push("riche en sodium");
+
+  if (composition.calcium >= 150) summary.push("riche en calcium");
+  else if (composition.calcium <= 50) summary.push("pauvre en calcium");
+
+  if (composition.magnesium >= 50) summary.push("riche en magnésium");
+  else if (composition.magnesium <= 20) summary.push("pauvre en magnésium");
+
+  if (composition.nitrates <= 5) summary.push("très pauvre en nitrates");
+  else if (composition.nitrates <= 10) summary.push("faible en nitrates");
+
+  if (composition.residusSec <= 500) summary.push("faiblement minéralisée");
+  else if (composition.residusSec >= 1000) summary.push("fortement minéralisée");
+
+  const summaryText = summary.length > 0 ? summary.join(', ') : "composition équilibrée";
+  return `Eau ${summaryText}, adaptée ${profiles ? `aux profils : ${profiles}` : 'à vos besoins'}.`;
+}
+
 export function calculateWaterScore(
   water: typeof bottledWaters[0],
   filters: RecommendationFilters
@@ -44,15 +70,29 @@ export function calculateWaterScore(
     ...filters.preferences.map(p => p.criteria)
   ];
 
+  // Priority handling - critical profiles (nourrisson, grossesse) get higher weight
+  const hasCriticalProfile = filters.profiles.some(p => 
+    ['nourrisson', 'grossesse', 'hypertension', 'calculs-renaux'].includes(p.id)
+  );
+
   // Process each mineral
   ['nitrates', 'sodium', 'calcium', 'magnesium', 'residusSec'].forEach(mineral => {
     const mineralValue = water.composition[mineral as keyof typeof water.composition];
     
-    allCriteria.forEach(criteria => {
+    allCriteria.forEach((criteria, index) => {
       const criteriaForMineral = criteria[mineral as keyof WaterCriteria];
       if (!criteriaForMineral) return;
 
-      const { min, max, priority } = criteriaForMineral;
+      let { min, max, priority } = criteriaForMineral;
+      
+      // Boost priority for critical profiles
+      if (hasCriticalProfile && index < filters.profiles.length) {
+        const profile = filters.profiles[index];
+        if (['nourrisson', 'grossesse', 'hypertension', 'calculs-renaux'].includes(profile.id)) {
+          priority = priority * 1.5;
+        }
+      }
+
       maxPossibleScore += priority;
 
       let mineralScore = 0;
@@ -62,35 +102,35 @@ export function calculateWaterScore(
         // Range criteria
         if (mineralValue >= min && mineralValue <= max) {
           mineralScore = priority;
-          reason = `${mineral}: ${mineralValue} (optimal: ${min}-${max})`;
+          reason = `${mineral}: ${mineralValue} mg/L (optimal: ${min}-${max})`;
         } else if (mineralValue < min) {
           const ratio = mineralValue / min;
           mineralScore = priority * Math.max(0, ratio);
-          reason = `${mineral}: ${mineralValue} (en dessous de ${min})`;
+          reason = `${mineral}: ${mineralValue} mg/L (en dessous de ${min})`;
         } else {
           const ratio = max / mineralValue;
           mineralScore = priority * Math.max(0, ratio);
-          reason = `${mineral}: ${mineralValue} (au dessus de ${max})`;
+          reason = `${mineral}: ${mineralValue} mg/L (au dessus de ${max})`;
         }
       } else if (min !== undefined) {
         // Minimum criteria
         if (mineralValue >= min) {
           mineralScore = priority;
-          reason = `${mineral}: ${mineralValue} (≥ ${min} ✓)`;
+          reason = `${mineral}: ${mineralValue} mg/L (≥ ${min} ✓)`;
         } else {
           const ratio = mineralValue / min;
           mineralScore = priority * ratio;
-          reason = `${mineral}: ${mineralValue} (< ${min})`;
+          reason = `${mineral}: ${mineralValue} mg/L (insuffisant, besoin ≥ ${min})`;
         }
       } else if (max !== undefined) {
         // Maximum criteria
         if (mineralValue <= max) {
           mineralScore = priority;
-          reason = `${mineral}: ${mineralValue} (≤ ${max} ✓)`;
+          reason = `${mineral}: ${mineralValue} mg/L (≤ ${max} ✓)`;
         } else {
           const ratio = max / mineralValue;
           mineralScore = priority * Math.max(0, ratio);
-          reason = `${mineral}: ${mineralValue} (> ${max})`;
+          reason = `${mineral}: ${mineralValue} mg/L (trop élevé, max recommandé ${max})`;
         }
       }
 
@@ -108,7 +148,7 @@ export function calculateWaterScore(
 
   if (percentage >= 80) {
     badge = 'ideal';
-    badgeText = 'Idéal pour vous';
+    badgeText = 'Idéale pour vous';
     badgeColor = 'bg-green-100 text-green-800 border-green-200';
   } else if (percentage >= 60) {
     badge = 'good';
@@ -133,7 +173,8 @@ export function calculateWaterScore(
     badge,
     badgeText,
     badgeColor,
-    reasons: reasons.slice(0, 3), // Limit to top 3 reasons
+    reasons: reasons.slice(0, 4), // Increased to 4 reasons
+    pedagogicalSummary: generatePedagogicalSummary(water, filters),
     composition: water.composition,
     price: water.price,
     type: water.type,
