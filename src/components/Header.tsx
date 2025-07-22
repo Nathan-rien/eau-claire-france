@@ -30,21 +30,21 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" role="banner">
       <div className="container mx-auto px-4">
         <div className="flex h-14 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity flex-shrink-0">
-            <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center">
+          <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity flex-shrink-0" aria-label="InfoEau.fr - Retour à l'accueil">
+            <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center" aria-hidden="true">
               <Droplets className="w-4 h-4 text-white" />
             </div>
-            <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+            <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
               InfoEau.fr
-            </h1>
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1 flex-1 justify-center max-w-4xl">
+          <nav className="hidden lg:flex items-center space-x-1 flex-1 justify-center max-w-4xl" role="navigation" aria-label="Navigation principale">
             {navigationItems.map((item) => (
               <Link
                 key={item.href}

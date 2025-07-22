@@ -6,19 +6,37 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import BottleComparison from '@/components/BottleComparison';
 import Layout from '@/components/Layout';
 import NavigationCTA from '@/components/NavigationCTA';
+import SEOHead from '@/components/SEOHead';
+import Breadcrumb from '@/components/Breadcrumb';
+import { seoData } from '@/utils/seoData';
 import { Link } from 'react-router-dom';
 
 const Bouteilles = () => {
   return (
     <Layout>
+      <SEOHead 
+        title={seoData.bouteilles.title}
+        description={seoData.bouteilles.description}
+        keywords={seoData.bouteilles.keywords}
+        canonical="/bouteilles"
+        ogImage={seoData.bouteilles.ogImage}
+        schemaData={seoData.bouteilles.schemaData}
+      />
+      
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-        <section className="py-12 px-4">
+        <div className="container mx-auto">
+          <Breadcrumb items={[
+            { name: 'Comparaison bouteilles', href: '/bouteilles', current: true }
+          ]} />
+        </div>
+        
+        <section className="py-12 px-4" role="main">
           <div className="container mx-auto">
             <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
                 <TrendingUp className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
                 <span>Eau du robinet vs Bouteilles</span>
-              </h2>
+              </h1>
               <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto px-4 mb-6">
                 Comparez la qualité, le coût et l'impact environnemental de l'eau du robinet avec les eaux en bouteille.
               </p>

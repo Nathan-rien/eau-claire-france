@@ -6,21 +6,32 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import SearchBar from '@/components/SearchBar';
 import Layout from '@/components/Layout';
 import NavigationCTA from '@/components/NavigationCTA';
+import SEOHead from '@/components/SEOHead';
+import { seoData } from '@/utils/seoData';
 
 const Index = () => {
   const [selectedCity, setSelectedCity] = useState<string>('');
 
   return (
     <Layout>
+      <SEOHead 
+        title={seoData.home.title}
+        description={seoData.home.description}
+        keywords={seoData.home.keywords}
+        canonical="/"
+        ogImage={seoData.home.ogImage}
+        schemaData={seoData.home.schemaData}
+      />
+      
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         {/* Hero Section */}
-        <section className="py-8 md:py-12 lg:py-16 px-4">
+        <section className="py-8 md:py-12 lg:py-16 px-4" role="banner">
           <div className="container mx-auto text-center">
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-2xl md:text-4xl lg:text-6xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight px-2">
+              <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight px-2">
                 Connaissez-vous vraiment la qualité de 
                 <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent"> votre eau</span> ?
-              </h2>
+              </h1>
               <p className="text-base md:text-lg lg:text-xl text-gray-600 mb-6 md:mb-8 leading-relaxed px-2">
                 Découvrez la composition réelle de l'eau potable distribuée dans votre commune, 
                 suivez les polluants présents et comparez avec les eaux en bouteille.
@@ -104,12 +115,12 @@ const Index = () => {
         </section>
 
         {/* Features Section */}
-        <section className="py-8 md:py-12 lg:py-16 px-4 bg-white">
+        <section className="py-8 md:py-12 lg:py-16 px-4 bg-white" role="region" aria-labelledby="features-title">
           <div className="container mx-auto">
             <div className="text-center mb-6 md:mb-8 lg:mb-12">
-              <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+              <h2 id="features-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
                 Transparence totale sur votre eau
-              </h3>
+              </h2>
               <p className="text-sm md:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto px-4">
                 Basé sur les données officielles des ARS, agences de l'eau et réseaux publics
               </p>
