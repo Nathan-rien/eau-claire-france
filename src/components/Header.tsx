@@ -64,7 +64,7 @@ const Header = () => {
               <SelectTrigger className="w-auto border-none bg-transparent px-2 py-1 h-auto">
                 <SelectValue>
                   <div className="flex items-center space-x-1">
-                    <span className="text-lg">{language === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
+                    <span className="text-lg">🇬🇧</span>
                     <span className="text-sm font-medium">{language === 'fr' ? 'FR' : 'EN'}</span>
                     <ChevronDown className="h-3 w-3 opacity-50" />
                   </div>
@@ -119,33 +119,33 @@ const Header = () => {
                       {item.label}
                     </Link>
                   ))}
-                  {/* Language Selector Mobile */}
-                  <div className="px-3 py-3">
-                    <Select value={language} onValueChange={handleLanguageChange}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-lg">{language === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
-                            <span className="text-sm font-medium">{language === 'fr' ? 'Français' : 'English'}</span>
-                          </div>
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="fr">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-lg">🇫🇷</span>
-                            <span>Français</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="en">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-lg">🇬🇧</span>
-                            <span>English</span>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                   {/* Language Selector Mobile */}
+                   <div className="px-3 py-3">
+                     <Select value={language} onValueChange={handleLanguageChange}>
+                       <SelectTrigger className="w-full">
+                         <SelectValue>
+                           <div className="flex items-center space-x-2">
+                             <span className="text-lg">🇬🇧</span>
+                             <span className="text-sm font-medium">{language === 'fr' ? 'Français' : 'English'}</span>
+                           </div>
+                         </SelectValue>
+                       </SelectTrigger>
+                       <SelectContent>
+                         <SelectItem value="fr">
+                           <div className="flex items-center space-x-2">
+                             <span className="text-lg">🇫🇷</span>
+                             <span>Français</span>
+                           </div>
+                         </SelectItem>
+                         <SelectItem value="en">
+                           <div className="flex items-center space-x-2">
+                             <span className="text-lg">🇬🇧</span>
+                             <span>English</span>
+                           </div>
+                         </SelectItem>
+                       </SelectContent>
+                     </Select>
+                   </div>
                 </div>
               </SheetContent>
             </Sheet>
