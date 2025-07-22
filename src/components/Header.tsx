@@ -1,15 +1,20 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Droplets, Menu, Languages } from 'lucide-react';
+import { Droplets, Menu, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Header = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const { language, toggleLanguage, t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
+
+  const handleLanguageChange = (newLanguage: string) => {
+    setLanguage(newLanguage as 'fr' | 'en');
+  };
 
   const navigationItems = [
     { href: '/carte', label: t('nav.map') },
@@ -54,16 +59,34 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Language Toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleLanguage}
-            className="hidden lg:flex items-center space-x-1 p-2"
-          >
-            <Languages className="h-4 w-4" />
-            <span className="text-sm font-medium">{language === 'fr' ? 'EN' : 'FR'}</span>
-          </Button>
+          {/* Language Selector */}
+          <div className="hidden lg:flex items-center">
+            <Select value={language} onValueChange={handleLanguageChange}>
+              <SelectTrigger className="w-auto border-none bg-transparent px-2 py-1 h-auto">
+                <SelectValue>
+                  <div className="flex items-center space-x-1">
+                    <span className="text-lg">{language === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
+                    <span className="text-sm font-medium">{language === 'fr' ? 'FR' : 'EN'}</span>
+                    <ChevronDown className="h-3 w-3 opacity-50" />
+                  </div>
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent align="end">
+                <SelectItem value="fr">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg">🇫🇷</span>
+                    <span>Français</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="en">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg">🇬🇧</span>
+                    <span>English</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           {/* Mobile Navigation */}
           <div className="lg:hidden">
@@ -97,16 +120,33 @@ const Header = () => {
                       {item.label}
                     </Link>
                   ))}
-                  {/* Language Toggle Mobile */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={toggleLanguage}
-                    className="flex items-center justify-start space-x-2 px-3 py-3 w-full text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground"
-                  >
-                    <Languages className="h-4 w-4" />
-                    <span>{language === 'fr' ? t('language.english') : t('language.french')}</span>
-                  </Button>
+                  {/* Language Selector Mobile */}
+                  <div className="px-3 py-3">
+                    <Select value={language} onValueChange={handleLanguageChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-lg">{language === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
+                            <span className="text-sm font-medium">{language === 'fr' ? 'Français' : 'English'}</span>
+                          </div>
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="fr">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-lg">🇫🇷</span>
+                            <span>Français</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="en">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-lg">🇬🇧</span>
+                            <span>English</span>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

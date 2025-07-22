@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 interface LanguageContextType {
   language: 'fr' | 'en';
   toggleLanguage: () => void;
+  setLanguage: (lang: 'fr' | 'en') => void;
   t: (key: string) => string;
 }
 
@@ -73,7 +74,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
   };
 
   return (
-    <LanguageContext.Provider value={{ language, toggleLanguage, t }}>
+    <LanguageContext.Provider value={{ language, toggleLanguage, setLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );
