@@ -209,43 +209,93 @@ export const userProfiles: UserProfile[] = [
 
 export const userIntolerances: UserIntolerance[] = [
   {
-    id: 'intolerance-sodium',
-    name: 'Intolérance au sodium (sel)',
-    description: 'Éviter les eaux riches en sodium',
+    id: 'intolerance-sulfates',
+    name: 'Sulfates',
+    description: 'éviter si présent >50 mg/L',
     criteria: {
-      sodium: { max: 15, priority: 5 }
+      // Note: sulfates pas disponible dans bottleWaterData, critère ignoré pour l'instant
+    }
+  },
+  {
+    id: 'intolerance-fluor',
+    name: 'Fluor',
+    description: 'éviter si présent >0,3 mg/L',
+    criteria: {
+      // Note: fluor pas disponible dans bottleWaterData, critère ignoré pour l'instant
+    }
+  },
+  {
+    id: 'intolerance-nitrates',
+    name: 'Nitrates',
+    description: 'éviter si présent >10 mg/L',
+    criteria: {
+      nitrates: { max: 10, priority: 5 }
+    }
+  },
+  {
+    id: 'intolerance-sodium',
+    name: 'Sodium (sel)',
+    description: 'éviter si présent >20 mg/L',
+    criteria: {
+      sodium: { max: 20, priority: 5 }
     }
   },
   {
     id: 'intolerance-calcium',
-    name: 'Intolérance au calcium',
-    description: 'Éviter les eaux très calciques',
+    name: 'Calcium',
+    description: 'éviter si présent >100 mg/L',
     criteria: {
       calcium: { max: 100, priority: 4 }
     }
   },
   {
     id: 'intolerance-magnesium',
-    name: 'Intolérance au magnésium',
-    description: 'Éviter les eaux très magnésiennes',
+    name: 'Magnésium',
+    description: 'éviter si présent >50 mg/L',
     criteria: {
       magnesium: { max: 50, priority: 4 }
     }
   },
   {
-    id: 'intolerance-nitrates',
-    name: 'Sensibilité aux nitrates',
-    description: 'Privilégier les eaux pauvres en nitrates',
+    id: 'intolerance-bicarbonates',
+    name: 'Bicarbonates',
+    description: 'éviter si présent >600 mg/L',
     criteria: {
-      nitrates: { max: 5, priority: 5 }
+      // Note: bicarbonates pas disponible dans bottleWaterData, critère ignoré pour l'instant
+    }
+  },
+  {
+    id: 'intolerance-ph-acide',
+    name: 'pH acide (<7)',
+    description: 'éviter si pH < 7',
+    criteria: {
+      // Note: pH pas disponible dans bottleWaterData, critère ignoré pour l'instant
+    }
+  },
+  {
+    id: 'intolerance-ph-basique',
+    name: 'pH basique (>8,5)',
+    description: 'éviter si pH > 8.5',
+    criteria: {
+      // Note: pH pas disponible dans bottleWaterData, critère ignoré pour l'instant
     }
   },
   {
     id: 'intolerance-mineralisation',
-    name: 'Intolérance eau très minéralisée',
-    description: 'Éviter les eaux à résidu sec élevé',
+    name: 'Eau très minéralisée',
+    description: 'éviter si résidu sec >1000 mg/L',
     criteria: {
-      residusSec: { max: 500, priority: 4 }
+      residusSec: { max: 1000, priority: 4 }
+    }
+  },
+  {
+    id: 'intolerance-ne-sais-pas',
+    name: 'Ne sais pas',
+    description: 'supprimer toutes les eaux à risques potentiels',
+    criteria: {
+      nitrates: { max: 10, priority: 5 },
+      residusSec: { max: 500, priority: 4 },
+      sodium: { max: 20, priority: 4 }
     }
   }
 ];
