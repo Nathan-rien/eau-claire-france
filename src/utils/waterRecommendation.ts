@@ -28,6 +28,7 @@ export interface RecommendationFilters {
   profiles: UserProfile[];
   intolerances: UserIntolerance[];
   preferences: UserPreference[];
+  waterType?: 'all' | 'plate' | 'gazeuse';
 }
 
 function generatePedagogicalSummary(water: typeof bottledWaters[0], filters: RecommendationFilters): string {
@@ -74,6 +75,28 @@ export function calculateWaterScore(
   const hasCriticalProfile = filters.profiles.some(p => 
     ['nourrisson', 'grossesse', 'hypertension', 'calculs-renaux'].includes(p.id)
   );
+
+  // Special handling for diarrhea profile - strongly penalize high magnesium waters like Hépar
+  const hasDiarrheaProfile = filters.profiles.some(p => p.id === 'diarrhee-colon');
+  if (hasDiarrheaProfile && water.id === 'hepar') {
+    // Automatically give very low score to Hépar for diarrhea profile
+    return {
+      id: water.id,
+      name: water.name,
+      score: 0,
+      maxScore: 100,
+      percentage: 0,
+      badge: 'avoid',
+      badgeText: 'À éviter absolument',
+      badgeColor: 'bg-red-100 text-red-800 border-red-200',
+      reasons: ['Hépar est fortement déconseillée en cas de diarrhée ou côlon irritable en raison de sa très haute teneur en magnésium (119 mg/L) qui a un effet laxatif'],
+      pedagogicalSummary: 'Eau très riche en magnésium, déconseillée pour les troubles digestifs.',
+      composition: water.composition,
+      price: water.price,
+      type: water.type,
+      source: water.source
+    };
+  }
 
   // Process each mineral
   ['nitrates', 'sodium', 'calcium', 'magnesium', 'residusSec'].forEach(mineral => {
@@ -187,7 +210,19 @@ export function getWaterRecommendations(filters: RecommendationFilters): WaterSc
     return [];
   }
 
-  const scores = bottledWaters.map(water => calculateWaterScore(water, filters));
+  // Filter waters by type first
+  let filteredWaters = bottledWaters;
+  if (filters.waterType === 'plate') {
+    filteredWaters = bottledWaters.filter(water => 
+      !water.type.toLowerCase().includes('gazeuse')
+    );
+  } else if (filters.waterType === 'gazeuse') {
+    filteredWaters = bottledWaters.filter(water => 
+      water.type.toLowerCase().includes('gazeuse')
+    );
+  }
+
+  const scores = filteredWaters.map(water => calculateWaterScore(water, filters));
   
   // Sort by percentage score (descending)
   return scores.sort((a, b) => b.percentage - a.percentage);

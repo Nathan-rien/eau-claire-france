@@ -14,6 +14,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 const QuelleEauBoire = () => {
+  const [waterType, setWaterType] = useState<'all' | 'plate' | 'gazeuse'>('all');
   const [selectedProfiles, setSelectedProfiles] = useState<UserProfile[]>([]);
   const [selectedIntolerances, setSelectedIntolerances] = useState<UserIntolerance[]>([]);
   const [selectedPreferences, setSelectedPreferences] = useState<UserPreference[]>([]);
@@ -57,7 +58,8 @@ const QuelleEauBoire = () => {
     const results = getWaterRecommendations({
       profiles: selectedProfiles,
       intolerances: selectedIntolerances,
-      preferences: selectedPreferences
+      preferences: selectedPreferences,
+      waterType
     });
     setRecommendations(results);
     setShowResults(true);
@@ -66,6 +68,7 @@ const QuelleEauBoire = () => {
   };
 
   const handleReset = () => {
+    setWaterType('all');
     setSelectedProfiles([]);
     setSelectedIntolerances([]);
     setSelectedPreferences([]);
@@ -333,6 +336,78 @@ const QuelleEauBoire = () => {
                 intolérances et objectifs de santé.
               </p>
             </div>
+
+            {/* Step 0: Water Type Selection */}
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <span className="bg-purple-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">0</span>
+                  <span>Type d'eau préféré</span>
+                </CardTitle>
+                <p className="text-gray-600">Choisissez votre préférence entre eau plate et eau gazeuse</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div
+                    className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                      waterType === 'all'
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => setWaterType('all')}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Checkbox 
+                        checked={waterType === 'all'}
+                        onChange={() => {}}
+                      />
+                      <div>
+                        <h3 className="font-semibold">Toutes les eaux</h3>
+                        <p className="text-sm text-gray-600">Plates et gazeuses</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                      waterType === 'plate'
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => setWaterType('plate')}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Checkbox 
+                        checked={waterType === 'plate'}
+                        onChange={() => {}}
+                      />
+                      <div>
+                        <h3 className="font-semibold">Eau plate uniquement</h3>
+                        <p className="text-sm text-gray-600">Sans bulles</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                      waterType === 'gazeuse'
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => setWaterType('gazeuse')}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Checkbox 
+                        checked={waterType === 'gazeuse'}
+                        onChange={() => {}}
+                      />
+                      <div>
+                        <h3 className="font-semibold">Eau gazeuse uniquement</h3>
+                        <p className="text-sm text-gray-600">Avec bulles</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Step 1: Profiles */}
             <Card className="mb-8">
