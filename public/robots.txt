@@ -1,22 +1,40 @@
-
 User-agent: *
 Allow: /
 
 # Sitemap
 Sitemap: https://infoeau.fr/sitemap.xml
 
-# Crawl-delay pour éviter la surcharge
+# Crawl-delay (optional - 1 second between requests)
 Crawl-delay: 1
 
-# Bloquer l'accès aux pages d'administration
+# Specific rules for different bots
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Block sensitive areas
 Disallow: /login
 Disallow: /dashboard
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_/
+Disallow: /tmp/
 
-# Permettre l'indexation de toutes les pages publiques
-Allow: /
+# Allow all public pages and images
 Allow: /carte
 Allow: /carte-polluants
 Allow: /diagnostic
 Allow: /alertes
 Allow: /bouteilles
 Allow: /polluants
+Allow: /images/
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.webp$
+Allow: /*.gif$
+Allow: /*.svg$

@@ -4,7 +4,7 @@ import { Eye, EyeOff, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import InteractiveMap from './InteractiveMap';
+import LazyInteractiveMap from './LazyInteractiveMap';
 
 const QualityMap = () => {
   const [showWaterSources, setShowWaterSources] = useState<boolean>(true);
@@ -94,7 +94,7 @@ const QualityMap = () => {
       </Card>
 
       {/* Interactive Map */}
-      <InteractiveMap showWaterSources={showWaterSources} />
+      <LazyInteractiveMap showWaterSources={showWaterSources} />
 
       {/* Regional Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

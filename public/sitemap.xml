@@ -6,21 +6,29 @@
   <!-- Page d'accueil - Priorité maximale -->
   <url>
     <loc>https://infoeau.fr/</loc>
-    <lastmod>2025-01-22</lastmod>
+    <lastmod>2025-07-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/"/>
+    <image:image>
+      <image:loc>https://infoeau.fr/images/og-default.jpg</image:loc>
+      <image:title>InfoEau.fr - Qualité de l'eau potable en France</image:title>
+    </image:image>
   </url>
   
   <!-- Pages principales - Haute priorité -->
   <url>
     <loc>https://infoeau.fr/carte</loc>
-    <lastmod>2025-01-22</lastmod>
+    <lastmod>2025-07-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/carte"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/map"/>
+    <image:image>
+      <image:loc>https://infoeau.fr/images/og-carte.jpg</image:loc>
+      <image:title>Carte interactive - Qualité de l'eau en France</image:title>
+    </image:image>
   </url>
   
   <url>

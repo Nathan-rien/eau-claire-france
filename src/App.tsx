@@ -4,33 +4,36 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import { analyticsService } from "@/services/analyticsService";
 import { AuthProvider } from "@/hooks/useAuth";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import Index from "./pages/Index";
-import Carte from "./pages/Carte";
-import CartePolluants from "./pages/CartePolluants";
-import Alertes from "./pages/Alertes";
-import Diagnostic from "./pages/Diagnostic";
-import Bouteilles from "./pages/Bouteilles";
-import ComparatifBouteilles from "./pages/ComparatifBouteilles";
-import QuelleEauBoire from "./pages/QuelleEauBoire";
-import Classement from "./pages/Classement";
-import Polluants from "./pages/Polluants";
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
-import Sources from "./pages/Sources";
-import Methodologie from "./pages/Methodologie";
-import ApiPublique from "./pages/ApiPublique";
-import APropos from "./pages/APropos";
-import Contact from "./pages/Contact";
-import MentionsLegales from "./pages/MentionsLegales";
-import NotFound from "./pages/NotFound";
-import RGPD from "./pages/RGPD";
-import Accessibilite from "./pages/Accessibilite";
-import OpenData from "./pages/OpenData";
+import PageLoader from "@/components/PageLoader";
+
+// Lazy load all pages for code splitting
+const Index = React.lazy(() => import("./pages/Index"));
+const Carte = React.lazy(() => import("./pages/Carte"));
+const CartePolluants = React.lazy(() => import("./pages/CartePolluants"));
+const Alertes = React.lazy(() => import("./pages/Alertes"));
+const Diagnostic = React.lazy(() => import("./pages/Diagnostic"));
+const Bouteilles = React.lazy(() => import("./pages/Bouteilles"));
+const ComparatifBouteilles = React.lazy(() => import("./pages/ComparatifBouteilles"));
+const QuelleEauBoire = React.lazy(() => import("./pages/QuelleEauBoire"));
+const Classement = React.lazy(() => import("./pages/Classement"));
+const Polluants = React.lazy(() => import("./pages/Polluants"));
+const Auth = React.lazy(() => import("./pages/Auth"));
+const Dashboard = React.lazy(() => import("./pages/Dashboard"));
+const Sources = React.lazy(() => import("./pages/Sources"));
+const Methodologie = React.lazy(() => import("./pages/Methodologie"));
+const ApiPublique = React.lazy(() => import("./pages/ApiPublique"));
+const APropos = React.lazy(() => import("./pages/APropos"));
+const Contact = React.lazy(() => import("./pages/Contact"));
+const MentionsLegales = React.lazy(() => import("./pages/MentionsLegales"));
+const NotFound = React.lazy(() => import("./pages/NotFound"));
+const RGPD = React.lazy(() => import("./pages/RGPD"));
+const Accessibilite = React.lazy(() => import("./pages/Accessibilite"));
+const OpenData = React.lazy(() => import("./pages/OpenData"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,37 +58,39 @@ const App = () => {
             <Toaster />
             <Sonner />
             <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/carte" element={<Carte />} />
-              <Route path="/carte-polluants" element={<CartePolluants />} />
-              <Route path="/alertes" element={<Alertes />} />
-              <Route path="/diagnostic" element={<Diagnostic />} />
-              <Route path="/bouteilles" element={<Bouteilles />} />
-              <Route path="/comparatif-bouteilles" element={<ComparatifBouteilles />} />
-              <Route path="/quelle-eau-boire" element={<QuelleEauBoire />} />
-              <Route path="/classement" element={<Classement />} />
-              <Route path="/polluants" element={<Polluants />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route 
-                path="/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route path="/sources" element={<Sources />} />
-              <Route path="/methodologie" element={<Methodologie />} />
-              <Route path="/api-publique" element={<ApiPublique />} />
-              <Route path="/a-propos" element={<APropos />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/mentions-legales" element={<MentionsLegales />} />
-              <Route path="/rgpd" element={<RGPD />} />
-              <Route path="/accessibilite" element={<Accessibilite />} />
-              <Route path="/open-data" element={<OpenData />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/carte" element={<Carte />} />
+                <Route path="/carte-polluants" element={<CartePolluants />} />
+                <Route path="/alertes" element={<Alertes />} />
+                <Route path="/diagnostic" element={<Diagnostic />} />
+                <Route path="/bouteilles" element={<Bouteilles />} />
+                <Route path="/comparatif-bouteilles" element={<ComparatifBouteilles />} />
+                <Route path="/quelle-eau-boire" element={<QuelleEauBoire />} />
+                <Route path="/classement" element={<Classement />} />
+                <Route path="/polluants" element={<Polluants />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route 
+                  path="/dashboard" 
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route path="/sources" element={<Sources />} />
+                <Route path="/methodologie" element={<Methodologie />} />
+                <Route path="/api-publique" element={<ApiPublique />} />
+                <Route path="/a-propos" element={<APropos />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/mentions-legales" element={<MentionsLegales />} />
+                <Route path="/rgpd" element={<RGPD />} />
+                <Route path="/accessibilite" element={<Accessibilite />} />
+                <Route path="/open-data" element={<OpenData />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
             </BrowserRouter>
           </TooltipProvider>
         </LanguageProvider>
