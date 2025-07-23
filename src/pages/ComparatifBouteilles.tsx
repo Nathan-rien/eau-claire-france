@@ -13,16 +13,18 @@ import ComparisonControls from '@/components/ComparisonControls';
 import FavoritesTab from '@/components/FavoritesTab';
 import { BottleWaterData } from '@/data/bottleComparisonData';
 import { convertBottleWaterDataToWaterData } from '@/utils/bottleConversion';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const ComparatifBouteilles = () => {
   const { selectedBottles, setSelectedBottles, showTapWater, setShowTapWater } = useBottleComparisonUrl();
   const { favorites, addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+  const { t } = useLanguage();
 
   const handleBottleAdd = (bottle: BottleWaterData) => {
     if (selectedBottles.length >= 3) {
       toast({
-        title: "Limite atteinte",
-        description: "Vous ne pouvez comparer que 3 bouteilles maximum.",
+        title: t('comparison.limit.title'),
+        description: t('comparison.limit.description'),
         variant: "destructive"
       });
       return;
@@ -63,11 +65,10 @@ const ComparatifBouteilles = () => {
             <div className="text-center mb-8">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
                 <TrendingUp className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
-                <span>Comparatif des eaux en bouteille</span>
+                <span>{t('comparison.title')}</span>
               </h1>
               <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto px-4">
-                Comparez jusqu'à 3 eaux en bouteille selon leurs caractéristiques : prix, composition minérale, 
-                impact environnemental et plus encore.
+                {t('comparison.subtitle')}
               </p>
             </div>
 
@@ -82,14 +83,14 @@ const ComparatifBouteilles = () => {
                   className="flex items-center space-x-2 text-base font-semibold data-[state=active]:bg-white data-[state=active]:shadow-md transition-all duration-200"
                 >
                   <Scale className="w-5 h-5" />
-                  <span>Comparaison</span>
+                  <span>{t('comparison.tabs.comparison')}</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="favorites" 
                   className="flex items-center space-x-2 text-base font-semibold data-[state=active]:bg-white data-[state=active]:shadow-md transition-all duration-200"
                 >
                   <Star className="w-5 h-5" />
-                  <span>Favoris ({favorites.length})</span>
+                  <span>{t('comparison.tabs.favorites')} ({favorites.length})</span>
                 </TabsTrigger>
               </TabsList>
 

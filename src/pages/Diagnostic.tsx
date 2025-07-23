@@ -7,9 +7,11 @@ import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
 import { seoData } from '@/utils/seoData';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Diagnostic = () => {
   const [selectedCity, setSelectedCity] = useState<string>('');
+  const { t } = useLanguage();
 
   return (
     <Layout>
@@ -25,7 +27,7 @@ const Diagnostic = () => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <div className="container mx-auto max-w-4xl">
           <Breadcrumb items={[
-            { name: 'Diagnostic personnalisé', href: '/diagnostic', current: true }
+            { name: t('breadcrumb.diagnostic'), href: '/diagnostic', current: true }
           ]} />
         </div>
         
@@ -34,21 +36,21 @@ const Diagnostic = () => {
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
                 <Search className="w-8 h-8 text-blue-600" />
-                <span>Diagnostic personnalisé</span>
+                <span>{t('diagnostic.title')}</span>
               </h1>
               <p className="text-lg text-gray-600">
-                Découvrez la qualité de l'eau potable distribuée dans votre commune avec un diagnostic détaillé.
+                {t('diagnostic.subtitle')}
               </p>
             </div>
 
             <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-              <h3 className="text-lg font-semibold mb-4 text-center">Recherchez votre commune</h3>
-              <SearchBar onCitySelect={setSelectedCity} placeholder="Entrez votre adresse ou commune..." />
+              <h3 className="text-lg font-semibold mb-4 text-center">{t('diagnostic.searchTitle')}</h3>
+              <SearchBar onCitySelect={setSelectedCity} placeholder={t('diagnostic.searchPlaceholder')} />
               {selectedCity && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center mt-4">
                   <p className="text-blue-800">
                     <MapPin className="w-4 h-4 inline mr-2" />
-                    Résultats pour : {selectedCity}
+                    {t('diagnostic.searchResult', { city: selectedCity })}
                   </p>
                 </div>
               )}
