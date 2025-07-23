@@ -4,7 +4,7 @@ import { Star } from 'lucide-react';
 import { BottleWaterData } from '@/data/bottleComparisonData';
 import { WaterData } from '@/data/bottleWaterData';
 import BottleComparisonTable from './BottleComparisonTable';
-import { convertWaterDataToBottleWaterData } from '@/utils/bottleConversion';
+import { convertWaterDataToBottleWaterData } from '@/utils/conversionUtils';
 
 interface FavoritesTabProps {
   favorites: WaterData[];
