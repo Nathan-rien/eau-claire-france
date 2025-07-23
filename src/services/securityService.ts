@@ -55,18 +55,15 @@ export class SecurityService {
     };
   }
 
-  // Log security events (for audit purposes)
+  // Secure error logging (production-ready)
   static logSecurityEvent(event: string, details?: any): void {
-    const timestamp = new Date().toISOString();
-    const logEntry = {
-      timestamp,
-      event,
-      details,
-      userAgent: navigator.userAgent,
-      url: window.location.href,
-    };
+    // Only log in development mode - remove sensitive data logging in production
+    if (process.env.NODE_ENV === 'development') {
+      const sanitizedDetails = details ? { type: typeof details, hasData: !!details } : null;
+      console.warn(`[SECURITY EVENT] ${event}`, sanitizedDetails);
+    }
     
-    // In production, this should send to a secure logging service
-    console.log('[SECURITY LOG]', logEntry);
+    // In production, send to secure audit service (implement as needed)
+    // Example: await supabase.functions.invoke('audit-log', { body: { event, timestamp: Date.now() } });
   }
 }

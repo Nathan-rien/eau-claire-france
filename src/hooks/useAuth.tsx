@@ -37,10 +37,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Enhanced secure logout with proper cleanup
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
+    try {
+      // Clear auth state immediately
+      setUser(null);
+      setSession(null);
+      
+      // Clear all auth-related storage
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('supabase.auth.') || key.includes('sb-'))) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
+      // Global sign out from Supabase
+      await supabase.auth.signOut({ scope: 'global' });
+      
+      // Force page refresh for complete cleanup
+      window.location.href = '/';
+    } catch (error) {
+      // Even if signOut fails, ensure local cleanup
+      setUser(null);
+      setSession(null);
+      console.error('Logout error:', error);
+      window.location.href = '/';
+    }
   };
 
   return (
