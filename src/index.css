@@ -103,16 +103,24 @@
   }
 }
 
-/* Nutritional values styling */
+/* WCAG AA compliant nutritional values with proper design tokens */
 .value-good {
-  color: #2ecc71;
-  font-weight: bold;
+  color: hsl(var(--success)); /* Green with sufficient contrast */
+  font-weight: 600;
 }
 
 .value-warn {
-  color: #f39c12;
+  color: hsl(var(--warning)); /* Orange with sufficient contrast */
+  font-weight: 500;
 }
 
 .value-bad {
-  color: #e74c3c;
+  color: hsl(var(--destructive)); /* Red with sufficient contrast */
+  font-weight: 600;
+}
+
+/* Add success and warning colors to design system */
+:root {
+  --success: 142 69% 35%; /* Dark green for WCAG AA compliance */
+  --warning: 25 95% 40%; /* Dark orange for WCAG AA compliance */
 }

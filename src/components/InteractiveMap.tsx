@@ -236,6 +236,19 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
       el.style.border = '2px solid white';
       el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
       el.style.cursor = 'pointer';
+      
+      // Add accessibility attributes
+      el.setAttribute('role', 'button');
+      el.setAttribute('aria-label', `Voir la qualité de l'eau à ${city.name} (note ${city.quality})`);
+      el.setAttribute('tabindex', '0');
+      
+      // Add keyboard navigation
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          el.click();
+        }
+      });
 
       // Create popup
       const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
