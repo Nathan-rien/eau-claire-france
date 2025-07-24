@@ -207,9 +207,6 @@ Envoyé depuis InfoEau.fr`;
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-2">Email principal</h4>
                     <p className="text-gray-600">contact@infoeau.fr</p>
-                    <p className="text-sm text-gray-500 mt-1">
-                      (redirige vers nth.orso@gmail.com)
-                    </p>
                   </div>
                   
                   <div>

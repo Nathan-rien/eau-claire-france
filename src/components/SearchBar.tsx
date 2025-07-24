@@ -60,7 +60,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     setQuery(suggestion.label);
     setSuggestions([]);
     setShowSuggestions(false);
-    onCitySelect(suggestion.name);
+    onCitySelect(suggestion.city);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -68,7 +68,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     
     if (query.trim()) {
       const cityName = suggestions.length > 0 ? 
-        suggestions[0].name : 
+        suggestions[0].city : 
         query.trim();
       onCitySelect(cityName);
       setShowSuggestions(false);
