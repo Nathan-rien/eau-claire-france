@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search, MapPin } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import WaterQualityCard from '@/components/WaterQualityCard';
@@ -11,7 +12,16 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 const Diagnostic = () => {
   const [selectedCity, setSelectedCity] = useState<string>('');
+  const [searchParams] = useSearchParams();
   const { t } = useLanguage();
+
+  // Load city from URL parameter on startup
+  useEffect(() => {
+    const cityFromUrl = searchParams.get('city');
+    if (cityFromUrl) {
+      setSelectedCity(cityFromUrl);
+    }
+  }, [searchParams]);
 
   return (
     <Layout>
