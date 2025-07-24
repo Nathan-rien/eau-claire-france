@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { MapPin, Stethoscope, Droplets } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -38,7 +39,7 @@ const NavigationCTA = () => {
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {navigationItems.map((item, index) => (
-          <a key={index} href={item.href} className="block group">
+          <Link key={index} to={item.href} className="block group">
             <Card className={`${item.bgColor} ${item.borderColor} border-2 hover:shadow-lg transition-all duration-300 group-hover:scale-105`}>
               <CardContent className="p-6 text-center">
                 <div className="flex justify-center mb-4">
@@ -52,7 +53,7 @@ const NavigationCTA = () => {
                 </p>
               </CardContent>
             </Card>
-          </a>
+          </Link>
         ))}
       </div>
     </div>

@@ -19,7 +19,7 @@ const Alertes = React.lazy(() => import("./pages/Alertes"));
 const Diagnostic = React.lazy(() => import("./pages/Diagnostic"));
 const Bouteilles = React.lazy(() => import("./pages/Bouteilles"));
 const ComparatifBouteilles = React.lazy(() => import("./pages/ComparatifBouteilles"));
-const QuelleEauBoire = React.lazy(() => import("./pages/QuelleEauBoire"));
+const LazyWaterRecommendation = React.lazy(() => import("@/components/LazyWaterRecommendation"));
 const Classement = React.lazy(() => import("./pages/Classement"));
 const Polluants = React.lazy(() => import("./pages/Polluants"));
 const Auth = React.lazy(() => import("./pages/Auth"));
@@ -38,10 +38,13 @@ const OpenData = React.lazy(() => import("./pages/OpenData"));
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,
+      retry: 2,
+      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
       refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes (was cacheTime)
+      refetchOnReconnect: true,
+      staleTime: 10 * 60 * 1000, // 10 minutes
+      gcTime: 30 * 60 * 1000, // 30 minutes
+      networkMode: 'online',
     },
   },
 });
@@ -69,7 +72,7 @@ const App = () => {
                 <Route path="/diagnostic" element={<Diagnostic />} />
                 <Route path="/bouteilles" element={<Bouteilles />} />
                 <Route path="/comparatif-bouteilles" element={<ComparatifBouteilles />} />
-                <Route path="/quelle-eau-boire" element={<QuelleEauBoire />} />
+                <Route path="/quelle-eau-boire" element={<LazyWaterRecommendation />} />
                 <Route path="/classement" element={<Classement />} />
                 <Route path="/polluants" element={<Polluants />} />
                 <Route path="/auth" element={<Auth />} />

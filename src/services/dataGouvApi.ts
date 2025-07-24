@@ -35,16 +35,16 @@ interface HubEauResponse {
   count: number;
 }
 
-// Fonction pour obtenir le code commune à partir du nom
+// Fonction optimisée pour obtenir le code commune (avec cache externe via React Query)
 const getCodeCommune = async (communeName: string): Promise<string | null> => {
+  if (!communeName || communeName.length < 2) return null;
+  
   try {
-    // Utilisation de l'API de géocodage française
     const response = await fetch(
       `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(communeName)}&type=municipality&limit=1`,
       {
-        headers: {
-          'Accept': 'application/json',
-        },
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(5000), // 5 second timeout
       }
     );
 
@@ -56,7 +56,11 @@ const getCodeCommune = async (communeName: string): Promise<string | null> => {
     }
     return null;
   } catch (error) {
-    console.error('Erreur lors de la recherche du code commune:', error);
+    if (error.name === 'AbortError') {
+      console.warn('Geocoding request timed out');
+    } else {
+      console.error('Geocoding error:', error);
+    }
     return null;
   }
 };
@@ -81,6 +85,7 @@ export const getWaterQualityByCommune = async (commune: string): Promise<ApiResp
       headers: {
         'Accept': 'application/json',
       },
+      signal: AbortSignal.timeout(10000), // 10 second timeout
     });
 
     if (!response.ok) {

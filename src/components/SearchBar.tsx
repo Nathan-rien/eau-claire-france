@@ -43,7 +43,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       } finally {
         setIsLoading(false);
       }
-    }, 300);
+    }, 500);
 
     return () => {
       if (debounceRef.current) {
