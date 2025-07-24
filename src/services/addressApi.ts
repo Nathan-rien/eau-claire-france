@@ -23,8 +23,9 @@ export const searchAddresses = async (query: string): Promise<AddressSuggestion[
   if (query.length < 3) return [];
   
   try {
+    // Retirer le paramètre type=municipality pour permettre la recherche d'adresses complètes
     const response = await fetch(
-      `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=5&type=municipality`,
+      `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=5`,
       {
         headers: {
           'Accept': 'application/json',
@@ -33,7 +34,8 @@ export const searchAddresses = async (query: string): Promise<AddressSuggestion[
     );
     
     if (!response.ok) {
-      console.warn('API adresse non disponible');
+      const errorText = await response.text();
+      console.warn('Erreur API adresse:', response.status, errorText);
       return [];
     }
     
