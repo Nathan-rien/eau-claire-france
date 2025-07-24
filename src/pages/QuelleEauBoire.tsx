@@ -1,320 +1,149 @@
 import React, { useState } from 'react';
-import { Droplets, CheckCircle, Star, Share2, Download, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import Layout from '@/components/Layout';
-import MineralTooltip from '@/components/MineralTooltip';
-import { userProfiles, userIntolerances, userPreferences, UserProfile, UserIntolerance, UserPreference } from '@/data/waterProfiles';
-import { getWaterRecommendations, WaterScore, getMineralColor } from '@/utils/waterRecommendation';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import SEOHead from '@/components/SEOHead';
 
-const QuelleEauBoire = () => {
-  const [waterType, setWaterType] = useState<'all' | 'plate' | 'gazeuse'>('all');
-  const [selectedProfiles, setSelectedProfiles] = useState<UserProfile[]>([]);
-  const [selectedIntolerances, setSelectedIntolerances] = useState<UserIntolerance[]>([]);
-  const [selectedPreferences, setSelectedPreferences] = useState<UserPreference[]>([]);
+interface WaterProfile {
+  id: string;
+  name: string;
+  description: string;
+}
+
+interface WaterRecommendation {
+  id: string;
+  name: string;
+  type: string;
+  score: number;
+  reasons: string[];
+  composition: { [key: string]: number };
+}
+
+const profiles: WaterProfile[] = [
+  { id: 'sport', name: 'Sportif', description: 'Pratique sportive régulière' },
+  { id: 'pregnant', name: 'Femme enceinte', description: 'Besoins spécifiques pendant la grossesse' },
+  { id: 'senior', name: 'Senior', description: 'Plus de 65 ans' },
+  { id: 'child', name: 'Enfant', description: 'Moins de 12 ans' },
+];
+
+const mockRecommendations: WaterRecommendation[] = [
+  {
+    id: '1',
+    name: 'Evian',
+    type: 'Eau de source',
+    score: 85,
+    reasons: ['Faible minéralisation', 'Adaptée aux enfants', 'pH neutre'],
+    composition: { calcium: 80, magnesium: 26, sodium: 6.5 }
+  },
+  {
+    id: '2',
+    name: 'Volvic',
+    type: 'Eau de source',
+    score: 82,
+    reasons: ['Très faible minéralisation', 'Idéale pour les nourrissons'],
+    composition: { calcium: 11.5, magnesium: 8, sodium: 11.6 }
+  }
+];
+
+const QuelleEauBoire: React.FC = () => {
+  const [selectedProfiles, setSelectedProfiles] = useState<string[]>([]);
   const [showResults, setShowResults] = useState(false);
-  const [recommendations, setRecommendations] = useState<WaterScore[]>([]);
+  const [recommendations, setRecommendations] = useState<WaterRecommendation[]>([]);
 
-  const handleProfileToggle = (profile: UserProfile) => {
-    setSelectedProfiles(prev => {
-      const exists = prev.find(p => p.id === profile.id);
-      if (exists) {
-        return prev.filter(p => p.id !== profile.id);
-      } else {
-        return [...prev, profile];
-      }
-    });
-  };
-
-  const handleIntoleranceToggle = (intolerance: UserIntolerance) => {
-    setSelectedIntolerances(prev => {
-      const exists = prev.find(i => i.id === intolerance.id);
-      if (exists) {
-        return prev.filter(i => i.id !== intolerance.id);
-      } else {
-        return [...prev, intolerance];
-      }
-    });
-  };
-
-  const handlePreferenceToggle = (preference: UserPreference) => {
-    setSelectedPreferences(prev => {
-      const exists = prev.find(p => p.id === preference.id);
-      if (exists) {
-        return prev.filter(p => p.id !== preference.id);
-      } else {
-        return [...prev, preference];
-      }
-    });
+  const handleProfileToggle = (profileId: string) => {
+    setSelectedProfiles(prev => 
+      prev.includes(profileId) 
+        ? prev.filter(id => id !== profileId)
+        : [...prev, profileId]
+    );
   };
 
   const handleGetRecommendations = () => {
-    const results = getWaterRecommendations({
-      profiles: selectedProfiles,
-      intolerances: selectedIntolerances,
-      preferences: selectedPreferences,
-      waterType
-    });
-    setRecommendations(results);
+    setRecommendations(mockRecommendations);
     setShowResults(true);
-    // Remonter en haut de page
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleReset = () => {
-    setWaterType('all');
     setSelectedProfiles([]);
-    setSelectedIntolerances([]);
-    setSelectedPreferences([]);
     setShowResults(false);
     setRecommendations([]);
   };
 
-  const handleExportPDF = async () => {
-    try {
-      const element = document.querySelector('.results-container');
-      if (!element) return;
-
-      const canvas = await html2canvas(element as HTMLElement, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        height: element.scrollHeight,
-        windowHeight: element.scrollHeight
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = pdfWidth;
-      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      // Ajouter la première page
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pdfHeight;
-
-      // Ajouter des pages supplémentaires si nécessaire
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pdfHeight;
-      }
-      
-      pdf.save('recommandations-eau.pdf');
-    } catch (error) {
-      console.error("Erreur lors de l'export PDF:", error);
-    }
-  };
-
-  const hasSelections = selectedProfiles.length > 0 || selectedIntolerances.length > 0 || selectedPreferences.length > 0;
-
   if (showResults) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-          <section className="py-12 px-4">
-            <div className="container mx-auto max-w-4xl results-container">
-              {/* Header */}
-              <div className="text-center mb-8">
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
-                  <Droplets className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
-                  <span>Vos recommandations d'eau</span>
-                </h1>
-                <p className="text-base md:text-lg text-gray-600 mb-6">
-                  Voici les eaux les mieux adaptées à vos besoins
-                </p>
-                
-                {/* Selected criteria */}
-                <div className="flex flex-wrap gap-2 justify-center mb-6">
-                  {selectedProfiles.map(profile => (
-                    <Badge key={profile.id} className={profile.color}>
-                      {profile.name}
-                    </Badge>
-                  ))}
-                  {selectedIntolerances.map(intolerance => (
-                    <Badge key={intolerance.id} variant="destructive" className="bg-red-100 text-red-800 border-red-200">
-                      {intolerance.name}
-                    </Badge>
-                  ))}
-                  {selectedPreferences.map(preference => (
-                    <Badge key={preference.id} variant="outline">
-                      {preference.name}
-                    </Badge>
-                  ))}
-                </div>
-
-                {/* Action buttons */}
-                <div className="flex flex-wrap gap-2 justify-center">
-                  <Button variant="outline" onClick={handleReset}>
-                    Nouvelle recherche
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Partager
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={handleExportPDF}>
-                    <Download className="w-4 h-4 mr-2" />
-                    PDF
-                  </Button>
-                </div>
-              </div>
-
-              {/* Results */}
-              {recommendations.length === 0 ? (
-                <Card>
-                  <CardContent className="text-center py-12">
-                    <p className="text-gray-500 mb-4">Aucune eau ne correspond parfaitement à vos critères.</p>
-                    <Button onClick={handleReset}>Modifier vos critères</Button>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="grid gap-6">
-                  {recommendations.map((recommendation, index) => (
-                    <Card key={recommendation.id} className="overflow-hidden">
-                      <CardHeader className="pb-4">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <CardTitle className="text-xl font-bold text-gray-900 mb-2">
-                              #{index + 1} {recommendation.name}
-                            </CardTitle>
-                            <p className="text-sm text-gray-600 mb-2">{recommendation.type}</p>
-                            <p className="text-xs text-gray-500">{recommendation.source}</p>
-                          </div>
-                          <div className="text-right">
-                            <Badge className={recommendation.badgeColor}>
-                              {recommendation.badgeText}
-                            </Badge>
-                            <div className="mt-2">
-                              <div className="text-2xl font-bold text-blue-600">
-                                {recommendation.percentage}%
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {recommendation.score}/{recommendation.maxScore} pts
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      
-                      <CardContent>
-                        {/* Pedagogical Summary */}
-                        <div className="mb-4">
-                          <Alert>
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertDescription className="text-sm">
-                              {recommendation.pedagogicalSummary}
-                            </AlertDescription>
-                          </Alert>
-                        </div>
-
-                        {/* Composition */}
-                        <div className="mb-4">
-                          <h4 className="font-semibold mb-2">Composition détaillée</h4>
-                          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
-                            <div>
-                              <div className="flex items-center">
-                                <span className="text-gray-500">Nitrates</span>
-                                <MineralTooltip 
-                                  mineral="nitrates" 
-                                  value={recommendation.composition.nitrates} 
-                                />
-                              </div>
-                              <div className={`font-semibold ${getMineralColor('nitrates', recommendation.composition.nitrates)}`}>
-                                {recommendation.composition.nitrates} mg/L
-                              </div>
-                            </div>
-                            <div>
-                              <div className="flex items-center">
-                                <span className="text-gray-500">Sodium</span>
-                                <MineralTooltip 
-                                  mineral="sodium" 
-                                  value={recommendation.composition.sodium} 
-                                />
-                              </div>
-                              <div className={`font-semibold ${getMineralColor('sodium', recommendation.composition.sodium)}`}>
-                                {recommendation.composition.sodium} mg/L
-                              </div>
-                            </div>
-                            <div>
-                              <div className="flex items-center">
-                                <span className="text-gray-500">Calcium</span>
-                                <MineralTooltip 
-                                  mineral="calcium" 
-                                  value={recommendation.composition.calcium} 
-                                />
-                              </div>
-                              <div className={`font-semibold ${getMineralColor('calcium', recommendation.composition.calcium)}`}>
-                                {recommendation.composition.calcium} mg/L
-                              </div>
-                            </div>
-                            <div>
-                              <div className="flex items-center">
-                                <span className="text-gray-500">Magnésium</span>
-                                <MineralTooltip 
-                                  mineral="magnesium" 
-                                  value={recommendation.composition.magnesium} 
-                                />
-                              </div>
-                              <div className={`font-semibold ${getMineralColor('magnesium', recommendation.composition.magnesium)}`}>
-                                {recommendation.composition.magnesium} mg/L
-                              </div>
-                            </div>
-                            <div>
-                              <div className="flex items-center">
-                                <span className="text-gray-500">Résidu sec</span>
-                                <MineralTooltip 
-                                  mineral="residusSec" 
-                                  value={recommendation.composition.residusSec} 
-                                />
-                              </div>
-                              <div className={`font-semibold ${getMineralColor('residusSec', recommendation.composition.residusSec)}`}>
-                                {recommendation.composition.residusSec} mg/L
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <Separator className="my-4" />
-
-                        {/* Reasons */}
-                        {recommendation.reasons.length > 0 && (
-                          <div className="mb-4">
-                            <h4 className="font-semibold mb-2">Pourquoi cette eau ?</h4>
-                            <ul className="text-sm text-gray-600 space-y-1">
-                              {recommendation.reasons.map((reason, idx) => (
-                                <li key={idx} className="flex items-start">
-                                  <CheckCircle className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                                  {reason}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        {/* Price */}
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-500">Prix moyen</span>
-                          <span className="font-semibold">{recommendation.price}€/L</span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
+        <SEOHead 
+          title="Recommandations d'eau - Quelle eau boire ?"
+          description="Découvrez les eaux recommandées selon votre profil"
+        />
+        <div className="container mx-auto py-8 px-4 max-w-4xl">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold mb-4">Vos recommandations d'eau</h1>
+            <div className="flex gap-2 justify-center mb-4">
+              {selectedProfiles.map(profileId => {
+                const profile = profiles.find(p => p.id === profileId);
+                return profile ? (
+                  <Badge key={profileId} variant="secondary">
+                    {profile.name}
+                  </Badge>
+                ) : null;
+              })}
             </div>
-          </section>
+            <div className="flex gap-4 justify-center">
+              <Button onClick={handleReset} variant="outline">
+                Nouvelle recherche
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {recommendations.map((water, index) => (
+              <Card key={water.id}>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                          {index + 1}
+                        </span>
+                        {water.name}
+                      </CardTitle>
+                      <p className="text-muted-foreground">{water.type}</p>
+                    </div>
+                    <Badge variant="default">
+                      Score: {water.score}/100
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="font-semibold mb-2">Pourquoi cette eau ?</h4>
+                      <ul className="list-disc list-inside text-sm text-muted-foreground">
+                        {water.reasons.map((reason, i) => (
+                          <li key={i}>{reason}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-semibold mb-2">Composition (mg/L)</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {Object.entries(water.composition).map(([mineral, value]) => (
+                          <div key={mineral} className="text-center p-2 bg-muted rounded">
+                            <div className="font-semibold">{value}</div>
+                            <div className="text-sm text-muted-foreground capitalize">{mineral}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </Layout>
     );
@@ -322,223 +151,57 @@ const QuelleEauBoire = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-        <section className="py-12 px-4">
-          <div className="container mx-auto max-w-4xl">
-            {/* Header */}
-            <div className="text-center mb-8">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
-                <Droplets className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
-                <span>Quelle eau boire ?</span>
-              </h1>
-              <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto">
-                Découvrez les eaux en bouteille les mieux adaptées à vos besoins physiologiques, 
-                intolérances et objectifs de santé.
-              </p>
+      <SEOHead 
+        title="Quelle eau boire ? - Trouvez l'eau adaptée à vos besoins"
+        description="Découvrez quelle eau boire selon votre profil et vos besoins spécifiques"
+      />
+      <div className="container mx-auto py-8 px-4 max-w-4xl">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold mb-4">Quelle eau boire ?</h1>
+          <p className="text-muted-foreground">
+            Trouvez l'eau qui correspond le mieux à vos besoins et à votre profil
+          </p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Sélectionnez votre profil</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {profiles.map((profile) => (
+                <div key={profile.id} className="flex items-start space-x-3 p-4 rounded-lg border">
+                  <Checkbox
+                    id={profile.id}
+                    checked={selectedProfiles.includes(profile.id)}
+                    onCheckedChange={() => handleProfileToggle(profile.id)}
+                  />
+                  <div>
+                    <label 
+                      htmlFor={profile.id} 
+                      className="font-medium cursor-pointer"
+                    >
+                      {profile.name}
+                    </label>
+                    <p className="text-sm text-muted-foreground">
+                      {profile.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {/* Step 0: Water Type Selection */}
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <span className="bg-purple-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">0</span>
-                  <span>Type d'eau préféré</span>
-                </CardTitle>
-                <p className="text-gray-600">Choisissez votre préférence entre eau plate et eau gazeuse</p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div
-                    className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                      waterType === 'all'
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                    onClick={() => setWaterType('all')}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <Checkbox 
-                        checked={waterType === 'all'}
-                        onChange={() => {}}
-                      />
-                      <div>
-                        <h3 className="font-semibold">Toutes les eaux</h3>
-                        <p className="text-sm text-gray-600">Plates et gazeuses</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                      waterType === 'plate'
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                    onClick={() => setWaterType('plate')}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <Checkbox 
-                        checked={waterType === 'plate'}
-                        onChange={() => {}}
-                      />
-                      <div>
-                        <h3 className="font-semibold">Eau plate uniquement</h3>
-                        <p className="text-sm text-gray-600">Sans bulles</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                      waterType === 'gazeuse'
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                    onClick={() => setWaterType('gazeuse')}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <Checkbox 
-                        checked={waterType === 'gazeuse'}
-                        onChange={() => {}}
-                      />
-                      <div>
-                        <h3 className="font-semibold">Eau gazeuse uniquement</h3>
-                        <p className="text-sm text-gray-600">Avec bulles</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Step 1: Profiles */}
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">1</span>
-                  <span>Choisissez votre profil</span>
-                </CardTitle>
-                <p className="text-gray-600">Sélectionnez un ou plusieurs profils qui vous correspondent</p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {userProfiles.map(profile => (
-                    <div
-                      key={profile.id}
-                      className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                        selectedProfiles.find(p => p.id === profile.id)
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                      onClick={() => handleProfileToggle(profile)}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <Checkbox 
-                          checked={!!selectedProfiles.find(p => p.id === profile.id)}
-                          onChange={() => {}}
-                        />
-                        <div>
-                          <h3 className="font-semibold">{profile.name}</h3>
-                          <p className="text-sm text-gray-600">{profile.description}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Step 2: Intolerances */}
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <span className="bg-orange-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">2</span>
-                  <span>Avez-vous des intolérances ?</span>
-                </CardTitle>
-                <p className="text-gray-600">Sélectionnez vos intolérances ou sensibilités (optionnel)</p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {userIntolerances.map(intolerance => (
-                    <div
-                      key={intolerance.id}
-                      className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                        selectedIntolerances.find(i => i.id === intolerance.id)
-                          ? 'border-red-500 bg-red-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                      onClick={() => handleIntoleranceToggle(intolerance)}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <Checkbox 
-                          checked={!!selectedIntolerances.find(i => i.id === intolerance.id)}
-                          onChange={() => {}}
-                        />
-                        <div>
-                          <h3 className="font-semibold">{intolerance.name}</h3>
-                          <p className="text-sm text-gray-600">{intolerance.description}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Step 3: Preferences */}
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <span className="bg-green-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</span>
-                  <span>Préférences spécifiques</span>
-                </CardTitle>
-                <p className="text-gray-600">Critères additionnels selon vos préférences (optionnel)</p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {userPreferences.map(preference => (
-                    <div
-                      key={preference.id}
-                      className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                        selectedPreferences.find(p => p.id === preference.id)
-                          ? 'border-green-500 bg-green-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                      onClick={() => handlePreferenceToggle(preference)}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <Checkbox 
-                          checked={!!selectedPreferences.find(p => p.id === preference.id)}
-                          onChange={() => {}}
-                        />
-                        <div>
-                          <h3 className="font-semibold">{preference.name}</h3>
-                          <p className="text-sm text-gray-600">{preference.description}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Get Recommendations Button */}
-            <div className="text-center">
+            <div className="mt-6 text-center">
               <Button 
-                size="lg" 
                 onClick={handleGetRecommendations}
-                disabled={!hasSelections}
-                className="px-8 py-3"
+                disabled={selectedProfiles.length === 0}
+                className="px-8"
               >
-                <Star className="w-5 h-5 mr-2" />
-                Voir mes recommandations
+                Obtenir mes recommandations
               </Button>
-              {!hasSelections && (
-                <p className="text-sm text-gray-500 mt-2">
-                  Veuillez sélectionner au moins un profil, une intolérance ou une préférence
-                </p>
-              )}
             </div>
-          </div>
-        </section>
+          </CardContent>
+        </Card>
       </div>
     </Layout>
   );
