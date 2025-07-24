@@ -33,14 +33,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
       return;
     }
 
-    // Check rate limiting
-    if (!SecurityService.checkRateLimit('search', 5000)) { // 5 second limit
-      toast({
-        title: "Trop de recherches",
-        description: "Veuillez attendre avant de rechercher à nouveau.",
-        variant: "destructive"
-      });
-      return;
+    // Check rate limiting - more lenient for search suggestions
+    if (!SecurityService.checkRateLimit('search', 1000)) { // 1 second limit
+      return; // Silent fail for search suggestions
     }
 
     setIsLoading(true);
@@ -68,9 +63,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
   }, [query]);
 
   const handleInputChange = (value: string) => {
-    // Limit input length and sanitize
-    const sanitizedValue = SecurityService.sanitizeInput(value).slice(0, 100);
-    setQuery(sanitizedValue);
+    // Limit input length but preserve spaces
+    const trimmedValue = value.slice(0, 100);
+    setQuery(trimmedValue);
   };
 
   const handleSelect = (suggestion: AddressSuggestion) => {
@@ -86,13 +81,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!SecurityService.checkRateLimit('search_submit', 3000)) {
-      toast({
-        title: "Trop de soumissions",
-        description: "Veuillez attendre avant de soumettre à nouveau.",
-        variant: "destructive"
-      });
-      return;
+    if (!SecurityService.checkRateLimit('search_submit', 2000)) {
+      return; // Silent fail for rapid submits
     }
     
     if (query.trim()) {
