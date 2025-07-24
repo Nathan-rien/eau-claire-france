@@ -4,8 +4,6 @@ import { Search, MapPin, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { searchAddresses, AddressSuggestion } from '@/services/addressApi';
-import { SecurityService } from '@/services/securityService';
-import { toast } from '@/hooks/use-toast';
 
 interface SearchBarProps {
   onCitySelect: (city: string) => void;
@@ -33,23 +31,15 @@ const SearchBar: React.FC<SearchBarProps> = ({
       return;
     }
 
-    // Check rate limiting - more lenient for search suggestions
-    if (!SecurityService.checkRateLimit('search', 1000)) { // 1 second limit
-      return; // Silent fail for search suggestions
-    }
-
     setIsLoading(true);
     debounceRef.current = setTimeout(async () => {
       try {
-        // Sanitize input before API call
-        const sanitizedQuery = SecurityService.sanitizeInput(query);
-        const results = await searchAddresses(sanitizedQuery);
+        const results = await searchAddresses(query);
         setSuggestions(results);
         setShowSuggestions(true);
       } catch (error) {
         console.error('Erreur lors de la recherche:', error);
         setSuggestions([]);
-        SecurityService.logSecurityEvent('search_error', { query, error });
       } finally {
         setIsLoading(false);
       }
@@ -63,33 +53,23 @@ const SearchBar: React.FC<SearchBarProps> = ({
   }, [query]);
 
   const handleInputChange = (value: string) => {
-    // Limit input length but preserve spaces
-    const trimmedValue = value.slice(0, 100);
-    setQuery(trimmedValue);
+    setQuery(value);
   };
 
   const handleSelect = (suggestion: AddressSuggestion) => {
-    const sanitizedLabel = SecurityService.sanitizeInput(suggestion.label);
-    const sanitizedName = SecurityService.sanitizeInput(suggestion.name);
-    
-    setQuery(sanitizedLabel);
+    setQuery(suggestion.label);
     setSuggestions([]);
     setShowSuggestions(false);
-    onCitySelect(sanitizedName);
+    onCitySelect(suggestion.name);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!SecurityService.checkRateLimit('search_submit', 2000)) {
-      return; // Silent fail for rapid submits
-    }
-    
     if (query.trim()) {
-      const sanitizedQuery = SecurityService.sanitizeInput(query.trim());
       const cityName = suggestions.length > 0 ? 
-        SecurityService.sanitizeInput(suggestions[0].name) : 
-        sanitizedQuery;
+        suggestions[0].name : 
+        query.trim();
       onCitySelect(cityName);
       setShowSuggestions(false);
     }
@@ -142,10 +122,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 <MapPin className="w-3 h-3 md:w-4 md:h-4 text-gray-400 flex-shrink-0" />
                 <div>
                   <p className="font-medium text-gray-900 text-sm md:text-base">
-                    {SecurityService.sanitizeInput(suggestion.name)}
+                    {suggestion.name}
                   </p>
                   <p className="text-xs md:text-sm text-gray-600">
-                    {suggestion.postcode} - {SecurityService.sanitizeInput(suggestion.context)}
+                    {suggestion.postcode} - {suggestion.context}
                   </p>
                 </div>
               </div>
