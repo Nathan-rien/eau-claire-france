@@ -71,44 +71,46 @@ const BottleSelector: React.FC<BottleSelectorProps> = ({
         )}
 
         {/* Filtres et recherche */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div className="space-y-4 mb-4">
           <div>
             <label className="block text-sm font-medium mb-2">Recherche</label>
             <Input
               placeholder="Marque, nom ou source..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full"
+              className="w-full h-12 text-base"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">Type d'eau</label>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les types</SelectItem>
-                <SelectItem value="plate">Eau plate</SelectItem>
-                <SelectItem value="gazeuse">Eau gazeuse</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">Éco-score</label>
-            <Select value={ecoFilter} onValueChange={setEcoFilter}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les scores</SelectItem>
-                <SelectItem value="A">A - Excellent</SelectItem>
-                <SelectItem value="B">B - Très bon</SelectItem>
-                <SelectItem value="C">C - Bon</SelectItem>
-                <SelectItem value="D">D - Moyen</SelectItem>
-                <SelectItem value="E">E - Mauvais</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Type d'eau</label>
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger className="h-12">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les types</SelectItem>
+                  <SelectItem value="plate">Eau plate</SelectItem>
+                  <SelectItem value="gazeuse">Eau gazeuse</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Éco-score</label>
+              <Select value={ecoFilter} onValueChange={setEcoFilter}>
+                <SelectTrigger className="h-12">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les scores</SelectItem>
+                  <SelectItem value="A">A - Excellent</SelectItem>
+                  <SelectItem value="B">B - Très bon</SelectItem>
+                  <SelectItem value="C">C - Bon</SelectItem>
+                  <SelectItem value="D">D - Moyen</SelectItem>
+                  <SelectItem value="E">E - Mauvais</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 

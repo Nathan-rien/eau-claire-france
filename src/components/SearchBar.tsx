@@ -122,7 +122,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             onBlur={handleInputBlur}
             onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
             placeholder={placeholder}
-            className="pl-10 pr-24 h-11 md:h-12 text-sm md:text-lg border-2 border-blue-200 focus:border-blue-500 rounded-xl w-full"
+            className="pl-10 pr-16 sm:pr-24 h-12 text-base border-2 border-blue-200 focus:border-blue-500 rounded-xl w-full"
             autoComplete="off"
             maxLength={100}
           />
@@ -132,7 +132,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           <Button 
             type="submit"
             size="sm"
-            className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-xs md:text-sm px-2 md:px-4 h-9 md:h-10"
+            className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-sm px-3 h-10"
           >
             <span className="hidden sm:inline">Rechercher</span>
             <span className="sm:hidden">OK</span>

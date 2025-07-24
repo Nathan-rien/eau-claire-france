@@ -29,21 +29,25 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-4">
           <div>
             <Input
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Rechercher un polluant..."
-              className="w-full"
+              className="w-full h-12 text-base"
             />
           </div>
           <div>
             <Tabs value={selectedCategory} onValueChange={onCategoryChange}>
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
                 {categories.map(category => (
-                  <TabsTrigger key={category} value={category}>
+                  <TabsTrigger 
+                    key={category} 
+                    value={category}
+                    className="text-xs sm:text-sm py-2 px-1"
+                  >
                     {category === 'all' ? 'Tous' : category}
                   </TabsTrigger>
                 ))}

@@ -30,17 +30,17 @@ const WaterSelector: React.FC<WaterSelectorProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 gap-4">
+        <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2">Marque</label>
             <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full h-12">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {filteredWaters.map(water => (
                   <SelectItem key={water.id} value={water.id}>
-                    <span className="text-sm">{water.name} - {water.type}</span>
+                    <span className="text-base">{water.name} - {water.type}</span>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -53,7 +53,7 @@ const WaterSelector: React.FC<WaterSelectorProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Rechercher une marque..."
-              className="w-full text-sm"
+              className="w-full h-12 text-base"
             />
           </div>
         </div>
