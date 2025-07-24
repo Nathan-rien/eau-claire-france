@@ -14,7 +14,7 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ 
   onCitySelect, 
-  placeholder = "Recherchez votre commune..." 
+  placeholder = "Votre adresse" 
 }) => {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
