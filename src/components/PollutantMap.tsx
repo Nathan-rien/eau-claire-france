@@ -5,6 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle } from 'lucide-react';
+import { MapboxSecurityService } from '@/services/mapboxSecurityService';
 
 const PollutantMap = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -16,15 +17,13 @@ const PollutantMap = () => {
   useEffect(() => {
     if (!mapContainer.current) return;
 
-    // Configure Mapbox token
-    mapboxgl.accessToken = 'pk.eyJ1IjoidGh1cnphciIsImEiOiJjbWJ1eG9xMmQwOTc5MnZzYTluODUxMmp3In0.LTG70XIWIvpzLVq8FVXUbw';
+    // Configure Mapbox securely
+    MapboxSecurityService.configureMapbox(mapboxgl);
     
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v11',
-      center: [lng, lat],
-      zoom: 4
-    });
+    // Create map with secure configuration
+    map.current = new mapboxgl.Map(
+      MapboxSecurityService.createSecureMapOptions(mapContainer.current)
+    );
 
     // Add navigation controls
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
