@@ -3,6 +3,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { SecurityService } from '@/services/securityService';
 import {
   Form,
   FormControl,
@@ -53,10 +54,8 @@ const SecureForm = ({ onSubmit, submitLabel, includeMessage = false }: SecureFor
 
   const handleSubmit = async (data: ContactFormData) => {
     try {
-      // Rate limiting check (simple client-side)
-      const lastSubmission = localStorage.getItem('lastFormSubmission');
-      const now = Date.now();
-      if (lastSubmission && now - parseInt(lastSubmission) < 60000) { // 1 minute
+      // Rate limiting check using SecurityService
+      if (!SecurityService.checkRateLimit('form_submission', 60000)) {
         toast({
           title: "Trop de tentatives",
           description: "Veuillez attendre avant de soumettre à nouveau.",
@@ -65,8 +64,40 @@ const SecureForm = ({ onSubmit, submitLabel, includeMessage = false }: SecureFor
         return;
       }
 
-      await onSubmit(data);
-      localStorage.setItem('lastFormSubmission', now.toString());
+      // Normalize and validate email
+      const normalizedData = {
+        ...data,
+        email: SecurityService.normalizeEmail(data.email),
+        commune: SecurityService.sanitizeInput(data.commune),
+        message: data.message ? SecurityService.sanitizeInput(data.message) : undefined,
+      };
+
+      // Additional validation
+      if (!SecurityService.isValidEmail(normalizedData.email)) {
+        toast({
+          title: "Email invalide",
+          description: "Veuillez saisir un email valide.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (!SecurityService.isValidCommune(normalizedData.commune)) {
+        toast({
+          title: "Commune invalide",
+          description: "Veuillez saisir un nom de commune valide.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Log security event
+      SecurityService.logSecurityEvent('form_submission', { 
+        type: submitLabel, 
+        hasMessage: !!normalizedData.message 
+      });
+
+      await onSubmit(normalizedData);
       form.reset();
       
       toast({

@@ -58,38 +58,74 @@ serve(async (req) => {
       );
     }
 
-    // Server-side rate limiting
-    const rateLimitKey = `rate_limit_${clientIP}_${type}`;
-    const now = Date.now();
-    const windowMs = 60000; // 1 minute
+    // Server-side rate limiting using new table structure
+    const rateLimitKey = `${clientIP}_${type}`;
+    const now = new Date();
+    const windowMs = 15 * 60 * 1000; // 15 minutes
     const maxRequests = 5;
 
-    // Check rate limit (in production, use Redis or similar)
-    const { data: rateLimitData } = await supabase
-      .from('rate_limits')
-      .select('*')
-      .eq('key', rateLimitKey)
-      .single();
+    try {
+      const { data: rateLimitData, error: rateLimitError } = await supabase
+        .from('rate_limits')
+        .select('count, last_reset')
+        .eq('identifier', rateLimitKey)
+        .eq('type', type)
+        .single();
 
-    let currentData: RateLimitData = rateLimitData || { count: 0, lastReset: now };
-
-    // Reset if window expired
-    if (now - currentData.lastReset > windowMs) {
-      currentData = { count: 0, lastReset: now };
+      if (rateLimitData && rateLimitError?.code !== 'PGRST116') {
+        const lastReset = new Date(rateLimitData.last_reset);
+        const resetTime = new Date(now.getTime() - windowMs);
+        
+        if (lastReset > resetTime) {
+          if (rateLimitData.count >= maxRequests) {
+            console.warn(`Rate limit exceeded for ${rateLimitKey}`);
+            return new Response(
+              JSON.stringify({ error: 'Trop de tentatives' }),
+              { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+          
+          // Increment counter
+          await supabase
+            .from('rate_limits')
+            .update({ 
+              count: rateLimitData.count + 1,
+              updated_at: now.toISOString()
+            })
+            .eq('identifier', rateLimitKey)
+            .eq('type', type);
+        } else {
+          // Reset counter
+          await supabase
+            .from('rate_limits')
+            .update({ 
+              count: 1, 
+              last_reset: now.toISOString(),
+              updated_at: now.toISOString()
+            })
+            .eq('identifier', rateLimitKey)
+            .eq('type', type);
+        }
+      } else {
+        // Create new rate limit entry
+        const { error: insertError } = await supabase
+          .from('rate_limits')
+          .insert({ 
+            identifier: rateLimitKey, 
+            type, 
+            count: 1, 
+            last_reset: now.toISOString()
+          });
+          
+        if (insertError) {
+          console.error('Rate limit insert error:', insertError);
+          // Continue processing even if rate limit insert fails
+        }
+      }
+    } catch (rateLimitErr) {
+      console.error('Rate limiting error:', rateLimitErr);
+      // Continue processing even if rate limiting fails
     }
-
-    if (currentData.count >= maxRequests) {
-      return new Response(
-        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Update rate limit
-    currentData.count++;
-    await supabase
-      .from('rate_limits')
-      .upsert({ key: rateLimitKey, ...currentData });
 
     // Process based on type
     if (type === 'alert') {

@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { SecurityService } from '@/services/securityService';
 
 interface AuthContextType {
   user: User | null;
@@ -24,6 +25,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Update last activity on auth state change
+        if (session?.user) {
+          SecurityService.updateLastActivity();
+        }
       }
     );
 
@@ -36,6 +42,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Check for session timeout
+  useEffect(() => {
+    if (user) {
+      const checkSessionTimeout = () => {
+        const lastActivity = localStorage.getItem('last_activity');
+        if (lastActivity && SecurityService.isSessionExpired(parseInt(lastActivity))) {
+          SecurityService.logSecurityEvent('session_timeout', { userId: user.id });
+          signOut();
+        }
+      };
+
+      // Check every minute
+      const timeoutCheck = setInterval(checkSessionTimeout, 60000);
+      return () => clearInterval(timeoutCheck);
+    }
+  }, [user]);
 
   // Enhanced secure logout with proper cleanup
   const signOut = async () => {

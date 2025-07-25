@@ -9,10 +9,15 @@ export class SecurityService {
       .slice(0, 1000); // Limit length
   }
 
-  // Email validation
+  // Email validation with normalization
   static isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email) && email.length <= 255;
+  }
+
+  // Normalize email (lowercase, trim)
+  static normalizeEmail(email: string): string {
+    return email.trim().toLowerCase();
   }
 
   // Password strength validation
@@ -52,7 +57,19 @@ export class SecurityService {
     return {
       'Content-Type': 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-Protection': '1',
     };
+  }
+
+  // Session timeout check (30 minutes)
+  static isSessionExpired(lastActivity: number): boolean {
+    const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+    return Date.now() - lastActivity > SESSION_TIMEOUT;
+  }
+
+  // Store last activity for session management
+  static updateLastActivity(): void {
+    localStorage.setItem('last_activity', Date.now().toString());
   }
 
   // Secure error logging (production-ready)
