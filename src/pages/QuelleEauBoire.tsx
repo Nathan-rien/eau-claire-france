@@ -11,6 +11,7 @@ import { userProfiles, userIntolerances, userPreferences, UserProfile, UserIntol
 import { waterRecommendationService, WaterRecommendation } from '@/services/waterRecommendationService';
 
 const QuelleEauBoire: React.FC = () => {
+  const [selectedWaterType, setSelectedWaterType] = useState<string>('all');
   const [selectedProfiles, setSelectedProfiles] = useState<string[]>([]);
   const [selectedIntolerances, setSelectedIntolerances] = useState<string[]>([]);
   const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
@@ -52,6 +53,7 @@ const QuelleEauBoire: React.FC = () => {
   };
 
   const handleReset = () => {
+    setSelectedWaterType('all');
     setSelectedProfiles([]);
     setSelectedIntolerances([]);
     setSelectedPreferences([]);
@@ -59,7 +61,7 @@ const QuelleEauBoire: React.FC = () => {
     setRecommendations([]);
   };
 
-  const hasSelections = selectedProfiles.length > 0 || selectedIntolerances.length > 0 || selectedPreferences.length > 0;
+  const hasSelections = selectedWaterType !== 'all' || selectedProfiles.length > 0 || selectedIntolerances.length > 0 || selectedPreferences.length > 0;
 
   if (showResults) {
     return (
@@ -209,118 +211,188 @@ const QuelleEauBoire: React.FC = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="profiles" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="profiles">Profils</TabsTrigger>
-            <TabsTrigger value="intolerances">Intolérances</TabsTrigger>
-            <TabsTrigger value="preferences">Préférences</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="profiles">
-            <Card>
-              <CardHeader>
-                <CardTitle>Sélectionnez vos profils</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Choisissez les profils qui vous correspondent (plusieurs choix possibles)
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {userProfiles.map((profile) => (
-                    <div key={profile.id} className="flex items-start space-x-3 p-4 rounded-lg border">
-                      <Checkbox
-                        id={profile.id}
-                        checked={selectedProfiles.includes(profile.id)}
-                        onCheckedChange={() => handleProfileToggle(profile.id)}
-                      />
-                      <div className="flex-1">
-                        <label 
-                          htmlFor={profile.id} 
-                          className="font-medium cursor-pointer"
-                        >
-                          {profile.name}
-                        </label>
-                        <p className="text-sm text-muted-foreground">
-                          {profile.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+        <div className="space-y-6">
+          {/* 1. Type d'eau préféré */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3">
+                <span className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                  1
+                </span>
+                Type d'eau préféré
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Choisissez votre préférence entre eau plate et eau gazeuse
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className={`flex items-start space-x-3 p-4 rounded-lg border cursor-pointer ${selectedWaterType === 'all' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'}`} onClick={() => setSelectedWaterType('all')}>
+                  <Checkbox
+                    id="all-water"
+                    checked={selectedWaterType === 'all'}
+                    onCheckedChange={() => setSelectedWaterType('all')}
+                  />
+                  <div className="flex-1">
+                    <label htmlFor="all-water" className="font-medium cursor-pointer">
+                      Toutes les eaux
+                    </label>
+                    <p className="text-sm text-muted-foreground">
+                      Plates et gazeuses
+                    </p>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                <div className={`flex items-start space-x-3 p-4 rounded-lg border cursor-pointer ${selectedWaterType === 'plate' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'}`} onClick={() => setSelectedWaterType('plate')}>
+                  <Checkbox
+                    id="flat-water"
+                    checked={selectedWaterType === 'plate'}
+                    onCheckedChange={() => setSelectedWaterType('plate')}
+                  />
+                  <div className="flex-1">
+                    <label htmlFor="flat-water" className="font-medium cursor-pointer">
+                      Eau plate uniquement
+                    </label>
+                    <p className="text-sm text-muted-foreground">
+                      Sans bulles
+                    </p>
+                  </div>
+                </div>
+                <div className={`flex items-start space-x-3 p-4 rounded-lg border cursor-pointer ${selectedWaterType === 'gazeuse' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'}`} onClick={() => setSelectedWaterType('gazeuse')}>
+                  <Checkbox
+                    id="sparkling-water"
+                    checked={selectedWaterType === 'gazeuse'}
+                    onCheckedChange={() => setSelectedWaterType('gazeuse')}
+                  />
+                  <div className="flex-1">
+                    <label htmlFor="sparkling-water" className="font-medium cursor-pointer">
+                      Eau gazeuse uniquement
+                    </label>
+                    <p className="text-sm text-muted-foreground">
+                      Avec bulles
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          <TabsContent value="intolerances">
-            <Card>
-              <CardHeader>
-                <CardTitle>Intolérances et restrictions</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Sélectionnez les substances que vous souhaitez éviter
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {userIntolerances.map((intolerance) => (
-                    <div key={intolerance.id} className="flex items-start space-x-3 p-4 rounded-lg border border-red-200 bg-red-50">
-                      <Checkbox
-                        id={intolerance.id}
-                        checked={selectedIntolerances.includes(intolerance.id)}
-                        onCheckedChange={() => handleIntoleranceToggle(intolerance.id)}
-                      />
-                      <div className="flex-1">
-                        <label 
-                          htmlFor={intolerance.id} 
-                          className="font-medium cursor-pointer text-red-800"
-                        >
-                          {intolerance.name}
-                        </label>
-                        <p className="text-sm text-red-600">
-                          {intolerance.description}
-                        </p>
-                      </div>
+          {/* 2. Profils */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3">
+                <span className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                  2
+                </span>
+                Choisissez votre profil
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Sélectionnez un ou plusieurs profils qui vous correspondent
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {userProfiles.map((profile) => (
+                  <div key={profile.id} className="flex items-start space-x-3 p-4 rounded-lg border">
+                    <Checkbox
+                      id={profile.id}
+                      checked={selectedProfiles.includes(profile.id)}
+                      onCheckedChange={() => handleProfileToggle(profile.id)}
+                    />
+                    <div className="flex-1">
+                      <label 
+                        htmlFor={profile.id} 
+                        className="font-medium cursor-pointer"
+                      >
+                        {profile.name}
+                      </label>
+                      <p className="text-sm text-muted-foreground">
+                        {profile.description}
+                      </p>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-          <TabsContent value="preferences">
-            <Card>
-              <CardHeader>
-                <CardTitle>Préférences personnelles</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Indiquez vos préférences pour le type d'eau
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {userPreferences.map((preference) => (
-                    <div key={preference.id} className="flex items-start space-x-3 p-4 rounded-lg border border-blue-200 bg-blue-50">
-                      <Checkbox
-                        id={preference.id}
-                        checked={selectedPreferences.includes(preference.id)}
-                        onCheckedChange={() => handlePreferenceToggle(preference.id)}
-                      />
-                      <div className="flex-1">
-                        <label 
-                          htmlFor={preference.id} 
-                          className="font-medium cursor-pointer text-blue-800"
-                        >
-                          {preference.name}
-                        </label>
-                        <p className="text-sm text-blue-600">
-                          {preference.description}
-                        </p>
-                      </div>
+          {/* 3. Intolérances */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3">
+                <span className="bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                  3
+                </span>
+                Intolérances et restrictions
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Sélectionnez les substances que vous souhaitez éviter
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {userIntolerances.map((intolerance) => (
+                  <div key={intolerance.id} className="flex items-start space-x-3 p-4 rounded-lg border border-red-200 bg-red-50">
+                    <Checkbox
+                      id={intolerance.id}
+                      checked={selectedIntolerances.includes(intolerance.id)}
+                      onCheckedChange={() => handleIntoleranceToggle(intolerance.id)}
+                    />
+                    <div className="flex-1">
+                      <label 
+                        htmlFor={intolerance.id} 
+                        className="font-medium cursor-pointer text-red-800"
+                      >
+                        {intolerance.name}
+                      </label>
+                      <p className="text-sm text-red-600">
+                        {intolerance.description}
+                      </p>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 4. Préférences */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3">
+                <span className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                  4
+                </span>
+                Préférences personnelles
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Indiquez vos préférences pour le type d'eau
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {userPreferences.map((preference) => (
+                  <div key={preference.id} className="flex items-start space-x-3 p-4 rounded-lg border border-blue-200 bg-blue-50">
+                    <Checkbox
+                      id={preference.id}
+                      checked={selectedPreferences.includes(preference.id)}
+                      onCheckedChange={() => handlePreferenceToggle(preference.id)}
+                    />
+                    <div className="flex-1">
+                      <label 
+                        htmlFor={preference.id} 
+                        className="font-medium cursor-pointer text-blue-800"
+                      >
+                        {preference.name}
+                      </label>
+                      <p className="text-sm text-blue-600">
+                        {preference.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="mt-6 text-center">
           <Button 
