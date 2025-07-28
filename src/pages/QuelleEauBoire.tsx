@@ -50,6 +50,7 @@ const QuelleEauBoire: React.FC = () => {
     const results = waterRecommendationService.calculateRecommendations(profiles, intolerances, preferences);
     setRecommendations(results);
     setShowResults(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleReset = () => {
