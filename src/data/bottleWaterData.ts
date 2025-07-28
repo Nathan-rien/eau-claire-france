@@ -4,15 +4,15 @@ export const bottledWaters = [
     id: 'cristaline',
     name: 'Cristaline',
     type: 'Eau de source',
-    source: 'Diverses (multi-sources régionales)',
-    price: 0.2,
+    source: 'Multiples sources',
+    price: 0.20,
     co2: 0.25,
     composition: {
-      nitrates: 6.8,
-      sodium: 5.1,
-      calcium: 90.0,
-      magnesium: 7.0,
-      residusSec: 330
+      nitrates: 2.6,
+      sodium: 5.5,
+      calcium: 58.0,
+      magnesium: 8.0,
+      residusSec: 331
     },
     producer: 'Sources Alma',
     packaging: 'Plastique',
@@ -22,8 +22,8 @@ export const bottledWaters = [
     id: 'evian',
     name: 'Evian',
     type: 'Eau minérale naturelle',
-    source: 'Évian-les-Bains (Haute-Savoie)',
-    price: 0.65,
+    source: 'Source Cachat',
+    price: 0.45,
     co2: 0.35,
     composition: {
       nitrates: 3.8,
@@ -33,36 +33,36 @@ export const bottledWaters = [
       residusSec: 345
     },
     producer: 'Danone',
-    packaging: 'Plastique / Verre',
+    packaging: 'Plastique',
     volumeAnnuel: 1600000000
   },
   {
     id: 'vittel',
     name: 'Vittel',
     type: 'Eau minérale naturelle',
-    source: 'Vittel (Vosges)',
-    price: 0.55,
+    source: 'Vosges',
+    price: 0.46,
     co2: 0.32,
     composition: {
-      nitrates: 4.2,
-      sodium: 8.4,
-      calcium: 240.0,
-      magnesium: 42.0,
-      residusSec: 900
+      nitrates: 4.9,
+      sodium: 5.2,
+      calcium: 94.0,
+      magnesium: 20.0,
+      residusSec: 305
     },
     producer: 'Nestlé Waters',
-    packaging: 'Plastique / Verre',
+    packaging: 'Plastique',
     volumeAnnuel: 900000000
   },
   {
     id: 'volvic',
     name: 'Volvic',
     type: 'Eau minérale naturelle',
-    source: 'Volvic (Puy-de-Dôme)',
-    price: 0.6,
+    source: 'Volcan d\'Auvergne',
+    price: 0.43,
     co2: 0.3,
     composition: {
-      nitrates: 7.0,
+      nitrates: 6.9,
       sodium: 11.6,
       calcium: 12.0,
       magnesium: 8.0,
