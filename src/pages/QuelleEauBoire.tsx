@@ -7,10 +7,34 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertTriangle } from 'lucide-react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
+import Breadcrumb from '@/components/Breadcrumb';
+import { seoData, generateFAQSchema } from '@/utils/seoData';
 import { userProfiles, userIntolerances, userPreferences, UserProfile, UserIntolerance, UserPreference } from '@/data/waterProfiles';
 import { waterRecommendationService, WaterRecommendation } from '@/services/waterRecommendationService';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const QuelleEauBoire: React.FC = () => {
+  const { t } = useLanguage();
+  
+  // FAQ data for schema
+  const faqData = [
+    {
+      question: "Comment choisir la meilleure eau en bouteille selon mon profil ?",
+      answer: "Notre outil d'aide au choix prend en compte votre profil (femme enceinte, sportif, etc.), vos intolérances et préférences pour recommander les eaux les plus adaptées à vos besoins spécifiques."
+    },
+    {
+      question: "Quelle eau boire pendant la grossesse ?",
+      answer: "Les femmes enceintes devraient privilégier des eaux faibles en nitrates (< 25 mg/L) et en sodium (< 20 mg/L), riches en calcium et magnésium pour le développement du bébé."
+    },
+    {
+      question: "Quelle eau pour les sportifs ?",
+      answer: "Les sportifs ont besoin d'eaux riches en minéraux pour compenser les pertes liées à la transpiration, particulièrement en magnésium, calcium et avec un taux de sodium modéré."
+    },
+    {
+      question: "Comment éviter les eaux trop riches en sodium ?",
+      answer: "Sélectionnez l'option 'Hypertension' ou 'Pauvre en sodium' dans nos filtres pour obtenir uniquement des eaux avec moins de 20 mg/L de sodium."
+    }
+  ];
   const [selectedWaterType, setSelectedWaterType] = useState<string>('all');
   const [selectedProfiles, setSelectedProfiles] = useState<string[]>([]);
   const [selectedIntolerances, setSelectedIntolerances] = useState<string[]>([]);
@@ -68,10 +92,28 @@ const QuelleEauBoire: React.FC = () => {
     return (
       <Layout>
         <SEOHead 
-          title="Recommandations d'eau - Quelle eau boire ?"
-          description="Découvrez les eaux recommandées selon votre profil"
+          title={seoData.quelleEauBoire.title}
+          description={seoData.quelleEauBoire.description}
+          keywords={seoData.quelleEauBoire.keywords}
+          canonical="/quelle-eau-boire"
+          ogImage={seoData.quelleEauBoire.ogImage}
+          schemaData={{
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Recommandations d'eau personnalisées",
+            "description": seoData.quelleEauBoire.description,
+            "url": "https://infoeau.fr/quelle-eau-boire",
+            "mainEntity": generateFAQSchema(faqData)
+          }}
         />
-        <div className="container mx-auto py-8 px-4 max-w-4xl">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+          <div className="container mx-auto">
+            <Breadcrumb items={[
+              { name: t('breadcrumb.waterRecommendation'), href: '/quelle-eau-boire', current: true }
+            ]} />
+          </div>
+          
+          <div className="container mx-auto py-8 px-4 max-w-4xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-4">Vos recommandations d'eau</h1>
           <div className="flex gap-2 justify-center mb-4 flex-wrap">
@@ -193,6 +235,7 @@ const QuelleEauBoire: React.FC = () => {
               </Card>
             ))}
           </div>
+          </div>
         </div>
       </Layout>
     );
@@ -201,10 +244,28 @@ const QuelleEauBoire: React.FC = () => {
   return (
     <Layout>
       <SEOHead 
-        title="Quelle eau boire ? - Trouvez l'eau adaptée à vos besoins"
-        description="Découvrez quelle eau boire selon votre profil et vos besoins spécifiques"
+        title={seoData.quelleEauBoire.title}
+        description={seoData.quelleEauBoire.description}
+        keywords={seoData.quelleEauBoire.keywords}
+        canonical="/quelle-eau-boire"
+        ogImage={seoData.quelleEauBoire.ogImage}
+        schemaData={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Quelle eau boire ? - Guide personnalisé",
+          "description": seoData.quelleEauBoire.description,
+          "url": "https://infoeau.fr/quelle-eau-boire",
+          "mainEntity": generateFAQSchema(faqData)
+        }}
       />
-      <div className="container mx-auto py-8 px-4 max-w-4xl">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+        <div className="container mx-auto">
+          <Breadcrumb items={[
+            { name: t('breadcrumb.waterRecommendation'), href: '/quelle-eau-boire', current: true }
+          ]} />
+        </div>
+        
+        <div className="container mx-auto py-8 px-4 max-w-4xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-4">Quelle eau boire ?</h1>
           <p className="text-muted-foreground">
@@ -403,6 +464,7 @@ const QuelleEauBoire: React.FC = () => {
           >
             Obtenir mes recommandations
           </Button>
+          </div>
         </div>
       </div>
     </Layout>

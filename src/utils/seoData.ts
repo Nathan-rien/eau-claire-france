@@ -87,7 +87,22 @@ export const seoData = {
     title: "Quelle eau boire ? Recommandations personnalisées",
     description: "Obtenez des recommandations d'eaux en bouteille adaptées à votre profil : femme enceinte, sportif, problèmes rénaux. Conseils personnalisés et scientifiques.",
     keywords: "quelle eau boire, recommandations eau personnalisées, eau femme enceinte, eau sportif, eau problèmes rénaux",
-    ogImage: "/images/og-recommandations.jpg"
+    ogImage: "/images/og-recommandations.jpg",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Quelle eau boire ? - Guide personnalisé",
+      "description": "Outil d'aide au choix d'eau en bouteille selon votre profil et besoins spécifiques",
+      "url": "https://infoeau.fr/quelle-eau-boire",
+      "isPartOf": {
+        "@type": "WebSite",
+        "url": "https://infoeau.fr"
+      },
+      "about": {
+        "@type": "Thing",
+        "name": "Recommandations d'eau en bouteille"
+      }
+    }
   }
 };
 
