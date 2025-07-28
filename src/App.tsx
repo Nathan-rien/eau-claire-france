@@ -5,11 +5,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React, { useEffect, Suspense } from "react";
+import { HelmetProvider } from "react-helmet-async";
 import { analyticsService } from "@/services/analyticsService";
 import { AuthProvider } from "@/hooks/useAuth";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import PageLoader from "@/components/PageLoader";
+import SecurityHeaders from "@/components/SecurityHeaders";
+import { EnhancedSecurityService } from "@/services/enhancedSecurityService";
 
 // Lazy load all pages for code splitting
 const Index = React.lazy(() => import("./pages/Index"));
@@ -34,6 +37,7 @@ const NotFound = React.lazy(() => import("./pages/NotFound"));
 const RGPD = React.lazy(() => import("./pages/RGPD"));
 const Accessibilite = React.lazy(() => import("./pages/Accessibilite"));
 const OpenData = React.lazy(() => import("./pages/OpenData"));
+const SecurityDashboard = React.lazy(() => import("./pages/SecurityDashboard"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -53,13 +57,18 @@ const App = () => {
   useEffect(() => {
     // Initialize tracking on app start
     analyticsService.trackPageView();
+    
+    // Initialize security monitoring
+    EnhancedSecurityService.startSecurityMonitoring();
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <LanguageProvider>
-          <TooltipProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <LanguageProvider>
+            <TooltipProvider>
+              <SecurityHeaders />
             <Toaster />
             <Sonner />
             <BrowserRouter>
@@ -93,14 +102,23 @@ const App = () => {
                 <Route path="/rgpd" element={<RGPD />} />
                 <Route path="/accessibilite" element={<Accessibilite />} />
                 <Route path="/open-data" element={<OpenData />} />
+                <Route 
+                  path="/security-dashboard" 
+                  element={
+                    <ProtectedRoute>
+                      <SecurityDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
             </BrowserRouter>
-          </TooltipProvider>
-        </LanguageProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+            </TooltipProvider>
+          </LanguageProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 };
 

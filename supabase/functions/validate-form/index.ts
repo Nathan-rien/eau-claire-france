@@ -38,22 +38,43 @@ serve(async (req) => {
     const communeRegex = /^[a-zA-ZÀ-ÿ\s\-']+$/;
 
     if (!emailRegex.test(email) || email.length > 255) {
+      console.log(JSON.stringify({
+        event: 'validation_error',
+        type: 'invalid_email',
+        timestamp: new Date().toISOString(),
+        ip: clientIP,
+        severity: 'low'
+      }));
       return new Response(
-        JSON.stringify({ error: 'Invalid email format' }),
+        JSON.stringify({ error: 'Invalid input format' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     if (!communeRegex.test(commune) || commune.length < 1 || commune.length > 100) {
+      console.log(JSON.stringify({
+        event: 'validation_error',
+        type: 'invalid_commune',
+        timestamp: new Date().toISOString(),
+        ip: clientIP,
+        severity: 'low'
+      }));
       return new Response(
-        JSON.stringify({ error: 'Invalid commune format' }),
+        JSON.stringify({ error: 'Invalid input format' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     if (message && message.length > 2000) {
+      console.log(JSON.stringify({
+        event: 'validation_error',
+        type: 'message_too_long',
+        timestamp: new Date().toISOString(),
+        ip: clientIP,
+        severity: 'low'
+      }));
       return new Response(
-        JSON.stringify({ error: 'Message too long' }),
+        JSON.stringify({ error: 'Input too long' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -143,12 +164,19 @@ serve(async (req) => {
         console.error('Database error:', error);
         if (error.code === '23505') { // Unique constraint violation
           return new Response(
-            JSON.stringify({ error: 'You are already subscribed to alerts for this commune.' }),
+            JSON.stringify({ error: 'Subscription already exists' }),
             { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
+        console.log(JSON.stringify({
+          event: 'database_error',
+          type: 'subscription_failed',
+          timestamp: new Date().toISOString(),
+          ip: clientIP,
+          severity: 'medium'
+        }));
         return new Response(
-          JSON.stringify({ error: 'Failed to subscribe to alerts' }),
+          JSON.stringify({ error: 'Service temporarily unavailable' }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
@@ -169,9 +197,15 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Validation error:', error);
+    console.log(JSON.stringify({
+      event: 'server_error',
+      type: 'unhandled_exception',
+      timestamp: new Date().toISOString(),
+      severity: 'high',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }));
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ error: 'Service temporarily unavailable' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

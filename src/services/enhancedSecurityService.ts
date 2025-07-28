@@ -221,7 +221,7 @@ export class EnhancedSecurityService extends SecurityService {
     timestamp: number;
     csp: boolean;
     session: { isValid: boolean; issues: string[] };
-    dataIntegrity: { valid: number; corrupted: number };
+    dataIntegrity: { valid: number; corrupted: number; keys: string[] };
     auditSummary: any;
     recommendations: string[];
   } {
