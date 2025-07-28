@@ -44,7 +44,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1 flex-1 justify-center max-w-4xl" role="navigation" aria-label="Navigation principale">
+          <nav className="hidden xl:flex items-center space-x-1 flex-1 justify-center max-w-4xl" role="navigation" aria-label="Navigation principale">
             {navigationItems.map((item) => (
               <Link
                 key={item.href}
@@ -88,10 +88,10 @@ const Header = () => {
             </Select>
 
             {/* Mobile Navigation */}
-            <div className="lg:hidden">
+            <div className="xl:hidden">
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="lg:hidden p-2 flex items-center space-x-2">
+                  <Button variant="ghost" size="sm" className="xl:hidden p-2 flex items-center space-x-2">
                     <Menu className="h-4 w-4" />
                     <span className="hidden md:inline text-sm font-medium">Menu</span>
                     <span className="sr-only">Toggle menu</span>
