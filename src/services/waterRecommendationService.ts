@@ -213,7 +213,7 @@ export class WaterRecommendationService {
     }
 
     return {
-      score: Math.round(score),
+      score: Math.min(100, Math.round(score)), // Cap at 100
       reasons: reasons.slice(0, 4), // Limit to 4 main reasons
       warnings
     };

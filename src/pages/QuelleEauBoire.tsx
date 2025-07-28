@@ -120,12 +120,12 @@ const QuelleEauBoire: React.FC = () => {
                       </CardTitle>
                       <p className="text-muted-foreground">{recommendation.bottle.type_eau}</p>
                       {recommendation.bottle.source && (
-                        <p className="text-sm text-muted-foreground">Source: {recommendation.bottle.source}</p>
+                        <p className="text-sm text-muted-foreground">Source : {recommendation.bottle.source}</p>
                       )}
                     </div>
                     <div className="text-right">
                       <Badge variant="default" className="mb-2">
-                        Score: {recommendation.score}/100
+                        Score : {recommendation.score}/100
                       </Badge>
                       <div className="text-sm text-muted-foreground">
                         {recommendation.bottle.prix_moyen_litre?.toFixed(2) || 'N/A'}€/L
