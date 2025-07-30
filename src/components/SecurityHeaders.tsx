@@ -7,7 +7,7 @@ const SecurityHeaders = () => {
   // Content Security Policy - more permissive in development
   const cspDirectives = isDevelopment ? {
     'default-src': "'self' 'unsafe-inline' 'unsafe-eval'",
-    'script-src': "'self' 'unsafe-inline' 'unsafe-eval' *.mapbox.com",
+    'script-src': "'self' 'unsafe-inline' 'unsafe-eval' *.mapbox.com blob:",
     'style-src': "'self' 'unsafe-inline' *.mapbox.com",
     'img-src': "'self' data: blob: *.mapbox.com",
     'connect-src': "'self' *.supabase.co *.mapbox.com",
@@ -16,7 +16,7 @@ const SecurityHeaders = () => {
     'frame-src': "'none'"
   } : {
     'default-src': "'self'",
-    'script-src': "'self' *.mapbox.com",
+    'script-src': "'self' *.mapbox.com blob:",
     'style-src': "'self' 'unsafe-inline' *.mapbox.com",
     'img-src': "'self' data: *.mapbox.com",
     'connect-src': "'self' *.supabase.co *.mapbox.com",
@@ -24,7 +24,8 @@ const SecurityHeaders = () => {
     'object-src': "'none'",
     'frame-src': "'none'",
     'base-uri': "'self'",
-    'form-action': "'self'"
+    'form-action': "'self'",
+    'worker-src': "'self' blob:"
   };
 
   const cspString = Object.entries(cspDirectives)
