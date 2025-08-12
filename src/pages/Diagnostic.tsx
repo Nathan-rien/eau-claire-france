@@ -1,27 +1,53 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, MapPin } from 'lucide-react';
+import { Search, MapPin, Navigation, Loader2 } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import WaterQualityCard from '@/components/WaterQualityCard';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
+import { Button } from '@/components/ui/button';
 import { seoData } from '@/utils/seoData';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useGeolocation } from '@/hooks/useGeolocation';
+import { useReverseGeocoding } from '@/hooks/useReverseGeocoding';
 
 const Diagnostic = () => {
   const [selectedCity, setSelectedCity] = useState<string>('');
+  const [isUsingGeolocation, setIsUsingGeolocation] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
   const { t } = useLanguage();
+  
+  // Géolocalisation
+  const { coordinates, error: geoError, loading: geoLoading, getCurrentPosition } = useGeolocation();
+  const { data: reverseGeoData, isLoading: reverseGeoLoading } = useReverseGeocoding(coordinates);
 
   // Load city from URL parameter on startup
   useEffect(() => {
     const cityFromUrl = searchParams.get('city');
     if (cityFromUrl) {
       setSelectedCity(cityFromUrl);
+      setIsUsingGeolocation(false);
     }
   }, [searchParams]);
+
+  // Auto-set city from geolocation when available
+  useEffect(() => {
+    if (reverseGeoData?.city && !selectedCity && !searchParams.get('city')) {
+      setSelectedCity(reverseGeoData.city);
+      setIsUsingGeolocation(true);
+    }
+  }, [reverseGeoData, selectedCity, searchParams]);
+
+  const handleGeolocationClick = () => {
+    getCurrentPosition();
+  };
+
+  const handleCitySelect = (city: string) => {
+    setSelectedCity(city);
+    setIsUsingGeolocation(false);
+  };
 
   return (
     <Layout>
@@ -54,13 +80,41 @@ const Diagnostic = () => {
             </div>
 
             <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-              <h3 className="text-lg font-semibold mb-4 text-center">{t('diagnostic.searchTitle')}</h3>
-              <SearchBar onCitySelect={setSelectedCity} placeholder={t('diagnostic.searchPlaceholder')} />
+              <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-center sm:text-left">{t('diagnostic.searchTitle')}</h3>
+                <Button
+                  onClick={handleGeolocationClick}
+                  disabled={geoLoading || reverseGeoLoading}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  {geoLoading || reverseGeoLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Navigation className="w-4 h-4" />
+                  )}
+                  Ma position
+                </Button>
+              </div>
+              
+              {geoError && (
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-center mb-4">
+                  <p className="text-orange-800 text-sm">{geoError}</p>
+                </div>
+              )}
+              
+              <SearchBar onCitySelect={handleCitySelect} placeholder={t('diagnostic.searchPlaceholder')} />
+              
               {selectedCity && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center mt-4">
                   <p className="text-blue-800">
                     <MapPin className="w-4 h-4 inline mr-2" />
-                    {t('diagnostic.searchResult', { city: selectedCity })}
+                    {isUsingGeolocation ? (
+                      <>Ville détectée automatiquement : <strong>{selectedCity}</strong></>
+                    ) : (
+                      <>Ville sélectionnée : <strong>{selectedCity}</strong></>
+                    )}
                   </p>
                 </div>
               )}
