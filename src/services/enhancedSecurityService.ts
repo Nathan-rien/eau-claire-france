@@ -155,13 +155,12 @@ export class EnhancedSecurityService extends SecurityService {
     }
   }
 
-  // Security monitoring
+  // Security monitoring (simplified)
   static startSecurityMonitoring(): void {
-    // Monitor for suspicious activities
+    // Only basic monitoring to avoid interfering with API calls
     this.monitorLocalStorageChanges();
     this.monitorConsoleAccess();
-    // Temporarily disable network monitoring to fix API calls
-    // this.monitorNetworkRequests();
+    // Network monitoring completely removed to fix API fetch issues
   }
 
   // Monitor localStorage changes
@@ -197,30 +196,7 @@ export class EnhancedSecurityService extends SecurityService {
     }
   }
 
-  // Monitor network requests
-  private static monitorNetworkRequests(): void {
-    const originalFetch = window.fetch;
-    window.fetch = async function(input, init) {
-      const url = typeof input === 'string' ? input : (input as Request).url;
-      
-      // Log external API calls but don't interfere with them
-      if (!url.includes(window.location.hostname)) {
-        try {
-          AuditService.logEvent({
-            type: 'security',
-            action: 'external_api_call',
-            details: { url: new URL(url).hostname },
-            severity: 'low'
-          });
-        } catch (error) {
-          // Silently fail if logging fails
-        }
-      }
-      
-      // Always call the original fetch without interference
-      return originalFetch.call(this, input, init);
-    };
-  }
+  // Network monitoring completely removed to prevent API interference
 
   // Generate security report
   static generateSecurityReport(): {

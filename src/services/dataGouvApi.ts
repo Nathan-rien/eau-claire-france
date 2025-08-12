@@ -35,32 +35,21 @@ interface HubEauResponse {
   count: number;
 }
 
-// Fonction optimisée pour obtenir le code commune (avec cache externe via React Query)
+// Fonction optimisée pour obtenir le code commune (avec données locales)
 const getCodeCommune = async (communeName: string): Promise<string | null> => {
   if (!communeName || communeName.length < 2) return null;
   
   try {
-    const response = await fetch(
-      `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(communeName)}&type=municipality&limit=1`,
-      {
-        headers: { 'Accept': 'application/json' },
-        signal: AbortSignal.timeout(5000), // 5 second timeout
-      }
-    );
-
-    if (!response.ok) return null;
-
-    const data = await response.json();
-    if (data.features && data.features.length > 0) {
-      return data.features[0].properties.citycode;
+    // Utiliser les données locales à la place de l'API externe
+    const { searchCities } = await import('@/data/frenchCities');
+    const cities = searchCities(communeName);
+    
+    if (cities.length > 0) {
+      return cities[0].citycode;
     }
     return null;
   } catch (error) {
-    if (error.name === 'AbortError') {
-      console.warn('Geocoding request timed out');
-    } else {
-      console.error('Geocoding error:', error);
-    }
+    console.error('Erreur recherche code commune:', error);
     return null;
   }
 };

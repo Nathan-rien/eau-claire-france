@@ -21,23 +21,15 @@ interface ReverseGeocodeApiResponse {
 
 const reverseGeocode = async (latitude: number, longitude: number): Promise<ReverseGeocodeResult | null> => {
   try {
-    const response = await fetch(
-      `https://api-adresse.data.gouv.fr/reverse/?lon=${longitude}&lat=${latitude}&type=municipality`,
-      {
-        headers: { 'Accept': 'application/json' },
-      }
-    );
-
-    if (!response.ok) return null;
-
-    const data: ReverseGeocodeApiResponse = await response.json();
+    // Utiliser les données locales à la place de l'API externe
+    const { findNearestCity } = await import('@/data/frenchCities');
+    const nearestCity = findNearestCity(latitude, longitude);
     
-    if (data.features && data.features.length > 0) {
-      const feature = data.features[0];
+    if (nearestCity) {
       return {
-        city: feature.properties.city || feature.properties.label.split(',')[0] || '',
-        postcode: feature.properties.postcode || '',
-        context: feature.properties.context || '',
+        city: nearestCity.name,
+        postcode: nearestCity.postcode,
+        context: nearestCity.context,
       };
     }
     

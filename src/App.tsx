@@ -58,8 +58,8 @@ const App = () => {
     // Initialize tracking on app start
     analyticsService.trackPageView();
     
-    // Note: Security monitoring disabled to fix API fetch issues
-    // EnhancedSecurityService.startSecurityMonitoring();
+    // Initialize basic security monitoring (network monitoring removed)
+    EnhancedSecurityService.startSecurityMonitoring();
   }, []);
 
   return (

@@ -24,23 +24,16 @@ const geocodeCity = async (cityName: string): Promise<GeocodeResult | null> => {
   if (!cityName || cityName.length < 2) return null;
   
   try {
-    const response = await fetch(
-      `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(cityName)}&type=municipality&limit=1`,
-      {
-        headers: { 'Accept': 'application/json' },
-      }
-    );
-
-    if (!response.ok) return null;
-
-    const data: GeocodeApiResponse = await response.json();
+    // Utiliser les données locales à la place de l'API externe
+    const { searchCities } = await import('@/data/frenchCities');
+    const cities = searchCities(cityName);
     
-    if (data.features && data.features.length > 0) {
-      const feature = data.features[0];
+    if (cities.length > 0) {
+      const city = cities[0];
       return {
-        citycode: feature.properties.citycode,
-        label: feature.properties.label,
-        coordinates: feature.geometry.coordinates,
+        citycode: city.citycode,
+        label: `${city.name}, ${city.context}`,
+        coordinates: city.coordinates,
       };
     }
     
