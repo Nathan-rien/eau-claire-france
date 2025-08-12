@@ -40,6 +40,13 @@ const Diagnostic = () => {
     }
   }, [reverseGeoData, selectedCity, searchParams]);
 
+  // Automatically trigger geolocation on page load if no city is set
+  useEffect(() => {
+    if (!selectedCity && !searchParams.get('city') && !geoLoading) {
+      getCurrentPosition();
+    }
+  }, [selectedCity, searchParams, geoLoading, getCurrentPosition]);
+
   const handleGeolocationClick = () => {
     getCurrentPosition();
   };

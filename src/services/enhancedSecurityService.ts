@@ -202,16 +202,21 @@ export class EnhancedSecurityService extends SecurityService {
     window.fetch = async function(input, init) {
       const url = typeof input === 'string' ? input : (input as Request).url;
       
-      // Log external API calls
+      // Log external API calls but don't interfere with them
       if (!url.includes(window.location.hostname)) {
-        AuditService.logEvent({
-          type: 'security',
-          action: 'external_api_call',
-          details: { url: new URL(url).hostname },
-          severity: 'low'
-        });
+        try {
+          AuditService.logEvent({
+            type: 'security',
+            action: 'external_api_call',
+            details: { url: new URL(url).hostname },
+            severity: 'low'
+          });
+        } catch (error) {
+          // Silently fail if logging fails
+        }
       }
       
+      // Always call the original fetch without interference
       return originalFetch.call(this, input, init);
     };
   }
