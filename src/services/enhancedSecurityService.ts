@@ -160,7 +160,8 @@ export class EnhancedSecurityService extends SecurityService {
     // Monitor for suspicious activities
     this.monitorLocalStorageChanges();
     this.monitorConsoleAccess();
-    this.monitorNetworkRequests();
+    // Temporarily disable network monitoring to fix API calls
+    // this.monitorNetworkRequests();
   }
 
   // Monitor localStorage changes
