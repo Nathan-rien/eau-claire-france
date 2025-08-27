@@ -118,23 +118,6 @@ const WaterSourceFilters: React.FC<WaterSourceFiltersProps> = ({
             </Select>
           </div>
 
-          {/* Répartition par région */}
-          <div className="pt-4 border-t">
-            <h4 className="text-sm font-medium mb-2">Répartition par région</h4>
-            <div className="space-y-1">
-              {Object.entries(stats.byRegion)
-                .sort(([,a], [,b]) => b - a)
-                .slice(0, 5)
-                .map(([region, count]) => (
-                  <div key={region} className="flex justify-between text-xs">
-                    <span className="truncate">{region}</span>
-                    <Badge variant="outline" className="ml-2">
-                      {count}
-                    </Badge>
-                  </div>
-                ))}
-            </div>
-          </div>
         </div>
       </CardContent>
     </Card>
