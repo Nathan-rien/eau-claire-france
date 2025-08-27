@@ -18,6 +18,7 @@ import { EnhancedSecurityService } from "@/services/enhancedSecurityService";
 const Index = React.lazy(() => import("./pages/Index"));
 const Carte = React.lazy(() => import("./pages/Carte"));
 const CartePolluants = React.lazy(() => import("./pages/CartePolluants"));
+const SourcesEau = React.lazy(() => import("./pages/SourcesEau"));
 const Alertes = React.lazy(() => import("./pages/Alertes"));
 const Diagnostic = React.lazy(() => import("./pages/Diagnostic"));
 const Bouteilles = React.lazy(() => import("./pages/Bouteilles"));
@@ -77,6 +78,7 @@ const App = () => {
                 <Route path="/" element={<Index />} />
                 <Route path="/carte" element={<Carte />} />
                 <Route path="/carte-polluants" element={<CartePolluants />} />
+                <Route path="/sources-eau" element={<SourcesEau />} />
                 <Route path="/alertes" element={<Alertes />} />
                 <Route path="/diagnostic" element={<Diagnostic />} />
                 <Route path="/bouteilles" element={<Bouteilles />} />
