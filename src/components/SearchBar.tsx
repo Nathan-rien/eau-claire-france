@@ -25,7 +25,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       clearTimeout(debounceRef.current);
     }
 
-    if (query.length < 3) {
+    if (query.length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
@@ -70,7 +70,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       let cityName = query.trim();
       
       // Si aucune suggestion n'est trouvée, forcer une recherche
-      if (suggestions.length === 0 && query.length >= 3) {
+      if (suggestions.length === 0 && query.length >= 2) {
         try {
           const results = await searchAddresses(query);
           if (results.length > 0) {
