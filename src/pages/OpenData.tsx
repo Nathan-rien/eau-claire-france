@@ -6,8 +6,11 @@ import NavigationCTA from '@/components/NavigationCTA';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useBottleData } from "@/hooks/useBottleData";
 
 const OpenData = () => {
+  const { composition, catalog, mdd, loading, error } = useBottleData();
+  
   const datasets = [
     {
       name: "Qualité de l'eau par commune",
@@ -79,6 +82,36 @@ const OpenData = () => {
               Toutes nos données sont ouvertes et réutilisables conformément aux principes de l'Open Data.
             </p>
           </div>
+
+          {/* Test des données CSV GitHub */}
+          <Card className="mb-8 border-purple-200 bg-purple-50">
+            <CardHeader>
+              <CardTitle className="text-purple-800">État des données CSV GitHub</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading && <div className="text-purple-700">Chargement des données...</div>}
+              {error && <div className="text-red-600">Erreur: {error}</div>}
+              {!loading && !error && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-purple-700">
+                  <div className="bg-white p-3 rounded">
+                    <div className="font-semibold">Composition</div>
+                    <div className="text-2xl font-bold">{composition?.length ?? 0}</div>
+                    <div className="text-sm">entrées chargées</div>
+                  </div>
+                  <div className="bg-white p-3 rounded">
+                    <div className="font-semibold">Catalogue</div>
+                    <div className="text-2xl font-bold">{catalog?.length ?? 0}</div>
+                    <div className="text-sm">entrées chargées</div>
+                  </div>
+                  <div className="bg-white p-3 rounded">
+                    <div className="font-semibold">MDD</div>
+                    <div className="text-2xl font-bold">{mdd?.length ?? 0}</div>
+                    <div className="text-sm">entrées chargées</div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Principes Open Data */}
           <Card className="mb-8 border-green-200 bg-green-50">

@@ -1,6 +1,8 @@
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
+import { useEffect, useState } from "react";
 import { bottleApi } from '@/services/bottleApi';
 import { BottleWaterData } from '@/data/bottleComparisonData';
+import { loadComposition, loadCatalog, loadMdd } from "@/services/waterData";
 
 export const useBottles = (options: {
   page?: number;
@@ -70,3 +72,36 @@ export const useWaterTypes = () => {
     gcTime: 30 * 60 * 1000,
   });
 };
+
+export function useBottleData() {
+  const [composition, setComposition] = useState<any[] | null>(null);
+  const [catalog, setCatalog] = useState<any[] | null>(null);
+  const [mdd, setMdd] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<null | string>(null);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const [c1, c2, c3] = await Promise.all([
+          loadComposition(),
+          loadCatalog(),
+          loadMdd(),
+        ]);
+        if (!alive) return;
+        setComposition(c1);
+        setCatalog(c2);
+        setMdd(c3);
+      } catch (e: any) {
+        console.error(e);
+        setError(e?.message ?? "Erreur de chargement des données");
+      } finally {
+        setLoading(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  return { composition, catalog, mdd, loading, error };
+}
