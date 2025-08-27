@@ -172,7 +172,10 @@ const QuelleEauBoire: React.FC = () => {
                         <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
                           {index + 1}
                         </span>
-                        {recommendation.bottle.marque} {recommendation.bottle.nom_bouteille}
+                         {recommendation.bottle.marque === recommendation.bottle.nom_bouteille 
+                           ? recommendation.bottle.marque 
+                           : `${recommendation.bottle.marque} ${recommendation.bottle.nom_bouteille}`
+                         }
                       </CardTitle>
                       <p className="text-muted-foreground">{recommendation.bottle.type_eau}</p>
                       {recommendation.bottle.source && (
