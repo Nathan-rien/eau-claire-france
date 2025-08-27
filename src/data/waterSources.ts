@@ -118,42 +118,42 @@ export const waterSources: WaterSource[] = [
     flow: 600
   },
   {
-    id: 'perrier-vergeze',
-    name: 'Source Perrier',
-    location: 'Vergèze, Gard',
-    coordinates: [4.2317, 43.7347],
+    id: 'saint-yorre-allier',
+    name: 'Sources de Saint-Yorre',
+    location: 'Saint-Yorre, Allier',
+    coordinates: [3.4667, 46.0667],
     type: 'Eau minérale naturelle gazeuse',
-    brands: ['Perrier'],
-    region: 'Occitanie',
-    composition: {
-      calcium: 150,
-      magnesium: 3.4,
-      sodium: 9.6,
-      nitrates: 0.1,
-      residu_sec: 456
-    },
-    description: 'Eau gazeuse naturelle du sud de la France, naturellement pétillante',
-    depth: 120,
-    flow: 2000
-  },
-  {
-    id: 'badoit-loire',
-    name: 'Sources de Badoit',
-    location: 'Saint-Galmier, Loire',
-    coordinates: [4.3156, 45.5889],
-    type: 'Eau minérale naturelle gazeuse',
-    brands: ['Badoit'],
+    brands: ['St-Yorre'],
     region: 'Auvergne-Rhône-Alpes',
     composition: {
-      calcium: 190,
-      magnesium: 85,
-      sodium: 150,
-      nitrates: 0.5,
-      residu_sec: 1200
+      calcium: 160,
+      magnesium: 80,
+      sodium: 1700,
+      nitrates: 0.3,
+      residu_sec: 4774
     },
-    description: 'Eau finement pétillante des sources de Saint-Galmier',
-    depth: 500,
+    description: 'Eau naturellement gazeuse et très minéralisée de l\'Allier',
+    depth: 180,
     flow: 400
+  },
+  {
+    id: 'quezac-lozere',
+    name: 'Sources de Quézac',
+    location: 'Quézac, Lozère',
+    coordinates: [3.4333, 44.4667],
+    type: 'Eau minérale naturelle gazeuse',
+    brands: ['Quézac'],
+    region: 'Occitanie',
+    composition: {
+      calcium: 90,
+      magnesium: 15,
+      sodium: 100,
+      nitrates: 0.2,
+      residu_sec: 1100
+    },
+    description: 'Eau gazeuse naturelle des Causses lozériens',
+    depth: 120,
+    flow: 350
   },
   {
     id: 'salvetat-herault',
@@ -175,48 +175,67 @@ export const waterSources: WaterSource[] = [
     flow: 350
   },
   {
-    id: 'gerolsteiner-allemagne',
-    name: 'Sources de Gerolsteiner',
-    location: 'Gerolstein, Allemagne',
-    coordinates: [6.6583, 50.2208],
-    type: 'Eau minérale naturelle gazeuse',
-    brands: ['Gerolsteiner'],
-    region: 'Allemagne',
+    id: 'mont-roucous-tarn',
+    name: 'Sources du Mont Roucous',
+    location: 'Lacaune, Tarn',
+    coordinates: [2.7167, 43.7167],
+    type: 'Eau minérale naturelle',
+    brands: ['Mont Roucous'],
+    region: 'Occitanie',
     composition: {
-      calcium: 348,
-      magnesium: 108,
-      sodium: 118,
-      nitrates: 0.6,
-      residu_sec: 2527
+      calcium: 2.5,
+      magnesium: 0.9,
+      sodium: 3.1,
+      nitrates: 1.2,
+      residu_sec: 22
     },
-    description: 'Eau minérale allemande très riche en minéraux',
-    depth: 200,
-    flow: 800
+    description: 'Eau très faiblement minéralisée, adaptée aux nourrissons',
+    depth: 60,
+    flow: 200
   },
   {
-    id: 'spa-belgique',
-    name: 'Sources de Spa',
-    location: 'Spa, Belgique',
-    coordinates: [5.8683, 50.4925],
+    id: 'thonon-haute-savoie',
+    name: 'Sources de Thonon',
+    location: 'Thonon-les-Bains, Haute-Savoie',
+    coordinates: [6.4797, 46.3700],
     type: 'Eau minérale naturelle',
-    brands: ['Spa'],
-    region: 'Belgique',
+    brands: ['Thonon'],
+    region: 'Auvergne-Rhône-Alpes',
     composition: {
-      calcium: 4.5,
-      magnesium: 1.5,
-      sodium: 2.7,
-      nitrates: 1.0,
-      residu_sec: 33
+      calcium: 60,
+      magnesium: 5,
+      sodium: 5,
+      nitrates: 2.1,
+      residu_sec: 300
     },
-    description: 'Eau très pure des Ardennes belges, faiblement minéralisée',
-    depth: 100,
-    flow: 1200
+    description: 'Sources des Alpes lémaniques, réputées pour leur pureté',
+    depth: 130,
+    flow: 400
+  },
+  {
+    id: 'saint-amand-nord',
+    name: 'Sources de Saint-Amand',
+    location: 'Saint-Amand-les-Eaux, Nord',
+    coordinates: [3.4333, 50.4500],
+    type: 'Eau minérale naturelle',
+    brands: ['Saint-Amand'],
+    region: 'Hauts-de-France',
+    composition: {
+      calcium: 85,
+      magnesium: 8,
+      sodium: 10,
+      nitrates: 1.5,
+      residu_sec: 430
+    },
+    description: 'Sources thermales du Nord de la France',
+    depth: 170,
+    flow: 600
   },
   {
     id: 'cristalline-multiples',
     name: 'Sources Cristaline',
     location: 'Multiples sources en France',
-    coordinates: [2.2137, 46.2276], // Centre de la France
+    coordinates: [2.2137, 46.2276],
     type: 'Eau de source',
     brands: ['Cristaline'],
     region: 'France entière',
@@ -230,25 +249,6 @@ export const waterSources: WaterSource[] = [
     description: 'Réseau de sources d\'eau naturelles réparties sur tout le territoire français',
     depth: 80,
     flow: 500
-  },
-  {
-    id: 'mont-roucous-aveyron',
-    name: 'Sources du Mont Roucous',
-    location: 'Mont Roucous, Aveyron',
-    coordinates: [2.8500, 43.9000],
-    type: 'Eau de source',
-    brands: ['Mont Roucous'],
-    region: 'Occitanie',
-    composition: {
-      calcium: 2.9,
-      magnesium: 0.5,
-      sodium: 3.0,
-      nitrates: 1.8,
-      residu_sec: 25
-    },
-    description: 'Eau très faiblement minéralisée, adaptée aux nourrissons',
-    depth: 60,
-    flow: 200
   }
 ];
 

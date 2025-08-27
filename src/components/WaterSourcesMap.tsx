@@ -106,7 +106,8 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({
             region: source.region,
             calcium: source.composition.calcium,
             magnesium: source.composition.magnesium,
-            sodium: source.composition.sodium
+            sodium: source.composition.sodium,
+            displayName: source.brands.length > 0 ? `${source.brands[0]} - ${source.name}` : source.name
           }
         }))
       }
@@ -145,9 +146,9 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({
       type: 'symbol',
       source: 'water-sources',
       layout: {
-        'text-field': ['get', 'name'],
+        'text-field': ['get', 'displayName'],
         'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-        'text-size': 12,
+        'text-size': 11,
         'text-offset': [0, 2],
         'text-anchor': 'top'
       },
@@ -214,7 +215,8 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({
           region: source.region,
           calcium: source.composition.calcium,
           magnesium: source.composition.magnesium,
-          sodium: source.composition.sodium
+          sodium: source.composition.sodium,
+          displayName: source.brands.length > 0 ? `${source.brands[0]} - ${source.name}` : source.name
         }
       }))
     });

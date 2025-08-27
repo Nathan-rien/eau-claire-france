@@ -118,25 +118,6 @@ const WaterSourceFilters: React.FC<WaterSourceFiltersProps> = ({
             </Select>
           </div>
 
-          {/* Informations supplémentaires */}
-          <div className="pt-4 border-t">
-            <h4 className="text-sm font-medium mb-2">Informations</h4>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <div className="flex justify-between">
-                <span>Profondeur moyenne</span>
-                <span>{stats.averageDepth}m</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Débit moyen</span>
-                <span>{stats.averageFlow} L/min</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Régions représentées</span>
-                <span>{Object.keys(stats.byRegion).length}</span>
-              </div>
-            </div>
-          </div>
-
           {/* Répartition par région */}
           <div className="pt-4 border-t">
             <h4 className="text-sm font-medium mb-2">Répartition par région</h4>
