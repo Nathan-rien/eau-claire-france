@@ -383,32 +383,6 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({
             </Card>
           )}
 
-          {/* Statistiques rapides */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Statistiques</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>Sources affichées</span>
-                  <span className="font-medium">{filteredSources.length}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Régions couvertes</span>
-                  <span className="font-medium">
-                    {new Set(filteredSources.map(s => s.region)).size}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Marques disponibles</span>
-                  <span className="font-medium">
-                    {new Set(filteredSources.flatMap(s => s.brands)).size}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
