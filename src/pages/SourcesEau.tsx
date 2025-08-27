@@ -37,14 +37,14 @@ const SourcesEau = () => {
     <Layout>
       <SEOHead 
         title="Sources d'Eau Minérale en France - Carte Interactive | InfoEau"
-        description="Découvrez les principales sources d'eau minérale et de source en France. Carte interactive, composition minérale, localisation et informations détaillées sur chaque source."
-        keywords="sources eau minérale, carte sources eau, eau de source France, géolocalisation sources, composition minérale, Evian, Volvic, Vittel, Contrex"
+        description="Explorez les principales sources des bouteilles d'eau vendues en France. Découvrez leur localisation, leur composition et les marques associées."
+        keywords="sources eau bouteilles, carte sources eau, bouteilles eau France, géolocalisation sources, composition, Evian, Volvic, Vittel, Contrex"
         canonical="/sources-eau"
         schemaData={{
           "@context": "https://schema.org",
           "@type": "WebPage",
-          "name": "Sources d'Eau Minérale en France",
-          "description": "Carte interactive des principales sources d'eau minérale et de source en France avec informations détaillées",
+          "name": "Les sources des bouteilles vendues en France",
+          "description": "Carte interactive des principales sources des bouteilles d'eau vendues en France avec informations détaillées",
           "url": "https://info-eau.fr/sources-eau",
           "mainEntity": {
             "@type": "Dataset",
@@ -67,11 +67,11 @@ const SourcesEau = () => {
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
                 <Droplets className="w-8 h-8 text-blue-600" />
-                <span>Sources d'Eau Minérale en France</span>
+                <span>Les sources des bouteilles vendues en France</span>
               </h1>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Explorez les principales sources d'eau minérale et de source françaises. 
-                Découvrez leur localisation, leur composition minérale et les marques associées.
+                Explorez les principales sources des bouteilles d'eau vendues en France. 
+                Découvrez leur localisation, leur composition et les marques associées.
               </p>
             </div>
 
