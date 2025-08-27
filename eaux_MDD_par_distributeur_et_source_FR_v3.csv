@@ -1,0 +1,12 @@
+retailer,mdd_brand,water_id,category,source_name,source_id,emb_code,region_scope,notes,evidence_url
+E.Leclerc,Marque Repère – Eau de source (Laqueuille),W-FR-FR-EAU-DE-SOURCE-LAQUEUILLE-PL,Eau de source,Laqueuille,SRC-LAQUEUILLE,,national,Conditionnée par Roxane,
+E.Leclerc,Eco+ – Eau de source (Laqueuille),W-FR-FR-EAU-DE-SOURCE-LAQUEUILLE-PL,Eau de source,Laqueuille,SRC-LAQUEUILLE,,national,,
+Carrefour,Carrefour Classic’ – Eau de source (Grand Barbier),W-FR-FR-EAU-DE-SOURCE-GRAND-BARBIER-PL,Eau de source,Grand Barbier,SRC-GRANDBARBIER,,national,,
+Intermarché,Top Budget – Eau de source (Fiée des Lois),W-FR-FR-EAU-DE-SOURCE-FIEE-DES-LOIS-PL,Eau de source,Fiée des Lois,SRC-FIEE,,national,,
+Système U,U – Eau de source (Sainte‑Sophie),W-FR-FR-EAU-DE-SOURCE-SAINTE-SOPHIE-PL,Eau de source,Sainte‑Sophie,SRC-STESOPHIE,,national,Sources variables,
+Auchan,Auchan – Eau de source (Pyrénéa),W-FR-FR-AUCHAN-EAU-DE-SOURCE-PYRENEA-PL,Eau de source,Pyrénéa,SRC-PYRENEA,,national,,
+Casino,Casino – Eau de source (Roche des Écrins),W-FR-FR-CASINO-EAU-DE-SOURCE-ROCHE-DES-ECRINS-PL,Eau de source,Roche des Écrins,SRC-ECRINS,,national,,
+Cora,Cora – Ondine (St‑Martin d’Abbat),W-FR-FR-EAU-DE-SOURCE-SAINT-MARTIN-DABBAT-PL,Eau de source,Saint‑Martin d’Abbat,,EMB 45290,regional,,
+Monoprix,Monoprix – Eau de source (5L),W-FR-FR-MONOPRIX-EAU-DE-SOURCE-PL,Eau de source,Sources variables,,,national,,
+Lidl,Saskia – Eau de source,W-FR-FR-SASKIA-(LIDL)-PL,Eau de source,Kirkel/Löningen/Jessen/Wörth/Leißling,,,regional,Source variable selon région,
+Aldi,Rocheval – Eau de source,W-FR-FR-ROCHEVAL-(ALDI)-PL,Eau de source,Louise / Ophélie,,,regional,,
