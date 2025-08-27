@@ -3,35 +3,19 @@ import { Droplets, MapPin, Info } from 'lucide-react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
-import WaterSourcesMap from '@/components/WaterSourcesMap';
-import WaterSourceFilters from '@/components/WaterSourceFilters';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { WaterSource } from '@/data/waterSources';
+import { useBottleData } from "@/hooks/useBottleData";
+import { buildSources } from "@/utils/sourcesAdapter";
 
-const SourcesEau = () => {
-  const [selectedType, setSelectedType] = useState<string>('all');
-  const [selectedBrand, setSelectedBrand] = useState<string>('all');
-  const [selectedSource, setSelectedSource] = useState<WaterSource | null>(null);
+export default function SourcesEau() {
+  const { composition, catalog, loading, error } = useBottleData();
+  const [pageSize, setPageSize] = useState<number | "all">("all");
 
-  const handleTypeChange = (type: string) => {
-    setSelectedType(type);
-    setSelectedSource(null);
-  };
+  if (loading) return <div style={{padding:16}}>Chargement…</div>;
+  if (error)   return <div style={{padding:16}}>❌ {error}</div>;
 
-  const handleBrandChange = (brand: string) => {
-    setSelectedBrand(brand);
-    setSelectedSource(null);
-  };
-
-  const handleReset = () => {
-    setSelectedType('all');
-    setSelectedBrand('all');
-    setSelectedSource(null);
-  };
-
-  const handleSourceSelect = (source: WaterSource) => {
-    setSelectedSource(source);
-  };
+  const sources = buildSources(composition ?? [], catalog ?? []);
+  const visible = pageSize === "all" ? sources : sources.slice(0, pageSize);
 
   return (
     <Layout>
@@ -67,11 +51,10 @@ const SourcesEau = () => {
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
                 <Droplets className="w-8 h-8 text-blue-600" />
-                <span>Les sources des bouteilles vendues en France</span>
+                <span>Sources d'eau en France</span>
               </h1>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Explorez les principales sources des bouteilles d'eau vendues en France. 
-                Découvrez leur localisation, leur composition et les marques associées.
+                {sources.length} captages trouvés — données agrégées depuis vos CSV (composition + catalogue).
               </p>
             </div>
 
@@ -112,28 +95,41 @@ const SourcesEau = () => {
               </Card>
             </div>
 
-            {/* Interface principale */}
-            <div className="grid lg:grid-cols-4 gap-6">
-              {/* Filtres */}
-              <div className="lg:col-span-1">
-                <WaterSourceFilters
-                  selectedType={selectedType}
-                  selectedBrand={selectedBrand}
-                  onTypeChange={handleTypeChange}
-                  onBrandChange={handleBrandChange}
-                  onReset={handleReset}
-                />
-              </div>
-
-              {/* Carte et détails */}
-              <div className="lg:col-span-3">
-                <WaterSourcesMap
-                  selectedType={selectedType}
-                  selectedBrand={selectedBrand}
-                  onSourceSelect={handleSourceSelect}
-                />
-              </div>
+            {/* Contrôles de pagination */}
+            <div className="mb-6 flex items-center gap-4">
+              <label htmlFor="pageSize" className="text-sm font-medium">Affichage :</label>
+              <select 
+                id="pageSize"
+                className="px-3 py-1 border border-gray-300 rounded-md text-sm"
+                value={pageSize} 
+                onChange={e => setPageSize(e.target.value === "all" ? "all" : Number(e.target.value))}
+              >
+                <option value="all">Tout ({sources.length})</option>
+                <option value={12}>12</option>
+                <option value={24}>24</option>
+                <option value={48}>48</option>
+              </select>
             </div>
+
+            {/* Liste des sources */}
+            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {visible.map(src => (
+                <li key={src.source_id} className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
+                  <div className="font-semibold text-gray-900 mb-1">{src.source_name}</div>
+                  {src.location && <div className="text-sm text-gray-600 mb-2">{src.location}</div>}
+                  <div className="text-sm text-gray-700 mb-3">
+                    {src.count_brands} marque{src.count_brands > 1 ? "s" : ""}
+                    {src.is_sparkling_mix ? " · inclut des gazeuses" : ""}
+                  </div>
+                  {src.brands.length > 0 && (
+                    <div className="text-sm text-gray-600">
+                      {src.brands.slice(0, 6).join(" · ")}
+                      {src.brands.length > 6 ? " · …" : ""}
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
 
             {/* Section éducative */}
             <div className="mt-12">
@@ -186,6 +182,4 @@ const SourcesEau = () => {
       </div>
     </Layout>
   );
-};
-
-export default SourcesEau;
+}
