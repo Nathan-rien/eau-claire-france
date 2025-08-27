@@ -6,15 +6,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapboxSecurityService } from '@/services/mapboxSecurityService';
 import { waterSources, WaterSource, getSourcesByType } from '@/data/waterSources';
+import { bottledWaters } from '@/data/bottleWaterData';
 import { Droplets, MapPin, Gauge, Ruler } from 'lucide-react';
 
 interface WaterSourcesMapProps {
   selectedType?: string;
+  selectedBrand?: string;
   onSourceSelect?: (source: WaterSource) => void;
 }
 
 const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ 
   selectedType = 'all',
+  selectedBrand = 'all',
   onSourceSelect 
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -22,11 +25,31 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({
   const [selectedSource, setSelectedSource] = useState<WaterSource | null>(null);
   const [filteredSources, setFilteredSources] = useState<WaterSource[]>(waterSources);
 
-  // Mettre à jour les sources filtrées quand le type change
+  // Mettre à jour les sources filtrées quand le type ou la marque change
   useEffect(() => {
-    const sources = getSourcesByType(selectedType);
+    let sources = getSourcesByType(selectedType);
+    
+    // Filtrer par marque si une marque spécifique est sélectionnée
+    if (selectedBrand !== 'all') {
+      const selectedWater = bottledWaters.find(water => water.id === selectedBrand);
+      if (selectedWater) {
+        sources = sources.filter(source => {
+          // Recherche flexible pour matcher les sources avec les bouteilles
+          const sourceName = source.name.toLowerCase();
+          const sourceLocation = source.location.toLowerCase();
+          const waterSource = selectedWater.source.toLowerCase();
+          const waterName = selectedWater.name.toLowerCase();
+          
+          return sourceName.includes(waterName) ||
+                 sourceLocation.includes(waterSource) ||
+                 waterSource.includes(sourceName) ||
+                 source.brands.some(brand => brand.toLowerCase().includes(waterName));
+        });
+      }
+    }
+    
     setFilteredSources(sources);
-  }, [selectedType]);
+  }, [selectedType, selectedBrand]);
 
   useEffect(() => {
     if (!mapContainer.current) return;

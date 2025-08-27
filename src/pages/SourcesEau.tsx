@@ -10,6 +10,7 @@ import { WaterSource } from '@/data/waterSources';
 
 const SourcesEau = () => {
   const [selectedType, setSelectedType] = useState<string>('all');
+  const [selectedBrand, setSelectedBrand] = useState<string>('all');
   const [selectedSource, setSelectedSource] = useState<WaterSource | null>(null);
 
   const handleTypeChange = (type: string) => {
@@ -17,8 +18,14 @@ const SourcesEau = () => {
     setSelectedSource(null);
   };
 
+  const handleBrandChange = (brand: string) => {
+    setSelectedBrand(brand);
+    setSelectedSource(null);
+  };
+
   const handleReset = () => {
     setSelectedType('all');
+    setSelectedBrand('all');
     setSelectedSource(null);
   };
 
@@ -111,7 +118,9 @@ const SourcesEau = () => {
               <div className="lg:col-span-1">
                 <WaterSourceFilters
                   selectedType={selectedType}
+                  selectedBrand={selectedBrand}
                   onTypeChange={handleTypeChange}
+                  onBrandChange={handleBrandChange}
                   onReset={handleReset}
                 />
               </div>
@@ -120,6 +129,7 @@ const SourcesEau = () => {
               <div className="lg:col-span-3">
                 <WaterSourcesMap
                   selectedType={selectedType}
+                  selectedBrand={selectedBrand}
                   onSourceSelect={handleSourceSelect}
                 />
               </div>

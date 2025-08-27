@@ -3,17 +3,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Filter, RotateCcw } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getSourcesStatistics } from '@/data/waterSources';
+import { bottledWaters } from '@/data/bottleWaterData';
 
 interface WaterSourceFiltersProps {
   selectedType: string;
+  selectedBrand: string;
   onTypeChange: (type: string) => void;
+  onBrandChange: (brand: string) => void;
   onReset: () => void;
 }
 
 const WaterSourceFilters: React.FC<WaterSourceFiltersProps> = ({
   selectedType,
+  selectedBrand,
   onTypeChange,
+  onBrandChange,
   onReset
 }) => {
   const stats = getSourcesStatistics();
@@ -53,7 +59,7 @@ const WaterSourceFilters: React.FC<WaterSourceFiltersProps> = ({
             <Filter className="h-5 w-5" />
             Filtres
           </CardTitle>
-          {selectedType !== 'all' && (
+          {(selectedType !== 'all' || selectedBrand !== 'all') && (
             <Button
               variant="outline"
               size="sm"
@@ -90,6 +96,26 @@ const WaterSourceFilters: React.FC<WaterSourceFiltersProps> = ({
                 </Button>
               ))}
             </div>
+          </div>
+
+          {/* Sélection par marque */}
+          <div className="space-y-2">
+            <h4 className="text-sm font-medium">Marque d'eau</h4>
+            <Select value={selectedBrand} onValueChange={onBrandChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Toutes les marques" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes les marques</SelectItem>
+                {bottledWaters
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((water) => (
+                    <SelectItem key={water.id} value={water.id}>
+                      {water.name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Informations supplémentaires */}
