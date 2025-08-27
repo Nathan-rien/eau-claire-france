@@ -63,13 +63,26 @@ const SearchBar: React.FC<SearchBarProps> = ({
     onCitySelect(suggestion.city);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (query.trim()) {
-      const cityName = suggestions.length > 0 ? 
-        suggestions[0].city : 
-        query.trim();
+      let cityName = query.trim();
+      
+      // Si aucune suggestion n'est trouvée, forcer une recherche
+      if (suggestions.length === 0 && query.length >= 3) {
+        try {
+          const results = await searchAddresses(query);
+          if (results.length > 0) {
+            cityName = results[0].city;
+          }
+        } catch (error) {
+          console.error('Erreur lors de la recherche finale:', error);
+        }
+      } else if (suggestions.length > 0) {
+        cityName = suggestions[0].city;
+      }
+      
       onCitySelect(cityName);
       setShowSuggestions(false);
     }

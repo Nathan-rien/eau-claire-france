@@ -53,11 +53,45 @@ export const searchCities = (query: string): CityData[] => {
   
   const normalizedQuery = query.toLowerCase().trim();
   
-  return FRENCH_CITIES
+  // Recherche normale par nom et code postal
+  let results = FRENCH_CITIES
     .filter(city => 
       city.name.toLowerCase().includes(normalizedQuery) ||
       city.postcode.includes(normalizedQuery)
-    )
+    );
+
+  // Si aucun résultat trouvé, recherche par adresse partielle
+  if (results.length === 0) {
+    // Extraire les mots potentiels de ville de l'adresse
+    const words = normalizedQuery.split(/[\s,\-]+/).filter(word => word.length > 2);
+    
+    for (const word of words) {
+      const matchingCities = FRENCH_CITIES.filter(city => 
+        city.name.toLowerCase().includes(word) ||
+        city.context.toLowerCase().includes(word)
+      );
+      if (matchingCities.length > 0) {
+        results = matchingCities;
+        break;
+      }
+    }
+    
+    // Si toujours aucun résultat, suggestion intelligente basée sur des termes communs
+    if (results.length === 0) {
+      if (normalizedQuery.includes('paris') || normalizedQuery.includes('75')) {
+        results = [FRENCH_CITIES.find(city => city.name === 'Paris')!];
+      } else if (normalizedQuery.includes('lyon') || normalizedQuery.includes('69')) {
+        results = [FRENCH_CITIES.find(city => city.name === 'Lyon')!];
+      } else if (normalizedQuery.includes('marseille') || normalizedQuery.includes('13')) {
+        results = [FRENCH_CITIES.find(city => city.name === 'Marseille')!];
+      } else {
+        // Par défaut, proposer Paris comme suggestion
+        results = [FRENCH_CITIES.find(city => city.name === 'Paris')!];
+      }
+    }
+  }
+  
+  return results
     .slice(0, 5)
     .map(city => ({
       ...city,
