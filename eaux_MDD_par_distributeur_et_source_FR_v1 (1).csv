@@ -1,0 +1,5 @@
+retailer,mdd_brand,water_id,category,source_name,source_id,emb_code,region_scope,notes,evidence_url
+E.Leclerc,Eau de Source Laqueuille,W-FR-MDD-LAQUEUILLE,Eau de source,Laqueuille,SRC-LAQUEUILLE,,national,MDD conditionnée par Roxane,https://www.e-leclerc.com/catalogue/eau-source-laqueuille
+Carrefour,Eau de Source Grand Barbier,W-FR-MDD-GRANDBARBIER,Eau de source,Grand Barbier,SRC-GRANDBARBIER,,national,MDD Carrefour,https://www.carrefour.fr/p/eau-de-source-carrefour
+Intermarché,Eau de Source Fiée des Lois,W-FR-MDD-FIEELOIS,Eau de source,Fiée des Lois,SRC-FIEELOIS,,national,MDD Intermarché,https://www.intermarche.com/eau-source-fiee-lois
+Super U,Eau de Source Sainte Sophie,W-FR-MDD-STESOPHIE,Eau de source,Sainte-Sophie,SRC-STESOPHIE,,national,MDD Super U,https://www.magasins-u.com/eau-source-sainte-sophie

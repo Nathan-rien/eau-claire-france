@@ -1,0 +1,5 @@
+water_id,brand,product_name,category,variant,is_gaseous,carbonation_natural,owner_group,source_name,source_id,emb_code,bottle_sizes_ml,pack_formats,ean_primary,status,notes
+W-FR-DAN-EVIAN,Evian,Eau minérale naturelle,EMN,plate,False,,Danone,Cachat,SRC-CACHAT,,1500;750;500;330,6x1.5L;6x50cL,3068320055002,active,
+W-FR-NES-PERRIER,Perrier,Eau minérale naturelle,EMN,gazeuse,True,true,Nestlé,Les Bouillens,SRC-BOUILLENS,,1500;750;500;330,6x1L;6x50cL,7613036013607,active,
+W-FR-NES-HEPAR,Hépar,Eau minérale naturelle,EMN,plate,False,,Nestlé,Hépar,SRC-HEPAR,,1000,6x1L,7613032680933,active,
+W-FR-CRIS-CRISTALINE,Cristaline,Eau de source,Eau de source,plate,False,,Roxane,Multi-sources,SRC-CRISTALINE,,1500;500;330,6x1.5L;6x50cL,3515450014016,active,"multi-sources, voir mdd_sources"
