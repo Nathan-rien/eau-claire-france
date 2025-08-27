@@ -71,7 +71,20 @@ const QuelleEauBoire: React.FC = () => {
     const intolerances = userIntolerances.filter(i => selectedIntolerances.includes(i.id));
     const preferences = userPreferences.filter(p => selectedPreferences.includes(p.id));
     
-    const results = waterRecommendationService.calculateRecommendations(profiles, intolerances, preferences);
+    let results = waterRecommendationService.calculateRecommendations(profiles, intolerances, preferences);
+    
+    // Filtrer par type d'eau si spécifié
+    if (selectedWaterType === 'plate') {
+      results = results.filter(rec => 
+        rec.bottle.type_eau === 'Eau de source' || 
+        rec.bottle.type_eau === 'Eau minérale naturelle'
+      );
+    } else if (selectedWaterType === 'gazeuse') {
+      results = results.filter(rec => 
+        rec.bottle.type_eau === 'Eau minérale naturelle gazeuse'
+      );
+    }
+    
     setRecommendations(results);
     setShowResults(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });

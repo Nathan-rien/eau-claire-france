@@ -29,9 +29,9 @@ export class WaterRecommendationService {
     });
 
     return recommendations
-      .filter(rec => rec.score > 30) // Only show bottles with decent scores
+      .filter(rec => rec.score > 10) // Plus permissif pour avoir plus de résultats
       .sort((a, b) => b.score - a.score)
-      .slice(0, 10); // Top 10 recommendations
+      .slice(0, 15); // Plus de recommandations
   }
 
   private combineCriteria(
@@ -107,7 +107,8 @@ export class WaterRecommendationService {
     intolerances: UserIntolerance[],
     preferences: UserPreference[]
   ): { score: number; reasons: string[]; warnings: string[] } {
-    let score = 100;
+    let totalScore = 0;
+    let weightSum = 0;
     const reasons: string[] = [];
     const warnings: string[] = [];
 
@@ -120,6 +121,9 @@ export class WaterRecommendationService {
       residusSec: 'residu_sec_mgL'
     };
 
+    // Score de base pour toutes les bouteilles
+    let baseScore = 70;
+
     // Evaluate each mineral criterion
     Object.entries(criteria).forEach(([key, criterion]) => {
       if (!criterion) return;
@@ -131,41 +135,67 @@ export class WaterRecommendationService {
       if (value === undefined || typeof value !== 'number') return;
 
       const { min, max, priority } = criterion;
-      let mineralScore = 100;
+      let mineralScore = 50; // Score neutre par défaut
       let reason = '';
 
-      if (max !== undefined && value > max) {
-        const excess = ((value - max) / max) * 100;
-        mineralScore = Math.max(0, 100 - excess * priority);
-        
-        if (priority >= 4) {
-          warnings.push(`Taux de ${this.getMineralName(key)} élevé (${value} mg/L)`);
+      // Calcul du score pour ce minéral
+      if (min !== undefined && max !== undefined) {
+        if (value >= min && value <= max) {
+          mineralScore = 100;
+          reason = `Taux optimal de ${this.getMineralName(key)}`;
+        } else if (value < min) {
+          const deficit = Math.abs((min - value) / min);
+          mineralScore = Math.max(20, 100 - deficit * 50);
+          if (priority >= 3) {
+            reason = `Faible en ${this.getMineralName(key)}`;
+          }
+        } else if (value > max) {
+          const excess = (value - max) / max;
+          mineralScore = Math.max(10, 100 - excess * 60);
+          if (priority >= 4) {
+            warnings.push(`Taux de ${this.getMineralName(key)} élevé (${value} mg/L)`);
+          }
         }
-      }
-
-      if (min !== undefined && value < min) {
-        const deficit = ((min - value) / min) * 100;
-        mineralScore = Math.max(0, 100 - deficit * priority);
-        
-        if (priority >= 3) {
+      } else if (min !== undefined) {
+        if (value >= min) {
+          mineralScore = 90;
+          reason = `Riche en ${this.getMineralName(key)}`;
+        } else {
+          const deficit = (min - value) / min;
+          mineralScore = Math.max(30, 70 - deficit * 40);
+          if (priority >= 3) {
+            reason = `Faible en ${this.getMineralName(key)}`;
+          }
+        }
+      } else if (max !== undefined) {
+        if (value <= max) {
+          mineralScore = 85;
           reason = `Faible en ${this.getMineralName(key)}`;
+        } else {
+          const excess = (value - max) / max;
+          mineralScore = Math.max(15, 80 - excess * 50);
+          if (priority >= 4) {
+            warnings.push(`Taux de ${this.getMineralName(key)} élevé (${value} mg/L)`);
+          }
         }
-      }
-
-      if (min !== undefined && max !== undefined && value >= min && value <= max) {
-        reason = `Taux optimal de ${this.getMineralName(key)}`;
-      } else if (min !== undefined && value >= min) {
-        reason = `Riche en ${this.getMineralName(key)}`;
-      } else if (max !== undefined && value <= max) {
-        reason = `Pauvre en ${this.getMineralName(key)}`;
       }
 
       if (reason) {
         reasons.push(reason);
       }
 
-      score = Math.min(score, mineralScore);
+      // Pondération du score selon la priorité
+      const weight = priority || 1;
+      totalScore += mineralScore * weight;
+      weightSum += weight;
     });
+
+    // Calcul du score final
+    let finalScore = baseScore;
+    if (weightSum > 0) {
+      const weightedScore = totalScore / weightSum;
+      finalScore = (baseScore + weightedScore) / 2;
+    }
 
     // Add specific reasons based on profiles
     profiles.forEach(profile => {
@@ -173,22 +203,31 @@ export class WaterRecommendationService {
         case 'nourrisson':
           if (bottle.sodium_mgL <= 10 && bottle.nitrates_mgL <= 10) {
             reasons.push('Adaptée aux nourrissons');
+            finalScore += 10;
           }
           break;
         case 'grossesse':
           if (bottle.nitrates_mgL <= 10 && bottle.calcium_mgL >= 80) {
             reasons.push('Sûre pendant la grossesse');
+            finalScore += 8;
           }
           break;
         case 'hypertension':
           if (bottle.sodium_mgL <= 20) {
             reasons.push('Faible teneur en sodium');
+            finalScore += 8;
           }
           break;
         case 'sportif-regulier':
-        case 'activite-intense':
           if (bottle.magnesium_mgL >= 20) {
             reasons.push('Bonne récupération sportive');
+            finalScore += 8;
+          }
+          break;
+        case 'activite-intense':
+          if (bottle.magnesium_mgL >= 30 && bottle.sodium_mgL >= 30) {
+            reasons.push('Excellente pour le sport intense');
+            finalScore += 12;
           }
           break;
       }
@@ -198,22 +237,30 @@ export class WaterRecommendationService {
     intolerances.forEach(intolerance => {
       if (intolerance.id === 'intolerance-nitrates' && bottle.nitrates_mgL > 10) {
         warnings.push('⚠️ Attention : Taux de nitrates élevé');
-        score *= 0.5;
+        finalScore *= 0.6;
       }
       if (intolerance.id === 'intolerance-sodium' && bottle.sodium_mgL > 20) {
         warnings.push('⚠️ Attention : Taux de sodium élevé');
-        score *= 0.5;
+        finalScore *= 0.6;
       }
     });
 
     // Bonus for ecological considerations
-    if (bottle.ecoscore === 'A' || bottle.ecoscore === 'B') {
-      score += 5;
+    if (bottle.ecoscore === 'A') {
+      finalScore += 8;
+      reasons.push('Excellent éco-score');
+    } else if (bottle.ecoscore === 'B') {
+      finalScore += 5;
       reasons.push('Bon éco-score');
     }
 
+    // Bonus pour les eaux plates si le filtre est appliqué
+    if (bottle.type_eau === 'Eau de source' || bottle.type_eau === 'Eau minérale naturelle') {
+      finalScore += 2;
+    }
+
     return {
-      score: Math.min(100, Math.round(score)), // Cap at 100
+      score: Math.min(100, Math.max(15, Math.round(finalScore))), // Entre 15 et 100
       reasons: reasons.slice(0, 4), // Limit to 4 main reasons
       warnings
     };
