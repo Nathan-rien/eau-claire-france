@@ -21,103 +21,85 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
   // Coordonnées réelles pour les sources françaises
   const [sourceCoordinates, setSourceCoordinates] = useState<Record<string, [number, number]>>({});
 
-  // Charger les coordonnées depuis le fichier CSV
+  // --- helper ---
+  const normalize = (s: string) =>
+    s?.toLowerCase()
+      .trim()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, ' ') || '';
+
+  // --- useEffect pour charger les coordonnées ---
   useEffect(() => {
     const loadCoordinates = async () => {
       try {
         const response = await fetch('/data/water_sources_coordinates.csv');
         const csvText = await response.text();
-        
-        const lines = csvText.split('\n').slice(1).filter(line => line.trim()); // Skip header and empty lines
+
+        const lines = csvText.split(/\r?\n/).slice(1).map(l => l.trim()).filter(Boolean);
         const coordinatesMap: Record<string, [number, number]> = {};
-        
-        lines.forEach(line => {
-          const [sourceName, brand, commune, department, lat, lng, category] = line.split(',');
-          if (sourceName && lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
-            const coords: [number, number] = [parseFloat(lng), parseFloat(lat)];
-            
-            // Clés de recherche multiples pour chaque source
-            const keys = [
-              sourceName.toLowerCase().trim(),
-              brand.toLowerCase().trim(),
-              commune.toLowerCase().trim()
-            ].filter(Boolean);
-            
-            // Ajouter toutes les variantes possibles
-            keys.forEach(key => {
-              coordinatesMap[key] = coords;
-              
-              // Ajouter des variantes sans accents et caractères spéciaux
-              const normalized = key
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-                .replace(/[^\w\s-]/g, '')
-                .replace(/\s+/g, ' ');
-              coordinatesMap[normalized] = coords;
-              
-              // Ajouter des mots-clés partiels pour améliorer la correspondance
-              const words = key.split(/[\s-]+/).filter(w => w.length > 2);
-              words.forEach(word => {
-                coordinatesMap[word] = coords;
-              });
-            });
-          }
-        });
-        
+
+        for (const line of lines) {
+          const parts = line.split(';').map(p => p.trim());
+          if (parts.length < 6) continue;
+
+          const [sourceNameRaw, brandRaw, communeRaw, , latRaw, lngRaw] = parts;
+          const lat = parseFloat(latRaw);
+          const lng = parseFloat(lngRaw);
+          if (isNaN(lat) || isNaN(lng)) continue;
+
+          const coords: [number, number] = [lng, lat];
+
+          const sourceName = normalize(sourceNameRaw);
+          const brand = normalize(brandRaw);
+          const commune = normalize(communeRaw);
+
+          if (sourceName) coordinatesMap[sourceName] = coords;
+          if (brand) coordinatesMap[brand] = coords;
+          if (commune) coordinatesMap[commune] = coords;
+          if (sourceName && commune) coordinatesMap[`${sourceName}|${commune}`] = coords;
+          if (brand && commune) coordinatesMap[`${brand}|${commune}`] = coords;
+        }
+
         setSourceCoordinates(coordinatesMap);
-      } catch (error) {
-        console.error('Erreur lors du chargement des coordonnées:', error);
+      } catch (e) {
+        console.error('Erreur lors du chargement des coordonnées:', e);
       }
     };
-    
+
     loadCoordinates();
   }, []);
 
+  // --- fonction de recherche stricte ---
   const getCoordinatesForSource = (source: SourceItem): [number, number] => {
-    const sourceName = source.source_name.toLowerCase().trim();
-    const location = source.location?.toLowerCase().trim() || '';
-    
-    // Recherche directe par nom de source
-    if (sourceCoordinates[sourceName]) {
-      return sourceCoordinates[sourceName];
+    const sName = normalize(source.source_name);
+    const loc = normalize(source.location || '');
+    const commune = (loc.split(/[,–-]/)[0] || '').trim();
+
+    if (sName && commune && sourceCoordinates[`${sName}|${commune}`]) {
+      return sourceCoordinates[`${sName}|${commune}`];
     }
-    
-    // Recherche par marques associées
-    for (const brand of source.brands) {
-      const brandKey = brand.toLowerCase().trim();
-      if (sourceCoordinates[brandKey]) {
-        return sourceCoordinates[brandKey];
-      }
+    if (sName && sourceCoordinates[sName]) {
+      return sourceCoordinates[sName];
     }
-    
-    // Recherche plus flexible par mots-clés
-    for (const [key, coords] of Object.entries(sourceCoordinates)) {
-      // Recherche dans le nom de source
-      if (sourceName.includes(key) || key.includes(sourceName)) {
-        return coords;
+    for (const b of source.brands) {
+      const brand = normalize(b);
+      if (brand && commune && sourceCoordinates[`${brand}|${commune}`]) {
+        return sourceCoordinates[`${brand}|${commune}`];
       }
-      
-      // Recherche dans la localisation
-      if (location && (location.includes(key) || key.includes(location))) {
-        return coords;
-      }
-      
-      // Recherche dans les marques
-      for (const brand of source.brands) {
-        const brandLower = brand.toLowerCase().trim();
-        if (brandLower.includes(key) || key.includes(brandLower)) {
-          return coords;
-        }
+      if (brand && sourceCoordinates[brand]) {
+        return sourceCoordinates[brand];
       }
     }
-    
-    // Position par défaut au centre de la France avec léger décalage aléatoire
-    const baseCoords: [number, number] = [2.2137, 46.2276];
-    const randomOffset = 0.2;
-    return [
-      baseCoords[0] + (Math.random() - 0.5) * randomOffset,
-      baseCoords[1] + (Math.random() - 0.5) * randomOffset
-    ];
+    if (commune && sourceCoordinates[commune]) {
+      return sourceCoordinates[commune];
+    }
+
+    // fallback centre France
+    const base: [number, number] = [2.2137, 46.2276];
+    const jitter = 0.05;
+    return [base[0] + (Math.random() - 0.5) * jitter, base[1] + (Math.random() - 0.5) * jitter];
   };
 
   useEffect(() => {

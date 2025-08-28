@@ -1,58 +1,58 @@
-source_name,brand,commune,department,latitude,longitude,category
-Cachat,Évian,Évian-les-Bains,Haute-Savoie,46.4008,6.5885,EMN
-Clairvic,Volvic,Volvic,Puy-de-Dôme,45.8708,3.0319,EMN
-Grande Source,Vittel,Vittel,Vosges,48.2034,5.9469,EMN
-Source Contrex,Contrex,Contrexéville,Vosges,48.1847,5.8936,EMN
-Hépar,Hépar,Vittel,Vosges,48.2100,5.9500,EMN
-Les Bouillens,Perrier,Vergèze,Gard,43.7500,3.9500,EMN
-Badoit,Badoit,Saint-Galmier,Loire,45.5333,4.2500,EMN
-Saint-Anne,Abatilles,Arcachon,Gironde,44.658,-1.1711,EMN
-Raphy-St-Simon Est,Aix-les-Bains,Grésy-sur-Aix,Savoie,45.7119,5.9086,EMN
-Alizée,Alizée,Chambon-la-Forêt,Loiret,48.0208,2.3689,EMN
-Amanda,Amanda,Saint-Amand-les-Eaux,Nord,50.4497,3.4336,EMN
-Biovive,Biovive,Dax,Landes,43.7102,-1.053,EMN
-La Liese,Celtic,Niederbronn-les-Bains,Bas-Rhin,48.949,7.6423,EMN
-Montfras,Chambon,Chambon-la-Forêt,Loiret,48.0208,2.3689,EMN
-Marie-Christine-Nord,Hydroxydase,Le Breuil-sur-Couze,Puy-de-Dôme,45.4658,3.2469,EMN
-La Cairolle,La Cairolle,Les Aires,Hérault,43.5664,3.05,EMN
-La Française,La Française,Propiac,Drôme,44.2758,5.1972,EMN
-Lapade,Luchon,Bagnères-de-Luchon,Haute-Garonne,42.7903,0.5931,EMN
-Mont Roucous,Mont Roucous,Lacaune,Tarn,43.4983,2.6881,EMN
-Montcalm,Montcalm,Auzat,Ariège,42.7,1.45,EMN
-Roy,Ogeu,Ogeu-les-Bains,Pyrénées-Atlantiques,43.1681,-0.5022,EMN
-Orée du Bois,Orée du Bois,Saint-Amand-les-Eaux,Nord,50.4497,3.4336,EMN
-Sassoy,Plancoët,Plancoët,Côtes-d'Armor,48.5167,-2.2333,EMN
-Prince Noir,Prince Noir,Saint-Antonin-Noble-Val,Tarn-et-Garonne,44.15,1.7667,EMN
-Thonon,Thonon,Thonon-les-Bains,Haute-Savoie,46.3667,6.4833,EMN
-Velleminfroy,Velleminfroy,Velleminfroy,Haute-Saône,47.7167,6.2833,EMN
-Wattwiller,Wattwiller,Wattwiller,Haut-Rhin,47.8333,7.1667,EMN
-Grande source du Volcan,Aizac,Aizac,Ardèche,44.7,4.3167,EMN
-Perline,Arcens,Arcens,Ardèche,44.9333,4.3167,EMN
-Arvie,Arvie,Augnat,Puy-de-Dôme,45.45,3.0333,EMN
-César,César,Saint-Alban-les-Eaux,Loire,45.95,3.9333,EMN
-Castel Rocher,Châteauneuf-Auvergne,Châteauneuf-les-Bains,Puy-de-Dôme,45.95,2.9,EMN
-Sergentale,Châteldon,Châteldon,Puy-de-Dôme,45.9833,3.5667,EMN
-Véronique,Cilaos,Cilaos,Réunion,-21.1333,55.4667,EMN
-Faustine,Faustine,Saint-Alban-les-Eaux,Loire,45.95,3.9333,EMN
-Rieumajou,La Salvetat,La Salvetat-sur-Agout,Hérault,43.6167,2.7,EMN
-Vernet Ouest,Le Vernet,Prades,Ardèche,44.6833,4.3,EMN
-Nessel,Nessel,Soultzmatt,Haut-Rhin,47.9667,7.2167,EMN
-Sorgente Sottana,Orezza,Rapaggio,Haute-Corse,42.3,9.3667,EMN
-Puits Saint-Georges,Puits Saint-Georges,Saint-Romain-le-Puy,Loire,45.5667,4.1,EMN
-Diva,Quézac,Quézac,Lozère,44.366,3.54,EMN
-La Reine des Basaltes,Reine des Basaltes,Asperjoc,Ardèche,44.6833,4.3667,EMN
-Des Romains,Rozana,Beauregard-Vendon,Puy-de-Dôme,45.9667,3.0667,EMN
-Bassin de Vichy,Saint-Yorre,Saint-Yorre,Allier,46.0667,3.4667,EMN
-Meyras,Ventadour,Meyras,Ardèche,44.6833,4.3,EMN
-Rieumajou,Vernière,Les Aires,Hérault,43.5664,3.05,EMN
-Bassin de Vichy,Vichy Célestins,Vichy,Allier,46.1333,3.4167,EMN
-Multi-sources,Cristaline,France,France,46.2276,2.2137,Eau de source
-Laqueuille,Laqueuille,Laqueuille,Puy-de-Dôme,45.65,2.7333,Eau de source
-Grand Barbier,Grand Barbier,France,France,46.2276,2.2137,Eau de source
-Fiée des Lois,Fiée des Lois,France,France,46.2276,2.2137,Eau de source
-Sainte-Sophie,Sainte-Sophie,France,France,46.2276,2.2137,Eau de source
-Pyrénéa,Pyrénéa,France,France,42.7,-0.5,Eau de source
-Roche des Écrins,Roche des Écrins,France,France,45.0,6.0,Eau de source
-Saint-Martin d'Abbat,Saint-Martin d'Abbat,Saint-Martin-d'Abbat,Loiret,47.8167,2.3167,Eau de source
-Louise,Louise,France,France,46.2276,2.2137,Eau de source
-Ophélie,Ophélie,France,France,46.2276,2.2137,Eau de source
+source_name;brand;commune;department;latitude;longitude;category
+Cachat;Évian;Évian-les-Bains;Haute-Savoie;46.4008;6.5885;EMN
+Clairvic;Volvic;Volvic;Puy-de-Dôme;45.8708;3.0319;EMN
+Grande Source;Vittel;Vittel;Vosges;48.2034;5.9469;EMN
+Source Contrex;Contrex;Contrexéville;Vosges;48.1847;5.8936;EMN
+Hépar;Hépar;Vittel;Vosges;48.2100;5.9500;EMN
+Les Bouillens;Perrier;Vergèze;Gard;43.7500;3.9500;EMN
+Badoit;Badoit;Saint-Galmier;Loire;45.5333;4.2500;EMN
+Saint-Anne;Abatilles;Arcachon;Gironde;44.658;-1.1711;EMN
+Raphy-St-Simon Est;Aix-les-Bains;Grésy-sur-Aix;Savoie;45.7119;5.9086;EMN
+Alizée;Alizée;Chambon-la-Forêt;Loiret;48.0208;2.3689;EMN
+Amanda;Amanda;Saint-Amand-les-Eaux;Nord;50.4497;3.4336;EMN
+Biovive;Biovive;Dax;Landes;43.7102;-1.053;EMN
+La Liese;Celtic;Niederbronn-les-Bains;Bas-Rhin;48.949;7.6423;EMN
+Montfras;Chambon;Chambon-la-Forêt;Loiret;48.0208;2.3689;EMN
+Marie-Christine-Nord;Hydroxydase;Le Breuil-sur-Couze;Puy-de-Dôme;45.4658;3.2469;EMN
+La Cairolle;La Cairolle;Les Aires;Hérault;43.5664;3.05;EMN
+La Française;La Française;Propiac;Drôme;44.2758;5.1972;EMN
+Lapade;Luchon;Bagnères-de-Luchon;Haute-Garonne;42.7903;0.5931;EMN
+Mont Roucous;Mont Roucous;Lacaune;Tarn;43.4983;2.6881;EMN
+Montcalm;Montcalm;Auzat;Ariège;42.7;1.45;EMN
+Roy;Ogeu;Ogeu-les-Bains;Pyrénées-Atlantiques;43.1681;-0.5022;EMN
+Orée du Bois;Orée du Bois;Saint-Amand-les-Eaux;Nord;50.4497;3.4336;EMN
+Sassoy;Plancoët;Plancoët;Côtes-d'Armor;48.5167;-2.2333;EMN
+Prince Noir;Prince Noir;Saint-Antonin-Noble-Val;Tarn-et-Garonne;44.15;1.7667;EMN
+Thonon;Thonon;Thonon-les-Bains;Haute-Savoie;46.3667;6.4833;EMN
+Velleminfroy;Velleminfroy;Velleminfroy;Haute-Saône;47.7167;6.2833;EMN
+Wattwiller;Wattwiller;Wattwiller;Haut-Rhin;47.8333;7.1667;EMN
+Grande source du Volcan;Aizac;Aizac;Ardèche;44.7;4.3167;EMN
+Perline;Arcens;Arcens;Ardèche;44.9333;4.3167;EMN
+Arvie;Arvie;Augnat;Puy-de-Dôme;45.45;3.0333;EMN
+César;César;Saint-Alban-les-Eaux;Loire;45.95;3.9333;EMN
+Castel Rocher;Châteauneuf-Auvergne;Châteauneuf-les-Bains;Puy-de-Dôme;45.95;2.9;EMN
+Sergentale;Châteldon;Châteldon;Puy-de-Dôme;45.9833;3.5667;EMN
+Véronique;Cilaos;Cilaos;Réunion;-21.1333;55.4667;EMN
+Faustine;Faustine;Saint-Alban-les-Eaux;Loire;45.95;3.9333;EMN
+Rieumajou;La Salvetat;La Salvetat-sur-Agout;Hérault;43.6167;2.7;EMN
+Vernet Ouest;Le Vernet;Prades;Ardèche;44.6833;4.3;EMN
+Nessel;Nessel;Soultzmatt;Haut-Rhin;47.9667;7.2167;EMN
+Sorgente Sottana;Orezza;Rapaggio;Haute-Corse;42.3;9.3667;EMN
+Puits Saint-Georges;Puits Saint-Georges;Saint-Romain-le-Puy;Loire;45.5667;4.1;EMN
+Diva;Quézac;Quézac;Lozère;44.366;3.54;EMN
+La Reine des Basaltes;Reine des Basaltes;Asperjoc;Ardèche;44.6833;4.3667;EMN
+Des Romains;Rozana;Beauregard-Vendon;Puy-de-Dôme;45.9667;3.0667;EMN
+Bassin de Vichy;Saint-Yorre;Saint-Yorre;Allier;46.0667;3.4667;EMN
+Meyras;Ventadour;Meyras;Ardèche;44.6833;4.3;EMN
+Rieumajou;Vernière;Les Aires;Hérault;43.5664;3.05;EMN
+Bassin de Vichy;Vichy Célestins;Vichy;Allier;46.1333;3.4167;EMN
+Multi-sources;Cristaline;France;France;46.2276;2.2137;Eau de source
+Laqueuille;Laqueuille;Laqueuille;Puy-de-Dôme;45.65;2.7333;Eau de source
+Grand Barbier;Grand Barbier;France;France;46.2276;2.2137;Eau de source
+Fiée des Lois;Fiée des Lois;France;France;46.2276;2.2137;Eau de source
+Sainte-Sophie;Sainte-Sophie;France;France;46.2276;2.2137;Eau de source
+Pyrénéa;Pyrénéa;France;France;42.7;-0.5;Eau de source
+Roche des Écrins;Roche des Écrins;France;France;45.0;6.0;Eau de source
+Saint-Martin d'Abbat;Saint-Martin d'Abbat;Saint-Martin-d'Abbat;Loiret;47.8167;2.3167;Eau de source
+Louise;Louise;France;France;46.2276;2.2137;Eau de source
+Ophélie;Ophélie;France;France;46.2276;2.2137;Eau de source
