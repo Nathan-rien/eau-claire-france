@@ -64,8 +64,6 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
           }
         });
         
-        console.log('Coordonnées chargées:', Object.keys(coordinatesMap).length, 'entrées');
-        console.log('Exemple de clés:', Object.keys(coordinatesMap).slice(0, 10));
         setSourceCoordinates(coordinatesMap);
       } catch (error) {
         console.error('Erreur lors du chargement des coordonnées:', error);
@@ -75,33 +73,12 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
     loadCoordinates();
   }, []);
 
-  // Ajouter la couche une fois que les coordonnées sont chargées
-  useEffect(() => {
-    if (map.current && map.current.isStyleLoaded() && Object.keys(sourceCoordinates).length > 0 && csvSources.length > 0) {
-      // Vérifier si la couche existe déjà
-      if (!map.current.getSource('water-sources')) {
-        addSourcesLayer();
-      } else {
-        updateSourcesOnMap();
-      }
-    }
-  }, [sourceCoordinates, csvSources]);
-
   const getCoordinatesForSource = (source: SourceItem): [number, number] => {
     const sourceName = source.source_name.toLowerCase().trim();
     const location = source.location?.toLowerCase().trim() || '';
     
-    // Debug pour comprendre les correspondances
-    console.log('Recherche coordonnées pour:', {
-      sourceName,
-      location,
-      brands: source.brands,
-      availableKeys: Object.keys(sourceCoordinates)
-    });
-    
     // Recherche directe par nom de source
     if (sourceCoordinates[sourceName]) {
-      console.log('Trouvé par nom de source:', sourceName);
       return sourceCoordinates[sourceName];
     }
     
@@ -109,7 +86,6 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
     for (const brand of source.brands) {
       const brandKey = brand.toLowerCase().trim();
       if (sourceCoordinates[brandKey]) {
-        console.log('Trouvé par marque:', brandKey);
         return sourceCoordinates[brandKey];
       }
     }
@@ -118,13 +94,11 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
     for (const [key, coords] of Object.entries(sourceCoordinates)) {
       // Recherche dans le nom de source
       if (sourceName.includes(key) || key.includes(sourceName)) {
-        console.log('Trouvé par inclusion nom:', key, sourceName);
         return coords;
       }
       
       // Recherche dans la localisation
       if (location && (location.includes(key) || key.includes(location))) {
-        console.log('Trouvé par inclusion location:', key, location);
         return coords;
       }
       
@@ -132,7 +106,6 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
       for (const brand of source.brands) {
         const brandLower = brand.toLowerCase().trim();
         if (brandLower.includes(key) || key.includes(brandLower)) {
-          console.log('Trouvé par inclusion marque:', key, brandLower);
           return coords;
         }
       }
@@ -164,10 +137,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
     map.current.on('load', () => {
-      // Attendre que les coordonnées soient chargées avant d'ajouter la couche
-      if (Object.keys(sourceCoordinates).length > 0) {
-        addSourcesLayer();
-      }
+      addSourcesLayer();
     });
 
     return () => {
@@ -175,10 +145,14 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
     };
   }, []);
 
-  // Mettre à jour la carte quand les sources CSV changent OU les coordonnées
+  // Mettre à jour la carte quand les sources CSV changent
   useEffect(() => {
-    if (map.current && map.current.isStyleLoaded() && Object.keys(sourceCoordinates).length > 0) {
-      updateSourcesOnMap();
+    if (map.current && map.current.isStyleLoaded() && csvSources.length > 0) {
+      if (map.current.getSource('water-sources')) {
+        updateSourcesOnMap();
+      } else {
+        addSourcesLayer();
+      }
     }
   }, [csvSources, sourceCoordinates]);
 
