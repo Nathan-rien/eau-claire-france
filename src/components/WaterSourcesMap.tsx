@@ -5,51 +5,63 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapboxSecurityService } from '@/services/mapboxSecurityService';
-import { waterSources, WaterSource, getSourcesByType } from '@/data/waterSources';
-import { bottledWaters } from '@/data/bottleWaterData';
+import { SourceItem } from '@/utils/sourcesAdapter';
+
 import { Droplets, MapPin, Gauge, Ruler } from 'lucide-react';
 
 interface WaterSourcesMapProps {
-  selectedType?: string;
-  selectedBrand?: string;
-  onSourceSelect?: (source: WaterSource) => void;
+  csvSources: SourceItem[];
 }
 
-const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ 
-  selectedType = 'all',
-  selectedBrand = 'all',
-  onSourceSelect 
-}) => {
+const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const [selectedSource, setSelectedSource] = useState<WaterSource | null>(null);
-  const [filteredSources, setFilteredSources] = useState<WaterSource[]>(waterSources);
+  const [selectedSource, setSelectedSource] = useState<SourceItem | null>(null);
 
-  // Mettre à jour les sources filtrées quand le type ou la marque change
-  useEffect(() => {
-    let sources = getSourcesByType(selectedType);
+  // Coordonnées approximatives pour les sources françaises (sera amélioré avec géocodage)
+  const getCoordinatesForSource = (source: SourceItem): [number, number] => {
+    // Coordonnées approximatives basées sur les régions connues
+    const locationMap: Record<string, [number, number]> = {
+      'evian': [6.5885, 46.4008],
+      'cachat': [6.5885, 46.4008],
+      'volvic': [3.0319, 45.8708],
+      'vittel': [5.9469, 48.2034],
+      'contrex': [5.8936, 48.1847],
+      'hépar': [5.9500, 48.2100],
+      'hepar': [5.9500, 48.2100],
+      'perrier': [3.9500, 43.7500],
+      'badoit': [4.2500, 45.5333],
+      'san pellegrino': [9.8167, 45.8333],
+      'cristaline': [2.2137, 46.2276], // Centre France
+      'mont roucous': [2.7167, 43.7167],
+      'thonon': [6.4797, 46.3700],
+      'salvetat': [2.7000, 43.6000],
+      'quézac': [3.4333, 44.4667],
+      'st-yorre': [3.4667, 46.0667],
+      'carrefour': [2.2137, 46.2276],
+      'leclerc': [2.2137, 46.2276],
+      'intermarché': [2.2137, 46.2276],
+      'super u': [2.2137, 46.2276],
+    };
+
+    const sourceName = source.source_name.toLowerCase();
+    const location = source.location?.toLowerCase() || '';
     
-    // Filtrer par marque si une marque spécifique est sélectionnée
-    if (selectedBrand !== 'all') {
-      const selectedWater = bottledWaters.find(water => water.id === selectedBrand);
-      if (selectedWater) {
-        sources = sources.filter(source => {
-          // Recherche flexible pour matcher les sources avec les bouteilles
-          const sourceName = source.name.toLowerCase();
-          const sourceLocation = source.location.toLowerCase();
-          const waterSource = selectedWater.source.toLowerCase();
-          const waterName = selectedWater.name.toLowerCase();
-          
-          return sourceName.includes(waterName) ||
-                 sourceLocation.includes(waterSource) ||
-                 waterSource.includes(sourceName) ||
-                 source.brands.some(brand => brand.toLowerCase().includes(waterName));
-        });
+    // Chercher par nom de source d'abord
+    for (const [key, coords] of Object.entries(locationMap)) {
+      if (sourceName.includes(key) || location.includes(key)) {
+        return coords;
       }
     }
     
-    setFilteredSources(sources);
-  }, [selectedType, selectedBrand]);
+    // Position par défaut au centre de la France avec léger décalage aléatoire
+    const baseCoords: [number, number] = [2.2137, 46.2276];
+    const randomOffset = 0.5;
+    return [
+      baseCoords[0] + (Math.random() - 0.5) * randomOffset,
+      baseCoords[1] + (Math.random() - 0.5) * randomOffset
+    ];
+  };
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -76,12 +88,12 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({
     };
   }, []);
 
-  // Mettre à jour la carte quand les sources filtrées changent
+  // Mettre à jour la carte quand les sources CSV changent
   useEffect(() => {
     if (map.current && map.current.isStyleLoaded()) {
       updateSourcesOnMap();
     }
-  }, [filteredSources]);
+  }, [csvSources]);
 
   const addSourcesLayer = () => {
     if (!map.current) return;
@@ -91,25 +103,28 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
-        features: filteredSources.map(source => ({
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: source.coordinates
-          },
-          properties: {
-            id: source.id,
-            name: source.name,
-            type: source.type,
-            brands: source.brands.join(', '),
-            location: source.location,
-            region: source.region,
-            calcium: source.composition.calcium,
-            magnesium: source.composition.magnesium,
-            sodium: source.composition.sodium,
-            displayName: source.brands.length > 0 ? `${source.brands[0]} - ${source.name}` : source.name
-          }
-        }))
+        features: csvSources.map(source => {
+          const coords = getCoordinatesForSource(source);
+          const waterType = source.is_sparkling_mix ? 'Eau minérale naturelle gazeuse' : 'Eau minérale naturelle';
+          
+          return {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: coords
+            },
+            properties: {
+              id: source.source_id,
+              name: source.source_name,
+              type: waterType,
+              brands: source.brands.join(', '),
+              location: source.location || 'Non spécifiée',
+              count_brands: source.count_brands,
+              is_sparkling_mix: source.is_sparkling_mix,
+              displayName: source.brands.length > 0 ? `${source.brands[0]} - ${source.source_name}` : source.source_name
+            }
+          } as const;
+        })
       }
     });
 
@@ -164,15 +179,15 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({
       if (e.features && e.features[0]) {
         const feature = e.features[0];
         const sourceId = feature.properties?.id;
-        const source = waterSources.find(s => s.id === sourceId);
+        const source = csvSources.find(s => s.source_id === sourceId);
         
         if (source) {
           setSelectedSource(source);
-          onSourceSelect?.(source);
           
           // Fly to source location
+          const coords = getCoordinatesForSource(source);
           map.current?.flyTo({
-            center: source.coordinates,
+            center: coords,
             zoom: 10,
             duration: 2000
           });
@@ -200,25 +215,28 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({
     const source = map.current.getSource('water-sources') as mapboxgl.GeoJSONSource;
     source.setData({
       type: 'FeatureCollection',
-      features: filteredSources.map(source => ({
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: source.coordinates
-        },
-        properties: {
-          id: source.id,
-          name: source.name,
-          type: source.type,
-          brands: source.brands.join(', '),
-          location: source.location,
-          region: source.region,
-          calcium: source.composition.calcium,
-          magnesium: source.composition.magnesium,
-          sodium: source.composition.sodium,
-          displayName: source.brands.length > 0 ? `${source.brands[0]} - ${source.name}` : source.name
-        }
-      }))
+      features: csvSources.map(source => {
+        const coords = getCoordinatesForSource(source);
+        const waterType = source.is_sparkling_mix ? 'Eau minérale naturelle gazeuse' : 'Eau minérale naturelle';
+        
+        return {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: coords
+          },
+          properties: {
+            id: source.source_id,
+            name: source.source_name,
+            type: waterType,
+            brands: source.brands.join(', '),
+            location: source.location || 'Non spécifiée',
+            count_brands: source.count_brands,
+            is_sparkling_mix: source.is_sparkling_mix,
+            displayName: source.brands.length > 0 ? `${source.brands[0]} - ${source.source_name}` : source.source_name
+          }
+        } as const;
+      })
     });
   };
 
@@ -286,78 +304,26 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Droplets className="h-5 w-5" />
-                  {selectedSource.name}
+                  {selectedSource.source_name}
                 </CardTitle>
-                <Badge className={getTypeColor(selectedSource.type)}>
-                  {selectedSource.type}
+                <Badge className={getTypeColor(selectedSource.is_sparkling_mix ? 'Eau minérale naturelle gazeuse' : 'Eau minérale naturelle')}>
+                  {selectedSource.is_sparkling_mix ? 'Eau minérale naturelle gazeuse' : 'Eau minérale naturelle'}
                 </Badge>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Localisation</p>
-                  <p className="font-medium">{selectedSource.location}</p>
-                  <p className="text-sm text-muted-foreground">{selectedSource.region}</p>
+                  <p className="font-medium">{selectedSource.location || 'Non spécifiée'}</p>
                 </div>
 
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Marques</p>
+                  <p className="text-sm text-muted-foreground mb-1">Marques ({selectedSource.count_brands})</p>
                   <div className="flex flex-wrap gap-1">
                     {selectedSource.brands.map((brand, index) => (
                       <Badge key={index} variant="outline" className="text-xs">
                         {brand}
                       </Badge>
                     ))}
-                  </div>
-                </div>
-
-                {selectedSource.description && (
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Description</p>
-                    <p className="text-sm">{selectedSource.description}</p>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-4">
-                  {selectedSource.depth && (
-                    <div className="flex items-center gap-2">
-                      <Ruler className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <p className="text-xs text-muted-foreground">Profondeur</p>
-                        <p className="text-sm font-medium">{selectedSource.depth}m</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {selectedSource.flow && (
-                    <div className="flex items-center gap-2">
-                      <Gauge className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <p className="text-xs text-muted-foreground">Débit</p>
-                        <p className="text-sm font-medium">{selectedSource.flow} L/min</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">Composition minérale (mg/L)</p>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="bg-muted p-2 rounded">
-                      <p className="font-medium">Calcium</p>
-                      <p>{selectedSource.composition.calcium}</p>
-                    </div>
-                    <div className="bg-muted p-2 rounded">
-                      <p className="font-medium">Magnésium</p>
-                      <p>{selectedSource.composition.magnesium}</p>
-                    </div>
-                    <div className="bg-muted p-2 rounded">
-                      <p className="font-medium">Sodium</p>
-                      <p>{selectedSource.composition.sodium}</p>
-                    </div>
-                    <div className="bg-muted p-2 rounded">
-                      <p className="font-medium">Nitrates</p>
-                      <p>{selectedSource.composition.nitrates}</p>
-                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -375,8 +341,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({
                   <MapPin className="h-12 w-12 mx-auto mb-2 opacity-50" />
                   <p>Cliquez sur une source pour voir ses détails</p>
                   <p className="text-sm mt-2">
-                    {filteredSources.length} source{filteredSources.length > 1 ? 's' : ''} 
-                    {selectedType !== 'all' ? ` de type ${selectedType}` : ''}
+                    {csvSources.length} source{csvSources.length > 1 ? 's' : ''} trouvée{csvSources.length > 1 ? 's' : ''}
                   </p>
                 </div>
               </CardContent>
