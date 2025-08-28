@@ -18,45 +18,69 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
   const map = useRef<mapboxgl.Map | null>(null);
   const [selectedSource, setSelectedSource] = useState<SourceItem | null>(null);
 
-  // Coordonnées approximatives pour les sources françaises (sera amélioré avec géocodage)
-  const getCoordinatesForSource = (source: SourceItem): [number, number] => {
-    // Coordonnées approximatives basées sur les régions connues
-    const locationMap: Record<string, [number, number]> = {
-      'evian': [6.5885, 46.4008],
-      'cachat': [6.5885, 46.4008],
-      'volvic': [3.0319, 45.8708],
-      'vittel': [5.9469, 48.2034],
-      'contrex': [5.8936, 48.1847],
-      'hépar': [5.9500, 48.2100],
-      'hepar': [5.9500, 48.2100],
-      'perrier': [3.9500, 43.7500],
-      'badoit': [4.2500, 45.5333],
-      'san pellegrino': [9.8167, 45.8333],
-      'cristaline': [2.2137, 46.2276], // Centre France
-      'mont roucous': [2.7167, 43.7167],
-      'thonon': [6.4797, 46.3700],
-      'salvetat': [2.7000, 43.6000],
-      'quézac': [3.4333, 44.4667],
-      'st-yorre': [3.4667, 46.0667],
-      'carrefour': [2.2137, 46.2276],
-      'leclerc': [2.2137, 46.2276],
-      'intermarché': [2.2137, 46.2276],
-      'super u': [2.2137, 46.2276],
-    };
+  // Coordonnées réelles pour les sources françaises
+  const [sourceCoordinates, setSourceCoordinates] = useState<Record<string, [number, number]>>({});
 
-    const sourceName = source.source_name.toLowerCase();
-    const location = source.location?.toLowerCase() || '';
+  // Charger les coordonnées depuis le fichier CSV
+  useEffect(() => {
+    const loadCoordinates = async () => {
+      try {
+        const response = await fetch('/data/water_sources_coordinates.csv');
+        const csvText = await response.text();
+        
+        const lines = csvText.split('\n').slice(1); // Skip header
+        const coordinatesMap: Record<string, [number, number]> = {};
+        
+        lines.forEach(line => {
+          const [sourceName, brand, commune, department, lat, lng, category] = line.split(',');
+          if (sourceName && lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
+            const key = sourceName.toLowerCase().trim();
+            coordinatesMap[key] = [parseFloat(lng), parseFloat(lat)];
+            
+            // Ajouter aussi par nom de marque
+            if (brand && brand.toLowerCase() !== sourceName.toLowerCase()) {
+              coordinatesMap[brand.toLowerCase().trim()] = [parseFloat(lng), parseFloat(lat)];
+            }
+          }
+        });
+        
+        setSourceCoordinates(coordinatesMap);
+      } catch (error) {
+        console.error('Erreur lors du chargement des coordonnées:', error);
+      }
+    };
     
-    // Chercher par nom de source d'abord
-    for (const [key, coords] of Object.entries(locationMap)) {
-      if (sourceName.includes(key) || location.includes(key)) {
+    loadCoordinates();
+  }, []);
+
+  const getCoordinatesForSource = (source: SourceItem): [number, number] => {
+    const sourceName = source.source_name.toLowerCase().trim();
+    const location = source.location?.toLowerCase().trim() || '';
+    
+    // Recherche directe par nom de source
+    if (sourceCoordinates[sourceName]) {
+      return sourceCoordinates[sourceName];
+    }
+    
+    // Recherche par marques associées
+    for (const brand of source.brands) {
+      const brandKey = brand.toLowerCase().trim();
+      if (sourceCoordinates[brandKey]) {
+        return sourceCoordinates[brandKey];
+      }
+    }
+    
+    // Recherche par mots-clés dans le nom
+    for (const [key, coords] of Object.entries(sourceCoordinates)) {
+      if (sourceName.includes(key) || key.includes(sourceName) || 
+          (location && (location.includes(key) || key.includes(location)))) {
         return coords;
       }
     }
     
     // Position par défaut au centre de la France avec léger décalage aléatoire
     const baseCoords: [number, number] = [2.2137, 46.2276];
-    const randomOffset = 0.5;
+    const randomOffset = 0.2;
     return [
       baseCoords[0] + (Math.random() - 0.5) * randomOffset,
       baseCoords[1] + (Math.random() - 0.5) * randomOffset
