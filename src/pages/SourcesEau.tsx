@@ -4,6 +4,8 @@ import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import WaterSourcesMap from '@/components/WaterSourcesMap';
 import { useBottleData } from "@/hooks/useBottleData";
 import { buildSources } from "@/utils/sourcesAdapter";
 
@@ -54,9 +56,28 @@ export default function SourcesEau() {
                 <span>Sources d'eau en France</span>
               </h1>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                {sources.length} captages trouvés — données agrégées depuis vos CSV (composition + catalogue).
+                {sources.length} captages trouvés — visualisez les sources sur la carte ou parcourez la liste détaillée.
               </p>
             </div>
+
+            {/* Onglets pour carte et liste */}
+            <Tabs defaultValue="carte" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="carte" className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  Carte interactive
+                </TabsTrigger>
+                <TabsTrigger value="liste" className="flex items-center gap-2">
+                  <Droplets className="h-4 w-4" />
+                  Liste des sources
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="carte" className="space-y-6">
+                <WaterSourcesMap />
+              </TabsContent>
+
+              <TabsContent value="liste" className="space-y-6">
 
             {/* Section d'information */}
             <div className="mb-8">
@@ -95,41 +116,43 @@ export default function SourcesEau() {
               </Card>
             </div>
 
-            {/* Contrôles de pagination */}
-            <div className="mb-6 flex items-center gap-4">
-              <label htmlFor="pageSize" className="text-sm font-medium">Affichage :</label>
-              <select 
-                id="pageSize"
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm"
-                value={pageSize} 
-                onChange={e => setPageSize(e.target.value === "all" ? "all" : Number(e.target.value))}
-              >
-                <option value="all">Tout ({sources.length})</option>
-                <option value={12}>12</option>
-                <option value={24}>24</option>
-                <option value={48}>48</option>
-              </select>
-            </div>
+                {/* Contrôles de pagination */}
+                <div className="mb-6 flex items-center gap-4">
+                  <label htmlFor="pageSize" className="text-sm font-medium">Affichage :</label>
+                  <select 
+                    id="pageSize"
+                    className="px-3 py-1 border border-gray-300 rounded-md text-sm"
+                    value={pageSize} 
+                    onChange={e => setPageSize(e.target.value === "all" ? "all" : Number(e.target.value))}
+                  >
+                    <option value="all">Tout ({sources.length})</option>
+                    <option value={12}>12</option>
+                    <option value={24}>24</option>
+                    <option value={48}>48</option>
+                  </select>
+                </div>
 
-            {/* Liste des sources */}
-            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {visible.map(src => (
-                <li key={src.source_id} className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
-                  <div className="font-semibold text-gray-900 mb-1">{src.source_name}</div>
-                  {src.location && <div className="text-sm text-gray-600 mb-2">{src.location}</div>}
-                  <div className="text-sm text-gray-700 mb-3">
-                    {src.count_brands} marque{src.count_brands > 1 ? "s" : ""}
-                    {src.is_sparkling_mix ? " · inclut des gazeuses" : ""}
-                  </div>
-                  {src.brands.length > 0 && (
-                    <div className="text-sm text-gray-600">
-                      {src.brands.slice(0, 6).join(" · ")}
-                      {src.brands.length > 6 ? " · …" : ""}
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
+                {/* Liste des sources */}
+                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {visible.map(src => (
+                    <li key={src.source_id} className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
+                      <div className="font-semibold text-gray-900 mb-1">{src.source_name}</div>
+                      {src.location && <div className="text-sm text-gray-600 mb-2">{src.location}</div>}
+                      <div className="text-sm text-gray-700 mb-3">
+                        {src.count_brands} marque{src.count_brands > 1 ? "s" : ""}
+                        {src.is_sparkling_mix ? " · inclut des gazeuses" : ""}
+                      </div>
+                      {src.brands.length > 0 && (
+                        <div className="text-sm text-gray-600">
+                          {src.brands.slice(0, 6).join(" · ")}
+                          {src.brands.length > 6 ? " · …" : ""}
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </TabsContent>
+            </Tabs>
 
             {/* Section éducative */}
             <div className="mt-12">
