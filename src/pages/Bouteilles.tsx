@@ -30,7 +30,7 @@ const RobinetVsBouteilles = () => {
   };
 
   const bottledWaterData = useMemo(() => {
-    if (!composition.length || !catalog.length) return null;
+    if (!composition || !catalog || composition.length === 0 || catalog.length === 0) return null;
     
     const rankedBottles = rankBottles(composition);
     const totalBottles = rankedBottles.length;
