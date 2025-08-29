@@ -34,37 +34,81 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
   useEffect(() => {
     const loadCoordinates = async () => {
       try {
+        console.log('🔄 Début du chargement des coordonnées...');
         const response = await fetch('/data/water_sources_coordinates.csv');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
         const csvText = await response.text();
+        console.log('📄 CSV chargé, taille:', csvText.length, 'caractères');
+        console.log('📋 Premières lignes:', csvText.split('\n').slice(0, 3));
 
         const lines = csvText.split(/\r?\n/).slice(1).map(l => l.trim()).filter(Boolean);
+        console.log('📊 Nombre de lignes à traiter:', lines.length);
+        
         const coordinatesMap: Record<string, [number, number]> = {};
 
-        for (const line of lines) {
+        for (const [index, line] of lines.entries()) {
           const parts = line.split(';').map(p => p.trim());
-          if (parts.length < 6) continue;
+          
+          if (parts.length < 6) {
+            console.warn(`⚠️ Ligne ${index + 2} invalide (${parts.length} colonnes):`, line);
+            continue;
+          }
 
           const [sourceNameRaw, brandRaw, communeRaw, , latRaw, lngRaw] = parts;
           const lat = parseFloat(latRaw);
           const lng = parseFloat(lngRaw);
-          if (isNaN(lat) || isNaN(lng)) continue;
+          
+          if (isNaN(lat) || isNaN(lng)) {
+            console.warn(`⚠️ Coordonnées invalides ligne ${index + 2}:`, { lat: latRaw, lng: lngRaw });
+            continue;
+          }
 
           const coords: [number, number] = [lng, lat];
-
           const sourceName = normalize(sourceNameRaw);
           const brand = normalize(brandRaw);
           const commune = normalize(communeRaw);
 
-          if (sourceName) coordinatesMap[sourceName] = coords;
-          if (brand) coordinatesMap[brand] = coords;
-          if (commune) coordinatesMap[commune] = coords;
-          if (sourceName && commune) coordinatesMap[`${sourceName}|${commune}`] = coords;
-          if (brand && commune) coordinatesMap[`${brand}|${commune}`] = coords;
+          // Stocker sous différentes clés pour maximiser les correspondances
+          if (sourceName) {
+            coordinatesMap[sourceName] = coords;
+            console.log(`✅ Ajouté source: "${sourceName}" → [${lng}, ${lat}]`);
+          }
+          if (brand) {
+            coordinatesMap[brand] = coords;
+            console.log(`✅ Ajouté brand: "${brand}" → [${lng}, ${lat}]`);
+          }
+          if (commune) {
+            coordinatesMap[commune] = coords;
+          }
+          if (sourceName && commune) {
+            coordinatesMap[`${sourceName}|${commune}`] = coords;
+          }
+          if (brand && commune) {
+            coordinatesMap[`${brand}|${commune}`] = coords;
+          }
         }
 
+        console.log('🎯 Coordonnées chargées:', Object.keys(coordinatesMap).length, 'entrées');
+        console.log('🔑 Premières clés:', Object.keys(coordinatesMap).slice(0, 10));
         setSourceCoordinates(coordinatesMap);
+        
       } catch (e) {
-        console.error('Erreur lors du chargement des coordonnées:', e);
+        console.error('❌ Erreur lors du chargement des coordonnées:', e);
+        // En cas d'erreur, créer des coordonnées par défaut pour les sources principales
+        const fallbackCoords: Record<string, [number, number]> = {
+          'evian': [6.5885, 46.4008],
+          'volvic': [3.0319, 45.8708],
+          'vittel': [5.9469, 48.2034],
+          'contrex': [5.8936, 48.1847],
+          'hepar': [5.9500, 48.2100],
+          'perrier': [3.9500, 43.7500],
+          'badoit': [4.2500, 45.5333],
+        };
+        setSourceCoordinates(fallbackCoords);
       }
     };
 
@@ -73,18 +117,25 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
 
   // --- fonction de recherche stricte ---
   const getCoordinatesForSource = (source: SourceItem): [number, number] => {
+    // Vérifier que les coordonnées sont chargées
+    if (Object.keys(sourceCoordinates).length === 0) {
+      console.warn('⚠️ sourceCoordinates vide, fallback par défaut');
+      const base: [number, number] = [2.2137, 46.2276];
+      const jitter = 0.05;
+      return [base[0] + (Math.random() - 0.5) * jitter, base[1] + (Math.random() - 0.5) * jitter];
+    }
+
     const sName = normalize(source.source_name);
     const loc = normalize(source.location || '');
     const commune = (loc.split(/[,–-]/)[0] || '').trim();
 
-    // Log pour déboguer
-    console.log('Recherche coordonnées pour:', {
+    console.log('🔍 Recherche coordonnées pour:', {
       source_name: source.source_name,
       normalized_source: sName,
       location: source.location,
       normalized_commune: commune,
       brands: source.brands,
-      available_keys: Object.keys(sourceCoordinates).slice(0, 10) // Premier 10 clés pour debug
+      total_available_keys: Object.keys(sourceCoordinates).length
     });
 
     // 1. Recherche source|commune
