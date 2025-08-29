@@ -7,6 +7,12 @@ export type SourceItem = {
   brands: string[];
   is_sparkling_mix?: boolean;
   count_brands: number;
+  
+  // Champs techniques
+  flow_rate?: number;     // m³/j
+  depth?: number;         // m
+  temperature?: number;   // °C
+  residue?: number;       // mg/L
 };
 
 function hashSource(name?: string, loc?: string) {

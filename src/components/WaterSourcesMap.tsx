@@ -243,7 +243,13 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
               location: source.location || 'Non spécifiée',
               count_brands: source.count_brands,
               is_sparkling_mix: source.is_sparkling_mix,
-              displayName: source.brands.length > 0 ? `${source.brands[0]} - ${source.source_name}` : source.source_name
+              displayName: source.brands.length > 0 ? `${source.brands[0]} - ${source.source_name}` : source.source_name,
+              
+              // Propriétés techniques
+              flow_rate: source.flow_rate ?? null,
+              depth: source.depth ?? null,
+              temperature: source.temperature ?? null,
+              residue: source.residue ?? null,
             }
           } as const;
         })
@@ -379,7 +385,13 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
             location: source.location || 'Non spécifiée',
             count_brands: source.count_brands,
             is_sparkling_mix: source.is_sparkling_mix,
-            displayName: source.brands.length > 0 ? `${source.brands[0]} - ${source.source_name}` : source.source_name
+            displayName: source.brands.length > 0 ? `${source.brands[0]} - ${source.source_name}` : source.source_name,
+            
+            // Propriétés techniques
+            flow_rate: source.flow_rate ?? null,
+            depth: source.depth ?? null,
+            temperature: source.temperature ?? null,
+            residue: source.residue ?? null,
           }
         } as const;
       })
@@ -471,6 +483,34 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
                       </Badge>
                     ))}
                   </div>
+                </div>
+
+                {/* Bloc infos techniques */}
+                <div className="grid grid-cols-2 gap-4">
+                  {typeof selectedSource.flow_rate === 'number' && (
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Débit autorisé</p>
+                      <p className="font-medium">{selectedSource.flow_rate} m³/j</p>
+                    </div>
+                  )}
+                  {typeof selectedSource.depth === 'number' && (
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Profondeur</p>
+                      <p className="font-medium">{selectedSource.depth} m</p>
+                    </div>
+                  )}
+                  {typeof selectedSource.temperature === 'number' && (
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Température</p>
+                      <p className="font-medium">{selectedSource.temperature} °C</p>
+                    </div>
+                  )}
+                  {typeof selectedSource.residue === 'number' && (
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Résidu sec</p>
+                      <p className="font-medium">{selectedSource.residue} mg/L</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
