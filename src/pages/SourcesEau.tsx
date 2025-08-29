@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Droplets, MapPin, Info } from 'lucide-react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
@@ -13,7 +13,7 @@ export default function SourcesEau() {
   const [sources, setSources] = useState<any[]>([]);
 
   // Charger les sources avec coordonnées
-  React.useEffect(() => {
+  useEffect(() => {
     if (composition && catalog) {
       buildSources(composition, catalog).then(setSources);
     }
