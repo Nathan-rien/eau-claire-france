@@ -11,6 +11,7 @@ import Breadcrumb from '@/components/Breadcrumb';
 import { seoData, generateFAQSchema } from '@/utils/seoData';
 import { userProfiles, userIntolerances, userPreferences, UserProfile, UserIntolerance, UserPreference } from '@/data/waterProfiles';
 import { waterRecommendationService, WaterRecommendation } from '@/services/waterRecommendationService';
+import { useBottleData } from '@/hooks/useBottleData';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const QuelleEauBoire: React.FC = () => {
@@ -41,6 +42,9 @@ const QuelleEauBoire: React.FC = () => {
   const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [recommendations, setRecommendations] = useState<WaterRecommendation[]>([]);
+  
+  // Charger les données de bouteilles
+  const { composition, catalog, mdd: mddData, loading, error } = useBottleData();
 
   const handleProfileToggle = (profileId: string) => {
     setSelectedProfiles(prev => 
@@ -67,11 +71,15 @@ const QuelleEauBoire: React.FC = () => {
   };
 
   const handleGetRecommendations = () => {
+    if (!composition.length || !catalog.length) return;
+    
     const profiles = userProfiles.filter(p => selectedProfiles.includes(p.id));
     const intolerances = userIntolerances.filter(i => selectedIntolerances.includes(i.id));
     const preferences = userPreferences.filter(p => selectedPreferences.includes(p.id));
     
-    let results = waterRecommendationService.calculateRecommendations(profiles, intolerances, preferences);
+    let results = waterRecommendationService.calculateRecommendations(
+      profiles, intolerances, preferences
+    );
     
     // Filtrer par type d'eau si spécifié
     if (selectedWaterType === 'plate') {
