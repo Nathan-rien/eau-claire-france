@@ -12,7 +12,7 @@ import { seoData } from '@/utils/seoData';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useBottleData } from '@/hooks/useBottleData';
-import { rankBottles } from '@/utils/bottleRanking';
+import { rankCompositions, CompositionRanking } from '@/utils/bottleRanking';
 
 const RobinetVsBouteilles = () => {
   const { t } = useLanguage();
@@ -31,7 +31,7 @@ const RobinetVsBouteilles = () => {
   const bottledWaterData = useMemo(() => {
     if (!composition || !catalog || composition.length === 0 || catalog.length === 0) return null;
     
-    const rankedBottles = rankBottles(composition);
+    const rankedBottles = rankCompositions(composition);
     const totalBottles = rankedBottles.length;
     const avgPrice = rankedBottles.reduce((sum, b) => sum + (b.nutritionalScore || 0.5), 0) / totalBottles;
     const avgCO2 = 300; // kg CO2/1000L moyenne pour les bouteilles
