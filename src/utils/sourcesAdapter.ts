@@ -144,6 +144,7 @@ export async function buildSources(
   composition: Composition[] = [],
   catalog: Record<string, string>[] = []
 ): Promise<SourceItem[]> {
+  console.log('🏗️ buildSources called with:', { compositionLength: composition.length, catalogLength: catalog.length });
   const byKey = new Map<string, SourceItem>();
   
   // Charger les données de coordonnées
@@ -151,6 +152,7 @@ export async function buildSources(
   console.log(`📍 ${coordinatesData.length} coordonnées chargées`);
 
   // Traitement des données de composition
+  console.log('🧪 Processing composition data...');
   for (const r of composition) {
     const source = (r.source_name ?? "").trim();
     if (!source) continue;
@@ -193,6 +195,7 @@ export async function buildSources(
   }
 
   // Traitement des données du catalogue
+  console.log('📋 Processing catalog data...');
   for (const c of catalog) {
     const source = (c.source_name ?? "").trim();
     if (!source) continue;
@@ -234,7 +237,9 @@ export async function buildSources(
     .map(s => ({ ...s, count_brands: s.brands.length }))
     .sort((a, b) => (b.count_brands - a.count_brands) || a.source_name.localeCompare(b.source_name));
     
-  console.log(`✅ ${result.length} sources construites, ${result.filter(s => s.latitude && s.longitude).length} avec coordonnées`);
+  console.log(`✅ buildSources completed: ${result.length} sources construites`);
+  console.log(`📊 Sources with coordinates: ${result.filter(s => s.latitude && s.longitude).length}`);
+  console.log(`🏷️ Sample sources:`, result.slice(0, 3).map(s => ({ name: s.source_name, coords: [s.latitude, s.longitude], brands: s.brands })));
   
   return result;
 }

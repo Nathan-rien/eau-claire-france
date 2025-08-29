@@ -17,6 +17,8 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
   const map = useRef<mapboxgl.Map | null>(null);
   const [selectedSource, setSelectedSource] = useState<SourceItem | null>(null);
 
+  console.log('🗺️ WaterSourcesMap received:', csvSources.length, 'sources');
+
 
   // Fonction pour obtenir les coordonnées d'une source (maintenant intégrées)
   const getCoordinatesForSource = (source: SourceItem): [number, number] | null => {

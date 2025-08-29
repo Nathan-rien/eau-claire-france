@@ -14,8 +14,15 @@ export default function SourcesEau() {
 
   // Charger les sources avec coordonnées
   useEffect(() => {
+    console.log('🔍 SourcesEau useEffect triggered', { composition: !!composition, catalog: !!catalog });
     if (composition && catalog) {
-      buildSources(composition, catalog).then(setSources);
+      console.log('📊 Data loaded:', { compositionLength: composition.length, catalogLength: catalog.length });
+      buildSources(composition, catalog).then(result => {
+        console.log('🏗️ buildSources result:', result.length, 'sources');
+        setSources(result);
+      }).catch(error => {
+        console.error('❌ buildSources error:', error);
+      });
     }
   }, [composition, catalog]);
 
