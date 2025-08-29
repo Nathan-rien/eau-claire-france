@@ -203,7 +203,31 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
         type: 'FeatureCollection',
         features: csvSources.map(source => {
           const coords = getCoordinatesForSource(source);
-          const waterType = source.is_sparkling_mix ? 'Eau minérale naturelle gazeuse' : 'Eau minérale naturelle';
+          
+          // Déterminer le type d'eau en fonction du nom de source ou des marques
+          let waterType = 'Eau minérale naturelle';
+          
+          // Vérifier si c'est une eau de source
+          const isSpringWater = source.source_name.toLowerCase().includes('source') ||
+                               source.brands.some(brand => 
+                                 brand.toLowerCase().includes('cristaline') ||
+                                 brand.toLowerCase().includes('carrefour') ||
+                                 brand.toLowerCase().includes('marque repère') ||
+                                 brand.toLowerCase().includes('eco+') ||
+                                 brand.toLowerCase().includes('saskia') ||
+                                 brand.toLowerCase().includes('rocheval') ||
+                                 brand.toLowerCase().includes('ondine') ||
+                                 brand.toLowerCase().includes('monoprix') ||
+                                 brand.toLowerCase().includes('auchan') ||
+                                 brand.toLowerCase().includes('casino') ||
+                                 brand.toLowerCase().includes('top budget')
+                               );
+          
+          if (isSpringWater) {
+            waterType = 'Eau de source';
+          } else if (source.is_sparkling_mix) {
+            waterType = 'Eau minérale naturelle gazeuse';
+          }
           
           return {
             type: 'Feature',
@@ -315,7 +339,31 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
       type: 'FeatureCollection',
       features: csvSources.map(source => {
         const coords = getCoordinatesForSource(source);
-        const waterType = source.is_sparkling_mix ? 'Eau minérale naturelle gazeuse' : 'Eau minérale naturelle';
+        
+        // Déterminer le type d'eau en fonction du nom de source ou des marques
+        let waterType = 'Eau minérale naturelle';
+        
+        // Vérifier si c'est une eau de source
+        const isSpringWater = source.source_name.toLowerCase().includes('source') ||
+                             source.brands.some(brand => 
+                               brand.toLowerCase().includes('cristaline') ||
+                               brand.toLowerCase().includes('carrefour') ||
+                               brand.toLowerCase().includes('marque repère') ||
+                               brand.toLowerCase().includes('eco+') ||
+                               brand.toLowerCase().includes('saskia') ||
+                               brand.toLowerCase().includes('rocheval') ||
+                               brand.toLowerCase().includes('ondine') ||
+                               brand.toLowerCase().includes('monoprix') ||
+                               brand.toLowerCase().includes('auchan') ||
+                               brand.toLowerCase().includes('casino') ||
+                               brand.toLowerCase().includes('top budget')
+                             );
+        
+        if (isSpringWater) {
+          waterType = 'Eau de source';
+        } else if (source.is_sparkling_mix) {
+          waterType = 'Eau minérale naturelle gazeuse';
+        }
         
         return {
           type: 'Feature',
