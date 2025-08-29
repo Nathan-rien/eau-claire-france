@@ -10,10 +10,6 @@ import { buildSources } from "@/utils/sourcesAdapter";
 
 export default function SourcesEau() {
   const { composition, catalog, loading, error } = useBottleData();
-
-  if (loading) return <div style={{padding:16}}>Chargement…</div>;
-  if (error)   return <div style={{padding:16}}>❌ {error}</div>;
-
   const [sources, setSources] = useState<any[]>([]);
 
   // Charger les sources avec coordonnées
@@ -22,6 +18,9 @@ export default function SourcesEau() {
       buildSources(composition, catalog).then(setSources);
     }
   }, [composition, catalog]);
+
+  if (loading) return <div style={{padding:16}}>Chargement…</div>;
+  if (error)   return <div style={{padding:16}}>❌ {error}</div>;
 
   return (
     <Layout>
