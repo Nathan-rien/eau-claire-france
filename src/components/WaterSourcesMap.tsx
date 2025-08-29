@@ -160,10 +160,11 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
           12, 25
         ],
         'circle-color': [
-          'case',
-          ['==', ['get', 'type'], 'Eau de source'], '#22c55e',
-          ['==', ['get', 'type'], 'Eau minérale naturelle'], '#3b82f6',
-          ['==', ['get', 'type'], 'Eau minérale naturelle gazeuse'], '#f59e0b',
+          'match',
+          ['get', 'type'],
+          'Eau de source', '#22c55e',
+          'Eau minérale naturelle', '#3b82f6',
+          'Eau minérale naturelle gazeuse', '#f59e0b',
           '#6b7280'
         ],
         'circle-stroke-width': 3,

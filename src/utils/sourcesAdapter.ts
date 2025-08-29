@@ -1,4 +1,5 @@
-import type { Composition } from "@/services/waterData";
+import { normalize, key } from './normalize';
+import type { Composition } from '@/services/waterData';
 
 export type SourceItem = {
   source_id: string;
@@ -13,7 +14,7 @@ export type SourceItem = {
   longitude?: number;
   
   // Catégorie d'eau (depuis CSV coordonnées)
-  water_category?: string; // 'EMN' | 'Eau de source'
+  water_category?: string;
   
   // Champs techniques (depuis composition)
   flow_rate?: number;     // m³/j
@@ -22,224 +23,132 @@ export type SourceItem = {
   residue?: number;       // mg/L (residu_sec_180_mg_L)
 };
 
-// Type pour les coordonnées depuis le CSV
-type CoordinateData = {
+type CoordRow = {
   source_name: string;
   brand: string;
   commune: string;
   department: string;
-  latitude: number;
-  longitude: number;
+  latitude: string;
+  longitude: string;
   category: string;
 };
 
-function hashSource(name?: string, loc?: string) {
-  const n = (name ?? "").trim().toLowerCase();
-  const l = (loc ?? "").trim().toLowerCase();
-  return `SRC-${n.replace(/\s+/g, "-")}-${l.replace(/\s+/g, "-")}`.replace(/[^a-z0-9\-]/g, "");
-}
+export async function buildSources(): Promise<SourceItem[]> {
+  const log = (...args: any[]) => console.log('[buildSources]', ...args);
 
-// Fonction pour charger et parser le CSV des coordonnées
-async function loadCoordinatesData(): Promise<CoordinateData[]> {
-  try {
-    const response = await fetch('/data/water_sources_coordinates.csv');
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
-    const csvText = await response.text();
-    const lines = csvText.split(/\r?\n/).slice(1).map(l => l.trim()).filter(Boolean);
-    
-    const coordinateData: CoordinateData[] = [];
-    
-    for (const line of lines) {
-      const parts = line.split(';').map(p => p.trim());
-      if (parts.length < 7) continue;
-      
-      const [source_name, brand, commune, department, latRaw, lngRaw, category] = parts;
-      const latitude = parseFloat(latRaw);
-      const longitude = parseFloat(lngRaw);
-      
-      if (isNaN(latitude) || isNaN(longitude)) continue;
-      
-      coordinateData.push({
-        source_name,
-        brand,
-        commune,
-        department,
-        latitude,
-        longitude,
-        category
-      });
-    }
-    
-    return coordinateData;
-  } catch (error) {
-    console.error('❌ Erreur lors du chargement des coordonnées:', error);
-    return [];
-  }
-}
+  // 1) Charger CSV
+  const [coordsText, catalogText, compText] = await Promise.all([
+    fetch('/data/water_sources_coordinates.csv').then(r => r.text()),
+    fetch('/data/infoeau_catalog_eaux_v3.csv').then(r => r.text()).catch(() => ''),
+    fetch('/data/infoeau_emn_composition_v2_partial.csv').then(r => r.text()).catch(() => ''),
+  ]);
 
-// Fonction pour normaliser les noms pour la correspondance
-function normalize(s: string): string {
-  return s?.toLowerCase()
-    .trim()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, ' ') || '';
-}
+  const parseCsv = (txt: string) =>
+    txt.split(/\r?\n/).slice(1).map(l => l.trim()).filter(Boolean).map(l => l.split(';').map(p => p.trim()));
 
-// Fonction pour trouver les coordonnées d'une source
-function findCoordinates(sourceName: string, brands: string[], location: string, coordinatesData: CoordinateData[]): { latitude?: number, longitude?: number, category?: string } {
-  const normalizedSourceName = normalize(sourceName);
-  const normalizedLocation = normalize(location);
-  const normalizedBrands = brands.map(normalize);
-  
-  // 1. Recherche exacte par nom de source
-  let match = coordinatesData.find(coord => 
-    normalize(coord.source_name) === normalizedSourceName
-  );
-  
-  if (match) {
-    return { latitude: match.latitude, longitude: match.longitude, category: match.category };
-  }
-  
-  // 2. Recherche par marque
-  for (const normalizedBrand of normalizedBrands) {
-    match = coordinatesData.find(coord => 
-      normalize(coord.brand) === normalizedBrand
-    );
-    if (match) {
-      return { latitude: match.latitude, longitude: match.longitude, category: match.category };
+  const coordsRows = parseCsv(coordsText);
+  const catalogRows = catalogText ? parseCsv(catalogText) : [];
+  const compRows = compText ? parseCsv(compText) : [];
+
+  log('rows:', { coords: coordsRows.length, catalog: catalogRows.length, comp: compRows.length });
+
+  // 2) Index coordonnées
+  const coordsIndex = new Map<string, {lat: number; lng: number; category: string; raw: any}>();
+  let idxCount = 0;
+
+  for (const parts of coordsRows) {
+    const [source_name, brand, commune, department, lat, lng, category] = parts as unknown as string[];
+    const latN = Number(lat); 
+    const lngN = Number(lng);
+    if (!Number.isFinite(latN) || !Number.isFinite(lngN)) continue;
+
+    const payload = { lat: latN, lng: lngN, category, raw: { source_name, brand, commune, department } };
+    const keys = new Set<string>([
+      key(source_name, brand, commune),
+      key(source_name, commune),
+      key(brand, commune),
+      key(source_name),
+      key(brand),
+    ]);
+    for (const k of keys) {
+      if (!k) continue;
+      coordsIndex.set(k, payload);
+      idxCount++;
     }
   }
-  
-  // 3. Recherche partielle par nom de source
-  match = coordinatesData.find(coord => {
-    const coordSourceName = normalize(coord.source_name);
-    return coordSourceName.includes(normalizedSourceName) || normalizedSourceName.includes(coordSourceName);
-  });
-  
-  if (match) {
-    return { latitude: match.latitude, longitude: match.longitude, category: match.category };
+  log('coordsIndex size:', coordsIndex.size, 'assignments:', idxCount);
+
+  // 3) Index composition (colonnes: brand, source_name, location, is_sparkling, pH, HCO3_mg_L, Ca_mg_L, Cl_mg_L, F_mg_L, Mg_mg_L, NO3_mg_L, K_mg_L, SiO2_mg_L, Na_mg_L, SO4_mg_L, residu_sec_180_mg_L, source_url)
+  const compIndex = new Map<string, { residue?: number; flow_rate?: number; depth?: number; temperature?: number }>();
+  let compHits = 0;
+  for (const parts of compRows) {
+    // Adapter selon l'ordre réel des colonnes du CSV composition
+    const [brand, source_name, location, is_sparkling, pH, HCO3, Ca, Cl, F, Mg, NO3, K, SiO2, Na, SO4, residu_sec_180, source_url] = parts as unknown as string[];
+    const meta = {
+      residue: residu_sec_180 ? Number(residu_sec_180) : undefined,
+      flow_rate: undefined, // pas dans ce CSV
+      depth: undefined,     // pas dans ce CSV  
+      temperature: undefined, // pas dans ce CSV
+    };
+    const k1 = key(source_name, brand, location);
+    const k2 = key(source_name, location);
+    const k3 = key(brand, location);
+    const k4 = key(source_name);
+    const k5 = key(brand);
+    for (const k of [k1,k2,k3,k4,k5]) {
+      if (k) { 
+        compIndex.set(k, meta); 
+        compHits++; 
+        break; 
+      }
+    }
   }
-  
-  // 4. Recherche partielle par marque
-  for (const normalizedBrand of normalizedBrands) {
-    match = coordinatesData.find(coord => {
-      const coordBrand = normalize(coord.brand);
-      return coordBrand.includes(normalizedBrand) || normalizedBrand.includes(coordBrand);
+  log('compIndex size:', compIndex.size, 'assignments:', compHits);
+
+  // 4) Construire la liste finale depuis le CSV coordonnées (source minimale)
+  const items: SourceItem[] = [];
+  let i = 0, withComp = 0;
+
+  for (const parts of coordsRows) {
+    const [source_name, brand, commune, department, lat, lng, rawCategory] = parts as unknown as string[];
+    const latN = Number(lat); 
+    const lngN = Number(lng);
+    if (!Number.isFinite(latN) || !Number.isFinite(lngN)) continue;
+
+    const k = key(source_name, brand, commune) || key(source_name, commune) || key(brand, commune) || key(source_name) || key(brand);
+
+    // Catégorie lisible
+    const mapCategory = (c?: string) => {
+      const v = (c ?? '').toLowerCase();
+      if (v === 'emn' || v.includes('minérale') && !v.includes('gazeuse')) return 'Eau minérale naturelle';
+      if (v.includes('gazeuse')) return 'Eau minérale naturelle gazeuse';
+      if (v.includes('source')) return 'Eau de source';
+      return 'Eau minérale naturelle'; // défaut raisonnable
+    };
+
+    // Métadonnées techniques si disponibles
+    const meta = (k && compIndex.get(k)) || {};
+
+    items.push({
+      source_id: `src_${i++}`,
+      source_name,
+      location: `${commune}, ${department}`,
+      brands: brand ? [brand] : [],
+      count_brands: brand ? 1 : 0,
+      is_sparkling_mix: mapCategory(rawCategory) === 'Eau minérale naturelle gazeuse',
+      latitude: latN,
+      longitude: lngN,
+      water_category: mapCategory(rawCategory),
+      residue: meta.residue,
+      flow_rate: meta.flow_rate,
+      depth: meta.depth,
+      temperature: meta.temperature,
     });
-    if (match) {
-      return { latitude: match.latitude, longitude: match.longitude, category: match.category };
-    }
-  }
-  
-  return {};
-}
 
-/** Agrège les captages depuis composition + complète avec le catalogue + coordonnées */
-export async function buildSources(
-  composition: Composition[] = [],
-  catalog: Record<string, string>[] = []
-): Promise<SourceItem[]> {
-  console.log('🏗️ buildSources called with:', { compositionLength: composition.length, catalogLength: catalog.length });
-  const byKey = new Map<string, SourceItem>();
-  
-  // Charger les données de coordonnées
-  const coordinatesData = await loadCoordinatesData();
-  console.log(`📍 ${coordinatesData.length} coordonnées chargées`);
-
-  // Traitement des données de composition
-  console.log('🧪 Processing composition data...');
-  for (const r of composition) {
-    const source = (r.source_name ?? "").trim();
-    if (!source) continue;
-    const loc = (r.location ?? "").trim();
-    const brand = (r.brand ?? "").trim();
-    const key = hashSource(source, loc);
-
-    if (!byKey.has(key)) {
-      // Rechercher les coordonnées pour cette source
-      const coords = findCoordinates(source, brand ? [brand] : [], loc, coordinatesData);
-      
-      byKey.set(key, {
-        source_id: key,
-        source_name: source,
-        location: loc || undefined,
-        brands: [],
-        is_sparkling_mix: false,
-        count_brands: 0,
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        water_category: coords.category,
-        // Données techniques depuis la composition
-        residue: typeof r.residu_sec_180_mg_L === 'number' ? r.residu_sec_180_mg_L : undefined,
-      });
-    }
-    const item = byKey.get(key)!;
-    if (brand && !item.brands.includes(brand)) {
-      item.brands.push(brand);
-      // Mettre à jour les coordonnées si on a une nouvelle marque
-      if (!item.latitude || !item.longitude) {
-        const coords = findCoordinates(source, item.brands, item.location || '', coordinatesData);
-        if (coords.latitude && coords.longitude) {
-          item.latitude = coords.latitude;
-          item.longitude = coords.longitude;
-          item.water_category = coords.category;
-        }
-      }
-    }
-    if (r.is_sparkling === true || r.is_sparkling === "true") item.is_sparkling_mix = true;
+    if (meta && (meta.residue || meta.flow_rate || meta.depth || meta.temperature)) withComp++;
   }
 
-  // Traitement des données du catalogue
-  console.log('📋 Processing catalog data...');
-  for (const c of catalog) {
-    const source = (c.source_name ?? "").trim();
-    if (!source) continue;
-    const key = hashSource(source, "");
-    const brand = (c.brand ?? "").trim();
-    
-    if (!byKey.has(key)) {
-      const coords = findCoordinates(source, brand ? [brand] : [], '', coordinatesData);
-      
-      byKey.set(key, {
-        source_id: key,
-        source_name: source,
-        location: undefined,
-        brands: [],
-        is_sparkling_mix: false,
-        count_brands: 0,
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        water_category: coords.category,
-      });
-    }
-    const item = byKey.get(key)!;
-    if (brand && !item.brands.includes(brand)) {
-      item.brands.push(brand);
-      // Mettre à jour les coordonnées si on a une nouvelle marque
-      if (!item.latitude || !item.longitude) {
-        const coords = findCoordinates(source, item.brands, item.location || '', coordinatesData);
-        if (coords.latitude && coords.longitude) {
-          item.latitude = coords.latitude;
-          item.longitude = coords.longitude;
-          item.water_category = coords.category;
-        }
-      }
-    }
-    if ((c.variant ?? "").toLowerCase() === "gazeuse") item.is_sparkling_mix = true;
-  }
+  log('built items:', items.length, 'with technical meta:', withComp);
 
-  const result = Array.from(byKey.values())
-    .map(s => ({ ...s, count_brands: s.brands.length }))
-    .sort((a, b) => (b.count_brands - a.count_brands) || a.source_name.localeCompare(b.source_name));
-    
-  console.log(`✅ buildSources completed: ${result.length} sources construites`);
-  console.log(`📊 Sources with coordinates: ${result.filter(s => s.latitude && s.longitude).length}`);
-  console.log(`🏷️ Sample sources:`, result.slice(0, 3).map(s => ({ name: s.source_name, coords: [s.latitude, s.longitude], brands: s.brands })));
-  
-  return result;
+  return items;
 }
