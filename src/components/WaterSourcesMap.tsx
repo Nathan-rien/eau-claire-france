@@ -77,25 +77,80 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
     const loc = normalize(source.location || '');
     const commune = (loc.split(/[,–-]/)[0] || '').trim();
 
+    // Log pour déboguer
+    console.log('Recherche coordonnées pour:', {
+      source_name: source.source_name,
+      normalized_source: sName,
+      location: source.location,
+      normalized_commune: commune,
+      brands: source.brands,
+      available_keys: Object.keys(sourceCoordinates).slice(0, 10) // Premier 10 clés pour debug
+    });
+
+    // 1. Recherche source|commune
     if (sName && commune && sourceCoordinates[`${sName}|${commune}`]) {
+      console.log('✓ Trouvé avec source|commune:', `${sName}|${commune}`);
       return sourceCoordinates[`${sName}|${commune}`];
     }
+    
+    // 2. Recherche source uniquement
     if (sName && sourceCoordinates[sName]) {
+      console.log('✓ Trouvé avec source:', sName);
       return sourceCoordinates[sName];
     }
+    
+    // 3. Recherche par marques
     for (const b of source.brands) {
       const brand = normalize(b);
+      
+      // 3a. brand|commune
       if (brand && commune && sourceCoordinates[`${brand}|${commune}`]) {
+        console.log('✓ Trouvé avec brand|commune:', `${brand}|${commune}`);
         return sourceCoordinates[`${brand}|${commune}`];
       }
+      
+      // 3b. brand uniquement
       if (brand && sourceCoordinates[brand]) {
+        console.log('✓ Trouvé avec brand:', brand);
         return sourceCoordinates[brand];
       }
     }
+    
+    // 4. Recherche commune uniquement
     if (commune && sourceCoordinates[commune]) {
+      console.log('✓ Trouvé avec commune:', commune);
       return sourceCoordinates[commune];
     }
 
+    // 5. Fallback - chercher des correspondances partielles
+    const allKeys = Object.keys(sourceCoordinates);
+    
+    // Chercher une correspondance partielle avec le nom de source
+    if (sName) {
+      const partialMatch = allKeys.find(key => 
+        key.includes(sName) || sName.includes(key.split('|')[0])
+      );
+      if (partialMatch) {
+        console.log('✓ Trouvé avec correspondance partielle source:', partialMatch);
+        return sourceCoordinates[partialMatch];
+      }
+    }
+    
+    // Chercher une correspondance partielle avec les marques
+    for (const b of source.brands) {
+      const brand = normalize(b);
+      if (brand) {
+        const partialMatch = allKeys.find(key => 
+          key.includes(brand) || brand.includes(key.split('|')[0])
+        );
+        if (partialMatch) {
+          console.log('✓ Trouvé avec correspondance partielle brand:', partialMatch);
+          return sourceCoordinates[partialMatch];
+        }
+      }
+    }
+
+    console.log('❌ Aucune coordonnée trouvée, utilisation fallback');
     // fallback centre France
     const base: [number, number] = [2.2137, 46.2276];
     const jitter = 0.05;
