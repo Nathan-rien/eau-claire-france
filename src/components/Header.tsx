@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Droplets, Menu, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -34,6 +34,28 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
   const [mapsMenuOpen, setMapsMenuOpen] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setMapsMenuOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setMapsMenuOpen(false);
+    }, 150); // Délai de 150ms pour permettre de naviguer vers le sous-menu
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" role="banner">
@@ -54,8 +76,8 @@ const Header = () => {
             {/* Sous-menu "Les cartes" */}
             <div 
               className="relative group"
-              onMouseEnter={() => setMapsMenuOpen(true)}
-              onMouseLeave={() => setMapsMenuOpen(false)}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
               <button
                 className={`px-3 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap flex items-center gap-1 ${
@@ -66,7 +88,11 @@ const Header = () => {
                 <ChevronDown className="h-3 w-3" />
               </button>
               {mapsMenuOpen && (
-                <div className="absolute left-0 top-full mt-1 w-64 bg-background border border-border shadow-lg rounded-md z-50">
+                <div 
+                  className="absolute left-0 top-full w-64 bg-background border border-border shadow-lg rounded-md z-50 mt-0"
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                >
                   {mapsItems.map((item) => (
                     <Link
                       key={item.href}
