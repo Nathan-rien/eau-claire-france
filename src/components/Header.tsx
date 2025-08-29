@@ -15,19 +15,25 @@ const Header = () => {
     setLanguage(newLanguage as 'fr' | 'en');
   };
 
+  const mapsItems = [
+    { href: '/carte', label: 'Carte des sources du robinet' },
+    { href: '/sources-eau', label: 'Carte des sources des bouteilles' },
+    { href: '/carte-polluants', label: 'Carte des polluants' },
+  ];
+
   const navigationItems = [
-    { href: '/carte', label: t('nav.map') },
-    { href: '/carte-polluants', label: t('nav.pollutants-map') },
-    { href: '/diagnostic', label: t('nav.diagnostic') },
-    { href: '/quelle-eau-boire', label: t('nav.which-water') },
-    { href: '/bouteilles', label: t('nav.bottles') },
-    { href: '/comparatif-bouteilles', label: t('nav.comparison') },
-    { href: '/classement', label: t('nav.ranking') },
-    { href: '/polluants', label: t('nav.pollutants') },
-    { href: '/alertes', label: t('nav.alerts') },
+    { href: '/diagnostic', label: 'Diagnostic' },
+    { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
+    { href: '/bouteilles', label: 'Robinet vs bouteilles' },
+    { href: '/comparatif-bouteilles', label: 'Comparatif' },
+    { href: '/classement', label: 'Classement' },
+    { href: '/polluants', label: 'Polluants' },
+    { href: '/alertes', label: 'Alertes' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
+  const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
+  const [mapsMenuOpen, setMapsMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" role="banner">
@@ -45,6 +51,38 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden xl:flex items-center space-x-1 flex-1 justify-center max-w-4xl" role="navigation" aria-label="Navigation principale">
+            {/* Sous-menu "Les cartes" */}
+            <div 
+              className="relative group"
+              onMouseEnter={() => setMapsMenuOpen(true)}
+              onMouseLeave={() => setMapsMenuOpen(false)}
+            >
+              <button
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap flex items-center gap-1 ${
+                  isActiveMapsSection ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Les cartes
+                <ChevronDown className="h-3 w-3" />
+              </button>
+              {mapsMenuOpen && (
+                <div className="absolute left-0 top-full mt-1 w-64 bg-background border border-border shadow-lg rounded-md z-50">
+                  {mapsItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      className={`block px-4 py-3 text-sm hover:bg-accent hover:text-accent-foreground transition-colors ${
+                        isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Liens directs */}
             {navigationItems.map((item) => (
               <Link
                 key={item.href}
@@ -106,6 +144,29 @@ const Header = () => {
                       <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
                         InfoEau.fr
                       </span>
+                    </div>
+                    {/* Section cartes dans mobile */}
+                    <div className="mb-4">
+                      <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
+                        Les cartes
+                      </div>
+                      {mapsItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          to={item.href}
+                          onClick={() => setIsOpen(false)}
+                          className={`block px-3 py-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground ml-3 ${
+                            isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                    
+                    {/* Autres liens */}
+                    <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
+                      Navigation
                     </div>
                     {navigationItems.map((item) => (
                       <Link
