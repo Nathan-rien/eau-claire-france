@@ -16,149 +16,43 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [selectedSource, setSelectedSource] = useState<SourceItem | null>(null);
-  const [sourceCoordinates, setSourceCoordinates] = useState<Record<string, [number, number]>>({});
-  const [coordinatesLoaded, setCoordinatesLoaded] = useState(false);
 
-  // Fonction de normalisation pour la correspondance des noms
-  const normalize = (s: string) =>
-    s?.toLowerCase()
-      .trim()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, ' ') || '';
 
-  // Chargement des coordonnées depuis le CSV
-  useEffect(() => {
-    const loadCoordinates = async () => {
-      try {
-        console.log('🔄 Chargement des coordonnées des sources...');
-        const response = await fetch('/data/water_sources_coordinates.csv');
-        
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const csvText = await response.text();
-        const lines = csvText.split(/\r?\n/).slice(1).map(l => l.trim()).filter(Boolean);
-        
-        const coordinatesMap: Record<string, [number, number]> = {};
-
-        for (const line of lines) {
-          const parts = line.split(';').map(p => p.trim());
-          
-          if (parts.length < 6) continue;
-
-          const [sourceNameRaw, brandRaw, communeRaw, , latRaw, lngRaw] = parts;
-          const lat = parseFloat(latRaw);
-          const lng = parseFloat(lngRaw);
-          
-          if (isNaN(lat) || isNaN(lng)) continue;
-
-          const coords: [number, number] = [lng, lat]; // [longitude, latitude] pour Mapbox
-          const sourceName = normalize(sourceNameRaw);
-          const brand = normalize(brandRaw);
-          const commune = normalize(communeRaw);
-
-          // Stocker sous différentes clés pour maximiser les correspondances
-          if (sourceName) coordinatesMap[sourceName] = coords;
-          if (brand) coordinatesMap[brand] = coords;
-          if (commune) coordinatesMap[commune] = coords;
-          if (sourceName && commune) coordinatesMap[`${sourceName}|${commune}`] = coords;
-          if (brand && commune) coordinatesMap[`${brand}|${commune}`] = coords;
-        }
-
-        console.log(`✅ ${Object.keys(coordinatesMap).length} coordonnées chargées`);
-        setSourceCoordinates(coordinatesMap);
-        setCoordinatesLoaded(true);
-        
-      } catch (e) {
-        console.error('❌ Erreur lors du chargement des coordonnées:', e);
-        // Coordonnées de fallback pour les principales sources
-        const fallbackCoords: Record<string, [number, number]> = {
-          'evian': [6.5885, 46.4008],
-          'volvic': [3.0319, 45.8708],
-          'vittel': [5.9469, 48.2034],
-          'contrex': [5.8936, 48.1847],
-          'hepar': [5.9500, 48.2100],
-          'perrier': [3.9500, 43.7500],
-          'badoit': [4.2500, 45.5333],
-          'cristaline': [2.2137, 46.2276],
-        };
-        setSourceCoordinates(fallbackCoords);
-        setCoordinatesLoaded(true);
-      }
-    };
-
-    loadCoordinates();
-  }, []);
-
-  // Fonction pour obtenir les coordonnées d'une source
+  // Fonction pour obtenir les coordonnées d'une source (maintenant intégrées)
   const getCoordinatesForSource = (source: SourceItem): [number, number] | null => {
-    if (!coordinatesLoaded || Object.keys(sourceCoordinates).length === 0) {
-      return null;
+    if (typeof source.latitude === 'number' && typeof source.longitude === 'number') {
+      return [source.longitude, source.latitude]; // [longitude, latitude] pour Mapbox
     }
-
-    const sName = normalize(source.source_name);
-    const loc = normalize(source.location || '');
-    const commune = (loc.split(/[,–-]/)[0] || '').trim();
-
-    // 1. Recherche exacte : source|commune
-    if (sName && commune && sourceCoordinates[`${sName}|${commune}`]) {
-      return sourceCoordinates[`${sName}|${commune}`];
-    }
-    
-    // 2. Recherche par nom de source
-    if (sName && sourceCoordinates[sName]) {
-      return sourceCoordinates[sName];
-    }
-    
-    // 3. Recherche par marques
-    for (const brand of source.brands) {
-      const normalizedBrand = normalize(brand);
-      
-      // 3a. brand|commune
-      if (normalizedBrand && commune && sourceCoordinates[`${normalizedBrand}|${commune}`]) {
-        return sourceCoordinates[`${normalizedBrand}|${commune}`];
-      }
-      
-      // 3b. brand uniquement
-      if (normalizedBrand && sourceCoordinates[normalizedBrand]) {
-        return sourceCoordinates[normalizedBrand];
-      }
-    }
-    
-    // 4. Recherche par commune
-    if (commune && sourceCoordinates[commune]) {
-      return sourceCoordinates[commune];
-    }
-
-    // 5. Recherche de correspondances partielles
-    const allKeys = Object.keys(sourceCoordinates);
-    
-    if (sName) {
-      const partialMatch = allKeys.find(key => 
-        key.includes(sName) || sName.includes(key.split('|')[0])
-      );
-      if (partialMatch) {
-        return sourceCoordinates[partialMatch];
-      }
-    }
-    
-    for (const brand of source.brands) {
-      const normalizedBrand = normalize(brand);
-      if (normalizedBrand) {
-        const partialMatch = allKeys.find(key => 
-          key.includes(normalizedBrand) || normalizedBrand.includes(key.split('|')[0])
-        );
-        if (partialMatch) {
-          return sourceCoordinates[partialMatch];
-        }
-      }
-    }
-
-    console.warn(`❌ Aucune coordonnée trouvée pour: ${source.source_name}`);
     return null;
+  };
+
+  // Fonction pour déterminer le type d'eau selon la nouvelle logique
+  const getWaterType = (source: SourceItem): string => {
+    // 1. Priorité à la catégorie depuis le CSV coordonnées
+    if (source.water_category === 'Eau de source') {
+      return 'Eau de source';
+    }
+    
+    // 2. Eau gazeuse (naturellement ou ajoutée)
+    if (source.is_sparkling_mix) {
+      return 'Eau minérale naturelle gazeuse';
+    }
+    
+    // 3. Détection eau de source par nom/marques (fallback)
+    const isSpringWater = source.source_name.toLowerCase().includes('source') ||
+                         source.brands.some(brand => 
+                           ['cristaline', 'carrefour', 'marque repère', 'eco+', 'saskia', 'rocheval', 
+                            'ondine', 'monoprix', 'auchan', 'casino', 'top budget'].some(keyword =>
+                             brand.toLowerCase().includes(keyword)
+                           )
+                         );
+    
+    if (isSpringWater) {
+      return 'Eau de source';
+    }
+    
+    // 4. Par défaut : eau minérale naturelle
+    return 'Eau minérale naturelle';
   };
 
   // Initialisation de la carte
@@ -186,17 +80,17 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
 
   // Mise à jour de la carte quand les données changent
   useEffect(() => {
-    if (map.current && map.current.isStyleLoaded() && csvSources.length > 0 && coordinatesLoaded) {
+    if (map.current && map.current.isStyleLoaded() && csvSources.length > 0) {
       if (map.current.getSource('water-sources')) {
         updateSourcesOnMap();
       } else {
         addSourcesLayer();
       }
     }
-  }, [csvSources, coordinatesLoaded, sourceCoordinates]);
+  }, [csvSources]);
 
   const addSourcesLayer = () => {
-    if (!map.current || !coordinatesLoaded) return;
+    if (!map.current) return;
 
     console.log('📍 Ajout des sources sur la carte...');
     
@@ -206,25 +100,12 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
         const coords = getCoordinatesForSource(source);
         
         if (!coords) {
+          console.warn(`❌ Pas de coordonnées pour: ${source.source_name}`);
           return null; // Ignorer les sources sans coordonnées
         }
 
-        // Déterminer le type d'eau
-        let waterType = 'Eau minérale naturelle';
-        
-        const isSpringWater = source.source_name.toLowerCase().includes('source') ||
-                             source.brands.some(brand => 
-                               ['cristaline', 'carrefour', 'marque repère', 'eco+', 'saskia', 'rocheval', 
-                                'ondine', 'monoprix', 'auchan', 'casino', 'top budget'].some(keyword =>
-                                 brand.toLowerCase().includes(keyword)
-                               )
-                             );
-        
-        if (isSpringWater) {
-          waterType = 'Eau de source';
-        } else if (source.is_sparkling_mix) {
-          waterType = 'Eau minérale naturelle gazeuse';
-        }
+        // Déterminer le type d'eau avec la nouvelle logique
+        const waterType = getWaterType(source);
         
         return {
           type: 'Feature' as const,
@@ -245,6 +126,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
             depth: source.depth ?? null,
             temperature: source.temperature ?? null,
             residue: source.residue ?? null,
+            water_category: source.water_category || null,
           }
         };
       })
@@ -348,7 +230,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
   };
 
   const updateSourcesOnMap = () => {
-    if (!map.current || !map.current.getSource('water-sources') || !coordinatesLoaded) return;
+    if (!map.current || !map.current.getSource('water-sources')) return;
 
     console.log('🔄 Mise à jour des sources sur la carte...');
 
@@ -360,21 +242,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
           return null;
         }
 
-        let waterType = 'Eau minérale naturelle';
-        
-        const isSpringWater = source.source_name.toLowerCase().includes('source') ||
-                             source.brands.some(brand => 
-                               ['cristaline', 'carrefour', 'marque repère', 'eco+', 'saskia', 'rocheval', 
-                                'ondine', 'monoprix', 'auchan', 'casino', 'top budget'].some(keyword =>
-                                 brand.toLowerCase().includes(keyword)
-                               )
-                             );
-        
-        if (isSpringWater) {
-          waterType = 'Eau de source';
-        } else if (source.is_sparkling_mix) {
-          waterType = 'Eau minérale naturelle gazeuse';
-        }
+        const waterType = getWaterType(source);
         
         return {
           type: 'Feature' as const,
@@ -395,6 +263,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
             depth: source.depth ?? null,
             temperature: source.temperature ?? null,
             residue: source.residue ?? null,
+            water_category: source.water_category || null,
           }
         };
       })
@@ -475,8 +344,8 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
                   <Droplets className="h-5 w-5" />
                   {selectedSource.source_name}
                 </CardTitle>
-                <Badge className={getTypeColor(selectedSource.is_sparkling_mix ? 'Eau minérale naturelle gazeuse' : 'Eau minérale naturelle')}>
-                  {selectedSource.is_sparkling_mix ? 'Eau minérale naturelle gazeuse' : 'Eau minérale naturelle'}
+                <Badge className={getTypeColor(getWaterType(selectedSource))}>
+                  {getWaterType(selectedSource)}
                 </Badge>
               </CardHeader>
               <CardContent className="space-y-4">

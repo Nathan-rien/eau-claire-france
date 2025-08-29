@@ -14,7 +14,14 @@ export default function SourcesEau() {
   if (loading) return <div style={{padding:16}}>Chargement…</div>;
   if (error)   return <div style={{padding:16}}>❌ {error}</div>;
 
-  const sources = buildSources(composition ?? [], catalog ?? []);
+  const [sources, setSources] = useState<any[]>([]);
+
+  // Charger les sources avec coordonnées
+  React.useEffect(() => {
+    if (composition && catalog) {
+      buildSources(composition, catalog).then(setSources);
+    }
+  }, [composition, catalog]);
 
   return (
     <Layout>
