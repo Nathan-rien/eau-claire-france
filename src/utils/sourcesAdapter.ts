@@ -34,6 +34,7 @@ type CoordRow = {
 };
 
 export async function buildSources(): Promise<SourceItem[]> {
+  console.log('[buildSources] START');
   const log = (...args: any[]) => console.log('[buildSources]', ...args);
 
   // 1) Charger CSV
@@ -42,6 +43,8 @@ export async function buildSources(): Promise<SourceItem[]> {
     fetch('/data/infoeau_catalog_eaux_v3.csv').then(r => r.text()).catch(() => ''),
     fetch('/data/infoeau_emn_composition_v2_partial.csv').then(r => r.text()).catch(() => ''),
   ]);
+
+  console.log('[buildSources] CSV loaded, lengths:', coordsText.length, catalogText.length, compText.length);
 
   const parseCsv = (txt: string, separator = ';') => {
     const lines = txt.split(/\r?\n/).slice(1).map(l => l.trim()).filter(Boolean);
@@ -115,9 +118,14 @@ export async function buildSources(): Promise<SourceItem[]> {
 
   for (const parts of coordsRows) {
     const [source_name, brand, commune, department, lat, lng, rawCategory] = parts as unknown as string[];
+    console.log('[buildSources] Processing row:', { source_name, brand, commune, department, lat, lng, rawCategory });
     const latN = Number(lat); 
     const lngN = Number(lng);
-    if (!Number.isFinite(latN) || !Number.isFinite(lngN)) continue;
+    console.log('[buildSources] Converted coordinates:', { latN, lngN, isFinite: Number.isFinite(latN) && Number.isFinite(lngN) });
+    if (!Number.isFinite(latN) || !Number.isFinite(lngN)) {
+      console.log('[buildSources] SKIPPING row due to invalid coordinates');
+      continue;
+    }
 
     const k = key(source_name, brand, commune) || key(source_name, commune) || key(brand, commune) || key(source_name) || key(brand);
 
