@@ -14,12 +14,29 @@ export default function SourcesEau() {
 
   // Charger les sources avec coordonnées
   useEffect(() => {
-    console.log('[page] SourcesEau useEffect triggered');
-    (async () => {
-      const list = await buildSources();
-      console.log('[page] WaterSources built:', list.length);
-      setSources(list);
-    })();
+    let mounted = true;
+    console.log('[SourcesEau] Starting buildSources');
+    
+    const loadSources = async () => {
+      try {
+        const list = await buildSources();
+        console.log('[SourcesEau] buildSources completed:', list.length, 'sources');
+        if (mounted) {
+          setSources(list);
+        }
+      } catch (error) {
+        console.error('[SourcesEau] Error loading sources:', error);
+        if (mounted) {
+          setSources([]); // Fallback empty array
+        }
+      }
+    };
+    
+    loadSources();
+    
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   if (loading) return <div style={{padding:16}}>Chargement…</div>;
