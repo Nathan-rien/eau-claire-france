@@ -9,15 +9,15 @@ import { SourceItem } from '@/utils/sourcesAdapter';
 import { Droplets, MapPin } from 'lucide-react';
 
 interface WaterSourcesMapProps {
-  csvSources: SourceItem[];
+  sources: SourceItem[];
 }
 
-const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
+const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [selectedSource, setSelectedSource] = useState<SourceItem | null>(null);
 
-  console.log('🗺️ WaterSourcesMap received:', csvSources.length, 'sources');
+  console.log('🗺️ WaterSourcesMap received:', sources.length, 'sources');
 
 
   // Fonction pour obtenir les coordonnées d'une source (maintenant intégrées)
@@ -35,8 +35,8 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
       return 'Eau de source';
     }
     
-    // 2. Eau gazeuse (naturellement ou ajoutée)
-    if (source.is_sparkling_mix) {
+    // 2. Eau gazeuse (détection par catégorie)
+    if (source.water_category === 'Eau minérale naturelle gazeuse') {
       return 'Eau minérale naturelle gazeuse';
     }
     
@@ -82,14 +82,14 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
 
   // Mise à jour de la carte quand les données changent
   useEffect(() => {
-    if (map.current && map.current.isStyleLoaded() && csvSources.length > 0) {
+    if (map.current && map.current.isStyleLoaded() && sources.length > 0) {
       if (map.current.getSource('water-sources')) {
         updateSourcesOnMap();
       } else {
         addSourcesLayer();
       }
     }
-  }, [csvSources]);
+  }, [sources]);
 
   const addSourcesLayer = () => {
     if (!map.current) return;
@@ -97,7 +97,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
     console.log('📍 Ajout des sources sur la carte...');
     
     // Créer les features avec validation des coordonnées
-    const features = csvSources
+    const features = sources
       .map(source => {
         const coords = getCoordinatesForSource(source);
         
@@ -122,7 +122,6 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
             brands: source.brands.join(', '),
             location: source.location || 'Non spécifiée',
             count_brands: source.count_brands,
-            is_sparkling_mix: source.is_sparkling_mix,
             displayName: source.brands.length > 0 ? `${source.brands[0]}` : source.source_name,
             flow_rate: source.flow_rate ?? null,
             depth: source.depth ?? null,
@@ -134,7 +133,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
       })
       .filter(feature => feature !== null); // Enlever les features nulles
 
-    console.log(`✅ ${features.length} sources ajoutées sur ${csvSources.length} sources total`);
+    console.log(`✅ ${features.length} sources ajoutées sur ${sources.length} sources total`);
 
     // Ajouter la source de données
     map.current.addSource('water-sources', {
@@ -201,7 +200,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
       if (e.features && e.features[0]) {
         const feature = e.features[0];
         const sourceId = feature.properties?.id;
-        const source = csvSources.find(s => s.source_id === sourceId);
+        const source = sources.find(s => s.source_id === sourceId);
         
         if (source) {
           setSelectedSource(source);
@@ -237,7 +236,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
 
     console.log('🔄 Mise à jour des sources sur la carte...');
 
-    const features = csvSources
+    const features = sources
       .map(source => {
         const coords = getCoordinatesForSource(source);
         
@@ -260,7 +259,6 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
             brands: source.brands.join(', '),
             location: source.location || 'Non spécifiée',
             count_brands: source.count_brands,
-            is_sparkling_mix: source.is_sparkling_mix,
             displayName: source.brands.length > 0 ? `${source.brands[0]}` : source.source_name,
             flow_rate: source.flow_rate ?? null,
             depth: source.depth ?? null,
@@ -410,7 +408,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ csvSources }) => {
                   <MapPin className="h-12 w-12 mx-auto mb-2 opacity-50" />
                   <p>Cliquez sur une source pour voir ses détails</p>
                   <p className="text-sm mt-2">
-                    {csvSources.length} source{csvSources.length > 1 ? 's' : ''} trouvée{csvSources.length > 1 ? 's' : ''}
+                    {sources.length} source{sources.length > 1 ? 's' : ''} trouvée{sources.length > 1 ? 's' : ''}
                   </p>
                 </div>
               </CardContent>

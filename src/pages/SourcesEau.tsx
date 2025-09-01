@@ -1,46 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from "react";
 import { Droplets, MapPin, Info } from 'lucide-react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import WaterSourcesMap from '@/components/WaterSourcesMap';
-import { useBottleData } from "@/hooks/useBottleData";
-import { buildSources } from "@/utils/sourcesAdapter";
+import { buildSources, type SourceItem } from "@/utils/sourcesAdapter";
 
 export default function SourcesEau() {
-  const { composition, catalog, loading, error } = useBottleData();
-  const [sources, setSources] = useState<any[]>([]);
+  const [sources, setSources] = useState<SourceItem[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const loadedRef = useRef(false);
 
-  // Charger les sources avec coordonnées
   useEffect(() => {
-    let mounted = true;
-    console.log('[SourcesEau] Starting buildSources');
-    
-    const loadSources = async () => {
+    if (loadedRef.current) return; // évite double fetch en dev/StrictMode
+    loadedRef.current = true;
+
+    let cancelled = false;
+    (async () => {
       try {
+        console.log("[page] buildSources:start");
         const list = await buildSources();
-        console.log('[SourcesEau] buildSources completed:', list.length, 'sources');
-        if (mounted) {
+        if (!cancelled) {
+          console.log("[page] buildSources:done", list.length);
           setSources(list);
         }
-      } catch (error) {
-        console.error('[SourcesEau] Error loading sources:', error);
-        if (mounted) {
-          setSources([]); // Fallback empty array
-        }
+      } catch (e: any) {
+        console.error("[page] buildSources:error", e);
+        if (!cancelled) setError(e?.message ?? "Erreur de chargement des sources");
       }
-    };
-    
-    loadSources();
-    
-    return () => {
-      mounted = false;
-    };
+    })();
+
+    return () => { cancelled = true; };
   }, []);
 
-  if (loading) return <div style={{padding:16}}>Chargement…</div>;
-  if (error)   return <div style={{padding:16}}>❌ {error}</div>;
+  if (error) return <div>Erreur: {error}</div>;
+  if (!sources) return <div>Chargement des sources…</div>;
+  if (sources.length === 0) return <div>Aucune source à afficher.</div>;
 
   return (
     <Layout>
@@ -85,7 +81,7 @@ export default function SourcesEau() {
 
             {/* Carte des sources */}
             <div className="mb-8">
-              <WaterSourcesMap csvSources={sources} />
+              <WaterSourcesMap sources={sources} />
             </div>
 
             {/* Section d'information */}
