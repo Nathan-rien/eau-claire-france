@@ -43,12 +43,16 @@ export async function buildSources(): Promise<SourceItem[]> {
     fetch('/data/infoeau_emn_composition_v2_partial.csv').then(r => r.text()).catch(() => ''),
   ]);
 
-  const parseCsv = (txt: string) =>
-    txt.split(/\r?\n/).slice(1).map(l => l.trim()).filter(Boolean).map(l => l.split(';').map(p => p.trim()));
+  const parseCsv = (txt: string, separator = ';') => {
+    const lines = txt.split(/\r?\n/).slice(1).map(l => l.trim()).filter(Boolean);
+    console.log(`[parseCsv] Found ${lines.length} lines`);
+    if (lines.length > 0) console.log(`[parseCsv] First line: "${lines[0]}"`);
+    return lines.map(l => l.split(separator).map(p => p.trim()));
+  };
 
-  const coordsRows = parseCsv(coordsText);
-  const catalogRows = catalogText ? parseCsv(catalogText) : [];
-  const compRows = compText ? parseCsv(compText) : [];
+  const coordsRows = parseCsv(coordsText, ';'); // water_sources_coordinates.csv utilise ';'
+  const catalogRows = catalogText ? parseCsv(catalogText, ',') : []; // catalog utilise ','
+  const compRows = compText ? parseCsv(compText, ',') : []; // composition utilise ','
 
   log('rows:', { coords: coordsRows.length, catalog: catalogRows.length, comp: compRows.length });
 
