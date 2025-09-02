@@ -17,6 +17,9 @@ import {
 import { formatPrice } from '@/utils/conversionUtils';
 import BottleRow from './BottleRow';
 import type { LoadingState } from '@/types/bottle';
+import { PriceDisplay } from '@/components/PriceDisplay';
+import { makeTapPrice, aggregateBottlePrices } from '@/lib/price';
+import { PRICE_INPUTS } from '@/data/prices.example';
 
 interface BottleComparisonDesktopProps {
   selectedBottles: BottleWaterData[];
@@ -133,14 +136,26 @@ const BottleComparisonDesktop: React.FC<BottleComparisonDesktopProps> = ({
                 bottles={selectedBottles}
                 showTapWater={showTapWater}
                 tapWaterValue={
-                  <span className="font-bold text-green-700">
-                    {formatPrice(tapWaterComparison.prix_moyen_litre)}
-                  </span>
+                  <div className="text-green-700">
+                    <PriceDisplay 
+                      priceData={makeTapPrice(PRICE_INPUTS.tap!)} 
+                      kind="tap" 
+                      showMetadata={false}
+                    />
+                  </div>
                 }
                 renderValue={(bottle) => (
-                  <span className="font-bold text-green-700">
-                    {formatPrice(bottle.prix_moyen_litre)}
-                  </span>
+                  <div className="text-green-700">
+                    <PriceDisplay 
+                      priceData={aggregateBottlePrices([{ 
+                        pricePerLitre: bottle.prix_moyen_litre, 
+                        source: `Données ${bottle.marque}`, 
+                        updatedAt: "2025-01-01" 
+                      }])} 
+                      kind="bottle" 
+                      showMetadata={false}
+                    />
+                  </div>
                 )}
               />
 

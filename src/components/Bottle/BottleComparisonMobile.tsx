@@ -13,6 +13,9 @@ import {
 import { formatPrice } from '@/utils/conversionUtils';
 import BottleCard from './BottleCard';
 import type { UseBottleComparisonReturn } from '@/hooks/useBottleComparison';
+import { PriceDisplay } from '@/components/PriceDisplay';
+import { makeTapPrice } from '@/lib/price';
+import { PRICE_INPUTS } from '@/data/prices.example';
 
 interface BottleComparisonMobileProps extends Pick<UseBottleComparisonReturn, 'handleToggleFavorite' | 'getEcoScoreColor' | 'loadingState'> {
   selectedBottles: BottleWaterData[];
@@ -78,9 +81,13 @@ const BottleComparisonMobile: React.FC<BottleComparisonMobileProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
               <div>
                 <strong>Prix :</strong> 
-                <span className="ml-1 font-semibold text-green-700">
-                  {formatPrice(tapWaterComparison.prix_moyen_litre)}/L
-                </span>
+                <div className="ml-1 text-green-700">
+                  <PriceDisplay 
+                    priceData={makeTapPrice(PRICE_INPUTS.tap!)} 
+                    kind="tap" 
+                    showMetadata={false}
+                  />
+                </div>
               </div>
               <div>
                 <strong>Nitrates :</strong> 

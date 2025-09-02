@@ -1269,9 +1269,16 @@ export const bottleWaterDatabase: BottleWaterData[] = [
   }
 ];
 
+// Import centralized price logic
+import { makeTapPrice } from "@/lib/price";
+import { PRICE_INPUTS } from "@/data/prices.example";
+
+// Generate tap water price with validation and metadata
+const tapPriceData = makeTapPrice(PRICE_INPUTS.tap!);
+
 export const tapWaterComparison = {
   nom_bouteille: "Eau du robinet (moyenne France)",
-  prix_moyen_litre: 0.004,
+  prix_moyen_litre: tapPriceData.value,
   nitrates_mgL: 12,
   residu_sec_mgL: 280,
   calcium_mgL: 90,

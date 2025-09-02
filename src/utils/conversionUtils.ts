@@ -127,9 +127,18 @@ export const convertWaterDataToBottleWaterData = (favorite: WaterData): BottleWa
 };
 
 /**
- * Format price for display
+ * Format price for display with validation
  */
 export const formatPrice = (price: number, decimals: number = 3): string => {
+  // Apply sanity check
+  import("@/lib/price").then(({ clampPriceForDisplay }) => {
+    const kind = decimals === 3 ? "tap" : "bottle";
+    const clamped = clampPriceForDisplay(price, kind);
+    if (clamped !== price) {
+      console.warn(`[formatPrice] Price ${price} was clamped to ${clamped} for ${kind}`);
+    }
+  });
+  
   return `${price.toFixed(decimals)}€`;
 };
 
