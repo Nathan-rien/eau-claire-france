@@ -84,7 +84,7 @@ const BottleCard: React.FC<BottleCardProps> = ({
           <div>
             <strong>Prix :</strong> 
             <span className="ml-1 font-semibold text-green-700">
-              {formatPrice(bottle.prix_moyen_litre, 2)}/L
+              {bottle.prix_moyen_litre.toFixed(2)}€/L
             </span>
           </div>
           <div>

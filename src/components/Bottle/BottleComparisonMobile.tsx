@@ -10,12 +10,10 @@ import {
   interpretSodium, 
   interpretPH 
 } from '@/utils/nutritionalInterpretation';
-import { formatPrice } from '@/utils/conversionUtils';
 import BottleCard from './BottleCard';
 import type { UseBottleComparisonReturn } from '@/hooks/useBottleComparison';
 import { PriceDisplay } from '@/components/PriceDisplay';
-import { makeTapPrice } from '@/lib/price';
-import { PRICE_INPUTS } from '@/data/prices.example';
+import { usePrices } from '@/hooks/usePrices';
 
 interface BottleComparisonMobileProps extends Pick<UseBottleComparisonReturn, 'handleToggleFavorite' | 'getEcoScoreColor' | 'loadingState'> {
   selectedBottles: BottleWaterData[];
@@ -31,6 +29,7 @@ const BottleComparisonMobile: React.FC<BottleComparisonMobileProps> = ({
   isFavorite,
   loadingState
 }) => {
+  const { tap } = usePrices();
   if (loadingState.isLoading) {
     return (
       <div className="space-y-4">
@@ -83,7 +82,7 @@ const BottleComparisonMobile: React.FC<BottleComparisonMobileProps> = ({
                 <strong>Prix :</strong> 
                 <div className="ml-1 text-green-700">
                   <PriceDisplay 
-                    priceData={makeTapPrice(PRICE_INPUTS.tap!)} 
+                    priceData={tap} 
                     kind="tap" 
                     showMetadata={false}
                   />

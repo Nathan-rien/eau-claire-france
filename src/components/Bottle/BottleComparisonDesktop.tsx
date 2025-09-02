@@ -14,12 +14,12 @@ import {
   interpretSodium, 
   interpretPH 
 } from '@/utils/nutritionalInterpretation';
-import { formatPrice } from '@/utils/conversionUtils';
+
 import BottleRow from './BottleRow';
 import type { LoadingState } from '@/types/bottle';
 import { PriceDisplay } from '@/components/PriceDisplay';
-import { makeTapPrice, aggregateBottlePrices } from '@/lib/price';
-import { PRICE_INPUTS } from '@/data/prices.example';
+import { aggregateBottlePrices } from '@/lib/price';
+import { usePrices } from '@/hooks/usePrices';
 
 interface BottleComparisonDesktopProps {
   selectedBottles: BottleWaterData[];
@@ -40,6 +40,7 @@ const BottleComparisonDesktop: React.FC<BottleComparisonDesktopProps> = ({
   isFavorite,
   loadingState
 }) => {
+  const { tap } = usePrices();
   if (loadingState.isLoading) {
     return (
       <Card>
@@ -135,15 +136,15 @@ const BottleComparisonDesktop: React.FC<BottleComparisonDesktopProps> = ({
                 className="bg-green-50"
                 bottles={selectedBottles}
                 showTapWater={showTapWater}
-                tapWaterValue={
-                  <div className="text-green-700">
-                    <PriceDisplay 
-                      priceData={makeTapPrice(PRICE_INPUTS.tap!)} 
-                      kind="tap" 
-                      showMetadata={false}
-                    />
-                  </div>
-                }
+                 tapWaterValue={
+                   <div className="text-green-700">
+                     <PriceDisplay 
+                       priceData={tap} 
+                       kind="tap" 
+                       showMetadata={false}
+                     />
+                   </div>
+                 }
                 renderValue={(bottle) => (
                   <div className="text-green-700">
                     <PriceDisplay 
