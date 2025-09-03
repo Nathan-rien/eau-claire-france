@@ -1,7 +1,7 @@
 import React from 'react';
 import { usePrices } from "@/hooks/usePrices";
 
-const PriceOverlayDebug = () => {
+const PriceOverlayDebug: React.FC = () => {
   const { tap, bottle } = usePrices();
   return (
     <div style={{position:"fixed",bottom:10,right:10,zIndex:9999,
