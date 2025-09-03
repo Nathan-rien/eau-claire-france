@@ -13,6 +13,8 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useBottleData } from '@/hooks/useBottleData';
 import { rankCompositions, CompositionRanking } from '@/utils/bottleRanking';
+import PriceOverlayDebug from '@/components/PriceOverlayDebug';
+import { usePrices } from '@/hooks/usePrices';
 
 const RobinetVsBouteilles = () => {
   const { t } = useLanguage();

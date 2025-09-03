@@ -146,16 +146,11 @@ const BottleComparisonDesktop: React.FC<BottleComparisonDesktopProps> = ({
                    </div>
                  }
                 renderValue={(bottle) => (
-                  <div className="text-green-700">
-                    <PriceDisplay 
-                      priceData={aggregateBottlePrices([{ 
-                        pricePerLitre: bottle.prix_moyen_litre, 
-                        source: `Données ${bottle.marque}`, 
-                        updatedAt: "2025-01-01" 
-                      }])} 
-                      kind="bottle" 
-                      showMetadata={false}
-                    />
+                  <div className="text-green-700" data-price="bottle" id="price-bottle-desktop">
+                    <span className="font-medium">
+                      {(bottle.prix_moyen_litre < 0.01 ? bottle.prix_moyen_litre.toFixed(3) : bottle.prix_moyen_litre.toFixed(2))}€/L
+                    </span>
+                    <em style={{opacity:.7, fontSize:'10px'}}> 💧PRICE-HOOK-ACTIVE</em>
                   </div>
                 )}
               />

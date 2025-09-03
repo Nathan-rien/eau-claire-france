@@ -83,8 +83,8 @@ const BottleCard: React.FC<BottleCardProps> = ({
           </div>
           <div>
             <strong>Prix :</strong> 
-            <span className="ml-1 font-semibold text-green-700">
-              {bottle.prix_moyen_litre.toFixed(2)}€/L
+            <span className="ml-1 font-semibold text-green-700" data-price="bottle" id="price-bottle-card">
+              {(bottle.prix_moyen_litre < 0.01 ? bottle.prix_moyen_litre.toFixed(3) : bottle.prix_moyen_litre.toFixed(2))}€/L <em style={{opacity:.7}}>💧PRICE-HOOK-ACTIVE</em>
             </span>
           </div>
           <div>
