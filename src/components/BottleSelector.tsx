@@ -132,7 +132,7 @@ const BottleSelector: React.FC<BottleSelectorProps> = ({
                   </div>
                   <div className="flex items-center space-x-2 mt-1">
                     <Badge variant="outline" className="text-xs">
-                      {(bottle.prix_moyen_litre < 0.01 ? bottle.prix_moyen_litre.toFixed(3) : bottle.prix_moyen_litre.toFixed(2))}€/L <em style={{opacity:.7}}>💧PRICE-HOOK-ACTIVE</em>
+                      {fmt(bottle.value)} <em style={{opacity:.7}}>💧HOOK</em>
                     </Badge>
                     <Badge 
                       variant="outline" 

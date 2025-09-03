@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useMemo } from 'react';
 import { Droplets, Calculator, ArrowRight, Info, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -20,27 +21,20 @@ const RobinetVsBouteilles = () => {
   const { t } = useLanguage();
   const { composition, catalog, mdd: mddData, loading, error } = useBottleData();
   const [selectedRegion, setSelectedRegion] = useState('national');
+  const { tap, bottle } = usePrices();
 
-  // Données de comparaison eau du robinet vs bouteilles
-  const tapWaterData = {
-    price: { min: 0.003, max: 0.005, unit: '€/L' },
-    co2: { value: 0.3, unit: 'kg CO2/1000L' },
-    quality: 'Contrôlée quotidiennement',
-    treatment: 'Traitement local adapté',
-    convenience: 'Disponible 24h/24'
-  };
+  // Formatage des prix
+  const fmt = (v: number) => (v < 0.01 ? v.toFixed(3) : v.toFixed(2)).replace(".", ",") + " €/L";
 
   const bottledWaterData = useMemo(() => {
     if (!composition || !catalog || composition.length === 0 || catalog.length === 0) return null;
     
     const rankedBottles = rankCompositions(composition);
     const totalBottles = rankedBottles.length;
-    const avgPrice = rankedBottles.reduce((sum, b) => sum + (b.nutritionalScore || 0.5), 0) / totalBottles;
     const avgCO2 = 300; // kg CO2/1000L moyenne pour les bouteilles
     
     return {
       totalBrands: totalBottles,
-      price: { avg: avgPrice, unit: '€/L' },
       co2: { value: avgCO2, unit: 'kg CO2/1000L' },
       quality: 'Contrôlée à la source',
       convenience: 'Transport et stockage nécessaires'
@@ -50,8 +44,8 @@ const RobinetVsBouteilles = () => {
   const comparisonData = [
     {
       criteria: 'Prix',
-      tapWater: '0,003 - 0,005 €/L',
-      bottledWater: bottledWaterData ? `${bottledWaterData.price.avg.toFixed(2)} €/L` : '0,30 - 3,00 €/L',
+      tapWater: <span data-price="tap" id="price-tap">{fmt(tap.value)} <em style={{opacity:.6}}>💧HOOK</em></span>,
+      bottledWater: <span data-price="bottle" id="price-bottle">{fmt(bottle.value)} <em style={{opacity:.6}}>💧HOOK</em></span>,
       winner: 'robinet'
     },
     {
@@ -256,17 +250,25 @@ const RobinetVsBouteilles = () => {
                       <div className="grid md:grid-cols-2 gap-6">
                         <div className="bg-blue-50 p-4 rounded-lg">
                           <h4 className="font-semibold text-blue-800 mb-2">💧 Eau du robinet</h4>
-                          <p className="text-2xl font-bold text-blue-700">0,003 - 0,005 €/L</p>
+                          <p className="text-2xl font-bold text-blue-700">
+                            <span data-price="tap" id="price-tap-card">{fmt(tap.value)} <em style={{opacity:.6}}>💧HOOK</em></span>
+                          </p>
                           <p className="text-sm text-blue-600 mt-2">
+                            Source: {tap.source} • Mis à jour: {new Date(tap.updatedAt).toLocaleDateString('fr-FR')}
+                          </p>
+                          <p className="text-sm text-blue-600 mt-1">
                             Soit environ <strong>2-3 € par an</strong> pour une consommation de 1,5L/jour
                           </p>
                         </div>
                         <div className="bg-amber-50 p-4 rounded-lg">
                           <h4 className="font-semibold text-amber-800 mb-2">🍼 Eau en bouteille</h4>
                           <p className="text-2xl font-bold text-amber-700">
-                            {bottledWaterData ? `${bottledWaterData.price.avg.toFixed(2)} €/L` : '0,30 - 3,00 €/L'}
+                            <span data-price="bottle" id="price-bottle-card">{fmt(bottle.value)} <em style={{opacity:.6}}>💧HOOK</em></span>
                           </p>
                           <p className="text-sm text-amber-600 mt-2">
+                            Source: {bottle.source} • Mis à jour: {new Date(bottle.updatedAt).toLocaleDateString('fr-FR')}
+                          </p>
+                          <p className="text-sm text-amber-600 mt-1">
                             Soit environ <strong>200-1000 € par an</strong> pour la même consommation
                           </p>
                         </div>
@@ -417,6 +419,12 @@ const RobinetVsBouteilles = () => {
                         <Calculator className="h-4 w-4" />
                       </Link>
                     </Button>
+                    <Button asChild variant="ghost" size="sm">
+                      <Link to="/__price-probe" className="flex items-center gap-2">
+                        Diagnostic prix
+                        <Info className="h-4 w-4" />
+                      </Link>
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -425,6 +433,7 @@ const RobinetVsBouteilles = () => {
         </section>
 
         <NavigationCTA />
+        <PriceOverlayDebug />
       </div>
     </Layout>
   );
