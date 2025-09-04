@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BottleWaterData, getUniqueBottles } from '@/data/bottleComparisonData';
+import { usePrices } from '@/hooks/usePrices';
 
 interface BottleSelectorProps {
   selectedBottles: BottleWaterData[];
@@ -19,6 +20,8 @@ const BottleSelector: React.FC<BottleSelectorProps> = ({
   onBottleAdd,
   onBottleRemove
 }) => {
+  const { bottle: bottlePrice } = usePrices();
+  const fmt = (v: number) => (v < 0.01 ? v.toFixed(3) : v.toFixed(2)).replace(".", ",") + " €/L";
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [ecoFilter, setEcoFilter] = useState('all');
@@ -131,9 +134,9 @@ const BottleSelector: React.FC<BottleSelectorProps> = ({
                     {bottle.type_eau} • {bottle.format} • {bottle.source}
                   </div>
                   <div className="flex items-center space-x-2 mt-1">
-                    <Badge variant="outline" className="text-xs">
-                      {fmt(bottle.value)} <em style={{opacity:.7}}>💧HOOK</em>
-                    </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        {fmt(bottlePrice.value)} <em style={{opacity:.7}}>💧HOOK</em>
+                      </Badge>
                     <Badge 
                       variant="outline" 
                       className={`text-xs ${

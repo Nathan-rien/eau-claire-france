@@ -40,7 +40,8 @@ const BottleComparisonDesktop: React.FC<BottleComparisonDesktopProps> = ({
   isFavorite,
   loadingState
 }) => {
-  const { tap } = usePrices();
+  const { tap, bottle: bottlePrice } = usePrices();
+  const fmt = (v: number) => (v < 0.01 ? v.toFixed(3) : v.toFixed(2)).replace(".", ",") + " €/L";
   if (loadingState.isLoading) {
     return (
       <Card>
@@ -145,14 +146,14 @@ const BottleComparisonDesktop: React.FC<BottleComparisonDesktopProps> = ({
                      />
                    </div>
                  }
-                renderValue={(bottle) => (
-                  <div className="text-green-700" data-price="bottle" id="price-bottle-desktop">
-                    <span className="font-medium">
-                      {fmt(bottle.value)} <em style={{opacity:.6}}>💧HOOK</em>
-                    </span>
-                    <em style={{opacity:.7, fontSize:'10px'}}> 💧PRICE-HOOK-ACTIVE</em>
-                  </div>
-                )}
+                 renderValue={(bottle) => (
+                   <div className="text-green-700" data-price="bottle" id="price-bottle-desktop">
+                     <span className="font-medium">
+                       {fmt(bottlePrice.value)} <em style={{opacity:.6}}>💧HOOK</em>
+                     </span>
+                     <em style={{opacity:.7, fontSize:'10px'}}> 💧PRICE-HOOK-ACTIVE</em>
+                   </div>
+                 )}
               />
 
               <BottleRow
