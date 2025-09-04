@@ -44,8 +44,8 @@ const RobinetVsBouteilles = () => {
   const comparisonData = [
     {
       criteria: 'Prix',
-      tapWater: <span data-price="tap" id="price-tap">{fmt(tap.value)} <em style={{opacity:.6}}>💧HOOK</em></span>,
-      bottledWater: <span data-price="bottle" id="price-bottle">{fmt(bottle.value)} <em style={{opacity:.6}}>💧HOOK</em></span>,
+      tapWater: <span data-price="tap" id="price-tap">{fmt(tap.value)}</span>,
+      bottledWater: <span data-price="bottle" id="price-bottle">{fmt(bottle.value)}</span>,
       winner: 'robinet'
     },
     {
@@ -251,7 +251,7 @@ const RobinetVsBouteilles = () => {
                         <div className="bg-blue-50 p-4 rounded-lg">
                           <h4 className="font-semibold text-blue-800 mb-2">💧 Eau du robinet</h4>
                           <p className="text-2xl font-bold text-blue-700">
-                            <span data-price="tap" id="price-tap-card">{fmt(tap.value)} <em style={{opacity:.6}}>💧HOOK</em></span>
+                            <span data-price="tap" id="price-tap-card">{fmt(tap.value)}</span>
                           </p>
                           <p className="text-sm text-blue-600 mt-2">
                             Source: {tap.source} • Mis à jour: {new Date(tap.updatedAt).toLocaleDateString('fr-FR')}
@@ -263,7 +263,7 @@ const RobinetVsBouteilles = () => {
                         <div className="bg-amber-50 p-4 rounded-lg">
                           <h4 className="font-semibold text-amber-800 mb-2">🍼 Eau en bouteille</h4>
                           <p className="text-2xl font-bold text-amber-700">
-                            <span data-price="bottle" id="price-bottle-card">{fmt(bottle.value)} <em style={{opacity:.6}}>💧HOOK</em></span>
+                            <span data-price="bottle" id="price-bottle-card">{fmt(bottle.value)}</span>
                           </p>
                           <p className="text-sm text-amber-600 mt-2">
                             Source: {bottle.source} • Mis à jour: {new Date(bottle.updatedAt).toLocaleDateString('fr-FR')}
@@ -433,7 +433,7 @@ const RobinetVsBouteilles = () => {
         </section>
 
         <NavigationCTA />
-        <PriceOverlayDebug />
+        
       </div>
     </Layout>
   );

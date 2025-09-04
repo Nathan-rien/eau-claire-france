@@ -149,9 +149,8 @@ const BottleComparisonDesktop: React.FC<BottleComparisonDesktopProps> = ({
                  renderValue={(bottle) => (
                    <div className="text-green-700" data-price="bottle" id="price-bottle-desktop">
                      <span className="font-medium">
-                       {fmt(bottlePrice.value)} <em style={{opacity:.6}}>💧HOOK</em>
+                       {fmt(bottlePrice.value)}
                      </span>
-                     <em style={{opacity:.7, fontSize:'10px'}}> 💧PRICE-HOOK-ACTIVE</em>
                    </div>
                  )}
               />
