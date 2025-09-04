@@ -57,9 +57,6 @@ export default function BottleRankingCard({
           {rsn.map((t,i)=><li key={i}>{t}</li>)}
         </ul>
       )}
-      <div className="mt-3 text-xs text-gray-500">
-        Profil : <b>{profile}</b> — pondérations {JSON.stringify(scored.weights)}
-      </div>
     </div>
   );
 }

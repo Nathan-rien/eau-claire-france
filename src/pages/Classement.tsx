@@ -7,14 +7,30 @@ import Layout from '@/components/Layout';
 import RankingProfileSelector from '@/components/Ranking/RankingProfileSelector';
 import BottleRankingCard from '@/components/Ranking/BottleRankingCard';
 import { Profile, scoreBottle, Composition } from '@/utils/rankingV2';
-import { BOTTLES } from '@/data/bottles.composition.mock';
+import { bottledWaters } from '@/data/bottleWaterData';
 
 const Classement = () => {
   const [profile, setProfile] = useState<Profile>("daily");
 
   const ranked = useMemo(() => {
-    return BOTTLES
-      .map(b => ({ ...b, score: scoreBottle(b.compos, profile).total }))
+    return bottledWaters
+      .map(water => {
+        const compos: Composition = {
+          NO3_mg_L: water.composition.nitrates,
+          residu_sec_180_mg_L: water.composition.residusSec,
+          Ca_mg_L: water.composition.calcium,
+          Mg_mg_L: water.composition.magnesium,
+          Na_mg_L: water.composition.sodium
+        };
+        return {
+          id: water.id,
+          name: water.name,
+          brand: water.producer,
+          pricePerL: water.price,
+          compos,
+          score: scoreBottle(compos, profile).total
+        };
+      })
       .sort((a,b) => b.score - a.score);
   }, [profile]);
 
@@ -36,27 +52,49 @@ const Classement = () => {
             </div>
 
             {/* Explication du score v2 */}
-            <Card className="mb-8 border-blue-200 bg-blue-50">
+            <Card className="mb-8 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2 text-blue-800">
                   <Info className="w-5 h-5" />
-                  <span>Moteur de score v2 : fenêtres optimales</span>
+                  <span>Comment fonctionne notre notation ?</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-sm text-blue-700">
-                <p className="mb-2">
-                  Le nouveau score (sur 50 points) utilise des <b>fenêtres optimales</b> et pénalise les extrêmes :
+              <CardContent className="text-blue-700">
+                <p className="mb-4 text-base">
+                  Notre score (sur 50 points) évalue chaque eau selon des <b>critères adaptés à votre usage</b> :
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                  <span>• Nitrates : "plus bas = mieux"</span>
-                  <span>• Résidu sec : fenêtre optimale selon profil</span>
-                  <span>• Calcium : ni trop bas, ni trop haut</span>
-                  <span>• Magnésium : équilibre selon usage</span>
-                  <span>• Sodium : faible en général, toléré en sport</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span><b>Nitrates</b> : Plus c'est bas, mieux c'est</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span><b>Résidu sec</b> : Ni trop faible, ni trop élevé</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                      <span><b>Calcium</b> : Équilibre selon vos besoins</span>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span><b>Magnésium</b> : Adapté à votre profil</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                      <span><b>Sodium</b> : Faible sauf pour le sport</span>
+                    </div>
+                  </div>
                 </div>
-                <p className="mt-2 text-xs">
-                  <b>Contrex</b> : excellente en Sport (Ca/Mg élevés), pénalisée au Quotidien (résidu sec très élevé).
-                </p>
+                <div className="bg-white/70 p-3 rounded-lg border border-blue-200">
+                  <p className="text-sm italic">
+                    💡 <b>Exemple :</b> Contrex est excellente pour le sport (calcium et magnésium élevés) 
+                    mais moins adaptée au quotidien (résidu sec très élevé).
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
