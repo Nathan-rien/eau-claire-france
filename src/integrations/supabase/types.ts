@@ -86,6 +86,87 @@ export type Database = {
         }
         Relationships: []
       }
+      prices: {
+        Row: {
+          availability: string | null
+          brand: string
+          created_at: string
+          id: string
+          image_url: string | null
+          is_promo: boolean | null
+          pack_count: number | null
+          price_per_l_eur: number | null
+          price_total_eur: number | null
+          product_name: string
+          promo_label: string | null
+          retailer_id: string
+          run_id: string
+          scraped_at: string
+          sku: string | null
+          total_volume_l: number | null
+          unique_hash: string
+          unit_volume_l: number | null
+          url: string | null
+        }
+        Insert: {
+          availability?: string | null
+          brand: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_promo?: boolean | null
+          pack_count?: number | null
+          price_per_l_eur?: number | null
+          price_total_eur?: number | null
+          product_name: string
+          promo_label?: string | null
+          retailer_id: string
+          run_id: string
+          scraped_at?: string
+          sku?: string | null
+          total_volume_l?: number | null
+          unique_hash: string
+          unit_volume_l?: number | null
+          url?: string | null
+        }
+        Update: {
+          availability?: string | null
+          brand?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_promo?: boolean | null
+          pack_count?: number | null
+          price_per_l_eur?: number | null
+          price_total_eur?: number | null
+          product_name?: string
+          promo_label?: string | null
+          retailer_id?: string
+          run_id?: string
+          scraped_at?: string
+          sku?: string | null
+          total_volume_l?: number | null
+          unique_hash?: string
+          unit_volume_l?: number | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prices_retailer_id_fkey"
+            columns: ["retailer_id"]
+            isOneToOne: false
+            referencedRelation: "retailers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prices_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rate_limits: {
         Row: {
           count: number
@@ -116,6 +197,131 @@ export type Database = {
         }
         Relationships: []
       }
+      raw_products: {
+        Row: {
+          created_at: string
+          id: string
+          payload_json: Json
+          retailer_id: string
+          run_id: string
+          scraped_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          payload_json?: Json
+          retailer_id: string
+          run_id: string
+          scraped_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          payload_json?: Json
+          retailer_id?: string
+          run_id?: string
+          scraped_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "raw_products_retailer_id_fkey"
+            columns: ["retailer_id"]
+            isOneToOne: false
+            referencedRelation: "retailers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "raw_products_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      retailers: {
+        Row: {
+          created_at: string
+          domain: string
+          id: string
+          name: string
+          search_url_template: string | null
+          slug: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          domain: string
+          id?: string
+          name: string
+          search_url_template?: string | null
+          slug: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          domain?: string
+          id?: string
+          name?: string
+          search_url_template?: string | null
+          slug?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      runs: {
+        Row: {
+          created_at: string
+          error_rate: number | null
+          finished_at: string | null
+          id: string
+          items_found: number | null
+          items_saved: number | null
+          notes: string | null
+          retailer_id: string
+          started_at: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          error_rate?: number | null
+          finished_at?: string | null
+          id?: string
+          items_found?: number | null
+          items_saved?: number | null
+          notes?: string | null
+          retailer_id: string
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          error_rate?: number | null
+          finished_at?: string | null
+          id?: string
+          items_found?: number | null
+          items_saved?: number | null
+          notes?: string | null
+          retailer_id?: string
+          started_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "runs_retailer_id_fkey"
+            columns: ["retailer_id"]
+            isOneToOne: false
+            referencedRelation: "retailers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -124,6 +330,38 @@ export type Database = {
       cleanup_old_rate_limits: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      gtrgm_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_decompress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_in: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_options: {
+        Args: { "": unknown }
+        Returns: undefined
+      }
+      gtrgm_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      set_limit: {
+        Args: { "": number }
+        Returns: number
+      }
+      show_limit: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      show_trgm: {
+        Args: { "": string }
+        Returns: string[]
       }
     }
     Enums: {
