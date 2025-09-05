@@ -30,6 +30,8 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
 
   // Fonction pour déterminer le type d'eau selon la nouvelle logique
   const getWaterType = (source: SourceItem): string => {
+    console.log(`🔍 Analyzing source: ${source.source_name}, water_category: ${source.water_category}`);
+    
     // 1. Priorité à la catégorie depuis le CSV coordonnées
     if (source.water_category === 'Eau de source') {
       return 'Eau de source';
@@ -37,10 +39,25 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
     
     // 2. Eau gazeuse (détection par catégorie)
     if (source.water_category === 'Eau minérale naturelle gazeuse') {
+      console.log(`✨ Found sparkling water: ${source.source_name}`);
       return 'Eau minérale naturelle gazeuse';
     }
     
-    // 3. Détection eau de source par nom/marques (fallback)
+    // 3. Détection eau gazeuse par nom/marques (fallback pour les cas manqués)
+    const isSparklingWater = source.source_name.toLowerCase().includes('gazeuse') ||
+                            source.source_name.toLowerCase().includes('pétillante') ||
+                            source.brands.some(brand => 
+                              ['perrier', 'badoit', 'salvetat', 'quézac', 'verniere', 'abatilles'].some(keyword =>
+                                brand.toLowerCase().includes(keyword)
+                              )
+                            );
+    
+    if (isSparklingWater) {
+      console.log(`✨ Found sparkling water by name/brand: ${source.source_name}`);
+      return 'Eau minérale naturelle gazeuse';
+    }
+    
+    // 4. Détection eau de source par nom/marques (fallback)
     const isSpringWater = source.source_name.toLowerCase().includes('source') ||
                          source.brands.some(brand => 
                            ['cristaline', 'carrefour', 'marque repère', 'eco+', 'saskia', 'rocheval', 
@@ -53,7 +70,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
       return 'Eau de source';
     }
     
-    // 4. Par défaut : eau minérale naturelle
+    // 5. Par défaut : eau minérale naturelle
     return 'Eau minérale naturelle';
   };
 
@@ -108,6 +125,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
 
         // Déterminer le type d'eau avec la nouvelle logique
         const waterType = getWaterType(source);
+        console.log(`🧪 Source: ${source.source_name}, Category: ${source.water_category}, Type: ${waterType}`);
         
         return {
           type: 'Feature' as const,
