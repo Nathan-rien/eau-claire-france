@@ -366,30 +366,65 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
                   </div>
                 </div>
 
-                {/* Informations techniques */}
-                <div className="grid grid-cols-2 gap-4">
-                  {typeof selectedSource.flow_rate === 'number' && (
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Débit autorisé</p>
-                      <p className="font-medium">{selectedSource.flow_rate} m³/j</p>
+                {/* Informations techniques détaillées */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-sm">Caractéristiques techniques</h4>
+                  <div className="grid grid-cols-1 gap-3">
+                    {typeof selectedSource.flow_rate === 'number' && (
+                      <div className="flex justify-between py-2 border-b">
+                        <span className="text-sm text-muted-foreground">Débit autorisé</span>
+                        <span className="font-medium">{selectedSource.flow_rate} m³/jour</span>
+                      </div>
+                    )}
+                    {typeof selectedSource.depth === 'number' && (
+                      <div className="flex justify-between py-2 border-b">
+                        <span className="text-sm text-muted-foreground">Profondeur captage</span>
+                        <span className="font-medium">{selectedSource.depth} mètres</span>
+                      </div>
+                    )}
+                    {typeof selectedSource.temperature === 'number' && (
+                      <div className="flex justify-between py-2 border-b">
+                        <span className="text-sm text-muted-foreground">Température émergence</span>
+                        <span className="font-medium">{selectedSource.temperature} °C</span>
+                      </div>
+                    )}
+                    {typeof selectedSource.residue === 'number' && (
+                      <div className="flex justify-between py-2 border-b">
+                        <span className="text-sm text-muted-foreground">Résidu sec</span>
+                        <span className="font-medium">{selectedSource.residue} mg/L</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between py-2 border-b">
+                      <span className="text-sm text-muted-foreground">Coordonnées</span>
+                      <span className="font-medium text-xs">
+                        {selectedSource.latitude?.toFixed(4)}°N, {selectedSource.longitude?.toFixed(4)}°E
+                      </span>
                     </div>
-                  )}
-                  {typeof selectedSource.depth === 'number' && (
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Profondeur</p>
-                      <p className="font-medium">{selectedSource.depth} m</p>
+                  </div>
+                </div>
+
+                {/* Informations sur la qualité */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-sm">Contrôle qualité</h4>
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-sm font-medium text-green-800">Source contrôlée</span>
                     </div>
-                  )}
-                  {typeof selectedSource.temperature === 'number' && (
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Température</p>
-                      <p className="font-medium">{selectedSource.temperature} °C</p>
-                    </div>
-                  )}
-                  {typeof selectedSource.residue === 'number' && (
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Résidu sec</p>
-                      <p className="font-medium">{selectedSource.residue} mg/L</p>
+                    <p className="text-xs text-green-700">
+                      Cette source fait l'objet de contrôles sanitaires réguliers selon la réglementation française.
+                    </p>
+                  </div>
+                  
+                  {getWaterType(selectedSource) === 'Eau minérale naturelle gazeuse' && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                        <span className="text-sm font-medium text-amber-800">Eau naturellement gazeuse</span>
+                      </div>
+                      <p className="text-xs text-amber-700">
+                        Cette eau contient naturellement du CO₂ à la source.
+                      </p>
                     </div>
                   )}
                 </div>

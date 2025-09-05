@@ -83,6 +83,7 @@ const translations = {
     'breadcrumb.map': 'Carte interactive',
     'breadcrumb.bottles': 'Comparaison bouteilles',
     'breadcrumb.diagnostic': 'Diagnostic personnalisé',
+    'breadcrumb.waterRecommendation': 'Quelle eau boire ?',
     
     // Water recommendation
     'water-recommendation.title': 'Quelle eau boire ?',
@@ -172,6 +173,7 @@ const translations = {
     'breadcrumb.map': 'Interactive map',
     'breadcrumb.bottles': 'Bottles comparison',
     'breadcrumb.diagnostic': 'Personalized diagnostic',
+    'breadcrumb.waterRecommendation': 'Which water to drink?',
     
     // Water recommendation
     'water-recommendation.title': 'Which water to drink?',
