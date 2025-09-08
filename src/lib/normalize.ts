@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import CryptoJS from 'crypto-js';
 
 export interface ParsedFormat {
   pack_count: number | null;
@@ -170,7 +170,7 @@ export function generateUniqueHash(
   
   const input = `${retailerSlug}|${identifier}|${totalVolumeL || 0}|${priceTotal || 0}|${dateOnly}`;
   
-  return createHash('sha256').update(input, 'utf8').digest('hex');
+  return CryptoJS.SHA256(input).toString();
 }
 
 /**

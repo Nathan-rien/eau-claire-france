@@ -1,8 +1,44 @@
-import { supabase } from "@/integrations/supabase/client";
-import { createScraper } from "@/scrapers";
+import { createClient } from '@supabase/supabase-js';
 import { normalizeScrapedItem } from "@/lib/normalize";
 import { BRAND_CONFIG } from "@/config/brands";
 import { ScrapeOptions } from "@/scrapers/types";
+
+// Server-side Supabase client
+const supabase = createClient(
+  "https://xblogttmomuogdhmaztf.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibG9ndHRtb211b2dkaG1henRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0MDYwNTgsImV4cCI6MjA2NTk4MjA1OH0._CAQGXwo2ZJYmwvvstGJ2bnC65vT9fHcTyuXwgNalP8"
+);
+
+// Dynamic scraper imports (server-side only)
+async function createScraper(retailerSlug: string) {
+  try {
+    switch (retailerSlug) {
+      case 'carrefour':
+        const { CarrefourScraper } = await import('@/scrapers/carrefour');
+        return new CarrefourScraper();
+      case 'auchan':
+        const { AuchanScraper } = await import('@/scrapers/auchan');
+        return new AuchanScraper();
+      case 'leclerc':
+        const { LeclercScraper } = await import('@/scrapers/leclerc');
+        return new LeclercScraper();
+      case 'intermarche':
+        const { IntermarcheScraper } = await import('@/scrapers/intermarche');
+        return new IntermarcheScraper();
+      case 'coursesu':
+        const { CoursesScraper } = await import('@/scrapers/coursesu');
+        return new CoursesScraper();
+      case 'casino':
+        const { CasinoScraper } = await import('@/scrapers/casino');
+        return new CasinoScraper();
+      default:
+        throw new Error(`Unknown retailer: ${retailerSlug}`);
+    }
+  } catch (error) {
+    console.error(`Failed to load scraper for ${retailerSlug}:`, error);
+    return null;
+  }
+}
 
 interface ScrapingConfig {
   retailers: string[];
@@ -56,7 +92,7 @@ export async function runScraping(config: ScrapingConfig) {
 
       try {
         // Create scraper instance
-        const scraper = createScraper(retailerSlug);
+        const scraper = await createScraper(retailerSlug);
         if (!scraper) {
           throw new Error(`No scraper found for ${retailerSlug}`);
         }

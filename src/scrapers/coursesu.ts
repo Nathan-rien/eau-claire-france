@@ -1,7 +1,7 @@
 import { BaseScraper } from './base';
 import { RetailerSelectors } from './types';
 
-export class CoursesUScraper extends BaseScraper {
+export class CoursesScraper extends BaseScraper {
   protected retailerName = 'Courses U';
   protected searchUrl = 'https://www.coursesu.com/recherche?q={query}';
   

@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { Run, Retailer } from '@/types/pricing';
-import { runScraping } from '@/scripts/run-scrape';
+// Server-side scraping removed from client
 import { BRAND_CONFIG } from '@/config/brands';
 
 export default function Admin() {
@@ -60,21 +60,16 @@ export default function Admin() {
     setScraping(retailerSlug);
     
     try {
-      await runScraping({
-        retailers: [retailerSlug],
-        brands: BRAND_CONFIG.defaultQueries,
-        formats: BRAND_CONFIG.defaultFormats,
-        maxPages: 3,
-        throttleMs: 1000
-      });
-
+      // TODO: Implement API endpoint for triggering scraping
+      // await fetch(`/api/scrape?retailer=${retailerSlug}`, { method: 'POST' });
+      
       toast({
-        title: "Scraping terminé",
-        description: `Le scraping de ${retailerSlug} est terminé`
+        title: "Scraping en cours",
+        description: `Le scraping de ${retailerSlug} va être implémenté via API`
       });
 
-      // Reload data
-      await loadData();
+      // Reload data after delay
+      setTimeout(() => loadData(), 2000);
       
     } catch (error) {
       console.error('Error during scraping:', error);

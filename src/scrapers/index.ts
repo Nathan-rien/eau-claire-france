@@ -2,7 +2,7 @@ import { CarrefourScraper } from './carrefour';
 import { AuchanScraper } from './auchan';
 import { LeclercScraper } from './leclerc';
 import { IntermarcheScraper } from './intermarche';
-import { CoursesUScraper } from './coursesu';
+import { CoursesScraper } from './coursesu';
 import { CasinoScraper } from './casino';
 import { BaseScraper } from './base';
 
@@ -11,7 +11,7 @@ export const SCRAPERS: Record<string, new () => BaseScraper> = {
   auchan: AuchanScraper,
   leclerc: LeclercScraper,
   intermarche: IntermarcheScraper,
-  coursesu: CoursesUScraper,
+  coursesu: CoursesScraper,
   casino: CasinoScraper
 };
 
