@@ -39,6 +39,10 @@ const RGPD = React.lazy(() => import("./pages/RGPD"));
 const Accessibilite = React.lazy(() => import("./pages/Accessibilite"));
 const OpenData = React.lazy(() => import("./pages/OpenData"));
 const SecurityDashboard = React.lazy(() => import("./pages/SecurityDashboard"));
+const PrixEaux = React.lazy(() => import("./pages/PrixEaux"));
+const ComparateurPrix = React.lazy(() => import("./pages/ComparateurPrix"));
+const MarquePrix = React.lazy(() => import("./pages/MarquePrix"));
+const Admin = React.lazy(() => import("./pages/Admin"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -104,6 +108,10 @@ const App = () => {
                 <Route path="/rgpd" element={<RGPD />} />
                 <Route path="/accessibilite" element={<Accessibilite />} />
                 <Route path="/open-data" element={<OpenData />} />
+                <Route path="/prix-eaux" element={<PrixEaux />} />
+                <Route path="/comparateur-prix" element={<ComparateurPrix />} />
+                <Route path="/marque/:slug" element={<MarquePrix />} />
+                <Route path="/admin" element={<Admin />} />
                 <Route 
                   path="/security-dashboard" 
                   element={
