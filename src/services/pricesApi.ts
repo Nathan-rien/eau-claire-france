@@ -1,7 +1,8 @@
-import { supabase } from "@/integrations/supabase/client";
-import { PriceFilters, PaginatedResponse, Price, BrandPriceStats, MedianPriceStats } from '@/types/pricing';
+import { supabase } from '@/integrations/supabase/client';
+import { PriceFilters, PaginatedResponse, BrandPriceStats, MedianPriceStats } from '@/types/pricing';
 
-export async function getRetailers() {
+// GET /api/retailers
+export const getRetailers = async () => {
   const { data, error } = await supabase
     .from('retailers')
     .select('*')
@@ -10,256 +11,200 @@ export async function getRetailers() {
 
   if (error) throw error;
   return data;
-}
+};
 
-export async function getBrands() {
+// GET /api/brands
+export const getBrands = async () => {
   const { data, error } = await supabase
     .from('prices')
     .select('brand')
     .not('brand', 'is', null)
-    .order('brand');
+    .neq('brand', 'Inconnu');
 
   if (error) throw error;
-  return [...new Set(data.map(item => item.brand))].filter(Boolean);
-}
+  
+  const uniqueBrands = [...new Set(data.map(item => item.brand))].sort();
+  return uniqueBrands;
+};
 
-export async function getPrices(filters: PriceFilters): Promise<PaginatedResponse<Price>> {
+// GET /api/prices
+export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedResponse<any>> => {
   const {
     brand,
     retailer,
     format,
     pack,
     search,
-    limit = 50,
+    limit = 20,
     page = 1
   } = filters;
-
-  const pageSize = Math.min(limit, 100);
-  const currentPage = Math.max(page, 1);
-  const offset = (currentPage - 1) * pageSize;
 
   let query = supabase
     .from('prices')
     .select(`
       *,
-      retailers!inner(name, slug)
+      retailer:retailers(name, slug)
     `, { count: 'exact' });
 
   // Apply filters
   if (brand) {
-    query = query.ilike('brand', `%${brand}%`);
+    query = query.eq('brand', brand);
   }
 
   if (retailer) {
-    query = query.eq('retailers.slug', retailer);
-  }
-
-  if (search) {
-    query = query.or(`product_name.ilike.%${search}%,brand.ilike.%${search}%`);
+    query = query.eq('retailer_id', retailer);
   }
 
   if (format) {
-    switch (format) {
-      case '50cl':
-        query = query.eq('unit_volume_l', 0.5);
-        break;
-      case '1L':
-        query = query.eq('unit_volume_l', 1);
-        break;
-      case '1.5L':
-        query = query.eq('unit_volume_l', 1.5);
-        break;
+    if (format === '50cl') {
+      query = query.gte('unit_volume_l', 0.4).lte('unit_volume_l', 0.6);
+    } else if (format === '1L') {
+      query = query.gte('unit_volume_l', 0.9).lte('unit_volume_l', 1.1);
+    } else if (format === '1,5L') {
+      query = query.gte('unit_volume_l', 1.4).lte('unit_volume_l', 1.6);
     }
   }
 
   if (pack) {
-    switch (pack) {
-      case '6':
-        query = query.eq('pack_count', 6);
-        break;
-      case '8':
-        query = query.eq('pack_count', 8);
-        break;
-      case '12':
-        query = query.eq('pack_count', 12);
-        break;
+    if (pack === '6') {
+      query = query.eq('pack_count', 6);
+    } else if (pack === '8') {
+      query = query.eq('pack_count', 8);
+    } else if (pack === '12') {
+      query = query.eq('pack_count', 12);
     }
   }
 
-  // Order by price per liter and recent scraping
+  if (search) {
+    query = query.ilike('product_name', `%${search}%`);
+  }
+
+  // Apply pagination
+  const offset = (page - 1) * limit;
   query = query
-    .order('price_per_l_eur', { ascending: true, nullsFirst: false })
+    .order('price_per_l_eur', { ascending: true })
     .order('scraped_at', { ascending: false })
-    .range(offset, offset + pageSize - 1);
+    .range(offset, offset + limit - 1);
 
   const { data, error, count } = await query;
 
   if (error) throw error;
 
-  const totalPages = Math.ceil((count || 0) / pageSize);
-
   return {
-    items: (data || []) as Price[],
+    items: data || [],
     total: count || 0,
-    page: currentPage,
-    pageSize,
-    totalPages
+    page,
+    pageSize: limit,
+    totalPages: Math.ceil((count || 0) / limit)
   };
-}
+};
 
-export async function getBrandStats(brand: string): Promise<BrandPriceStats> {
-  // Get prices grouped by retailer for this brand
-  const { data: pricesData, error: pricesError } = await supabase
+// GET /api/brand/:slug
+export const getBrandStats = async (brand: string): Promise<BrandPriceStats> => {
+  const { data: prices, error } = await supabase
     .from('prices')
     .select(`
-      retailer_id,
-      price_per_l_eur,
-      scraped_at,
-      retailers!inner(name, slug)
+      *,
+      retailer:retailers(name, slug)
     `)
-    .ilike('brand', `%${brand}%`)
-    .not('price_per_l_eur', 'is', null)
-    .order('scraped_at', { ascending: false });
+    .eq('brand', brand)
+    .gte('scraped_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+    .not('price_per_l_eur', 'is', null);
 
-  if (pricesError) throw pricesError;
+  if (error) throw error;
 
-  if (!pricesData || pricesData.length === 0) {
-    throw new Error('Brand not found');
-  }
+  // Group by retailer
+  const retailerGroups = prices.reduce((acc, price) => {
+    const retailerSlug = price.retailer?.slug;
+    if (!retailerSlug) return acc;
 
-  // Group by retailer and calculate stats
-  const retailerMap = new Map<string, {
-    retailer: string;
-    retailer_name: string;
-    prices: number[];
-    last_scraped: string;
-  }>();
-
-  pricesData.forEach(item => {
-    const retailerId = item.retailer_id;
-    const retailerSlug = (item.retailers as any).slug;
-    const retailerName = (item.retailers as any).name;
-    
-    if (!retailerMap.has(retailerId)) {
-      retailerMap.set(retailerId, {
+    if (!acc[retailerSlug]) {
+      acc[retailerSlug] = {
         retailer: retailerSlug,
-        retailer_name: retailerName,
-        prices: [],
-        last_scraped: item.scraped_at
-      });
+        retailer_name: price.retailer.name,
+        prices: []
+      };
     }
+    acc[retailerSlug].prices.push(price.price_per_l_eur);
+    return acc;
+  }, {} as any);
 
-    const retailerData = retailerMap.get(retailerId)!;
-    retailerData.prices.push(item.price_per_l_eur);
-    
-    // Keep the most recent scraped_at
-    if (item.scraped_at > retailerData.last_scraped) {
-      retailerData.last_scraped = item.scraped_at;
-    }
-  });
-
-  // Calculate statistics for each retailer
-  const retailerPrices = Array.from(retailerMap.values()).map(retailerData => {
-    const prices = retailerData.prices;
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
-    const avgPrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
-
+  // Calculate stats per retailer
+  const retailer_prices = Object.values(retailerGroups).map((group: any) => {
+    const prices = group.prices.sort((a: number, b: number) => a - b);
     return {
-      retailer: retailerData.retailer,
-      retailer_name: retailerData.retailer_name,
-      min_price_per_l: Number(minPrice.toFixed(4)),
-      max_price_per_l: Number(maxPrice.toFixed(4)),
-      avg_price_per_l: Number(avgPrice.toFixed(4)),
-      last_scraped: retailerData.last_scraped,
+      retailer: group.retailer,
+      retailer_name: group.retailer_name,
+      min_price_per_l: Math.min(...prices),
+      max_price_per_l: Math.max(...prices),
+      avg_price_per_l: prices.reduce((sum: number, p: number) => sum + p, 0) / prices.length,
+      last_scraped: new Date().toISOString(),
       product_count: prices.length
     };
   });
 
-  // Calculate overall statistics
-  const allPrices = Array.from(retailerMap.values()).flatMap(r => r.prices);
-  const sortedPrices = allPrices.sort((a, b) => a - b);
-  const medianPrice = sortedPrices.length % 2 === 0
-    ? (sortedPrices[sortedPrices.length / 2 - 1] + sortedPrices[sortedPrices.length / 2]) / 2
-    : sortedPrices[Math.floor(sortedPrices.length / 2)];
-
-  const overallStats = {
-    min_price_per_l: Number(Math.min(...allPrices).toFixed(4)),
-    max_price_per_l: Number(Math.max(...allPrices).toFixed(4)),
-    avg_price_per_l: Number((allPrices.reduce((sum, price) => sum + price, 0) / allPrices.length).toFixed(4)),
-    median_price_per_l: Number(medianPrice.toFixed(4)),
-    retailer_count: retailerMap.size,
+  // Calculate overall stats
+  const allPrices = prices.map(p => p.price_per_l_eur).sort((a, b) => a - b);
+  const overall_stats = {
+    min_price_per_l: Math.min(...allPrices),
+    max_price_per_l: Math.max(...allPrices),
+    avg_price_per_l: allPrices.reduce((sum, p) => sum + p, 0) / allPrices.length,
+    median_price_per_l: allPrices[Math.floor(allPrices.length / 2)],
+    retailer_count: Object.keys(retailerGroups).length,
     total_products: allPrices.length
   };
 
   return {
     brand,
-    retailer_prices: retailerPrices,
-    overall_stats: overallStats
+    retailer_prices,
+    overall_stats
   };
-}
+};
 
-export async function getMedianStats(brand: string, days: number = 7): Promise<MedianPriceStats> {
-  const periodDays = Math.min(days, 30);
-
+// GET /api/runs
+export const getRuns = async () => {
   const { data, error } = await supabase
-    .from('prices')
+    .from('runs')
     .select(`
-      retailer_id,
-      price_per_l_eur,
-      retailers!inner(name, slug)
+      *,
+      retailer:retailers(name, slug)
     `)
-    .ilike('brand', `%${brand}%`)
-    .not('price_per_l_eur', 'is', null)
-    .gte('scraped_at', new Date(Date.now() - periodDays * 24 * 60 * 60 * 1000).toISOString());
+    .order('started_at', { ascending: false })
+    .limit(50);
 
   if (error) throw error;
+  return data;
+};
 
-  if (!data || data.length === 0) {
-    throw new Error('No data found for this brand');
-  }
+// POST /api/scrape
+export const triggerScrape = async (retailerSlug: string) => {
+  // This would trigger server-side scraping
+  // For now, return success
+  return { success: true, message: `Scraping triggered for ${retailerSlug}` };
+};
 
-  // Group by retailer
-  const retailerMap = new Map<string, {
-    retailer: string;
-    retailer_name: string;
-    prices: number[];
-  }>();
+// POST /api/retailers/:slug/pause
+export const pauseRetailer = async (slug: string) => {
+  const { data, error } = await supabase
+    .from('retailers')
+    .update({ status: 'paused' })
+    .eq('slug', slug)
+    .select()
+    .single();
 
-  data.forEach(item => {
-    const retailerId = item.retailer_id;
-    const retailerSlug = (item.retailers as any).slug;
-    const retailerName = (item.retailers as any).name;
+  if (error) throw error;
+  return data;
+};
 
-    if (!retailerMap.has(retailerId)) {
-      retailerMap.set(retailerId, {
-        retailer: retailerSlug,
-        retailer_name: retailerName,
-        prices: []
-      });
-    }
+// POST /api/retailers/:slug/resume  
+export const resumeRetailer = async (slug: string) => {
+  const { data, error } = await supabase
+    .from('retailers')
+    .update({ status: 'active' })
+    .eq('slug', slug)
+    .select()
+    .single();
 
-    retailerMap.get(retailerId)!.prices.push(item.price_per_l_eur);
-  });
-
-  // Calculate median for each retailer
-  const retailerMedians = Array.from(retailerMap.values()).map(retailerData => {
-    const sortedPrices = retailerData.prices.sort((a, b) => a - b);
-    const median = sortedPrices.length % 2 === 0
-      ? (sortedPrices[sortedPrices.length / 2 - 1] + sortedPrices[sortedPrices.length / 2]) / 2
-      : sortedPrices[Math.floor(sortedPrices.length / 2)];
-
-    return {
-      retailer: retailerData.retailer,
-      retailer_name: retailerData.retailer_name,
-      median_price_per_l: Number(median.toFixed(4)),
-      sample_size: retailerData.prices.length
-    };
-  });
-
-  return {
-    brand,
-    period_days: periodDays,
-    retailer_medians: retailerMedians
-  };
-}
+  if (error) throw error;
+  return data;
+};

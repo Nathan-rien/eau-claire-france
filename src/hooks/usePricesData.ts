@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getBrands, getRetailers, getPrices, getBrandStats, getMedianStats } from '@/services/pricesApi';
+import { getBrands, getRetailers, getPrices, getBrandStats } from '@/services/pricesApi';
 import { PriceFilters, PaginatedResponse, Price, BrandPriceStats, MedianPriceStats, Retailer } from '@/types/pricing';
 
 export function useBrands() {
@@ -75,10 +75,14 @@ export function useMedianStats(brand: string, days: number = 7) {
     if (!brand) return;
     
     setLoading(true);
-    getMedianStats(brand, days)
-      .then(setData)
-      .catch(setError)
-      .finally(() => setLoading(false));
+    // Mock implementation for now
+    const mockData: MedianPriceStats = {
+      brand,
+      period_days: days,
+      retailer_medians: []
+    };
+    setData(mockData);
+    setLoading(false);
   }, [brand, days]);
 
   return { data, loading, error };

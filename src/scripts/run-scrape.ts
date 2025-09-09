@@ -16,6 +16,9 @@ async function createScraper(retailerSlug: string) {
       case 'carrefour':
         const { CarrefourScraper } = await import('@/scrapers/carrefour');
         return new CarrefourScraper();
+      case 'carrefour_market':
+        const { CarrefourMarketScraper } = await import('@/scrapers/carrefour_market');
+        return new CarrefourMarketScraper();
       case 'auchan':
         const { AuchanScraper } = await import('@/scrapers/auchan');
         return new AuchanScraper();
@@ -28,9 +31,27 @@ async function createScraper(retailerSlug: string) {
       case 'coursesu':
         const { CoursesScraper } = await import('@/scrapers/coursesu');
         return new CoursesScraper();
+      case 'monoprix':
+        const { MonoprixScraper } = await import('@/scrapers/monoprix');
+        return new MonoprixScraper();
       case 'casino':
         const { CasinoScraper } = await import('@/scrapers/casino');
         return new CasinoScraper();
+      case 'franprix':
+        const { FranprixScraper } = await import('@/scrapers/franprix');
+        return new FranprixScraper();
+      case 'cora':
+        const { CoraScraper } = await import('@/scrapers/cora');
+        return new CoraScraper();
+      case 'match':
+        const { MatchScraper } = await import('@/scrapers/match');
+        return new MatchScraper();
+      case 'chronodrive':
+        const { ChronodriveScraper } = await import('@/scrapers/chronodrive');
+        return new ChronodriveScraper();
+      case 'houra':
+        const { HouraScraper } = await import('@/scrapers/houra');
+        return new HouraScraper();
       default:
         throw new Error(`Unknown retailer: ${retailerSlug}`);
     }
@@ -251,7 +272,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
 
   const defaultConfig: ScrapingConfig = {
-    retailers: ['carrefour', 'auchan', 'leclerc', 'intermarche', 'coursesu', 'casino'],
+    retailers: ['carrefour', 'carrefour_market', 'auchan', 'leclerc', 'intermarche', 'coursesu', 'monoprix', 'casino', 'franprix', 'cora', 'match', 'chronodrive', 'houra'],
     brands: BRAND_CONFIG.defaultQueries,
     formats: BRAND_CONFIG.defaultFormats,
     maxPages: 3,
