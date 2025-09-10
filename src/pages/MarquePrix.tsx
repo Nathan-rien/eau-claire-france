@@ -89,7 +89,6 @@ export default function MarquePrix() {
 
         setStats({
           brand: brandName,
-          period_days: 7,
           retailer_prices: retailerStats,
           overall_stats: {
             min_price_per_l: 0, max_price_per_l: 0, avg_price_per_l: 0,
