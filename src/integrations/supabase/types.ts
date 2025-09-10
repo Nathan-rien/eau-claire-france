@@ -167,6 +167,72 @@ export type Database = {
           },
         ]
       }
+      prices_history: {
+        Row: {
+          availability: string | null
+          brand: string
+          created_at: string
+          id: string
+          image_url: string | null
+          is_promo: boolean | null
+          pack_count: number | null
+          price_per_l_eur: number | null
+          price_total_eur: number | null
+          product_name: string
+          promo_label: string | null
+          retailer_id: string
+          run_id: string
+          scraped_at: string
+          sku: string | null
+          total_volume_l: number | null
+          unique_hash: string
+          unit_volume_l: number | null
+          url: string | null
+        }
+        Insert: {
+          availability?: string | null
+          brand: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_promo?: boolean | null
+          pack_count?: number | null
+          price_per_l_eur?: number | null
+          price_total_eur?: number | null
+          product_name: string
+          promo_label?: string | null
+          retailer_id: string
+          run_id: string
+          scraped_at?: string
+          sku?: string | null
+          total_volume_l?: number | null
+          unique_hash: string
+          unit_volume_l?: number | null
+          url?: string | null
+        }
+        Update: {
+          availability?: string | null
+          brand?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_promo?: boolean | null
+          pack_count?: number | null
+          price_per_l_eur?: number | null
+          price_total_eur?: number | null
+          product_name?: string
+          promo_label?: string | null
+          retailer_id?: string
+          run_id?: string
+          scraped_at?: string
+          sku?: string | null
+          total_volume_l?: number | null
+          unique_hash?: string
+          unit_volume_l?: number | null
+          url?: string | null
+        }
+        Relationships: []
+      }
       rate_limits: {
         Row: {
           count: number
@@ -284,9 +350,12 @@ export type Database = {
           items_found: number | null
           items_saved: number | null
           notes: string | null
+          outliers_count: number | null
+          quality_score: number | null
           retailer_id: string
           started_at: string
           status: string
+          unknown_brands_count: number | null
         }
         Insert: {
           created_at?: string
@@ -296,9 +365,12 @@ export type Database = {
           items_found?: number | null
           items_saved?: number | null
           notes?: string | null
+          outliers_count?: number | null
+          quality_score?: number | null
           retailer_id: string
           started_at?: string
           status?: string
+          unknown_brands_count?: number | null
         }
         Update: {
           created_at?: string
@@ -308,9 +380,12 @@ export type Database = {
           items_found?: number | null
           items_saved?: number | null
           notes?: string | null
+          outliers_count?: number | null
+          quality_score?: number | null
           retailer_id?: string
           started_at?: string
           status?: string
+          unknown_brands_count?: number | null
         }
         Relationships: [
           {

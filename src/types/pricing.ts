@@ -3,7 +3,7 @@ export interface Retailer {
   name: string;
   slug: string;
   domain: string;
-  status: 'active' | 'paused';
+  status: 'active' | 'paused' | 'beta';
   search_url_template?: string;
   created_at: string;
   updated_at: string;
@@ -19,6 +19,9 @@ export interface Run {
   items_found: number;
   items_saved: number;
   error_rate: number;
+  outliers_count: number;
+  unknown_brands_count: number;
+  quality_score: number;
   created_at: string;
 }
 
