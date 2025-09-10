@@ -1,3 +1,4 @@
+// Active retailers (production ready)
 import { CarrefourScraper } from './carrefour';
 import { CarrefourMarketScraper } from './carrefour_market';
 import { AuchanScraper } from './auchan';
@@ -11,9 +12,19 @@ import { CoraScraper } from './cora';
 import { MatchScraper } from './match';
 import { ChronodriveScraper } from './chronodrive';
 import { HouraScraper } from './houra';
+
+// Beta retailers (in development)
+import { LidlScraper } from './lidl';
+import { AldiScraper } from './aldi';
+import { GreenweezScraper } from './greenweez';
+import { LafourcheScraper } from './lafourche';
+import { AmazonFreshFrScraper } from './amazon_fresh_fr';
+import { DeliverooGroceryScraper } from './deliveroo_grocery';
+
 import { BaseScraper } from './base';
 
 export const SCRAPERS: Record<string, new () => BaseScraper> = {
+  // Active retailers
   carrefour: CarrefourScraper,
   carrefour_market: CarrefourMarketScraper,
   auchan: AuchanScraper,
@@ -26,7 +37,15 @@ export const SCRAPERS: Record<string, new () => BaseScraper> = {
   cora: CoraScraper,
   match: MatchScraper,
   chronodrive: ChronodriveScraper,
-  houra: HouraScraper
+  houra: HouraScraper,
+  
+  // Beta retailers
+  lidl: LidlScraper,
+  aldi: AldiScraper,
+  greenweez: GreenweezScraper,
+  lafourche: LafourcheScraper,
+  amazon_fresh_fr: AmazonFreshFrScraper,
+  deliveroo_grocery: DeliverooGroceryScraper
 };
 
 export function createScraper(retailerSlug: string): BaseScraper | null {
