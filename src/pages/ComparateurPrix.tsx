@@ -1,151 +1,178 @@
 import { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { ArrowUpDown, TrendingUp, BarChart3 } from 'lucide-react';
-import { Retailer, BrandPriceStats } from '@/types/pricing';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeftRight, TrendingUp, TrendingDown } from 'lucide-react';
+import { Price, Retailer } from '@/types/pricing';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+
+interface ComparisonData {
+  brand?: string;
+  retailer?: string;
+  prices: (Price & { retailer_name: string })[];
+  medianPrice: number | null;
+  minPrice: number | null;
+  maxPrice: number | null;
+}
 
 export default function ComparateurPrix() {
   const { toast } = useToast();
   
-  const [retailers, setRetailers] = useState<Retailer[]>([]);
+  const [mode, setMode] = useState<'brands' | 'retailers'>('brands');
   const [brands, setBrands] = useState<string[]>([]);
+  const [retailers, setRetailers] = useState<Retailer[]>([]);
+  const [selectedBrand1, setSelectedBrand1] = useState<string>('');
+  const [selectedBrand2, setSelectedBrand2] = useState<string>('');
+  const [selectedRetailer1, setSelectedRetailer1] = useState<string>('');
+  const [selectedRetailer2, setSelectedRetailer2] = useState<string>('');
+  const [comparison1, setComparison1] = useState<ComparisonData | null>(null);
+  const [comparison2, setComparison2] = useState<ComparisonData | null>(null);
   const [loading, setLoading] = useState(false);
-  
-  // Mode A: Comparer 2 marques
-  const [brand1, setBrand1] = useState<string>('');
-  const [brand2, setBrand2] = useState<string>('');
-  const [brandComparison, setBrandComparison] = useState<{
-    brand1?: BrandPriceStats;
-    brand2?: BrandPriceStats;
-  }>({});
 
-  // Mode B: Comparer 2 enseignes
-  const [retailer1, setRetailer1] = useState<string>('');
-  const [retailer2, setRetailer2] = useState<string>('');
-  const [selectedBrandsForRetailers, setSelectedBrandsForRetailers] = useState<string[]>([]);
-  const [retailerComparison, setRetailerComparison] = useState<any>({});
-
-  // Charger les données initiales
   useEffect(() => {
-    const loadInitialData = async () => {
-      try {
-        // Charger les enseignes
-        const { data: retailersData } = await supabase
-          .from('retailers')
-          .select('*')
-          .eq('status', 'active')
-          .order('name');
-
-        if (retailersData) setRetailers(retailersData as Retailer[]);
-
-        // Charger les marques distinctes
-        const { data: brandsData } = await supabase
-          .from('prices')
-          .select('brand')
-          .not('brand', 'eq', 'Inconnu')
-          .order('brand');
-
-        if (brandsData) {
-          const uniqueBrands = [...new Set(brandsData.map(b => b.brand))];
-          setBrands(uniqueBrands);
-        }
-      } catch (error) {
-        console.error('Erreur lors du chargement des données:', error);
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les données",
-          variant: "destructive"
-        });
-      }
-    };
-
     loadInitialData();
-  }, [toast]);
+  }, []);
 
-  // Charger la comparaison de marques
-  const loadBrandComparison = async () => {
-    if (!brand1 || !brand2) return;
+  const loadInitialData = async () => {
+    try {
+      // Charger les marques
+      const { data: brandsData } = await supabase
+        .from('prices')
+        .select('brand')
+        .not('brand', 'eq', 'Inconnu')
+        .order('brand');
+
+      if (brandsData) {
+        const uniqueBrands = [...new Set(brandsData.map(b => b.brand))];
+        setBrands(uniqueBrands);
+      }
+
+      // Charger les enseignes
+      const { data: retailersData } = await supabase
+        .from('retailers')
+        .select('*')
+        .eq('status', 'active')
+        .order('name');
+
+      if (retailersData) setRetailers(retailersData as Retailer[]);
+
+    } catch (error) {
+      console.error('Erreur lors du chargement des données:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les données",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const loadBrandComparison = async (brand: string): Promise<ComparisonData> => {
+    const { data: pricesData, error } = await supabase
+      .from('prices')
+      .select(`
+        *,
+        retailers!inner(name)
+      `)
+      .eq('brand', brand)
+      .not('price_per_l_eur', 'is', null)
+      .order('scraped_at', { ascending: false })
+      .limit(100);
+
+    if (error) throw error;
+
+    const prices = (pricesData || []).map(price => ({
+      ...price,
+      retailer_name: (price as any).retailers.name
+    })) as (Price & { retailer_name: string })[];
+
+    const pricesPerL = prices.map(p => p.price_per_l_eur!).filter(Boolean).sort((a, b) => a - b);
     
+    return {
+      brand,
+      prices,
+      medianPrice: pricesPerL.length > 0 ? pricesPerL[Math.floor(pricesPerL.length / 2)] : null,
+      minPrice: pricesPerL.length > 0 ? Math.min(...pricesPerL) : null,
+      maxPrice: pricesPerL.length > 0 ? Math.max(...pricesPerL) : null
+    };
+  };
+
+  const loadRetailerComparison = async (retailerId: string): Promise<ComparisonData> => {
+    const { data: pricesData, error } = await supabase
+      .from('prices')
+      .select(`
+        *,
+        retailers!inner(name)
+      `)
+      .eq('retailer_id', retailerId)
+      .not('price_per_l_eur', 'is', null)
+      .order('scraped_at', { ascending: false })
+      .limit(100);
+
+    if (error) throw error;
+
+    const prices = (pricesData || []).map(price => ({
+      ...price,
+      retailer_name: (price as any).retailers.name
+    })) as (Price & { retailer_name: string })[];
+
+    const retailer = retailers.find(r => r.id === retailerId);
+    const pricesPerL = prices.map(p => p.price_per_l_eur!).filter(Boolean).sort((a, b) => a - b);
+    
+    return {
+      retailer: retailer?.name,
+      prices,
+      medianPrice: pricesPerL.length > 0 ? pricesPerL[Math.floor(pricesPerL.length / 2)] : null,
+      minPrice: pricesPerL.length > 0 ? Math.min(...pricesPerL) : null,
+      maxPrice: pricesPerL.length > 0 ? Math.max(...pricesPerL) : null
+    };
+  };
+
+  const handleCompare = async () => {
+    if (mode === 'brands' && (!selectedBrand1 || !selectedBrand2)) {
+      toast({
+        title: "Sélection incomplète",
+        description: "Veuillez sélectionner deux marques à comparer",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (mode === 'retailers' && (!selectedRetailer1 || !selectedRetailer2)) {
+      toast({
+        title: "Sélection incomplète", 
+        description: "Veuillez sélectionner deux enseignes à comparer",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      const loadBrandStats = async (brand: string): Promise<BrandPriceStats> => {
-        const { data: pricesData } = await supabase
-          .from('prices')
-          .select(`
-            *,
-            retailers!inner(name, slug)
-          `)
-          .eq('brand', brand)
-          .gte('scraped_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
-
-        if (!pricesData) throw new Error('Pas de données');
-
-        const retailerGroups = pricesData.reduce((acc, price) => {
-          const retailerId = price.retailer_id;
-          if (!acc[retailerId]) {
-            acc[retailerId] = {
-              retailer: retailerId,
-              retailer_name: (price as any).retailers.name,
-              prices: []
-            };
-          }
-          if (price.price_per_l_eur) {
-            acc[retailerId].prices.push(price.price_per_l_eur);
-          }
-          return acc;
-        }, {} as any);
-
-        const retailer_prices = Object.values(retailerGroups).map((group: any) => ({
-          retailer: group.retailer,
-          retailer_name: group.retailer_name,
-          min_price_per_l: Math.min(...group.prices),
-          max_price_per_l: Math.max(...group.prices),
-          avg_price_per_l: group.prices.reduce((a: number, b: number) => a + b, 0) / group.prices.length,
-          last_scraped: new Date().toISOString(),
-          product_count: group.prices.length
-        }));
-
-        const allPrices = pricesData
-          .map(p => p.price_per_l_eur)
-          .filter(Boolean) as number[];
-
-        const sortedPrices = allPrices.sort((a, b) => a - b);
-        const median = sortedPrices.length % 2 === 0
-          ? (sortedPrices[sortedPrices.length / 2 - 1] + sortedPrices[sortedPrices.length / 2]) / 2
-          : sortedPrices[Math.floor(sortedPrices.length / 2)];
-
-        return {
-          brand,
-          retailer_prices,
-          overall_stats: {
-            min_price_per_l: Math.min(...allPrices),
-            max_price_per_l: Math.max(...allPrices),
-            avg_price_per_l: allPrices.reduce((a, b) => a + b, 0) / allPrices.length,
-            median_price_per_l: median,
-            retailer_count: retailer_prices.length,
-            total_products: allPrices.length
-          }
-        };
-      };
-
-      const [stats1, stats2] = await Promise.all([
-        loadBrandStats(brand1),
-        loadBrandStats(brand2)
-      ]);
-
-      setBrandComparison({ brand1: stats1, brand2: stats2 });
+      if (mode === 'brands') {
+        const [comp1, comp2] = await Promise.all([
+          loadBrandComparison(selectedBrand1),
+          loadBrandComparison(selectedBrand2)
+        ]);
+        setComparison1(comp1);
+        setComparison2(comp2);
+      } else {
+        const [comp1, comp2] = await Promise.all([
+          loadRetailerComparison(selectedRetailer1),
+          loadRetailerComparison(selectedRetailer2)
+        ]);
+        setComparison1(comp1);
+        setComparison2(comp2);
+      }
     } catch (error) {
       console.error('Erreur lors de la comparaison:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de charger la comparaison",
+        description: "Impossible de charger les données de comparaison",
         variant: "destructive"
       });
     } finally {
@@ -153,24 +180,26 @@ export default function ComparateurPrix() {
     }
   };
 
-  useEffect(() => {
-    if (brand1 && brand2) {
-      loadBrandComparison();
-    }
-  }, [brand1, brand2]);
+  const formatPrice = (price: number | null) => {
+    if (!price) return '-';
+    return `${price.toFixed(2)}€`;
+  };
 
-  const formatPrice = (price: number) => `${price.toFixed(3)}€/L`;
-
-  const swapBrands = () => {
-    setBrand1(brand2);
-    setBrand2(brand1);
+  const getPriceComparison = (price1: number | null, price2: number | null) => {
+    if (!price1 || !price2) return null;
+    const diff = ((price1 - price2) / price2) * 100;
+    return {
+      percentage: Math.abs(diff),
+      isHigher: diff > 0,
+      isLower: diff < 0
+    };
   };
 
   return (
     <Layout>
       <SEOHead 
-        title="Comparateur de prix des eaux en bouteille"
-        description="Comparez les prix des eaux en bouteille entre marques et enseignes. Analysez les écarts de prix et trouvez les meilleures offres."
+        title="Comparateur de prix - Eaux en bouteille"
+        description="Comparez les prix des eaux en bouteille entre marques ou enseignes. Trouvez les meilleures offres et économisez sur vos achats."
         canonical="/comparateur-prix"
       />
 
@@ -178,23 +207,24 @@ export default function ComparateurPrix() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-4">Comparateur de prix</h1>
           <p className="text-muted-foreground mb-6">
-            Comparez les prix entre marques ou enseignes pour trouver les meilleures offres.
+            Comparez les prix entre marques ou entre enseignes pour trouver les meilleures offres.
           </p>
 
-          <Tabs defaultValue="brands" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="brands">Comparer 2 marques</TabsTrigger>
-              <TabsTrigger value="retailers">Comparer 2 enseignes</TabsTrigger>
+          {/* Sélection du mode */}
+          <Tabs value={mode} onValueChange={(value) => setMode(value as 'brands' | 'retailers')}>
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="brands">Comparer des marques</TabsTrigger>
+              <TabsTrigger value="retailers">Comparer des enseignes</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="brands" className="space-y-6">
-              <Card className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Sélection des marques</h3>
-                <div className="flex items-center gap-4">
-                  <div className="flex-1">
-                    <Select value={brand1} onValueChange={setBrand1}>
+            <TabsContent value="brands">
+              <Card className="p-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Première marque</label>
+                    <Select value={selectedBrand1} onValueChange={setSelectedBrand1}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Première marque" />
+                        <SelectValue placeholder="Sélectionner une marque" />
                       </SelectTrigger>
                       <SelectContent>
                         {brands.map(brand => (
@@ -203,23 +233,19 @@ export default function ComparateurPrix() {
                       </SelectContent>
                     </Select>
                   </div>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={swapBrands}
-                    disabled={!brand1 || !brand2}
-                  >
-                    <ArrowUpDown className="h-4 w-4" />
-                  </Button>
-                  
-                  <div className="flex-1">
-                    <Select value={brand2} onValueChange={setBrand2}>
+
+                  <div className="text-center">
+                    <ArrowLeftRight className="h-6 w-6 mx-auto text-muted-foreground" />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Seconde marque</label>
+                    <Select value={selectedBrand2} onValueChange={setSelectedBrand2}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Deuxième marque" />
+                        <SelectValue placeholder="Sélectionner une marque" />
                       </SelectTrigger>
                       <SelectContent>
-                        {brands.map(brand => (
+                        {brands.filter(b => b !== selectedBrand1).map(brand => (
                           <SelectItem key={brand} value={brand}>{brand}</SelectItem>
                         ))}
                       </SelectContent>
@@ -227,83 +253,218 @@ export default function ComparateurPrix() {
                   </div>
                 </div>
               </Card>
-
-              {loading && (
-                <div className="text-center py-12">Chargement de la comparaison...</div>
-              )}
-
-              {brandComparison.brand1 && brandComparison.brand2 && !loading && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {[brandComparison.brand1, brandComparison.brand2].map((stats, index) => (
-                    <Card key={stats.brand} className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-bold">{stats.brand}</h3>
-                        <Badge variant={index === 0 ? "default" : "secondary"}>
-                          {stats.retailer_prices.length} enseignes
-                        </Badge>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div>
-                          <h4 className="font-semibold mb-2">Statistiques globales</h4>
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <div className="text-muted-foreground">Prix minimum</div>
-                              <div className="font-bold text-green-600">
-                                {formatPrice(stats.overall_stats.min_price_per_l)}
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-muted-foreground">Prix maximum</div>
-                              <div className="font-bold text-red-600">
-                                {formatPrice(stats.overall_stats.max_price_per_l)}
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-muted-foreground">Prix médian</div>
-                              <div className="font-bold">
-                                {formatPrice(stats.overall_stats.median_price_per_l)}
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-muted-foreground">Produits</div>
-                              <div className="font-bold">{stats.overall_stats.total_products}</div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h4 className="font-semibold mb-2">Prix par enseigne</h4>
-                          <div className="space-y-2">
-                            {stats.retailer_prices
-                              .sort((a, b) => a.min_price_per_l - b.min_price_per_l)
-                              .slice(0, 5)
-                              .map(retailer => (
-                              <div key={retailer.retailer} className="flex justify-between items-center text-sm">
-                                <span>{retailer.retailer_name}</span>
-                                <span className="font-medium">
-                                  {formatPrice(retailer.min_price_per_l)}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
             </TabsContent>
 
-            <TabsContent value="retailers" className="space-y-6">
-              <Card className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Fonction en cours de développement</h3>
-                <p className="text-muted-foreground">
-                  La comparaison entre enseignes sera bientôt disponible.
-                </p>
+            <TabsContent value="retailers">
+              <Card className="p-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Première enseigne</label>
+                    <Select value={selectedRetailer1} onValueChange={setSelectedRetailer1}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner une enseigne" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {retailers.map(retailer => (
+                          <SelectItem key={retailer.id} value={retailer.id}>{retailer.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="text-center">
+                    <ArrowLeftRight className="h-6 w-6 mx-auto text-muted-foreground" />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Seconde enseigne</label>
+                    <Select value={selectedRetailer2} onValueChange={setSelectedRetailer2}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner une enseigne" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {retailers.filter(r => r.id !== selectedRetailer1).map(retailer => (
+                          <SelectItem key={retailer.id} value={retailer.id}>{retailer.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </Card>
             </TabsContent>
           </Tabs>
+
+          {/* Bouton de comparaison */}
+          <div className="text-center mb-8">
+            <Button 
+              onClick={handleCompare} 
+              disabled={loading}
+              size="lg"
+              className="px-8"
+            >
+              {loading ? 'Comparaison en cours...' : 'Comparer'}
+            </Button>
+          </div>
+
+          {/* Résultats de comparaison */}
+          {comparison1 && comparison2 && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Comparaison 1 */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    {mode === 'brands' ? comparison1.brand : comparison1.retailer}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <div className="text-2xl font-bold text-green-600">
+                          {formatPrice(comparison1.minPrice)}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Prix min/L</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold">
+                          {formatPrice(comparison1.medianPrice)}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Prix médian/L</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-red-600">
+                          {formatPrice(comparison1.maxPrice)}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Prix max/L</div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-sm text-muted-foreground text-center">
+                      {comparison1.prices.length} produits analysés
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Comparaison 2 */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    {mode === 'brands' ? comparison2.brand : comparison2.retailer}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <div className="text-2xl font-bold text-green-600">
+                          {formatPrice(comparison2.minPrice)}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Prix min/L</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold">
+                          {formatPrice(comparison2.medianPrice)}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Prix médian/L</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-red-600">
+                          {formatPrice(comparison2.maxPrice)}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Prix max/L</div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-sm text-muted-foreground text-center">
+                      {comparison2.prices.length} produits analysés
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Analyse comparative */}
+          {comparison1 && comparison2 && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Analyse comparative</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Prix minimum */}
+                  <div className="text-center">
+                    <h3 className="font-medium mb-2">Prix minimum</h3>
+                    {(() => {
+                      const comp = getPriceComparison(comparison1.minPrice, comparison2.minPrice);
+                      const winner = (comparison1.minPrice || 0) < (comparison2.minPrice || 0) ? 1 : 2;
+                      return (
+                        <div>
+                          <Badge variant={winner === 1 ? "default" : "secondary"}>
+                            {mode === 'brands' ? 
+                              (winner === 1 ? comparison1.brand : comparison2.brand) :
+                              (winner === 1 ? comparison1.retailer : comparison2.retailer)
+                            }
+                          </Badge>
+                          {comp && (
+                            <div className="text-sm text-muted-foreground mt-1">
+                              {comp.percentage.toFixed(1)}% moins cher
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Prix médian */}
+                  <div className="text-center">
+                    <h3 className="font-medium mb-2">Prix médian</h3>
+                    {(() => {
+                      const comp = getPriceComparison(comparison1.medianPrice, comparison2.medianPrice);
+                      const winner = (comparison1.medianPrice || 0) < (comparison2.medianPrice || 0) ? 1 : 2;
+                      return (
+                        <div>
+                          <Badge variant={winner === 1 ? "default" : "secondary"}>
+                            {mode === 'brands' ? 
+                              (winner === 1 ? comparison1.brand : comparison2.brand) :
+                              (winner === 1 ? comparison1.retailer : comparison2.retailer)
+                            }
+                          </Badge>
+                          {comp && (
+                            <div className="text-sm text-muted-foreground mt-1">
+                              {comp.percentage.toFixed(1)}% moins cher
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Nombre de produits */}
+                  <div className="text-center">
+                    <h3 className="font-medium mb-2">Choix disponible</h3>
+                    {(() => {
+                      const winner = comparison1.prices.length > comparison2.prices.length ? 1 : 2;
+                      return (
+                        <div>
+                          <Badge variant={winner === 1 ? "default" : "secondary"}>
+                            {mode === 'brands' ? 
+                              (winner === 1 ? comparison1.brand : comparison2.brand) :
+                              (winner === 1 ? comparison1.retailer : comparison2.retailer)
+                            }
+                          </Badge>
+                          <div className="text-sm text-muted-foreground mt-1">
+                            {winner === 1 ? comparison1.prices.length : comparison2.prices.length} produits
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
     </Layout>
