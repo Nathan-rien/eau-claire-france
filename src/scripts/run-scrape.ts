@@ -284,6 +284,36 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
   const config: Partial<ScrapingConfig> = {};
 
+  // Show help if requested
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log(`
+Usage: pnpm scrape [options]
+
+Options:
+  --retailers <list>    Comma-separated retailer slugs (carrefour,auchan,leclerc...)
+  --brands <list>       Comma-separated brand names (evian,cristaline,volvic...)
+  --formats <list>      Comma-separated formats ("50 cl","1 l","1,5 l"...)
+  --maxPages <number>   Maximum pages per query (default: 3)
+  --throttle <ms>       Delay between requests in ms (default: 1000)
+  --headful             Run in headful mode (default: false)
+  --dry-run             Simulate run without saving data (default: false)
+  --smoke               Quick smoke test mode (default: false)
+  --since <date>        Only process items since date (YYYY-MM-DD)
+  --help, -h            Show this help message
+
+Examples:
+  # Smoke test (3 retailers)
+  pnpm scrape --retailers carrefour,auchan,leclerc --brands evian,cristaline --formats "1,5 l" --maxPages 1
+  
+  # Extended test (6 retailers)
+  pnpm scrape --retailers carrefour,auchan,leclerc,intermarche,coursesu,monoprix --brands evian,cristaline,volvic --formats "50 cl,1 l,1,5 l" --maxPages 2
+  
+  # Debug mode
+  pnpm scrape --retailers carrefour --brands evian --formats "1 l" --maxPages 1 --headful
+`);
+    process.exit(0);
+  }
+
   for (let i = 0; i < args.length; i += 2) {
     const flag = args[i];
     const value = args[i + 1];
@@ -316,6 +346,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       case '--since':
         config.since = value;
         break;
+      case '--help':
+      case '-h':
+        // Already handled above
+        break;
+      default:
+        console.error(`Unknown flag: ${flag}`);
+        process.exit(1);
     }
   }
 

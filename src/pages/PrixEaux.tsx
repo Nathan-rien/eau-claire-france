@@ -31,16 +31,36 @@ export default function PrixEaux() {
     totalPages: 0
   });
 
-  // Filtres depuis l'URL
+  // Filtres depuis l'URL avec persistance
   const filters: PriceFilters = useMemo(() => ({
-    brand: searchParams.get('brand') || undefined,
-    retailer: searchParams.get('retailer') || undefined,
+    brand: searchParams.get('brands') || undefined, // Changed to 'brands' for multi-select
+    retailer: searchParams.get('retailers') || undefined, // Changed to 'retailers' for multi-select
     format: searchParams.get('format') || undefined,
     pack: searchParams.get('pack') || undefined,
     search: searchParams.get('search') || undefined,
     page: parseInt(searchParams.get('page') || '1'),
-    limit: 50
+    limit: parseInt(searchParams.get('pageSize') || '50')
   }), [searchParams]);
+
+  // Update URL when filters change
+  const updateFilters = (newFilters: Partial<PriceFilters>) => {
+    const params = new URLSearchParams(searchParams);
+    
+    Object.entries(newFilters).forEach(([key, value]) => {
+      if (value && value !== '' && value !== 'all') {
+        params.set(key, String(value));
+      } else {
+        params.delete(key);
+      }
+    });
+    
+    // Reset page when filters change (except when changing page itself)
+    if (!newFilters.page) {
+      params.delete('page');
+    }
+    
+    setSearchParams(params);
+  };
 
   // Charger les données initiales
   useEffect(() => {
