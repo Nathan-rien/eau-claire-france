@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { normalizeScrapedItem } from "@/lib/normalize";
+import { analyzeQuality } from "@/lib/quality";
+import { triggerAutoExport } from "@/utils/csvAutoExport";
 import { BRAND_CONFIG } from "@/config/brands";
 import { ScrapeOptions } from "@/scrapers/types";
 
@@ -67,6 +69,10 @@ interface ScrapingConfig {
   formats: string[];
   maxPages: number;
   throttleMs: number;
+  headful?: boolean;
+  dryRun?: boolean;
+  smoke?: boolean;
+  since?: string;
 }
 
 export async function runScraping(config: ScrapingConfig) {
@@ -190,16 +196,25 @@ export async function runScraping(config: ScrapingConfig) {
 
         // Calculate error rate
         const errorRate = result.items.length > 0 ? result.errors.length / result.items.length : 0;
+        
+        // Analyze quality
+        const qualityReport = analyzeQuality(normalizedPrices);
+        
+        // Determine final status
+        const finalStatus = errorRate > 0.5 ? 'failed' : errorRate > 0.2 ? 'partial' : 'success';
 
-        // Update run status
+        // Update run status with quality metrics
         const { error: updateError } = await supabase
           .from('runs')
           .update({
-            status: errorRate > 0.5 ? 'failed' : errorRate > 0.2 ? 'partial' : 'success',
+            status: finalStatus,
             finished_at: new Date().toISOString(),
             items_found: result.items.length,
             items_saved: itemsSaved,
             error_rate: errorRate,
+            quality_score: qualityReport.quality_score,
+            outliers_count: qualityReport.outlier_count,
+            unknown_brands_count: qualityReport.unknown_brand_count,
             notes: result.errors.length > 0 ? JSON.stringify(result.errors) : null
           })
           .eq('id', run.id);
@@ -209,6 +224,15 @@ export async function runScraping(config: ScrapingConfig) {
         }
 
         console.log(`Completed scraping for ${retailerSlug}: ${itemsSaved}/${result.items.length} items saved`);
+        
+        // Auto-export si le run est success
+        if (finalStatus === 'success' && itemsSaved > 0) {
+          try {
+            await triggerAutoExport(run.id);
+          } catch (exportError) {
+            console.error('Erreur lors de l\'export automatique:', exportError);
+          }
+        }
 
       } catch (scrapingError) {
         console.error(`Scraping failed for ${retailerSlug}:`, scrapingError);
@@ -267,6 +291,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         break;
       case '--throttle':
         config.throttleMs = parseInt(value);
+        break;
+      case '--headful':
+        config.headful = value === 'true';
+        break;
+      case '--dry-run':
+        config.dryRun = value === 'true';
+        break;
+      case '--smoke':
+        config.smoke = value === 'true';
+        break;
+      case '--since':
+        config.since = value;
         break;
     }
   }

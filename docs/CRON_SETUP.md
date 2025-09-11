@@ -12,29 +12,23 @@ Le système de scraping des prix est conçu pour s'exécuter automatiquement tou
 # Groupe Carrefour
 20 6 * * * cd /app && pnpm scrape --retailers carrefour --brands evian,cristaline,volvic,vittel,contrex,hepar,badoit,perrier --formats "50cl,1l,1.5l,6x1.5l" --maxPages 3
 35 6 * * * cd /app && pnpm scrape --retailers carrefour_market --brands evian,cristaline,volvic,vittel,contrex --formats "50cl,1l,1.5l" --maxPages 2
-50 6 * * * cd /app && pnpm scrape --retailers carrefour_drive --brands evian,cristaline,volvic,vittel --formats "1l,1.5l,6x1.5l" --maxPages 2
 
-# Autres grandes enseignes
-5 7 * * * cd /app && pnpm scrape --retailers auchan --brands evian,cristaline,volvic,vittel,contrex,hepar,badoit,perrier --formats "50cl,1l,1.5l,6x1.5l" --maxPages 3
-20 7 * * * cd /app && pnpm scrape --retailers auchan_super --brands evian,cristaline,volvic,vittel --formats "50cl,1l,1.5l" --maxPages 2
-35 7 * * * cd /app && pnpm scrape --retailers leclerc --brands evian,cristaline,volvic,vittel,contrex,hepar,badoit,perrier --formats "50cl,1l,1.5l,6x1.5l" --maxPages 3
-50 7 * * * cd /app && pnpm scrape --retailers intermarche --brands evian,cristaline,volvic,vittel,contrex --formats "50cl,1l,1.5l" --maxPages 2
+# Grandes enseignes
+50 6 * * * cd /app && pnpm scrape --retailers auchan --brands evian,cristaline,volvic,vittel,contrex,hepar,badoit,perrier --formats "50cl,1l,1.5l,6x1.5l" --maxPages 3
+5 7 * * * cd /app && pnpm scrape --retailers leclerc --brands evian,cristaline,volvic,vittel,contrex,hepar,badoit,perrier --formats "50cl,1l,1.5l,6x1.5l" --maxPages 3
+20 7 * * * cd /app && pnpm scrape --retailers intermarche --brands evian,cristaline,volvic,vittel,contrex --formats "50cl,1l,1.5l" --maxPages 2
+35 7 * * * cd /app && pnpm scrape --retailers coursesu --brands evian,cristaline,volvic,vittel --formats "1l,1.5l,6x1.5l" --maxPages 2
 
 # Enseignes spécialisées
-5 8 * * * cd /app && pnpm scrape --retailers u_drive --brands evian,cristaline,volvic,vittel --formats "1l,1.5l,6x1.5l" --maxPages 2
-20 8 * * * cd /app && pnpm scrape --retailers monoprix --brands evian,cristaline,volvic,vittel,contrex,hepar --formats "50cl,1l,1.5l" --maxPages 2
-35 8 * * * cd /app && pnpm scrape --retailers monoprix_plus --brands evian,cristaline,volvic --formats "50cl,1l,1.5l" --maxPages 2
-50 8 * * * cd /app && pnpm scrape --retailers casino --brands evian,cristaline,volvic,vittel,contrex --formats "50cl,1l,1.5l" --maxPages 2
+50 7 * * * cd /app && pnpm scrape --retailers monoprix --brands evian,cristaline,volvic,vittel,contrex,hepar --formats "50cl,1l,1.5l" --maxPages 2
+5 8 * * * cd /app && pnpm scrape --retailers casino --brands evian,cristaline,volvic,vittel,contrex --formats "50cl,1l,1.5l" --maxPages 2
+20 8 * * * cd /app && pnpm scrape --retailers franprix --brands evian,cristaline,volvic,vittel --formats "50cl,1l,1.5l" --maxPages 2
+35 8 * * * cd /app && pnpm scrape --retailers cora --brands evian,cristaline,volvic,vittel,contrex --formats "50cl,1l,1.5l" --maxPages 2
 
 # Enseignes complémentaires
-5 9 * * * cd /app && pnpm scrape --retailers geant_casino --brands evian,cristaline,volvic,vittel --formats "1l,1.5l,6x1.5l" --maxPages 2
-20 9 * * * cd /app && pnpm scrape --retailers franprix --brands evian,cristaline,volvic,vittel --formats "50cl,1l,1.5l" --maxPages 2
-35 9 * * * cd /app && pnpm scrape --retailers cora --brands evian,cristaline,volvic,vittel,contrex --formats "50cl,1l,1.5l" --maxPages 2
-50 9 * * * cd /app && pnpm scrape --retailers match --brands evian,cristaline,volvic,vittel --formats "1l,1.5l" --maxPages 2
-
-# Drive et livraison
-5 10 * * * cd /app && pnpm scrape --retailers chronodrive --brands evian,cristaline,volvic,vittel --formats "1l,1.5l,6x1.5l" --maxPages 2
-20 10 * * * cd /app && pnpm scrape --retailers houra --brands evian,cristaline,volvic,vittel --formats "50cl,1l,1.5l" --maxPages 2
+50 8 * * * cd /app && pnpm scrape --retailers match --brands evian,cristaline,volvic,vittel --formats "1l,1.5l" --maxPages 2
+5 9 * * * cd /app && pnpm scrape --retailers chronodrive --brands evian,cristaline,volvic,vittel --formats "1l,1.5l,6x1.5l" --maxPages 2
+20 9 * * * cd /app && pnpm scrape --retailers houra --brands evian,cristaline,volvic,vittel --formats "50cl,1l,1.5l" --maxPages 2
 ```
 
 ### Enseignes beta (non activées en cron pour l'instant)
@@ -112,14 +106,14 @@ pnpm exec tsx src/scripts/pause-retailer.ts --retailer carrefour
 pnpm exec tsx src/scripts/resume-retailer.ts --retailer carrefour
 
 # Test smoke après maintenance
-pnpm scrape --retailers carrefour,auchan,leclerc --brands evian,cristaline --formats "1l,1.5l" --maxPages 1 --dry-run
+pnpm scrape --retailers carrefour,auchan,leclerc --brands evian,cristaline --formats "1,5 l" --maxPages 1 --dry-run
 ```
 
 ### Procédure en cas d'incident
 
 1. **Identifier l'enseigne en panne** via `/admin/runs`
 2. **Consulter les logs** : `/var/log/scraping/[retailer]_[date].log`
-3. **Test manuel** : `pnpm scrape --retailers [retailer] --brands evian --formats "1l" --maxPages 1 --headful`
+3. **Test manuel** : `pnpm scrape --retailers [retailer] --brands evian --formats "1 l" --maxPages 1 --headful`
 4. **Corrections nécessaires** :
    - Mise à jour des sélecteurs CSS
    - Ajustement du throttling

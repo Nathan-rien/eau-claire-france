@@ -55,6 +55,22 @@ describe('parseFormat', () => {
       total_volume_l: 3.96
     });
   });
+
+  test('parses nested formats', () => {
+    expect(parseFormat('2x6x50cl')).toEqual({
+      pack_count: 12,
+      unit_volume_l: 0.5,
+      total_volume_l: 6
+    });
+  });
+
+  test('ignores bonus in format', () => {
+    expect(parseFormat('6×1 l + 2 offertes')).toEqual({
+      pack_count: 6,
+      unit_volume_l: 1,
+      total_volume_l: 6
+    });
+  });
 });
 
 describe('parsePrice', () => {
@@ -77,6 +93,18 @@ describe('parsePrice', () => {
   test('handles invalid text', () => {
     expect(parsePrice('abc')).toBeNull();
   });
+
+  test('handles strikethrough price', () => {
+    expect(parsePrice('̶3̶,̶9̶8̶ € 2,50 €')).toBe(2.5);
+  });
+
+  test('handles euro symbol before', () => {
+    expect(parsePrice('€ 4,25')).toBe(4.25);
+  });
+
+  test('handles non-breaking spaces', () => {
+    expect(parsePrice('3,75 €')).toBe(3.75);
+  });
 });
 
 describe('guessBrand', () => {
@@ -98,6 +126,21 @@ describe('guessBrand', () => {
 
   test('returns null for unknown brand', () => {
     expect(guessBrand('Eau inconnue 1L')).toBeNull();
+  });
+
+  test('detects Hépar variations', () => {
+    expect(guessBrand('Eau Hepar 1,5L')).toBe('Hépar');
+    expect(guessBrand('HEPAR eau riche en magnésium')).toBe('Hépar');
+  });
+
+  test('detects Saint-Amand variations', () => {
+    expect(guessBrand('Eau Saint-Amand 1L')).toBe('Saint-Amand');
+    expect(guessBrand('St Amand eau minérale')).toBe('Saint-Amand');
+  });
+
+  test('detects Quézac variations', () => {
+    expect(guessBrand('Eau Quezac 1L')).toBe('Quézac');
+    expect(guessBrand('QUEZAC eau gazeuse')).toBe('Quézac');
   });
 });
 

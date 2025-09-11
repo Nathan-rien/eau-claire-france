@@ -71,12 +71,31 @@ Pages disponibles :
 
 ### CLI
 
+**Flags supportés :**
+- `--retailers` : Liste des enseignes (séparées par virgules)
+- `--brands` : Liste des marques (séparées par virgules)  
+- `--formats` : Formats à rechercher (séparés par virgules)
+- `--maxPages` : Nombre max de pages par requête
+- `--headful` : Mode navigateur visible (debug)
+- `--dry-run` : Simulation sans écriture DB
+- `--smoke` : Test rapide automatique
+- `--since` : Données depuis une date
+
 ```bash
 # Smoke test (recommandé pour débuter)
 pnpm scrape --retailers carrefour,auchan,leclerc --brands evian,cristaline --formats "1,5 l" --maxPages 1
 
-# Scraping complet
+# Test élargi 6 enseignes
+pnpm scrape --retailers carrefour,auchan,leclerc,intermarche,coursesu,monoprix --brands evian,cristaline,volvic --formats "50 cl,1 l,1,5 l" --maxPages 2
+
+# Scraping complet (production)
 pnpm scrape --retailers carrefour,auchan,leclerc,intermarche,coursesu,monoprix,casino,franprix,cora,match,chronodrive,houra --brands evian,cristaline,volvic,hepar,contrex,vittel,badoit --formats "50 cl,1 l,1,5 l" --maxPages 3
+
+# Mode debug
+pnpm scrape --retailers carrefour --brands evian --formats "1 l" --maxPages 1 --headful
+
+# Simulation
+pnpm scrape --retailers carrefour,auchan --brands evian --formats "1,5 l" --maxPages 1 --dry-run
 ```
 
 ### Cron automatique

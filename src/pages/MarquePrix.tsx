@@ -5,10 +5,12 @@ import SEOHead from '@/components/SEOHead';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TrendingUp, TrendingDown, Minus, ExternalLink } from 'lucide-react';
-import { Price, Retailer, BrandPriceStats } from '@/types/pricing';
+import { Price, Retailer, BrandPriceStats, MedianPriceStats } from '@/types/pricing';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { getBrandTimeseries } from '@/services/timeseriesApi';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
@@ -22,6 +24,8 @@ export default function MarquePrix() {
   const [prices, setPrices] = useState<PriceWithRetailer[]>([]);
   const [retailers, setRetailers] = useState<Retailer[]>([]);
   const [stats, setStats] = useState<BrandPriceStats | null>(null);
+  const [timeseries, setTimeseries] = useState<MedianPriceStats | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<7 | 30>(30);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -96,6 +100,14 @@ export default function MarquePrix() {
           }
         });
 
+        // Charger les données timeseries
+        try {
+          const timeseriesData = await getBrandTimeseries(brandName, selectedPeriod);
+          setTimeseries(timeseriesData);
+        } catch (error) {
+          console.error('Erreur timeseries:', error);
+        }
+
       } catch (error) {
         console.error('Erreur lors du chargement des données de la marque:', error);
         toast({
@@ -109,7 +121,7 @@ export default function MarquePrix() {
     };
 
     loadBrandData();
-  }, [slug, toast, retailers, prices]);
+  }, [slug, toast, retailers, prices, selectedPeriod]);
 
   const formatPrice = (price: number | null) => {
     if (!price) return '-';
@@ -166,8 +178,17 @@ export default function MarquePrix() {
           {/* Prix par enseigne */}
           {stats && (
             <Card className="mb-6">
-              <CardHeader>
-                <CardTitle>Prix médian par enseigne (7 derniers jours)</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Prix médian par enseigne</CardTitle>
+                <Select value={selectedPeriod.toString()} onValueChange={(value) => setSelectedPeriod(parseInt(value) as 7 | 30)}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="7">7 jours</SelectItem>
+                    <SelectItem value="30">30 jours</SelectItem>
+                  </SelectContent>
+                </Select>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

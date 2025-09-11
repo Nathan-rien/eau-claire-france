@@ -101,6 +101,12 @@ export default function PrixEaux() {
         if (filters.search) {
           query = query.ilike('product_name', `%${filters.search}%`);
         }
+        
+        // Filtre disponibilité
+        const availability = searchParams.get('availability');
+        if (availability === 'in_stock') {
+          query = query.eq('availability', 'in_stock');
+        }
         if (filters.format) {
           switch (filters.format) {
             case '50cl':
@@ -211,7 +217,7 @@ export default function PrixEaux() {
 
           {/* Filtres */}
           <Card className="p-6 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -254,21 +260,35 @@ export default function PrixEaux() {
                   <SelectItem value="">Tous les formats</SelectItem>
                   <SelectItem value="50cl">50cl</SelectItem>
                   <SelectItem value="1l">1L</SelectItem>
-                  <SelectItem value="1.5l">1,5L</SelectItem>
+                   <SelectItem value="1.5l">1,5L</SelectItem>
+                   <SelectItem value="autre">Autre</SelectItem>
                 </SelectContent>
               </Select>
 
-              <Select value={filters.pack || ''} onValueChange={(value) => updateFilter('pack', value || null)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Pack" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Tous les packs</SelectItem>
-                  <SelectItem value="6">Pack de 6</SelectItem>
-                  <SelectItem value="8">Pack de 8</SelectItem>
-                  <SelectItem value="12">Pack de 12</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2">
+                <Select value={filters.pack || ''} onValueChange={(value) => updateFilter('pack', value || null)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pack" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Tous les packs</SelectItem>
+                    <SelectItem value="6">Pack de 6</SelectItem>
+                    <SelectItem value="8">Pack de 8</SelectItem>
+                    <SelectItem value="12">Pack de 12</SelectItem>
+                    <SelectItem value="autre">Autre</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={searchParams.get('availability') || 'all'} onValueChange={(value) => updateFilter('availability', value === 'all' ? null : value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Disponibilité" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tous produits</SelectItem>
+                    <SelectItem value="in_stock">En stock</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </Card>
 
@@ -341,10 +361,15 @@ export default function PrixEaux() {
                         {formatPrice(price.price_per_l_eur)}
                       </td>
                       <td className="border border-gray-200 dark:border-gray-700 p-3 text-center text-sm text-muted-foreground">
-                        <div className="flex items-center justify-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {new Date(price.scraped_at).toLocaleDateString('fr-FR')}
-                        </div>
+                         <div className="flex items-center justify-center gap-1">
+                           <Clock className="h-3 w-3" />
+                           {new Date(price.scraped_at).toLocaleDateString('fr-FR', {
+                             day: '2-digit',
+                             month: '2-digit',
+                             hour: '2-digit',
+                             minute: '2-digit'
+                           })}
+                         </div>
                       </td>
                     </tr>
                   ))}
