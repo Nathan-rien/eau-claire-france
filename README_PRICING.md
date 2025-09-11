@@ -8,10 +8,13 @@ Production-ready module for scraping and comparing bottle water prices across Fr
 # Installation
 pnpm install
 
-# Smoke test (3 retailers)
+# Production validation pipeline (REQUIRED before activation)
+node src/scripts/validation-pipeline.ts
+
+# Smoke test (3 retailers) - Quick validation
 pnpm scrape --retailers carrefour,auchan,leclerc --brands evian,cristaline --formats "1,5 l" --maxPages 1
 
-# Extended test (6 retailers)
+# Extended test (6 retailers) - Complete validation
 pnpm scrape --retailers carrefour,auchan,leclerc,intermarche,coursesu,monoprix --brands evian,cristaline,volvic --formats "50 cl,1 l,1,5 l" --maxPages 2
 
 # Help
@@ -151,17 +154,25 @@ npm test src/lib/__tests__/normalize.test.ts
 ## 📋 Production Validation
 
 ```bash
-# Automated validation pipeline
+# Automated validation pipeline (MANDATORY before production)
 node src/scripts/validation-pipeline.ts
 ```
 
+**Validation Criteria:**
+- **Smoke Test:** 2/3 retailers successful, error rate < 30%, items saved > 0
+- **Extended Test:** 4/6 retailers successful, error rate < 40%, quality score > 0.8
+- **Quality Check:** Outliers < 5, unknown brands < 3, overall quality > 0.7
+- **CSV Exports:** prices_latest.csv and prices_history_YYYYMMDD.csv generated
+
+**Only proceeds to production if ALL criteria pass.**
+
 This will:
-1. Run smoke test (3 retailers)
-2. Run extended test (6 retailers) if smoke passes
-3. Analyze quality metrics
-4. Verify CSV exports
-5. Activate cron jobs if all tests pass
-6. Generate VALIDATION_REPORT.md
+1. Run smoke test (3 retailers) → Must pass to continue
+2. Run extended test (6 retailers) → Must pass to continue  
+3. Analyze quality metrics → Must achieve quality score > 0.7
+4. Verify CSV exports → Must generate both latest and history files
+5. Activate cron jobs → **Only if all previous steps pass**
+6. Generate VALIDATION_REPORT.md with PASS/FAIL status
 
 ## ⚖️ Compliance
 
@@ -173,16 +184,35 @@ This will:
 
 ## 🕐 Automated Scheduling
 
-See `docs/CRON_SETUP.md` for configuration.
+**⚠️ Cron jobs are activated ONLY after successful validation pipeline.**
 
-Cron sequence (Europe/Paris timezone):
+```bash
+# Run daily cron schedule (production environment)
+node src/scripts/cron-scheduler.ts run
+
+# Pause/resume individual retailers
+node src/scripts/cron-scheduler.ts pause carrefour
+node src/scripts/cron-scheduler.ts resume carrefour
 ```
-06:20 carrefour      07:35 coursesu       08:50 match
-06:35 carrefour_market  07:50 monoprix    09:05 chronodrive  
-06:50 auchan         08:05 casino        09:20 houra
-07:05 leclerc        08:20 franprix
-07:20 intermarche    08:35 cora
+
+**Production Schedule (Europe/Paris timezone):**
 ```
+06:20 carrefour      → 3 pages (evian,cristaline)
+06:35 carrefour_market → 3 pages (evian,cristaline)
+06:50 auchan         → 3 pages (evian,cristaline)
+07:05 leclerc        → 3 pages (evian,cristaline,volvic)
+07:20 intermarche    → 3 pages (evian,cristaline)
+07:35 coursesu       → 3 pages (evian,cristaline)
+07:50 monoprix       → 2 pages (evian,cristaline)
+08:05 casino         → 3 pages (evian,cristaline)
+08:20 franprix       → 2 pages (evian,cristaline)
+08:35 cora           → 3 pages (evian,cristaline)
+08:50 match          → 2 pages (evian,cristaline)
+09:05 chronodrive    → 2 pages (evian,cristaline)
+09:20 houra          → 2 pages (evian,cristaline)
+```
+
+**Auto-exclusions:** Beta retailers, paused retailers, failed retailers (3+ consecutive failures)
 
 ## 📁 CSV Exports
 

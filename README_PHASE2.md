@@ -82,7 +82,17 @@ npm test
 
 ## Automated Scheduling (Europe/Paris)
 
-Cron sequence (ignores paused/beta retailers):
+**🔒 Activation ONLY after validation pipeline PASS:**
+```bash
+# Activate cron (only if validation passes)
+node src/scripts/cron-scheduler.ts run
+
+# Pause/resume management
+node src/scripts/cron-scheduler.ts pause <retailer>
+node src/scripts/cron-scheduler.ts resume <retailer>
+```
+
+**Production Sequence (auto-excludes paused/beta):**
 ```
 06:20 carrefour      07:35 coursesu       08:50 match
 06:35 carrefour_market  07:50 monoprix    09:05 chronodrive  
@@ -91,7 +101,8 @@ Cron sequence (ignores paused/beta retailers):
 07:20 intermarche    08:35 cora
 ```
 
-✅ Activation/pause procedures documented in CRON_SETUP.md
+✅ Complete incident runbook: INCIDENT_RUNBOOK.md  
+✅ Activation/pause procedures: docs/CRON_SETUP.md
 
 ## Phase 2 Deliverables
 
@@ -106,9 +117,18 @@ Cron sequence (ignores paused/beta retailers):
 ## Production Deployment
 
 ```bash
-# Automated validation and deployment
+# MANDATORY: Automated validation and deployment
 node src/scripts/validation-pipeline.ts
 ```
+
+**⚠️ CRITICAL:** Cron jobs are activated **ONLY** if validation pipeline reports PASS status.
+
+**Validation Flow:**
+1. **Smoke Test** (3 retailers) → Must pass with < 30% error rate
+2. **Extended Test** (6 retailers) → Must pass with quality score > 0.8  
+3. **Quality Analysis** → Must achieve overall quality > 0.7
+4. **CSV Export Verification** → Both latest and history files must generate
+5. **Cron Activation** → Only proceeds if ALL previous steps pass
 
 See VALIDATION_REPORT.md for detailed results and production readiness status.
 

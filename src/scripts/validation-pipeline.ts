@@ -183,7 +183,7 @@ class ValidationPipeline {
       const avgQualityScore = runs.reduce((sum, r) => sum + (r.quality_score || 0), 0) / runs.length;
       const itemsSaved = runs.reduce((sum, r) => sum + (r.items_saved || 0), 0);
       
-      if (successfulRuns.length >= 4 && avgErrorRate < 0.4 && avgQualityScore > 0.6) {
+      if (successfulRuns.length >= 4 && avgErrorRate < 0.4 && avgQualityScore > 0.8) {
         this.report.extended_test = {
           step: 'extended_test',
           status: 'PASS',
