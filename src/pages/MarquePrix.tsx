@@ -7,10 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TrendingUp, TrendingDown, Minus, ExternalLink } from 'lucide-react';
-import { Price, Retailer, BrandPriceStats, MedianPriceStats } from '@/types/pricing';
+import { Price, Retailer, BrandPriceStats } from '@/types/pricing';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
-import { getBrandTimeseries } from '@/services/timeseriesApi';
+import { getBrandTimeseries, BrandTimeseries } from '@/services/timeseriesApi';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
@@ -24,7 +24,7 @@ export default function MarquePrix() {
   const [prices, setPrices] = useState<PriceWithRetailer[]>([]);
   const [retailers, setRetailers] = useState<Retailer[]>([]);
   const [stats, setStats] = useState<BrandPriceStats | null>(null);
-  const [timeseries, setTimeseries] = useState<MedianPriceStats | null>(null);
+  const [timeseries, setTimeseries] = useState<BrandTimeseries[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<7 | 30>(30);
   const [loading, setLoading] = useState(true);
 

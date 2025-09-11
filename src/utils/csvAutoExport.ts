@@ -58,26 +58,34 @@ export class CSVAutoExport {
       if (error) throw error;
 
       if (prices && prices.length > 0) {
-        const transformedPrices = prices.map(price => ({
-          retailer: (price as any).retailers.slug,
-          brand: price.brand,
-          product_name: price.product_name,
-          pack_count: price.pack_count,
-          unit_volume_l: price.unit_volume_l,
-          total_volume_l: price.total_volume_l,
-          price_total_eur: price.price_total_eur,
-          price_per_l_eur: price.price_per_l_eur,
-          is_promo: price.is_promo,
-          promo_label: price.promo_label,
-          availability: price.availability,
-          sku: price.sku,
-          url: price.url,
-          scraped_at: price.scraped_at
-        }));
+        // Transform to simple objects for CSV export (not using generateCSV)
+        const csvRows = [
+          'retailer,brand,product_name,pack_count,unit_volume_l,total_volume_l,price_total_eur,price_per_l_eur,is_promo,promo_label,availability,sku,url,scraped_at'
+        ];
+        
+        prices.forEach(price => {
+          const retailer = (price as any).retailers?.slug || 'unknown';
+          csvRows.push([
+            retailer,
+            price.brand,
+            price.product_name,
+            price.pack_count,
+            price.unit_volume_l,
+            price.total_volume_l,
+            price.price_total_eur,
+            price.price_per_l_eur,
+            price.is_promo,
+            price.promo_label || '',
+            price.availability,
+            price.sku || '',
+            price.url || '',
+            price.scraped_at
+          ].map(v => this.escapeCSV(String(v || ''))).join(','));
+        });
 
-        const csvContent = generateCSV(transformedPrices);
+        const csvContent = csvRows.join('\n');
         await this.writeToFile('prices_latest.csv', csvContent);
-        console.log(`Export latest: ${transformedPrices.length} prix exportés`);
+        console.log(`Export latest: ${prices.length} prix exportés`);
       }
     } catch (error) {
       console.error('Erreur export latest prices:', error);
@@ -103,7 +111,31 @@ export class CSVAutoExport {
       if (error) throw error;
 
       if (history && history.length > 0) {
-        const csvContent = generateCSV(history);
+        // Direct CSV generation for history data
+        const csvRows = [
+          'retailer,brand,product_name,pack_count,unit_volume_l,total_volume_l,price_total_eur,price_per_l_eur,is_promo,promo_label,availability,sku,url,scraped_at'
+        ];
+        
+        history.forEach(entry => {
+          csvRows.push([
+            entry.retailer_id, // Use ID for history
+            entry.brand,
+            entry.product_name,
+            entry.pack_count,
+            entry.unit_volume_l,
+            entry.total_volume_l,
+            entry.price_total_eur,
+            entry.price_per_l_eur,
+            entry.is_promo,
+            entry.promo_label || '',
+            entry.availability,
+            entry.sku || '',
+            entry.url || '',
+            entry.scraped_at
+          ].map(v => this.escapeCSV(String(v || ''))).join(','));
+        });
+
+        const csvContent = csvRows.join('\n');
         await this.writeToFile(filename, csvContent);
         console.log(`Export history: ${history.length} entrées exportées pour ${dateStr}`);
       } else {
@@ -132,6 +164,16 @@ export class CSVAutoExport {
       // Node.js environment - would write to filesystem
       console.log(`Fichier généré: ${this.config.outputDir}/${filename}`);
     }
+  }
+
+  /**
+   * Helper to escape CSV values
+   */
+  private escapeCSV(value: string): string {
+    if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+      return `"${value.replace(/"/g, '""')}"`;
+    }
+    return value;
   }
 
   /**

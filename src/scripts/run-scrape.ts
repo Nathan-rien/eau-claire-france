@@ -4,6 +4,7 @@ import { analyzeQuality } from "@/lib/quality";
 import { triggerAutoExport } from "@/utils/csvAutoExport";
 import { BRAND_CONFIG } from "@/config/brands";
 import { ScrapeOptions } from "@/scrapers/types";
+import type { Price } from "@/types/pricing";
 
 // Server-side Supabase client
 const supabase = createClient(
@@ -197,8 +198,19 @@ export async function runScraping(config: ScrapingConfig) {
         // Calculate error rate
         const errorRate = result.items.length > 0 ? result.errors.length / result.items.length : 0;
         
-        // Analyze quality
-        const qualityReport = analyzeQuality(normalizedPrices);
+        // Analyze quality on stored prices with proper Price objects
+        let qualityReport = { quality_score: 1.0, outliers_count: 0, unknown_brands_count: 0 };
+        if (itemsSaved > 0) {
+          // Get full Price objects from database for quality analysis
+          const { data: storedPrices } = await supabase
+            .from('prices')
+            .select('*')
+            .eq('run_id', run.id);
+          
+          if (storedPrices && storedPrices.length > 0) {
+            qualityReport = analyzeQuality(storedPrices as Price[]);
+          }
+        }
         
         // Determine final status
         const finalStatus = errorRate > 0.5 ? 'failed' : errorRate > 0.2 ? 'partial' : 'success';
@@ -213,8 +225,8 @@ export async function runScraping(config: ScrapingConfig) {
             items_saved: itemsSaved,
             error_rate: errorRate,
             quality_score: qualityReport.quality_score,
-            outliers_count: qualityReport.outlier_count,
-            unknown_brands_count: qualityReport.unknown_brand_count,
+            outliers_count: qualityReport.outliers_count,
+            unknown_brands_count: qualityReport.unknown_brands_count,
             notes: result.errors.length > 0 ? JSON.stringify(result.errors) : null
           })
           .eq('id', run.id);
