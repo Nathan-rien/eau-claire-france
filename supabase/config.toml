@@ -1,1 +1,10 @@
 project_id = "xblogttmomuogdhmaztf"
+
+[functions.debug-health]
+verify_jwt = false
+
+[functions.debug-retailers]
+verify_jwt = false
+
+[functions.debug-brands]
+verify_jwt = false

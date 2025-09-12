@@ -6,11 +6,20 @@ import { BRAND_CONFIG } from "@/config/brands";
 import { ScrapeOptions } from "@/scrapers/types";
 import type { Price } from "@/types/pricing";
 
-// Server-side Supabase client
-const supabase = createClient(
-  "https://xblogttmomuogdhmaztf.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibG9ndHRtb211b2dkaG1henRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0MDYwNTgsImV4cCI6MjA2NTk4MjA1OH0._CAQGXwo2ZJYmwvvstGJ2bnC65vT9fHcTyuXwgNalP8"
-);
+// Server-side Supabase client (service role)
+import { createServiceClient } from '@/integrations/supabase/serviceClient';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const supabase = (() => {
+  try {
+    return createServiceClient();
+  } catch (e) {
+    console.error('[FATAL] Missing SUPABASE_SERVICE_ROLE_KEY. Aborting scraping.');
+    console.error('Hint: set SUPABASE_SERVICE_ROLE_KEY and SUPABASE_URL in your environment.');
+    process.exit(2);
+  }
+})();
 
 // Dynamic scraper imports (server-side only)
 async function createScraper(retailerSlug: string) {
@@ -80,6 +89,8 @@ export async function runScraping(config: ScrapingConfig) {
   const { retailers, brands, formats, maxPages, throttleMs } = config;
 
   console.log(`Starting scraping for ${retailers.length} retailers...`);
+  console.log(`Targets: ${retailers.join(', ')}`);
+  let totalItemsSaved = 0;
 
   for (const retailerSlug of retailers) {
     console.log(`\n=== Starting scraping for ${retailerSlug} ===`);
@@ -94,6 +105,12 @@ export async function runScraping(config: ScrapingConfig) {
 
       if (retailerError || !retailer) {
         console.error(`Retailer ${retailerSlug} not found:`, retailerError);
+        continue;
+      }
+
+      // Ignore retailers that are paused or in beta (only process active)
+      if (retailer.status !== 'active') {
+        console.log(`Skipping retailer ${retailerSlug} due to status='${retailer.status}'`);
         continue;
       }
 
@@ -172,11 +189,17 @@ export async function runScraping(config: ScrapingConfig) {
             }
           })
           .filter(Boolean)
-          .map(price => ({
-            ...price,
-            retailer_id: retailer.id,
-            run_id: run.id
-          }));
+          .map(price => {
+            const p: any = { ...price };
+            if ((p.price_per_l_eur === null || p.price_per_l_eur === undefined) && p.price_total_eur != null && p.total_volume_l != null && Number(p.total_volume_l) > 0) {
+              p.price_per_l_eur = Math.round((Number(p.price_total_eur) / Number(p.total_volume_l)) * 10000) / 10000;
+            }
+            return {
+              ...p,
+              retailer_id: retailer.id,
+              run_id: run.id
+            };
+          });
 
         let itemsSaved = 0;
         if (normalizedPrices.length > 0) {
@@ -194,6 +217,7 @@ export async function runScraping(config: ScrapingConfig) {
             console.log(`Stored ${itemsSaved} normalized prices`);
           }
         }
+        totalItemsSaved += itemsSaved;
 
         // Calculate error rate
         const errorRate = result.items.length > 0 ? result.errors.length / result.items.length : 0;
@@ -277,6 +301,21 @@ export async function runScraping(config: ScrapingConfig) {
   }
 
   console.log('\n=== Scraping completed for all retailers ===');
+  const smokeResult = {
+    status: totalItemsSaved > 0 ? 'PASS' : 'FAIL',
+    items_saved: totalItemsSaved,
+    timestamp: new Date().toISOString()
+  };
+  try {
+    fs.mkdirSync('exports', { recursive: true });
+    fs.writeFileSync(path.join('exports', 'SMOKE_RESULT.json'), JSON.stringify(smokeResult, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Failed to write exports/SMOKE_RESULT.json:', e);
+  }
+  if (totalItemsSaved === 0) {
+    console.error('SMOKE FAILED: 0 items saved. Check SERVICE_ROLE key, RLS policies, or selectors.');
+    process.exit(2);
+  }
 }
 
 // CLI interface

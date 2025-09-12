@@ -8,54 +8,24 @@ export interface DataStats {
 }
 
 export const hasData = async (): Promise<DataStats> => {
-  const { data, error } = await supabase
-    .from('prices')
-    .select('scraped_at', { count: 'exact' })
-    .order('scraped_at', { ascending: false })
-    .limit(1);
-
+  const { data, error } = await supabase.functions.invoke('debug-health');
   if (error) throw error;
-
-  const count = data?.length || 0;
-  const hasPrices = count > 0;
-  const lastScrapeAt = hasPrices && data?.[0]?.scraped_at ? data[0].scraped_at : undefined;
-
-  // Get total count
-  const { count: totalCount } = await supabase
-    .from('prices')
-    .select('*', { count: 'exact', head: true });
-
+  const stats = data as any;
   return {
-    hasPrices,
-    totalPrices: totalCount || 0,
-    lastScrapeAt
+    hasPrices: (stats?.prices_count || 0) > 0,
+    totalPrices: stats?.prices_count || 0,
+    lastScrapeAt: stats?.last_scraped_at || undefined,
   };
 };
 
 export const listDistinctBrands = async (): Promise<string[]> => {
-  const { data, error } = await supabase
-    .from('prices')
-    .select('brand')
-    .not('brand', 'is', null)
-    .neq('brand', 'Inconnu')
-    .order('brand');
-
+  const { data, error } = await supabase.functions.invoke('debug-brands');
   if (error) throw error;
-  
-  // Remove duplicates and normalize case insensitive sorting
-  const uniqueBrands = [...new Set(data.map(item => item.brand))]
-    .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-  
-  return uniqueBrands;
+  return (data as string[]) || [];
 };
 
 export const listActiveRetailers = async () => {
-  const { data, error } = await supabase
-    .from('retailers')
-    .select('*')
-    .eq('status', 'active')
-    .order('name');
-
+  const { data, error } = await supabase.functions.invoke('debug-retailers');
   if (error) throw error;
-  return data || [];
+  return (data as any[]) || [];
 };
