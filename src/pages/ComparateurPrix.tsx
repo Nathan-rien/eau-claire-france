@@ -6,10 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeftRight, TrendingUp, TrendingDown } from 'lucide-react';
+import { ArrowLeftRight, RotateCcw } from 'lucide-react';
 import { Price, Retailer } from '@/types/pricing';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import DataWarmupBanner from '@/components/DataWarmupBanner';
+import { listDistinctBrands, listActiveRetailers, hasData } from '@/services/dataStatsApi';
+import { computeFallbackPricePerL } from '@/lib/normalize';
 
 interface ComparisonData {
   brand?: string;
@@ -33,6 +36,8 @@ export default function ComparateurPrix() {
   const [comparison1, setComparison1] = useState<ComparisonData | null>(null);
   const [comparison2, setComparison2] = useState<ComparisonData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showDataBanner, setShowDataBanner] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<string | null>(null);
 
   useEffect(() => {
     loadInitialData();
@@ -40,26 +45,24 @@ export default function ComparateurPrix() {
 
   const loadInitialData = async () => {
     try {
-      // Charger les marques
-      const { data: brandsData } = await supabase
-        .from('prices')
-        .select('brand')
-        .not('brand', 'eq', 'Inconnu')
-        .order('brand');
-
-      if (brandsData) {
-        const uniqueBrands = [...new Set(brandsData.map(b => b.brand))];
-        setBrands(uniqueBrands);
+      // Vérifier si la base a des données
+      const dataStats = await hasData();
+      setShowDataBanner(!dataStats.hasPrices);
+      if (dataStats.lastScrapeAt) {
+        setLastUpdate(dataStats.lastScrapeAt);
+      }
+      
+      if (!dataStats.hasPrices) {
+        return; // Ne pas charger les listes si pas de données
       }
 
-      // Charger les enseignes
-      const { data: retailersData } = await supabase
-        .from('retailers')
-        .select('*')
-        .eq('status', 'active')
-        .order('name');
+      // Charger les marques depuis la base
+      const brandsData = await listDistinctBrands();
+      setBrands(brandsData);
 
-      if (retailersData) setRetailers(retailersData as Retailer[]);
+      // Charger les enseignes actives
+      const retailersData = await listActiveRetailers();
+      setRetailers(retailersData as Retailer[]);
 
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error);
@@ -79,16 +82,19 @@ export default function ComparateurPrix() {
         retailers!inner(name)
       `)
       .eq('brand', brand)
-      .not('price_per_l_eur', 'is', null)
       .order('scraped_at', { ascending: false })
       .limit(100);
 
     if (error) throw error;
 
-    const prices = (pricesData || []).map(price => ({
-      ...price,
-      retailer_name: (price as any).retailers.name
-    })) as (Price & { retailer_name: string })[];
+    const prices = (pricesData || []).map(price => {
+      const priceWithFallback = {
+        ...price,
+        retailer_name: (price as any).retailers.name,
+        price_per_l_eur: computeFallbackPricePerL(price)
+      };
+      return priceWithFallback;
+    }).filter(p => p.price_per_l_eur !== null) as (Price & { retailer_name: string })[];
 
     const pricesPerL = prices.map(p => p.price_per_l_eur!).filter(Boolean).sort((a, b) => a - b);
     
@@ -109,16 +115,19 @@ export default function ComparateurPrix() {
         retailers!inner(name)
       `)
       .eq('retailer_id', retailerId)
-      .not('price_per_l_eur', 'is', null)
       .order('scraped_at', { ascending: false })
       .limit(100);
 
     if (error) throw error;
 
-    const prices = (pricesData || []).map(price => ({
-      ...price,
-      retailer_name: (price as any).retailers.name
-    })) as (Price & { retailer_name: string })[];
+    const prices = (pricesData || []).map(price => {
+      const priceWithFallback = {
+        ...price,
+        retailer_name: (price as any).retailers.name,
+        price_per_l_eur: computeFallbackPricePerL(price)
+      };
+      return priceWithFallback;
+    }).filter(p => p.price_per_l_eur !== null) as (Price & { retailer_name: string })[];
 
     const retailer = retailers.find(r => r.id === retailerId);
     const pricesPerL = prices.map(p => p.price_per_l_eur!).filter(Boolean).sort((a, b) => a - b);
@@ -195,6 +204,31 @@ export default function ComparateurPrix() {
     };
   };
 
+  const handleSwapSelections = () => {
+    if (mode === 'brands') {
+      const temp = selectedBrand1;
+      setSelectedBrand1(selectedBrand2);
+      setSelectedBrand2(temp);
+    } else {
+      const temp = selectedRetailer1;
+      setSelectedRetailer1(selectedRetailer2);
+      setSelectedRetailer2(temp);
+    }
+  };
+
+  const handleDataAvailable = () => {
+    setShowDataBanner(false);
+    loadInitialData(); // Reload data when available
+  };
+
+  // Empty states
+  const isSelectionEmpty = mode === 'brands' 
+    ? !selectedBrand1 || !selectedBrand2
+    : !selectedRetailer1 || !selectedRetailer2;
+
+  const hasNoResults = comparison1 && comparison2 && 
+    comparison1.prices.length === 0 && comparison2.prices.length === 0;
+
   return (
     <Layout>
       <SEOHead 
@@ -209,6 +243,9 @@ export default function ComparateurPrix() {
           <p className="text-muted-foreground mb-6">
             Comparez les prix entre marques ou entre enseignes pour trouver les meilleures offres.
           </p>
+
+          {/* Data warmup banner */}
+          {showDataBanner && <DataWarmupBanner onDataAvailable={handleDataAvailable} />}
 
           {/* Sélection du mode */}
           <Tabs value={mode} onValueChange={(value) => setMode(value as 'brands' | 'retailers')}>
@@ -235,7 +272,15 @@ export default function ComparateurPrix() {
                   </div>
 
                   <div className="text-center">
-                    <ArrowLeftRight className="h-6 w-6 mx-auto text-muted-foreground" />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleSwapSelections}
+                      className="p-2"
+                      disabled={isSelectionEmpty}
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                    </Button>
                   </div>
 
                   <div>
@@ -273,7 +318,15 @@ export default function ComparateurPrix() {
                   </div>
 
                   <div className="text-center">
-                    <ArrowLeftRight className="h-6 w-6 mx-auto text-muted-foreground" />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleSwapSelections}
+                      className="p-2"
+                      disabled={isSelectionEmpty}
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                    </Button>
                   </div>
 
                   <div>
@@ -298,13 +351,42 @@ export default function ComparateurPrix() {
           <div className="text-center mb-8">
             <Button 
               onClick={handleCompare} 
-              disabled={loading}
+              disabled={loading || isSelectionEmpty || showDataBanner}
               size="lg"
               className="px-8"
             >
               {loading ? 'Comparaison en cours...' : 'Comparer'}
             </Button>
+            
+            {lastUpdate && (
+              <p className="text-sm text-muted-foreground mt-2">
+                Dernière mise à jour : {new Date(lastUpdate).toLocaleDateString('fr-FR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </p>
+            )}
           </div>
+
+          {/* Empty state messages */}
+          {!showDataBanner && isSelectionEmpty && (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">
+                Sélectionnez 2 {mode === 'brands' ? 'marques' : 'enseignes'} pour commencer la comparaison
+              </p>
+            </div>
+          )}
+
+          {hasNoResults && (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">
+                Aucune donnée trouvée pour ces critères. Essayez d'autres {mode === 'brands' ? 'marques' : 'enseignes'}.
+              </p>
+            </div>
+          )}
 
           {/* Résultats de comparaison */}
           {comparison1 && comparison2 && (

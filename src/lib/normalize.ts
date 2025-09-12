@@ -60,13 +60,37 @@ const BRAND_MAPPING: Record<string, string[]> = {
 
 /**
  * Parse le format d'un produit (pack x volume)
+ * Gère "2x6x50cl", "6x1,5 l", "1 l", "12 x 1 l", et ignore "+ 2 offertes"
  */
 export function parseFormat(productName: string): ParsedFormat {
   const name = productName.toLowerCase().trim();
   
+  // Ignore les bonus/offres
+  const cleanName = name.replace(/\+\s*\d+\s*(offerte?s?|gratuite?s?)/gi, '');
+  
+  // Pattern pour format imbriqué : 2x6x50cl
+  const nestedPattern = /(\d+)\s*[x×]\s*(\d+)\s*[x×]\s*(\d*[.,]?\d+)\s*(l|cl)\b/i;
+  const nestedMatch = cleanName.match(nestedPattern);
+  
+  if (nestedMatch) {
+    const multiplier = parseInt(nestedMatch[1]);
+    const packCount = parseInt(nestedMatch[2]);
+    const volume = parseFloat(nestedMatch[3].replace(',', '.'));
+    const unit = nestedMatch[4].toLowerCase();
+    
+    const volumeInL = unit === 'cl' ? volume / 100 : volume;
+    const totalPacks = multiplier * packCount;
+    
+    return {
+      pack_count: totalPacks,
+      unit_volume_l: volumeInL,
+      total_volume_l: totalPacks * volumeInL
+    };
+  }
+  
   // Pattern principal : 6x1,5L, 12 x 50cl, etc.
   const mainPattern = /(\d+)\s*[x×]\s*(\d*[.,]?\d+)\s*(l|cl)\b/i;
-  const mainMatch = name.match(mainPattern);
+  const mainMatch = cleanName.match(mainPattern);
   
   if (mainMatch) {
     const packCount = parseInt(mainMatch[1]);
@@ -84,7 +108,7 @@ export function parseFormat(productName: string): ParsedFormat {
   
   // Pattern secondaire : volume simple (1,5L, 50cl)
   const simplePattern = /(\d*[.,]?\d+)\s*(l|cl)\b/i;
-  const simpleMatch = name.match(simplePattern);
+  const simpleMatch = cleanName.match(simplePattern);
   
   if (simpleMatch) {
     const volume = parseFloat(simpleMatch[1].replace(',', '.'));
@@ -134,6 +158,23 @@ export function computePricePerL(priceTotal: number, totalVolumeL: number): numb
   }
   
   return Math.round((priceTotal / totalVolumeL) * 10000) / 10000; // 4 décimales
+}
+
+/**
+ * Calcule le prix au litre en fallback si manquant
+ */
+export function computeFallbackPricePerL(price: { price_total_eur?: number | null, total_volume_l?: number | null, price_per_l_eur?: number | null }): number | null {
+  // Si le prix au litre existe déjà, le retourner
+  if (price.price_per_l_eur) {
+    return price.price_per_l_eur;
+  }
+  
+  // Sinon, calculer en fallback si possible
+  if (price.price_total_eur && price.total_volume_l && price.total_volume_l > 0) {
+    return computePricePerL(price.price_total_eur, price.total_volume_l);
+  }
+  
+  return null;
 }
 
 /**

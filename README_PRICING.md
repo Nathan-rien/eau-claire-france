@@ -2,6 +2,17 @@
 
 Production-ready module for scraping and comparing bottle water prices across French retailers.
 
+## 🚨 Si rien ne s'affiche...
+
+Si les pages `/prix-eaux` et `/comparateur-prix` sont vides, la base de données n'a probablement pas encore de données. 
+
+**Solution rapide :**
+```bash
+pnpm scrape --retailers carrefour,auchan,leclerc --brands evian,cristaline --formats "1,5 l" --maxPages 1
+```
+
+Cette commande smoke test (3 enseignes) alimente la base en 1-2 minutes. L'interface se met à jour automatiquement.
+
 ## Quick Start
 
 ```bash

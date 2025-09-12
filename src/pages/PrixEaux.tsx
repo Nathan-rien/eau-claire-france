@@ -11,6 +11,9 @@ import { Search, Filter, TrendingUp, Clock } from 'lucide-react';
 import { Price, Retailer, PriceFilters, PaginatedResponse } from '@/types/pricing';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import DataWarmupBanner from '@/components/DataWarmupBanner';
+import { listDistinctBrands, listActiveRetailers, hasData } from '@/services/dataStatsApi';
+import { computeFallbackPricePerL } from '@/lib/normalize';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
@@ -24,6 +27,7 @@ export default function PrixEaux() {
   const [retailers, setRetailers] = useState<Retailer[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showDataBanner, setShowDataBanner] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     pageSize: 50,
@@ -66,26 +70,22 @@ export default function PrixEaux() {
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        // Charger les enseignes
-        const { data: retailersData } = await supabase
-          .from('retailers')
-          .select('*')
-          .eq('status', 'active')
-          .order('name');
+        // Vérifier si la base a des données
+        const dataStats = await hasData();
+        setShowDataBanner(!dataStats.hasPrices);
+        
+        if (!dataStats.hasPrices) {
+          setLoading(false);
+          return; // Ne pas charger les listes si pas de données
+        }
 
-        if (retailersData) setRetailers(retailersData as Retailer[]);
+        // Charger les enseignes actives
+        const retailersData = await listActiveRetailers();
+        setRetailers(retailersData as Retailer[]);
 
         // Charger les marques distinctes
-        const { data: brandsData } = await supabase
-          .from('prices')
-          .select('brand')
-          .not('brand', 'eq', 'Inconnu')
-          .order('brand');
-
-        if (brandsData) {
-          const uniqueBrands = [...new Set(brandsData.map(b => b.brand))];
-          setBrands(uniqueBrands);
-        }
+        const brandsData = await listDistinctBrands();
+        setBrands(brandsData);
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error);
         toast({
@@ -93,11 +93,18 @@ export default function PrixEaux() {
           description: "Impossible de charger les données",
           variant: "destructive"
         });
+        setLoading(false);
       }
     };
 
     loadInitialData();
   }, [toast]);
+
+  const handleDataAvailable = () => {
+    setShowDataBanner(false);
+    // Reload page data when data becomes available
+    window.location.reload();
+  };
 
   // Charger les prix avec filtres
   useEffect(() => {
@@ -166,10 +173,14 @@ export default function PrixEaux() {
         if (error) throw error;
 
         if (data) {
-          const pricesWithRetailer = data.map(price => ({
-            ...price,
-            retailer_name: (price as any).retailers.name
-          }));
+          const pricesWithRetailer = data.map(price => {
+            const priceWithFallback = {
+              ...price,
+              retailer_name: (price as any).retailers.name,
+              price_per_l_eur: computeFallbackPricePerL(price) || price.price_per_l_eur
+            };
+            return priceWithFallback;
+          });
           
           setPrices(pricesWithRetailer as PriceWithRetailer[]);
           setPagination({
@@ -234,6 +245,9 @@ export default function PrixEaux() {
             Comparez les prix des eaux en bouteille dans toutes les enseignes. 
             Données mises à jour quotidiennement.
           </p>
+
+          {/* Data warmup banner */}
+          {showDataBanner && <DataWarmupBanner onDataAvailable={handleDataAvailable} />}
 
           {/* Filtres */}
           <Card className="p-6 mb-6">
@@ -339,6 +353,18 @@ export default function PrixEaux() {
 
           {loading ? (
             <div className="text-center py-12">Chargement...</div>
+          ) : showDataBanner ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">
+                Aucune donnée disponible. Lancez le smoke test ci-dessus pour commencer.
+              </p>
+            </div>
+          ) : prices.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">
+                Aucun prix trouvé pour ces critères. Modifiez vos filtres ou essayez une recherche différente.
+              </p>
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse border border-gray-200 dark:border-gray-700">
