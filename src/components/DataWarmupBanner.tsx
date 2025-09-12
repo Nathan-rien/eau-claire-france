@@ -87,8 +87,8 @@ export default function DataWarmupBanner({ onDataAvailable }: DataWarmupBannerPr
     // Show instruction modal since we can't execute CLI directly
     toast({
       title: "Lancement du smoke test",
-      description: "Copiez et exécutez cette commande dans votre terminal : pnpm scrape --retailers carrefour,auchan,leclerc --brands evian,cristaline --formats \"1,5 l\" --maxPages 1",
-      duration: 10000
+      description: "Copiez et exécutez cette commande dans votre terminal :\n\npnpm scrape --retailers carrefour,auchan,leclerc --brands evian,cristaline --formats \"1,5 l\" --maxPages 1\n\nEnsuite, patientez 1-2 minutes puis revenez sur cette page.",
+      duration: 15000
     });
     
     // Start polling for data

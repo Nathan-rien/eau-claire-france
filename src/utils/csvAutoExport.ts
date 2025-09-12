@@ -1,3 +1,4 @@
+import { createServiceClient } from '@/integrations/supabase/serviceClient';
 import { supabase } from '@/integrations/supabase/client';
 import { generateCSV } from './csvExport';
 
@@ -47,7 +48,12 @@ export class CSVAutoExport {
    */
   private async exportLatestPrices(): Promise<void> {
     try {
-      const { data: prices, error } = await supabase
+      // Use service client for server-side exports (Node env)
+      const clientToUse = typeof window === 'undefined' 
+        ? createServiceClient()
+        : supabase;
+
+      const { data: prices, error } = await clientToUse
         .from('prices')
         .select(`
           *,
@@ -101,7 +107,12 @@ export class CSVAutoExport {
       const dateStr = today.toISOString().split('T')[0];
       const filename = `prices_history_${dateStr.replace(/-/g, '')}.csv`;
 
-      const { data: history, error } = await supabase
+      // Use service client for server-side exports (Node env)
+      const clientToUse = typeof window === 'undefined' 
+        ? createServiceClient()
+        : supabase;
+
+      const { data: history, error } = await clientToUse
         .from('prices_history')
         .select('*')
         .gte('scraped_at', `${dateStr}T00:00:00Z`)
