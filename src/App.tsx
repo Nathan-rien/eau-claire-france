@@ -113,7 +113,7 @@ const App = () => {
                 <Route path="/marque/:slug" element={<MarquePrix />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route 
-                  path="/security-dashboard" 
+                  path="/admin/security" 
                   element={
                     <ProtectedRoute>
                       <SecurityDashboard />

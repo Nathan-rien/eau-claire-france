@@ -1,257 +1,528 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Shield, AlertTriangle, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
-import { EnhancedSecurityService } from '@/services/enhancedSecurityService';
-import { AuditService } from '@/services/auditService';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { Shield, CheckCircle, XCircle, AlertTriangle, RefreshCw, Download, Eye, Settings, Clock, Database } from 'lucide-react';
 import Layout from '@/components/Layout';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Helmet } from 'react-helmet-async';
 
-interface SecurityReport {
-  cspStatus: boolean;
-  sessionValid: boolean;
-  dataIntegrity: { valid: number; corrupted: number; keys: string[] };
-  auditSummary: {
-    totalEvents: number;
-    criticalEvents: number;
-    recentEvents: number;
-    suspiciousActivity: boolean;
-  };
-  recommendations: string[];
-  sessionIssues: string[];
+interface SecurityCheckResult {
+  ok: boolean;
+  message: string;
+  details?: any;
+  timestamp?: string;
+}
+
+interface SecurityChecks {
+  rls: SecurityCheckResult | null;
+  hardening: SecurityCheckResult | null;
+  diagnostic: SecurityCheckResult | null;
+  smoke: SecurityCheckResult | null;
+  alerts: SecurityCheckResult | null;
+  envSample: SecurityCheckResult | null;
+  clean: SecurityCheckResult | null;
+  cronStatus: SecurityCheckResult | null;
 }
 
 const SecurityDashboard = () => {
-  const [securityReport, setSecurityReport] = useState<SecurityReport | null>(null);
-  const [auditLogs, setAuditLogs] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [checks, setChecks] = useState<SecurityChecks>({
+    rls: null,
+    hardening: null,
+    diagnostic: null,
+    smoke: null,
+    alerts: null,
+    envSample: null,
+    clean: null,
+    cronStatus: null,
+  });
+  const [envSample, setEnvSample] = useState<string>('');
+  const [showEnvDialog, setShowEnvDialog] = useState(false);
+  const [authError, setAuthError] = useState<string>('');
 
-  const generateReport = async () => {
-    setIsLoading(true);
-    try {
-      const rawReport = await EnhancedSecurityService.generateSecurityReport();
-      const logs = AuditService.getLocalLogs().slice(-10); // Last 10 events
-      
-      // Transform the report to match our interface
-      const report: SecurityReport = {
-        cspStatus: rawReport.csp,
-        sessionValid: rawReport.session.isValid,
-        sessionIssues: rawReport.session.issues,
-        dataIntegrity: rawReport.dataIntegrity,
-        auditSummary: rawReport.auditSummary,
-        recommendations: rawReport.recommendations
-      };
-      
-      setSecurityReport(report);
-      setAuditLogs(logs);
-    } catch (error) {
-      console.error('Failed to generate security report:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  // Load initial data
   useEffect(() => {
-    generateReport();
+    loadInitialData();
   }, []);
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'critical': return 'destructive';
-      case 'high': return 'destructive';
-      case 'medium': return 'secondary';
-      case 'low': return 'outline';
-      default: return 'outline';
+  const callSecurityEndpoint = async (endpoint: string, actionName: string) => {
+    setLoading(true);
+    setAuthError('');
+    
+    try {
+      const { data, error } = await supabase.functions.invoke(endpoint, {
+        body: {}
+      });
+
+      if (error) {
+        // Check for authentication errors
+        if (error.message?.includes('Unauthorized') || error.message?.includes('401')) {
+          setAuthError('Accès admin requis — définissez ADMIN_DASHBOARD_TOKEN côté serveur et envoyez l\'entête X-Admin-Token.');
+          toast.error('Accès non autorisé - Token admin requis');
+          return null;
+        }
+        
+        toast.error(`Erreur ${actionName}: ${error.message}`);
+        return null;
+      }
+
+      toast.success(`${actionName} terminé avec succès`);
+      return data;
+    } catch (error) {
+      console.error(`Error calling ${endpoint}:`, error);
+      
+      // Check for network/auth errors
+      if (error.message?.includes('401') || error.message?.includes('403')) {
+        setAuthError('Accès admin requis — définissez ADMIN_DASHBOARD_TOKEN côté serveur et envoyez l\'entête X-Admin-Token.');
+        toast.error('Accès non autorisé - Token admin requis');
+      } else {
+        toast.error(`Erreur ${actionName}: ${error.message}`);
+      }
+      return null;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getStatusIcon = (isValid: boolean) => {
-    return isValid ? CheckCircle : XCircle;
+  const loadInitialData = async () => {
+    // Try to load diagnostic to check auth status
+    const diagnosticResult = await callSecurityEndpoint('admin-security-diagnostic', 'Diagnostic initial');
+    if (diagnosticResult) {
+      setChecks(prev => ({ ...prev, diagnostic: diagnosticResult }));
+    }
   };
 
-  if (isLoading) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center h-64">
-            <RefreshCw className="h-8 w-8 animate-spin" />
-            <span className="ml-2">Generating security report...</span>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+  const runRLSCheck = async () => {
+    const result = await callSecurityEndpoint('admin-security-rls', 'Vérification RLS');
+    if (result) {
+      setChecks(prev => ({ ...prev, rls: result }));
+    }
+  };
 
-  if (!securityReport) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <Alert>
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>
-              Failed to generate security report. Please try again.
-            </AlertDescription>
-          </Alert>
-        </div>
-      </Layout>
-    );
-  }
+  const runHardeningCheck = async () => {
+    const result = await callSecurityEndpoint('admin-security-hardening', 'Vérification Hardening');
+    if (result) {
+      setChecks(prev => ({ ...prev, hardening: result }));
+    }
+  };
+
+  const runDiagnostic = async () => {
+    const result = await callSecurityEndpoint('admin-security-diagnostic', 'Diagnostic Environnement');
+    if (result) {
+      setChecks(prev => ({ ...prev, diagnostic: result }));
+    }
+  };
+
+  const runSecuritySmoke = async () => {
+    const result = await callSecurityEndpoint('admin-security-smoke', 'Security Smoke Test');
+    if (result) {
+      setChecks(prev => ({ ...prev, smoke: result }));
+      // Refresh other checks if smoke test passed
+      if (result.ok) {
+        await Promise.all([
+          runRLSCheck(),
+          runHardeningCheck(),
+          runDiagnostic()
+        ]);
+      }
+    }
+  };
+
+  const runCleanup = async () => {
+    const result = await callSecurityEndpoint('admin-security-clean', 'Nettoyage');
+    if (result) {
+      setChecks(prev => ({ ...prev, clean: result }));
+    }
+  };
+
+  const checkAlerts = async () => {
+    const result = await callSecurityEndpoint('admin-security-alerts', 'Vérification Alertes');
+    if (result) {
+      setChecks(prev => ({ ...prev, alerts: result }));
+    }
+  };
+
+  const loadEnvSample = async () => {
+    const result = await callSecurityEndpoint('admin-security-env-sample', 'Chargement ENV Sample');
+    if (result && result.content) {
+      setEnvSample(result.content);
+      setShowEnvDialog(true);
+    }
+  };
+
+  const enableCron = async () => {
+    const result = await callSecurityEndpoint('admin-security-cron-enable', 'Activation CRON');
+    if (result) {
+      setChecks(prev => ({ ...prev, cronStatus: result }));
+    }
+  };
+
+  const disableCron = async () => {
+    const result = await callSecurityEndpoint('admin-security-cron-disable', 'Désactivation CRON');
+    if (result) {
+      setChecks(prev => ({ ...prev, cronStatus: result }));
+    }
+  };
+
+  const getStatusBadge = (check: SecurityCheckResult | null) => {
+    if (!check) return <Badge variant="outline">Non testé</Badge>;
+    if (check.ok) return <Badge variant="default" className="bg-green-600">✅ PASS</Badge>;
+    return <Badge variant="destructive">❌ FAIL</Badge>;
+  };
+
+  const getStatusIcon = (check: SecurityCheckResult | null) => {
+    if (!check) return <Clock className="h-4 w-4 text-muted-foreground" />;
+    return check.ok ? 
+      <CheckCircle className="h-4 w-4 text-green-600" /> : 
+      <XCircle className="h-4 w-4 text-red-600" />;
+  };
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center gap-2">
-              <Shield className="h-8 w-8" />
-              Security Dashboard
-            </h1>
-            <p className="text-muted-foreground">
-              Monitor and manage your application's security posture
-            </p>
+      <Helmet>
+        <meta name="robots" content="noindex,nofollow" />
+        <title>Security Dashboard - InfoEau Admin</title>
+      </Helmet>
+      
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
+                <Shield className="h-8 w-8 text-primary" />
+                Security Dashboard
+              </h1>
+              <p className="text-muted-foreground">
+                Tableau de bord de sécurité InfoEau - Contrôles et surveillance
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                onClick={runSecuritySmoke} 
+                disabled={loading}
+                className="flex items-center gap-2"
+              >
+                {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Shield className="h-4 w-4" />}
+                Security Smoke Test
+              </Button>
+              <Dialog open={showEnvDialog} onOpenChange={setShowEnvDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" onClick={loadEnvSample}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Copier .env
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[80vh]">
+                  <DialogHeader>
+                    <DialogTitle>Configuration Environnement</DialogTitle>
+                    <DialogDescription>
+                      Copiez ce contenu dans votre fichier .env
+                    </DialogDescription>
+                  </DialogHeader>
+                  <ScrollArea className="h-[60vh]">
+                    <pre className="text-sm bg-muted p-4 rounded-md overflow-x-auto">
+                      {envSample}
+                    </pre>
+                  </ScrollArea>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
-          <Button onClick={generateReport} variant="outline">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh Report
-          </Button>
         </div>
 
-        {/* Security Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">CSP Status</CardTitle>
-              {React.createElement(getStatusIcon(securityReport.cspStatus), {
-                className: `h-4 w-4 ${securityReport.cspStatus ? 'text-green-600' : 'text-red-600'}`
-              })}
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {securityReport.cspStatus ? 'Active' : 'Inactive'}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Session</CardTitle>
-              {React.createElement(getStatusIcon(securityReport.sessionValid), {
-                className: `h-4 w-4 ${securityReport.sessionValid ? 'text-green-600' : 'text-red-600'}`
-              })}
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {securityReport.sessionValid ? 'Valid' : 'Issues'}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Data Integrity</CardTitle>
-              {React.createElement(getStatusIcon(securityReport.dataIntegrity.corrupted === 0), {
-                className: `h-4 w-4 ${securityReport.dataIntegrity.corrupted === 0 ? 'text-green-600' : 'text-red-600'}`
-              })}
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {securityReport.dataIntegrity.valid}/{securityReport.dataIntegrity.valid + securityReport.dataIntegrity.corrupted}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Valid entries
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Audit Events</CardTitle>
-              <AlertTriangle className={`h-4 w-4 ${securityReport.auditSummary.criticalEvents > 0 ? 'text-red-600' : 'text-green-600'}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {securityReport.auditSummary.totalEvents}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {securityReport.auditSummary.criticalEvents} critical
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Security Recommendations */}
-        {securityReport.recommendations.length > 0 && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Security Recommendations</CardTitle>
-              <CardDescription>
-                Suggested improvements to enhance your security posture
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {securityReport.recommendations.map((recommendation, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <AlertTriangle className="h-4 w-4 text-yellow-600 mt-1 flex-shrink-0" />
-                    <span className="text-sm">{recommendation}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Session Issues */}
-        {securityReport.sessionIssues.length > 0 && (
-          <Alert className="mb-8">
+        {/* Auth Error Alert */}
+        {authError && (
+          <Alert className="mb-6 border-destructive">
             <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>
-              <strong>Session Issues Detected:</strong>
-              <ul className="mt-2 space-y-1">
-                {securityReport.sessionIssues.map((issue, index) => (
-                  <li key={index} className="text-sm">• {issue}</li>
-                ))}
-              </ul>
+            <AlertDescription className="flex items-center justify-between">
+              <span>{authError}</span>
+              <Button variant="outline" size="sm" onClick={() => setShowEnvDialog(true)}>
+                Voir ENV_SAMPLE.md
+              </Button>
             </AlertDescription>
           </Alert>
         )}
 
-        {/* Recent Audit Logs */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Audit Logs</CardTitle>
-            <CardDescription>
-              Latest security events and system activities
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {auditLogs.length === 0 ? (
-              <p className="text-muted-foreground text-center py-4">
-                No audit logs available
-              </p>
-            ) : (
-              <div className="space-y-4">
-                {auditLogs.map((log, index) => (
-                  <div key={index} className="flex items-start justify-between p-3 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge variant={getSeverityColor(log.severity)}>
-                          {log.severity}
-                        </Badge>
-                        <span className="font-medium text-sm">{log.action}</span>
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
+            <TabsTrigger value="checks">Tests détaillés</TabsTrigger>
+            <TabsTrigger value="monitoring">Surveillance</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            {/* Status Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">RLS Policies</CardTitle>
+                  {getStatusIcon(checks.rls)}
+                </CardHeader>
+                <CardContent>
+                  {getStatusBadge(checks.rls)}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {checks.rls?.message || 'Vérification des politiques de sécurité'}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Security Hardening</CardTitle>
+                  {getStatusIcon(checks.hardening)}
+                </CardHeader>
+                <CardContent>
+                  {getStatusBadge(checks.hardening)}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {checks.hardening?.message || 'Durcissement de sécurité'}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Environment</CardTitle>
+                  {getStatusIcon(checks.diagnostic)}
+                </CardHeader>
+                <CardContent>
+                  {getStatusBadge(checks.diagnostic)}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {checks.diagnostic?.message || 'Configuration environnement'}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">CRON Status</CardTitle>
+                  {getStatusIcon(checks.cronStatus)}
+                </CardHeader>
+                <CardContent>
+                  {getStatusBadge(checks.cronStatus)}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {checks.cronStatus?.message || 'Statut du scheduler'}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Global Smoke Test Result */}
+            {checks.smoke && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="h-5 w-5" />
+                    Security Smoke Test
+                  </CardTitle>
+                  <CardDescription>
+                    Test de fumée global - Statut de sécurité général
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {getStatusIcon(checks.smoke)}
+                      <div>
+                        <p className="font-medium">{checks.smoke.message}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Dernière vérification: {checks.smoke.timestamp || 'Maintenant'}
+                        </p>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(log.timestamp).toLocaleString()}
-                      </p>
-                      <p className="text-sm mt-1 capitalize">{log.type}</p>
                     </div>
+                    {getStatusBadge(checks.smoke)}
                   </div>
-                ))}
-              </div>
+                </CardContent>
+              </Card>
             )}
-          </CardContent>
-        </Card>
+          </TabsContent>
+
+          <TabsContent value="checks" className="space-y-6">
+            {/* Individual Check Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Database className="h-4 w-4" />
+                    Vérification RLS
+                  </CardTitle>
+                  <CardDescription>
+                    Teste les politiques Row Level Security
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    {getStatusBadge(checks.rls)}
+                    <Button onClick={runRLSCheck} disabled={loading} size="sm">
+                      Vérifier RLS
+                    </Button>
+                  </div>
+                  {checks.rls && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {checks.rls.message}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="h-4 w-4" />
+                    Vérification Hardening
+                  </CardTitle>
+                  <CardDescription>
+                    Contrôle la configuration de sécurité
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    {getStatusBadge(checks.hardening)}
+                    <Button onClick={runHardeningCheck} disabled={loading} size="sm">
+                      Vérifier Hardening
+                    </Button>
+                  </div>
+                  {checks.hardening && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {checks.hardening.message}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    Diagnostic ENV
+                  </CardTitle>
+                  <CardDescription>
+                    Vérifie les variables d'environnement
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    {getStatusBadge(checks.diagnostic)}
+                    <Button onClick={runDiagnostic} disabled={loading} size="sm">
+                      Diagnostic
+                    </Button>
+                  </div>
+                  {checks.diagnostic && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {checks.diagnostic.message}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    Nettoyage
+                  </CardTitle>
+                  <CardDescription>
+                    Supprime les artefacts de debug
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    {getStatusBadge(checks.clean)}
+                    <Button onClick={runCleanup} disabled={loading} size="sm" variant="outline">
+                      Nettoyer
+                    </Button>
+                  </div>
+                  {checks.clean && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {checks.clean.message}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* CRON Controls */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  Contrôle CRON
+                </CardTitle>
+                <CardDescription>
+                  Activation/désactivation du scheduler automatique
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between mb-4">
+                  {getStatusBadge(checks.cronStatus)}
+                  <div className="flex gap-2">
+                    <Button onClick={disableCron} disabled={loading} size="sm" variant="outline">
+                      Désactiver
+                    </Button>
+                    <Button onClick={enableCron} disabled={loading} size="sm">
+                      Activer
+                    </Button>
+                  </div>
+                </div>
+                <Alert>
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>
+                    Le CRON ne peut être activé que si tous les tests de sécurité sont PASS.
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="monitoring" className="space-y-6">
+            {/* Alerts Monitoring */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-4 w-4" />
+                  Surveillance Alertes
+                </CardTitle>
+                <CardDescription>
+                  Monitoring des événements de sécurité
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between mb-4">
+                  {getStatusBadge(checks.alerts)}
+                  <Button onClick={checkAlerts} disabled={loading} size="sm">
+                    Vérifier Alertes
+                  </Button>
+                </div>
+                {checks.alerts?.details && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">
+                      Webhook: {checks.alerts.details.webhookEnabled ? '✅ Activé' : '❌ Désactivé'}
+                    </p>
+                    {checks.alerts.details.alerts && checks.alerts.details.alerts.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Alertes récentes:</p>
+                        {checks.alerts.details.alerts.map((alert: any, index: number) => (
+                          <div key={index} className="p-2 bg-muted rounded text-sm">
+                            <Badge variant={alert.severity === 'high' ? 'destructive' : 'secondary'}>
+                              {alert.severity}
+                            </Badge>
+                            <span className="ml-2">{alert.message}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </Layout>
   );
