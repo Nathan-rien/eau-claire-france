@@ -15,6 +15,7 @@ import DataWarmupBanner from '@/components/DataWarmupBanner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { listDistinctBrands, listActiveRetailers, hasData } from '@/services/dataStatsApi';
 import { computeFallbackPricePerL } from '@/lib/normalize';
+import { DataBanner } from '@/components/DataBanner';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
@@ -101,6 +102,10 @@ export default function PrixEaux() {
   const handleDataAvailable = () => {
     setShowDataBanner(false);
     // Reload page data when data becomes available
+    window.location.reload();
+  };
+
+  const refreshData = () => {
     window.location.reload();
   };
 
@@ -243,6 +248,8 @@ export default function PrixEaux() {
             Comparez les prix des eaux en bouteille dans toutes les enseignes. 
             Données mises à jour quotidiennement.
           </p>
+
+          <DataBanner onDataUpdate={refreshData} />
 
           {/* Data warmup banner */}
           {showDataBanner && <DataWarmupBanner onDataAvailable={handleDataAvailable} />}

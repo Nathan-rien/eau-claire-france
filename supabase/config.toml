@@ -1,5 +1,11 @@
 project_id = "xblogttmomuogdhmaztf"
 
+[functions.admin-diagnostic]
+verify_jwt = false
+
+[functions.admin-smoke]
+verify_jwt = false
+
 [functions.debug-health]
 verify_jwt = false
 

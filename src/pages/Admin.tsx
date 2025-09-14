@@ -8,6 +8,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Run, Retailer } from '@/types/pricing';
 // Server-side scraping removed from client
 import { BRAND_CONFIG } from '@/config/brands';
+import { AdminQuickStart } from '@/components/AdminQuickStart';
 
 export default function Admin() {
   const [runs, setRuns] = useState<(Run & { retailers: Retailer })[]>([]);
@@ -108,6 +109,8 @@ export default function Admin() {
 
   return (
     <div className="container mx-auto py-8 space-y-8">
+      <AdminQuickStart />
+      
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Administration - Scraping des prix</h1>
       </div>

@@ -14,6 +14,7 @@ import DataWarmupBanner from '@/components/DataWarmupBanner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { listDistinctBrands, listActiveRetailers, hasData } from '@/services/dataStatsApi';
 import { computeFallbackPricePerL } from '@/lib/normalize';
+import { DataBanner } from '@/components/DataBanner';
 
 interface ComparisonData {
   brand?: string;
@@ -224,6 +225,10 @@ export default function ComparateurPrix() {
     loadInitialData(); // Reload data when available
   };
 
+  const refreshData = () => {
+    loadInitialData();
+  };
+
   // Empty states
   const isSelectionEmpty = mode === 'brands' 
     ? !selectedBrand1 || !selectedBrand2
@@ -246,6 +251,8 @@ export default function ComparateurPrix() {
           <p className="text-muted-foreground mb-6">
             Comparez les prix entre marques ou entre enseignes pour trouver les meilleures offres.
           </p>
+
+          <DataBanner onDataUpdate={refreshData} />
 
           {/* Data warmup banner */}
           {showDataBanner && <DataWarmupBanner onDataAvailable={handleDataAvailable} />}
