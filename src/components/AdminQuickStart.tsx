@@ -154,39 +154,83 @@ export const AdminQuickStart = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Action Buttons */}
-        <div className="flex flex-wrap gap-2">
-          <Button 
-            onClick={runDiagnostic}
-            disabled={diagnosticLoading}
-            variant="outline"
-          >
-            {diagnosticLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Vérifier ma configuration
-          </Button>
-          
-          <Button 
-            onClick={runSmokeTest}
-            disabled={smokeLoading}
-            variant="default"
-          >
-            {smokeLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Remplir la base (Smoke test)
-          </Button>
-          
-          <Button 
-            onClick={refreshData}
-            disabled={refreshLoading}
-            variant="ghost"
-          >
-            {refreshLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="mr-2 h-4 w-4" />
-            )}
-            Rafraîchir l'UI
-          </Button>
-        </div>
+         {/* Action Buttons */}
+         <div className="flex flex-wrap gap-2">
+           <Button 
+             onClick={runDiagnostic}
+             disabled={diagnosticLoading}
+             variant="outline"
+           >
+             {diagnosticLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+             Vérifier ma configuration
+           </Button>
+           
+           <Button 
+             onClick={runSmokeTest}
+             disabled={smokeLoading}
+             variant="default"
+           >
+             {smokeLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+             Remplir la base (Smoke test)
+           </Button>
+
+           {/* Debug quick actions */}
+           <Button 
+             onClick={async () => {
+               try {
+                 const { data, error } = await supabase.functions.invoke('admin-scrape', { body: { retailer: 'carrefour', debug: true, headful: true } });
+                 if (error) throw error;
+                 toast({ title: 'Debug Carrefour', description: data.message || 'Terminé' });
+               } catch (e) {
+                 toast({ title: 'Erreur debug Carrefour', description: 'Impossible de lancer le debug', variant: 'destructive' });
+               }
+             }}
+             variant="secondary"
+           >
+             Scraper (debug) Carrefour
+           </Button>
+           <Button 
+             onClick={async () => {
+               try {
+                 const { data, error } = await supabase.functions.invoke('admin-scrape', { body: { retailer: 'auchan', debug: true, headful: true } });
+                 if (error) throw error;
+                 toast({ title: 'Debug Auchan', description: data.message || 'Terminé' });
+               } catch (e) {
+                 toast({ title: 'Erreur debug Auchan', description: 'Impossible de lancer le debug', variant: 'destructive' });
+               }
+             }}
+             variant="secondary"
+           >
+             Scraper (debug) Auchan
+           </Button>
+           <Button 
+             onClick={async () => {
+               try {
+                 const { data, error } = await supabase.functions.invoke('admin-scrape', { body: { retailer: 'leclerc', debug: true, headful: true } });
+                 if (error) throw error;
+                 toast({ title: 'Debug Leclerc', description: data.message || 'Terminé' });
+               } catch (e) {
+                 toast({ title: 'Erreur debug Leclerc', description: 'Impossible de lancer le debug', variant: 'destructive' });
+               }
+             }}
+             variant="secondary"
+           >
+             Scraper (debug) Leclerc
+           </Button>
+           
+           <Button 
+             onClick={refreshData}
+             disabled={refreshLoading}
+             variant="ghost"
+           >
+             {refreshLoading ? (
+               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+             ) : (
+               <RefreshCw className="mr-2 h-4 w-4" />
+             )}
+             Rafraîchir l'UI
+           </Button>
+         </div>
 
         {/* Diagnostic Results */}
         {diagnosticResult && (

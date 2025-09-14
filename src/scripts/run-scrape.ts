@@ -83,6 +83,9 @@ interface ScrapingConfig {
   dryRun?: boolean;
   smoke?: boolean;
   since?: string;
+  debug?: boolean;
+  slowMoMs?: number;
+  debugDir?: string;
 }
 
 export async function runScraping(config: ScrapingConfig) {
@@ -147,9 +150,13 @@ export async function runScraping(config: ScrapingConfig) {
           queries: brands,
           formats,
           maxPagesPerQuery: maxPages,
-          throttleMs,
-          retailerId: retailer.id
-        };
+           throttleMs,
+           retailerId: retailer.id,
+           debug: config.debug,
+           headful: config.headful,
+           slowMoMs: config.slowMoMs,
+           debugDir: config.debugDir,
+         };
 
         // Run scraping
         console.log(`Starting scrape with options:`, options);
@@ -314,6 +321,13 @@ export async function runScraping(config: ScrapingConfig) {
   }
   if (totalItemsSaved === 0) {
     console.error('SMOKE FAILED: 0 items saved. Check SERVICE_ROLE key, RLS policies, or selectors.');
+    try {
+      if ((defaultConfig.debug || (config.debug ?? false))) {
+        fs.mkdirSync('debug', { recursive: true });
+        fs.writeFileSync(path.join('debug', 'SMOKE_FAIL.txt'), `Retailers: ${finalConfig.retailers.join(', ')}\nBrands: ${finalConfig.brands.join(', ')}\nFormats: ${finalConfig.formats.join(', ')}\nSelectors: see scrapers config\n`, 'utf8');
+        console.log('Debug artifacts written to ./debug');
+      }
+    } catch {}
     process.exit(2);
   }
 }
@@ -374,16 +388,29 @@ Examples:
         config.throttleMs = parseInt(value);
         break;
       case '--headful':
-        config.headful = value === 'true';
+        config.headful = true;
+        i -= 1; // flag without value
         break;
       case '--dry-run':
-        config.dryRun = value === 'true';
+        config.dryRun = true;
+        i -= 1;
         break;
       case '--smoke':
-        config.smoke = value === 'true';
+        config.smoke = true;
+        i -= 1;
         break;
       case '--since':
         config.since = value;
+        break;
+      case '--debug':
+        config.debug = true;
+        i -= 1;
+        break;
+      case '--slowMo':
+        config.slowMoMs = parseInt(value);
+        break;
+      case '--debugDir':
+        config.debugDir = value;
         break;
       case '--help':
       case '-h':
@@ -395,13 +422,17 @@ Examples:
     }
   }
 
-  const defaultConfig: ScrapingConfig = {
-    retailers: ['carrefour', 'carrefour_market', 'auchan', 'leclerc', 'intermarche', 'coursesu', 'monoprix', 'casino', 'franprix', 'cora', 'match', 'chronodrive', 'houra'],
-    brands: BRAND_CONFIG.defaultQueries,
-    formats: BRAND_CONFIG.defaultFormats,
-    maxPages: 3,
-    throttleMs: 1000
-  };
+   const defaultConfig: ScrapingConfig = {
+     retailers: ['carrefour', 'carrefour_market', 'auchan', 'leclerc', 'intermarche', 'coursesu', 'monoprix', 'casino', 'franprix', 'cora', 'match', 'chronodrive', 'houra'],
+     brands: BRAND_CONFIG.defaultQueries,
+     formats: BRAND_CONFIG.defaultFormats,
+     maxPages: 3,
+     throttleMs: 1000,
+     debug: false,
+     headful: false,
+     slowMoMs: 0,
+     debugDir: './debug'
+   };
 
   const finalConfig = { ...defaultConfig, ...config };
 

@@ -28,21 +28,21 @@ class SimpleScraper {
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Return mock data
-    const mockItems = options.brands.map((brand, index) => ({
-      brand,
-      product_name: `${brand} ${options.format}`,
-      price_total_eur: 1.50 + (index * 0.25),
-      total_volume_l: options.format === '1,5 l' ? 1.5 : 0.5,
-      unit_volume_l: options.format === '1,5 l' ? 1.5 : 0.5,
-      pack_count: 1,
-      price_per_l_eur: null, // Will be calculated
-      is_promo: false,
-      availability: 'available',
-      url: `https://example.com/${brand.toLowerCase()}`,
-      image_url: null,
-      sku: `${brand}-${options.format}`,
-      promo_label: null,
-    }));
+      const mockItems = options.brands.map((brand, index) => ({
+        brand,
+        product_name: `${brand} ${options.format}`,
+        price_total_eur: 1.50 + (index * 0.25),
+        total_volume_l: options.format === '1,5 l' ? 1.5 : 0.5,
+        unit_volume_l: options.format === '1,5 l' ? 1.5 : 0.5,
+        pack_count: 1,
+        price_per_l_eur: null, // Will be calculated
+        is_promo: false,
+        availability: 'in_stock',
+        url: `https://example.com/${brand.toLowerCase()}`,
+        image_url: null,
+        sku: `${brand}-${options.format}`,
+        promo_label: null,
+      }));
 
     return mockItems;
   }

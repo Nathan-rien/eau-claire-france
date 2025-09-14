@@ -4,6 +4,11 @@ export interface ScrapeOptions {
   maxPagesPerQuery?: number;
   throttleMs?: number;
   retailerId: string;
+  // Debug options
+  debug?: boolean;
+  headful?: boolean;
+  slowMoMs?: number;
+  debugDir?: string;
 }
 
 export interface ScrapedItem {

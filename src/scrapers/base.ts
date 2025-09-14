@@ -1,6 +1,7 @@
 import { Page, Browser } from 'playwright';
 import { ScrapeOptions, ScrapeResult, ScrapedItem, RetailerSelectors } from './types';
 import { parsePrice } from '@/lib/normalize';
+// Debug helpers are dynamically imported where needed to keep browser bundle light
 
 export abstract class BaseScraper {
   protected abstract selectors: RetailerSelectors;
@@ -14,7 +15,7 @@ export abstract class BaseScraper {
 
     try {
       const { chromium } = await import('playwright');
-      const browser = await chromium.launch({ headless: true });
+      const browser = await chromium.launch({ headless: !(options.headful), slowMo: options.slowMoMs || 0 });
       
       try {
         for (const query of queries) {
@@ -39,9 +40,18 @@ export abstract class BaseScraper {
             }
           }
         }
-      } finally {
-        await browser.close();
-      }
+        // Category fallback if nothing found after all queries
+        if (items.length === 0) {
+          try {
+            const added = await this.scrapeCategoryFallback(browser, options);
+            items.push(...added);
+          } catch (e) {
+            console.error(`[${this.retailerName}] Category fallback failed`, e);
+          }
+        }
+       } finally {
+         await browser.close();
+       }
     } catch (error) {
       console.error(`[${this.retailerName}] Browser setup error:`, error);
       errors.push({
@@ -72,6 +82,17 @@ export abstract class BaseScraper {
       const searchUrl = this.searchUrl.replace('{query}', encodeURIComponent(query));
       await page.goto(searchUrl, { waitUntil: 'networkidle' });
 
+      // Consent cookies and store selection (best-effort)
+      try {
+        const { acceptCookies, ensureStoreSelected, capture } = await import('./helpers/debug');
+        // @ts-ignore options extended at runtime
+        await acceptCookies(page as any, this.retailerName, options as any);
+        // @ts-ignore options extended at runtime
+        await ensureStoreSelected(page as any, this.retailerName, options as any);
+        // @ts-ignore options extended at runtime
+        if ((options as any).debug) await capture(page as any, this.retailerName, options as any, `search-${query}-p1`);
+      } catch {}
+
       let currentPage = 1;
       
       while (currentPage <= maxPages) {
@@ -86,6 +107,14 @@ export abstract class BaseScraper {
           items.push(...pageItems);
 
           console.log(`[${this.retailerName}] Found ${pageItems.length} items on page ${currentPage}`);
+
+          try {
+            const { logMetric, capture } = await import('./helpers/debug');
+            // @ts-ignore options extended at runtime
+            await logMetric(this.retailerName, options as any, { step: `query-${query}-p${currentPage}`, foundCount: pageItems.length, url: page.url() });
+            // @ts-ignore options extended at runtime
+            if ((options as any).debug) await capture(page as any, this.retailerName, options as any, `search-${query}-p${currentPage}`);
+          } catch {}
 
           // Try to go to next page
           if (currentPage < maxPages && this.selectors.nextPage) {
@@ -215,4 +244,38 @@ export abstract class BaseScraper {
       return null;
     }
   }
-}
+
+  protected async scrapeCategoryFallback(browser: Browser, options: any) {
+    const items: ScrapedItem[] = [];
+    try {
+      const page = await browser.newPage();
+      try {
+        const { CATEGORY_FALLBACK } = await import('./config/categories');
+        const urlMap: Record<string, string> = CATEGORY_FALLBACK as any;
+        const retailerSlug = this.retailerName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const categoryUrl = urlMap[retailerSlug];
+        if (!categoryUrl) return items;
+        await page.goto(categoryUrl, { waitUntil: 'networkidle' });
+        try {
+          const { capture, logMetric } = await import('./helpers/debug');
+          // @ts-ignore
+          if (options?.debug) await capture(page as any, this.retailerName, options as any, 'category-fallback');
+          await logMetric(this.retailerName, options as any, { step: 'category-opened', url: page.url() });
+        } catch {}
+        await page.waitForSelector(this.selectors.productContainer, { timeout: 10000 }).catch(() => {});
+        const pageItems = await this.extractProducts(page);
+        items.push(...pageItems);
+      } finally {
+        await page.close();
+      }
+    } catch {}
+    // If still nothing, write NO_RESULTS report
+    try {
+      if (items.length === 0 && options?.debug) {
+        const { logMetric } = await import('./helpers/debug');
+        await logMetric(this.retailerName, options as any, { step: 'no-results' });
+      }
+    } catch {}
+    return items;
+  }
+ }

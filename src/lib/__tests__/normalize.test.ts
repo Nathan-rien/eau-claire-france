@@ -156,6 +156,11 @@ describe('computePricePerL', () => {
   test('handles null price', () => {
     expect(computePricePerL(null as any, 1.5)).toBeNull();
   });
+
+  test('fallback when price_per_l missing but total and volume present', () => {
+    // Using computePricePerL directly for sanity; full fallback tested elsewhere
+    expect(computePricePerL(3.75, 1.5)).toBe(2.5);
+  });
 });
 
 describe('generateUniqueHash', () => {
