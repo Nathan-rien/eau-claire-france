@@ -11,6 +11,7 @@ import { Price, Retailer } from '@/types/pricing';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import DataWarmupBanner from '@/components/DataWarmupBanner';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { listDistinctBrands, listActiveRetailers, hasData } from '@/services/dataStatsApi';
 import { computeFallbackPricePerL } from '@/lib/normalize';
 
@@ -38,6 +39,7 @@ export default function ComparateurPrix() {
   const [loading, setLoading] = useState(false);
   const [showDataBanner, setShowDataBanner] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string | null>(null);
+  const [noActiveRetailers, setNoActiveRetailers] = useState(false);
 
   useEffect(() => {
     loadInitialData();
@@ -51,6 +53,7 @@ export default function ComparateurPrix() {
       if (dataStats.lastScrapeAt) {
         setLastUpdate(dataStats.lastScrapeAt);
       }
+      setNoActiveRetailers((dataStats as any).activeRetailersCount === 0);
       
       // Ne pas bloquer le chargement des listes même si la base semble vide
       // Cela permet de diagnostiquer un éventuel problème de scraping/RLS
@@ -246,6 +249,16 @@ export default function ComparateurPrix() {
 
           {/* Data warmup banner */}
           {showDataBanner && <DataWarmupBanner onDataAvailable={handleDataAvailable} />}
+
+          {/* No active retailers banner */}
+          {noActiveRetailers && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertTitle>Aucune enseigne active visible</AlertTitle>
+              <AlertDescription>
+                Vérifiez le seed des enseignes et les politiques RLS.
+              </AlertDescription>
+            </Alert>
+          )}
 
           {/* Sélection du mode */}
           <Tabs value={mode} onValueChange={(value) => setMode(value as 'brands' | 'retailers')}>

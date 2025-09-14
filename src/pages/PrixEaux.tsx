@@ -12,6 +12,7 @@ import { Price, Retailer, PriceFilters, PaginatedResponse } from '@/types/pricin
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import DataWarmupBanner from '@/components/DataWarmupBanner';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { listDistinctBrands, listActiveRetailers, hasData } from '@/services/dataStatsApi';
 import { computeFallbackPricePerL } from '@/lib/normalize';
 
@@ -28,6 +29,7 @@ export default function PrixEaux() {
   const [brands, setBrands] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDataBanner, setShowDataBanner] = useState(false);
+  const [noActiveRetailers, setNoActiveRetailers] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     pageSize: 50,
@@ -73,12 +75,8 @@ export default function PrixEaux() {
         // Vérifier si la base a des données
         const dataStats = await hasData();
         setShowDataBanner(!dataStats.hasPrices);
+        setNoActiveRetailers((dataStats as any).activeRetailersCount === 0);
         
-        if (!dataStats.hasPrices) {
-          setLoading(false);
-          return; // Ne pas charger les listes si pas de données
-        }
-
         // Charger les enseignes actives
         const retailersData = await listActiveRetailers();
         setRetailers(retailersData as Retailer[]);
@@ -248,6 +246,16 @@ export default function PrixEaux() {
 
           {/* Data warmup banner */}
           {showDataBanner && <DataWarmupBanner onDataAvailable={handleDataAvailable} />}
+
+          {/* No active retailers banner */}
+          {noActiveRetailers && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertTitle>Aucune enseigne active visible</AlertTitle>
+              <AlertDescription>
+                Vérifiez le seed des enseignes et les politiques RLS.
+              </AlertDescription>
+            </Alert>
+          )}
 
           {/* Filtres */}
           <Card className="p-6 mb-6">

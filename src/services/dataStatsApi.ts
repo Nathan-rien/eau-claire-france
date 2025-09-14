@@ -5,6 +5,7 @@ export interface DataStats {
   hasPrices: boolean;
   totalPrices: number;
   lastScrapeAt?: string;
+  activeRetailersCount?: number;
 }
 
 export const hasData = async (): Promise<DataStats> => {
@@ -15,6 +16,7 @@ export const hasData = async (): Promise<DataStats> => {
     hasPrices: (stats?.prices_count || 0) > 0,
     totalPrices: stats?.prices_count || 0,
     lastScrapeAt: stats?.last_scraped_at || undefined,
+    activeRetailersCount: stats?.active_retailers_count || 0,
   };
 };
 
