@@ -322,9 +322,9 @@ export async function runScraping(config: ScrapingConfig) {
   if (totalItemsSaved === 0) {
     console.error('SMOKE FAILED: 0 items saved. Check SERVICE_ROLE key, RLS policies, or selectors.');
     try {
-      if ((defaultConfig.debug || (config.debug ?? false))) {
+      if (config.debug ?? false) {
         fs.mkdirSync('debug', { recursive: true });
-        fs.writeFileSync(path.join('debug', 'SMOKE_FAIL.txt'), `Retailers: ${finalConfig.retailers.join(', ')}\nBrands: ${finalConfig.brands.join(', ')}\nFormats: ${finalConfig.formats.join(', ')}\nSelectors: see scrapers config\n`, 'utf8');
+        fs.writeFileSync(path.join('debug', 'SMOKE_FAIL.txt'), `Retailers: ${config.retailers.join(', ')}\nBrands: ${config.brands.join(', ')}\nFormats: ${config.formats.join(', ')}\nSelectors: see scrapers config\n`, 'utf8');
         console.log('Debug artifacts written to ./debug');
       }
     } catch {}
