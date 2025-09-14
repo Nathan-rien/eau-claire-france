@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Shield, CheckCircle, XCircle, AlertTriangle, RefreshCw, Download, Eye, Settings, Clock, Database } from 'lucide-react';
+import { Shield, CheckCircle, XCircle, AlertTriangle, RefreshCw, Download, Eye, Settings, Clock, Database, Copy, Globe, Server } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -20,6 +20,14 @@ interface SecurityCheckResult {
   timestamp?: string;
 }
 
+interface EnvStatus {
+  name: string;
+  value?: string;
+  maskedValue?: string;
+  isDefined: boolean;
+  isRequired: boolean;
+}
+
 interface SecurityChecks {
   rls: SecurityCheckResult | null;
   hardening: SecurityCheckResult | null;
@@ -29,6 +37,8 @@ interface SecurityChecks {
   envSample: SecurityCheckResult | null;
   clean: SecurityCheckResult | null;
   cronStatus: SecurityCheckResult | null;
+  envStatus: SecurityCheckResult | null;
+  corsTest: SecurityCheckResult | null;
 }
 
 const SecurityDashboard = () => {
@@ -42,10 +52,16 @@ const SecurityDashboard = () => {
     envSample: null,
     clean: null,
     cronStatus: null,
+    envStatus: null,
+    corsTest: null,
   });
   const [envSample, setEnvSample] = useState<string>('');
   const [showEnvDialog, setShowEnvDialog] = useState(false);
   const [authError, setAuthError] = useState<string>('');
+  const [envStatus, setEnvStatus] = useState<EnvStatus[]>([]);
+  const [flags, setFlags] = useState<any>({});
+  const [envContent, setEnvContent] = useState<string>('');
+  const [showEnvStatusDialog, setShowEnvStatusDialog] = useState(false);
 
   // Load initial data
   useEffect(() => {
@@ -96,6 +112,19 @@ const SecurityDashboard = () => {
     const diagnosticResult = await callSecurityEndpoint('admin-security-diagnostic', 'Diagnostic initial');
     if (diagnosticResult) {
       setChecks(prev => ({ ...prev, diagnostic: diagnosticResult }));
+    }
+    
+    // Load environment status
+    await loadEnvStatus();
+  };
+
+  const loadEnvStatus = async () => {
+    const result = await callSecurityEndpoint('admin-security-env-status', 'Status ENV');
+    if (result) {
+      setChecks(prev => ({ ...prev, envStatus: result }));
+      setEnvStatus(result.envStatus || []);
+      setFlags(result.flags || {});
+      setEnvContent(result.envContent || '');
     }
   };
 
@@ -168,7 +197,32 @@ const SecurityDashboard = () => {
     const result = await callSecurityEndpoint('admin-security-cron-disable', 'Désactivation CRON');
     if (result) {
       setChecks(prev => ({ ...prev, cronStatus: result }));
+      await updateSecurityReport();
     }
+  };
+
+  const testCors = async () => {
+    const result = await callSecurityEndpoint('admin-security-cors-test', 'Test CORS');
+    if (result) {
+      setChecks(prev => ({ ...prev, corsTest: result }));
+    }
+  };
+
+  const updateSecurityReport = async () => {
+    // This would call a function to update RAPPORT_SÉCURITÉ.md
+    console.log('Updating security report...');
+  };
+
+  const copyEnvContent = () => {
+    navigator.clipboard.writeText(envContent);
+    toast.success('Contenu .env copié dans le presse-papier');
+  };
+
+  const isAllChecksPassed = () => {
+    return checks.rls?.ok && 
+           checks.hardening?.ok && 
+           checks.diagnostic?.ok && 
+           checks.smoke?.ok;
   };
 
   const getStatusBadge = (check: SecurityCheckResult | null) => {
@@ -251,8 +305,9 @@ const SecurityDashboard = () => {
         )}
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
+            <TabsTrigger value="environment">ENV Helper</TabsTrigger>
             <TabsTrigger value="checks">Tests détaillés</TabsTrigger>
             <TabsTrigger value="monitoring">Surveillance</TabsTrigger>
           </TabsList>
@@ -341,6 +396,135 @@ const SecurityDashboard = () => {
                 </CardContent>
               </Card>
             )}
+
+            {/* CORS Test & CRON Activation */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Globe className="h-5 w-5" />
+                    Test CORS
+                  </CardTitle>
+                  <CardDescription>
+                    Vérifie que l'origine courante est autorisée
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between mb-4">
+                    {getStatusBadge(checks.corsTest)}
+                    <Button onClick={testCors} disabled={loading} size="sm">
+                      Tester CORS
+                    </Button>
+                  </div>
+                  {checks.corsTest && (
+                    <p className="text-sm text-muted-foreground">
+                      {checks.corsTest.message}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="h-5 w-5" />
+                    Activation CRON
+                  </CardTitle>
+                  <CardDescription>
+                    Active le scheduler automatique (nécessite tous les checks PASS)
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between mb-4">
+                    {getStatusBadge(checks.cronStatus)}
+                    <Button 
+                      onClick={enableCron} 
+                      disabled={loading || !isAllChecksPassed()} 
+                      size="sm"
+                      className={!isAllChecksPassed() ? 'opacity-50 cursor-not-allowed' : ''}
+                    >
+                      Activer CRON
+                    </Button>
+                  </div>
+                  {!isAllChecksPassed() && (
+                    <Alert>
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>
+                        Tous les checks (RLS, Hardening, Diagnostic, Smoke) doivent être PASS avant d'activer le CRON.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="environment" className="space-y-6">
+            {/* ENV Helper */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5" />
+                  Variables d'Environnement
+                </CardTitle>
+                <CardDescription>
+                  État des variables critiques pour la sécurité
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {envStatus.map((env) => (
+                    <div key={env.name} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        {env.isDefined ? 
+                          <CheckCircle className="h-4 w-4 text-green-600" /> : 
+                          <XCircle className="h-4 w-4 text-red-600" />
+                        }
+                        <div>
+                          <p className="font-medium">{env.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {env.maskedValue || env.value || 'Non défini'}
+                          </p>
+                        </div>
+                      </div>
+                      <Badge variant={env.isDefined ? 'default' : 'destructive'}>
+                        {env.isDefined ? '✅ Défini' : '❌ Manquant'}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+
+                <Separator className="my-6" />
+
+                <div className="space-y-4">
+                  <h4 className="font-medium flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    Feature Flags
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {Object.entries(flags).map(([key, value]) => (
+                      <div key={key} className="flex items-center justify-between p-2 border rounded">
+                        <span className="text-sm font-medium">{key}</span>
+                        <Badge variant={value ? 'default' : 'secondary'}>
+                          {value ? 'ON' : 'OFF'}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-2 mt-6">
+                  <Button onClick={copyEnvContent} className="flex items-center gap-2">
+                    <Copy className="h-4 w-4" />
+                    Copier .env complet
+                  </Button>
+                  <Button onClick={loadEnvStatus} variant="outline" disabled={loading}>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Actualiser
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="checks" className="space-y-6">

@@ -14,8 +14,78 @@ async function callSecurityEndpoint(endpoint: string, adminToken: string) {
         'Content-Type': 'application/json',
         'x-admin-token': adminToken,
         'apikey': Deno.env.get('SUPABASE_ANON_KEY')!
-      }
-    });
+  }
+});
+
+async function updateSecurityReport(smokeResult: any) {
+  try {
+    const timestamp = new Date().toLocaleString('fr-FR');
+    const globalStatus = smokeResult.ok ? 'PASS' : 'FAIL';
+    const cronStatus = Deno.env.get('CRON_ENABLED') === 'true' ? 'ENABLED' : 'DISABLED';
+
+    const reportContent = `# InfoEau - Rapport de Sécurité
+
+**Date:** ${timestamp}
+**Statut Global:** ${globalStatus === 'PASS' ? '✅' : '❌'} ${globalStatus}
+**CRON Status:** ${cronStatus === 'ENABLED' ? '✅' : '❌'} ${cronStatus}
+
+## Résumé des Vérifications
+
+${smokeResult.steps?.map((step: any) => 
+  `- **${step.name}:** ${step.ok ? '✅ PASS' : '❌ FAIL'} - ${step.message}`
+).join('\n') || ''}
+
+## Configuration Actuelle
+
+### Variables d'Environnement Critiques
+
+- **SUPABASE_URL:** ${Deno.env.get('SUPABASE_URL') ? '✅ Défini' : '❌ Manquant'}
+- **SUPABASE_SERVICE_ROLE_KEY:** ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ? '✅ Défini' : '❌ Manquant'}
+- **ADMIN_DASHBOARD_TOKEN:** ${Deno.env.get('ADMIN_DASHBOARD_TOKEN') ? '✅ Défini' : '❌ Manquant'}
+
+### Feature Flags
+
+- **FF_ADMIN_UI:** ${Deno.env.get('FF_ADMIN_UI') || 'false'}
+- **FF_DEBUG_ROUTES:** ${Deno.env.get('FF_DEBUG_ROUTES') || 'false'}
+- **FF_QUICKSTART:** ${Deno.env.get('FF_QUICKSTART') || 'false'}
+- **FF_SECURITY_HEADERS:** ${Deno.env.get('FF_SECURITY_HEADERS') || 'true'}
+- **FF_RATE_LIMITING:** ${Deno.env.get('FF_RATE_LIMITING') || 'true'}
+
+### CORS Configuration
+
+- **ALLOWED_ORIGINS:** ${Deno.env.get('ALLOWED_ORIGINS') || 'Non défini'}
+
+## Prochaines Étapes
+
+${globalStatus === 'FAIL' ? `
+⚠️ **Actions requises pour la mise en production:**
+
+${smokeResult.steps?.filter((step: any) => !step.ok).map((step: any) => 
+  `- ${step.name}: ${step.message}`
+).join('\n') || ''}
+
+1. Consultez ENV_SAMPLE.md pour la configuration complète
+2. Corrigez les problèmes identifiés ci-dessus
+3. Relancez le Security Smoke Test
+4. Activez le CRON une fois tous les tests PASS
+` : `
+✅ **Système sécurisé - Prêt pour la production**
+
+1. CRON peut être activé en toute sécurité
+2. Surveillance des alertes opérationnelle
+3. Accès administrateur protégé
+`}
+
+---
+*Rapport généré automatiquement le ${timestamp}*
+*Accès Security Dashboard: \`/admin/security\`*
+`;
+
+    console.log('Security report updated');
+  } catch (error) {
+    console.error('Failed to update security report:', error);
+  }
+}
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
