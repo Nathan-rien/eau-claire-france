@@ -25,7 +25,7 @@ const Navigation = () => {
   const directNavigationItems = [
     { href: '/diagnostic', label: 'Diagnostic' },
     { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
-    { href: '/bouteilles', label: 'Robinet vs bouteilles' },
+    
     { href: '/comparatif-bouteilles', label: 'Comparatif' },
     { href: '/classement', label: 'Classement' },
     { href: '/polluants', label: 'Polluants' },

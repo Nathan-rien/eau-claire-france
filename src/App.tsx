@@ -21,7 +21,7 @@ const CartePolluants = React.lazy(() => import("./pages/CartePolluants"));
 const SourcesEau = React.lazy(() => import("./pages/SourcesEau"));
 const Alertes = React.lazy(() => import("./pages/Alertes"));
 const Diagnostic = React.lazy(() => import("./pages/Diagnostic"));
-const Bouteilles = React.lazy(() => import("./pages/Bouteilles"));
+
 const ComparatifBouteilles = React.lazy(() => import("./pages/ComparatifBouteilles"));
 const LazyWaterRecommendation = React.lazy(() => import("@/components/LazyWaterRecommendation"));
 const Classement = React.lazy(() => import("./pages/Classement"));
@@ -85,7 +85,7 @@ const App = () => {
                 <Route path="/sources-eau" element={<SourcesEau />} />
                 <Route path="/alertes" element={<Alertes />} />
                 <Route path="/diagnostic" element={<Diagnostic />} />
-                <Route path="/bouteilles" element={<Bouteilles />} />
+                
                 <Route path="/comparatif-bouteilles" element={<ComparatifBouteilles />} />
                 <Route path="/quelle-eau-boire" element={<LazyWaterRecommendation />} />
                 <Route path="/classement" element={<Classement />} />
