@@ -375,7 +375,7 @@ export default function PrixEaux() {
           ) : showDataBanner ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
-                Aucune donnée disponible. Lancez le smoke test ci-dessus pour commencer.
+                Aucune donnée disponible. Les données de prix sont mises à jour périodiquement.
               </p>
             </div>
           ) : prices.length === 0 ? (

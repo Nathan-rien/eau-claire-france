@@ -1,150 +1,150 @@
-# Production Checklist - Bottle Water Pricing
+# Production Checklist
 
-## Pre-Production Validation ✅
+Ce checklist garantit que l'application est sécurisée et prête pour la production.
 
-### 1. CLI Harmonization
-- [ ] ✅ All flags in English only: `--retailers`, `--brands`, `--formats`, `--maxPages`, `--headful`, `--since`, `--dry-run`, `--smoke`
-- [ ] ✅ No French variants remaining in code
-- [ ] ✅ Help command updated: `pnpm scrape --help`
-- [ ] ✅ Documentation consistent across README_PRICING.md and README_PHASE2.md
+## 🔒 Sécurité - Configuration
 
-### 2. Validation Pipeline
-- [ ] ✅ Smoke test command: `pnpm scrape --retailers carrefour,auchan,leclerc --brands evian,cristaline --formats "1,5 l" --maxPages 1`
-- [ ] ✅ Extended test command: `pnpm scrape --retailers carrefour,auchan,leclerc,intermarche,coursesu,monoprix --brands evian,cristaline,volvic --formats "50 cl,1 l,1,5 l" --maxPages 2`
-- [ ] ✅ Quality analysis with proper thresholds (score > 0.8)
-- [ ] ✅ CSV export verification (latest + history)
-- [ ] ✅ Automated cron activation only on PASS
+### Environment Variables
+- [ ] `VITE_SUPABASE_URL` configuré avec l'URL de production Supabase
+- [ ] `VITE_SUPABASE_ANON_KEY` configuré avec la clé publique
+- [ ] `SUPABASE_SERVICE_ROLE_KEY` configuré côté serveur uniquement
+- [ ] `ADMIN_DASHBOARD_TOKEN` généré et sécurisé (côté serveur)
+- [ ] Aucune variable secrète dans les variables `VITE_*`
 
-### 3. UX & Admin Pages
-- [ ] ✅ `/prix-eaux`: Persistent filters via URL, server-side sorting (€/L asc, date desc), "Promo" badges, "Maj" column (DD/MM HH:MM)
-- [ ] ✅ `/marque/:slug`: Timeseries API, period selector (7/30 days), recent prices by retailer
-- [ ] ✅ `/comparateur-prix`: 2 brands/2 retailers modes, min/median/max €/L, loading states
-- [ ] ✅ `/admin/quality`: Anomalies list, outliers detection, unknown brands, quality score summary, CSV export
+### Feature Flags de Production
+- [ ] `FF_ADMIN_UI=false` (sauf si admin requis)
+- [ ] `FF_DEBUG_ROUTES=false` 
+- [ ] `FF_QUICKSTART=false`
+- [ ] `FF_SECURITY_HEADERS=true`
+- [ ] `FF_RATE_LIMITING=true`
+- [ ] `FF_AUDIT_LOGGING=true`
+- [ ] `CRON_ENABLED=false` (activation manuelle après tests)
 
-### 4. CSV Auto-Export
-- [ ] ✅ After each successful run: `exports/prices_latest.csv`
-- [ ] ✅ Daily history: `exports/prices_history_YYYYMMDD.csv`
-- [ ] ✅ UTF-8 encoding, decimal separator ".", comma separator ","
-- [ ] ✅ Exact headers: `retailer,brand,product_name,pack_count,unit_volume_l,total_volume_l,price_total_eur,price_per_l_eur,is_promo,promo_label,availability,sku,url,scraped_at`
+## 🛡️ Sécurité - Base de données
 
-### 5. E2E Tests & Fixtures
-- [ ] ✅ Fixtures: `fixtures/{carrefour,auchan,leclerc}/search_eau_1_5l.html`
-- [ ] ✅ E2E test: Load fixture → normalize → quality check → CSV export
-- [ ] ✅ Extended normalize tests: parseFormat, parseEuro, guessBrand variants
-- [ ] ✅ Tests pass: `npm test`
+### RLS Policies
+- [ ] `retailers` : lecture publique, écriture service role uniquement
+- [ ] `prices` : lecture publique, écriture service role uniquement
+- [ ] `prices_history` : lecture publique limitée à 90 jours
+- [ ] `runs` : lecture publique limitée à 30 jours, écriture service role
+- [ ] `audit_logs` : accès service role uniquement
+- [ ] `rate_limits` : accès service role uniquement
 
-### 6. Documentation
-- [ ] ✅ README_PRICING.md: Updated with validation pipeline
-- [ ] ✅ README_PHASE2.md: Production activation procedures  
-- [ ] ✅ docs/CRON_SETUP.md: Complete scheduler documentation
-- [ ] ✅ docs/SELECTORS.md: Selector methodology and fallbacks
-- [ ] ✅ INCIDENT_RUNBOOK.md: Emergency procedures and escalation
-
----
-
-## Production Deployment 🚀
-
-### Step 1: Execute Validation Pipeline
+### Tests RLS
 ```bash
-node src/scripts/validation-pipeline.ts
+npm run rls:check
 ```
+- [ ] Toutes les politiques testées et validées
+- [ ] Accès anonyme correctement restreint
+- [ ] Accès service role fonctionnel
 
-**Expected Output:**
-- ✅ Smoke Test: 2/3 retailers successful, error rate < 30%
-- ✅ Extended Test: 4/6 retailers successful, quality score > 0.8
-- ✅ Quality Check: Overall quality > 0.7
-- ✅ CSV Export: Both latest and history files generated
-- ✅ Cron Activation: Configured for active retailers only
-- ✅ Overall Status: **PASS**
+## 🌐 Sécurité - Web
 
-### Step 2: Verify VALIDATION_REPORT.md
+### Headers HTTP
+- [ ] `Content-Security-Policy` configuré
+- [ ] `X-Frame-Options: DENY`
+- [ ] `X-Content-Type-Options: nosniff`
+- [ ] `Referrer-Policy: strict-origin-when-cross-origin`
+- [ ] `Strict-Transport-Security` (si HTTPS)
+- [ ] `Permissions-Policy` restrictif
+
+### CORS
+- [ ] Origines limitées aux domaines autorisés
+- [ ] Pas de wildcard `*` en production
+- [ ] Headers autorisés minimaux
+
+### Robots & Indexation
+- [ ] `robots.txt` interdit `/admin/`, `/api/`, `/debug/`, `/exports/`
+- [ ] Pages admin avec `<meta name="robots" content="noindex,nofollow">`
+- [ ] Sitemap mis à jour sans pages sensibles
+
+## 🔐 Accès & Authentication
+
+### Routes Admin
+- [ ] `/admin/*` protégé par `AdminGuard`
+- [ ] `/api/admin/*` exige auth + rôle admin
+- [ ] `/api/debug/*` exige auth (sauf `/debug/health` si flag activé)
+- [ ] Rate limiting : 60 req/min public, 600 req/min admin
+
+### Interface Utilisateur
+- [ ] QuickStart masqué si `FF_QUICKSTART=false`
+- [ ] Boutons debug/smoke masqués en production
+- [ ] Messages d'erreur non techniques pour utilisateurs finaux
+
+## 🧹 Nettoyage
+
+### Artefacts de développement
 ```bash
-cat VALIDATION_REPORT.md
+npm run clean:artifacts
 ```
+- [ ] Dossier `debug/` supprimé
+- [ ] Dossier `exports/` supprimé
+- [ ] Fichiers `*.log` supprimés
+- [ ] `SMOKE_RESULT.json` supprimé
+- [ ] `coverage.json` supprimé
 
-**Must Show:**
-- Overall Status: ✅ PASS
-- Summary metrics within acceptable ranges
-- All validation steps marked as ✅ PASS
-- Production readiness confirmed
+### Code
+- [ ] `console.log` verbeux remplacés par debug conditionnel
+- [ ] Pas de secrets hardcodés
+- [ ] Source maps désactivées ou non exposées
+- [ ] Dependencies de dev exclues du bundle
 
-### Step 3: Manual Verification (Optional)
+## 📊 Monitoring & Logs
+
+### Audit Logging
+- [ ] Events de sécurité loggués (tentatives d'accès admin)
+- [ ] Rate limiting violations tracées
+- [ ] IPs suspectes identifiées
+- [ ] Logs structurés et exploitables
+
+### Performance
+- [ ] Rate limiting testé sous charge
+- [ ] Métriques d'usage collectées
+- [ ] Alertes configurées pour incidents
+
+## 🚀 Déploiement
+
+### Build
 ```bash
-# Test public pages
-curl -s "http://localhost:5173/prix-eaux" | grep -q "prix"
-curl -s "http://localhost:5173/marque/evian" | grep -q "evian"
-curl -s "http://localhost:5173/admin/quality" | grep -q "quality"
-
-# Check CSV exports
-ls -la exports/prices_latest.csv
-ls -la exports/prices_history_$(date +%Y%m%d).csv
+npm run build
+npm run harden:check
 ```
+- [ ] Build sans erreurs
+- [ ] Validation de sécurité passée
+- [ ] Bundle size optimisé
+- [ ] Pas de leak de variables serveur
 
-### Step 4: Production Activation (Automatic)
-If validation pipeline shows **PASS**, cron jobs are automatically configured.
+### Tests
+- [ ] Tests unitaires passent
+- [ ] Tests d'intégration passent
+- [ ] Tests de sécurité passent
+- [ ] Smoke tests en environnement staging
 
-**Manual override (if needed):**
-```bash
-# Activate cron schedule
-node src/scripts/cron-scheduler.ts run
+### Post-déploiement
+- [ ] Health check `/api/debug/health` répond 200
+- [ ] Pages publiques accessibles
+- [ ] Pages admin inaccessibles sans auth
+- [ ] CRON désactivé par défaut
+- [ ] Monitoring opérationnel
 
-# Pause specific retailer if issues
-node src/scripts/cron-scheduler.ts pause <retailer-slug>
-```
+## ⚡ Activation Cron (Optionnel)
 
----
+Si l'automatisation de scraping est requise :
+- [ ] Tests manuels complets sur tous retailers
+- [ ] `CRON_ENABLED=true` 
+- [ ] Surveillance des runs automatiques
+- [ ] Plan de rollback en cas d'incident
 
-## Post-Production Monitoring 📊
+## 🆘 Incident Response
 
-### Daily Health Checks
-1. **Check validation status:** `cat VALIDATION_REPORT.md`
-2. **Monitor runs:** Visit [/admin/runs](/admin/runs)
-3. **Review quality:** Visit [/admin/quality](/admin/quality)
-4. **Verify exports:** `ls -la exports/prices_*$(date +%Y%m%d)*`
-
-### Key Metrics to Monitor
-- **Success Rate:** > 70% per retailer
-- **Quality Score:** > 0.7 overall  
-- **CSV Exports:** Generated daily
-- **Error Rate:** < 30% per retailer
-- **Response Time:** < 5min per retailer
-
-### Alert Conditions
-- ❌ **Critical:** 0 items found for > 2 hours
-- ⚠️ **Warning:** Error rate > 50% for single retailer  
-- ℹ️ **Info:** Quality score < 0.8
+- [ ] Procédure de désactivation rapide du cron
+- [ ] Contacts techniques identifiés
+- [ ] Logs d'audit consultables
+- [ ] Capacité de bloquer IPs suspectes
 
 ---
 
-## Incident Response 🚨
+**Statut** : ⏳ En cours | ✅ Validé | ❌ Échec
 
-### Quick Reference
-- **Pause retailer:** `node src/scripts/cron-scheduler.ts pause <slug>`
-- **Resume retailer:** `node src/scripts/cron-scheduler.ts resume <slug>`
-- **Debug mode:** `pnpm scrape --retailers <slug> --brands evian --formats "1 l" --maxPages 1 --headful`
-- **Re-validate:** `node src/scripts/validation-pipeline.ts`
-
-### Emergency Contacts
-- **Technical Issues:** Check INCIDENT_RUNBOOK.md
-- **Selector Updates:** See docs/SELECTORS.md
-- **Admin Dashboard:** [/admin/runs](/admin/runs)
-- **Quality Dashboard:** [/admin/quality](/admin/quality)
-
----
-
-## Success Criteria Met ✅
-
-- [x] **CLI harmonized** (English flags only)
-- [x] **Validation pipeline** operational
-- [x] **Public UX** finalized (filters, sorting, badges)
-- [x] **Admin quality** monitoring active
-- [x] **CSV exports** automated (latest + history)
-- [x] **E2E tests** with fixtures
-- [x] **Cron scheduling** with auto-activation
-- [x] **Documentation** complete
-- [x] **Incident procedures** documented
-
-**🎉 SYSTEM READY FOR PRODUCTION 🎉**
-
----
-*Generated: 2024-12-10 | Status: PRODUCTION READY*
+**Dernière mise à jour** : $(date)
+**Validé par** : _______________

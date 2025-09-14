@@ -160,10 +160,10 @@ export default function DiagnosticPrix() {
           </CardContent>
         </Card>
 
-        {/* Console logs */}
+        {/* Informations système */}
         <Card>
           <CardHeader>
-            <CardTitle>🔍 Debug Info</CardTitle>
+            <CardTitle>🔍 Informations système</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-sm text-muted-foreground">
