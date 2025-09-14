@@ -16,13 +16,17 @@ User-agent: Bingbot
 Allow: /
 Crawl-delay: 1
 
-# Block sensitive areas
+# Block sensitive areas and admin access
 Disallow: /login
 Disallow: /dashboard
 Disallow: /api/
 Disallow: /admin/
+Disallow: /debug/
+Disallow: /exports/
 Disallow: /_/
 Disallow: /tmp/
+Disallow: /*.log$
+Disallow: /*.json$
 
 # Allow all public pages and images
 Allow: /carte

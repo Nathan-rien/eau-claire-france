@@ -9,6 +9,9 @@ import { Run, Retailer } from '@/types/pricing';
 // Server-side scraping removed from client
 import { BRAND_CONFIG } from '@/config/brands';
 import { AdminQuickStart } from '@/components/AdminQuickStart';
+import { AdminGuard, QuickStartGuard } from '@/components/SecurityGuard';
+import { getMetaSecurityTags } from '@/utils/securityHeaders';
+import { Helmet } from 'react-helmet-async';
 
 export default function Admin() {
   const [runs, setRuns] = useState<(Run & { retailers: Retailer })[]>([]);
@@ -108,8 +111,17 @@ export default function Admin() {
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      <AdminQuickStart />
+    <AdminGuard>
+      <Helmet>
+        <title>Administration - InfoEau</title>
+        {getMetaSecurityTags(true).map((tag, index) => (
+          <meta key={index} {...tag} />
+        ))}
+      </Helmet>
+      <div className="container mx-auto py-8 space-y-8">
+        <QuickStartGuard>
+          <AdminQuickStart />
+        </QuickStartGuard>
       
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Administration - Scraping des prix</h1>
@@ -197,6 +209,7 @@ export default function Admin() {
           </Table>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </AdminGuard>
   );
 }
