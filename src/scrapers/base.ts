@@ -143,6 +143,100 @@ export abstract class BaseScraper {
     return items;
   }
 
+  /**
+   * Paginate by clicking next links
+   */
+  protected async paginateByLink(
+    page: Page,
+    nextSelectors: string[],
+    maxPages: number = 5
+  ): Promise<void> {
+    let currentPage = 1;
+    
+    while (currentPage < maxPages) {
+      // Try each next selector
+      let nextClicked = false;
+      
+      for (const selector of nextSelectors) {
+        try {
+          const nextButton = await page.$(selector);
+          if (nextButton) {
+            const isDisabled = await nextButton.evaluate(el => 
+              el.hasAttribute('disabled') || 
+              el.classList.contains('disabled') ||
+              el.getAttribute('aria-disabled') === 'true'
+            );
+            
+            if (!isDisabled) {
+              await nextButton.click();
+              await page.waitForLoadState('networkidle');
+              await page.waitForTimeout(1000); // Simple delay
+              nextClicked = true;
+              break;
+            }
+          }
+        } catch (error) {
+          // Try next selector
+          continue;
+        }
+      }
+      
+      if (!nextClicked) {
+        console.log('No more pages available');
+        break;
+      }
+      
+      currentPage++;
+      // Debug capture would go here if needed
+    }
+  }
+
+  /**
+   * Paginate by infinite scroll
+   */
+  protected async paginateByScroll(
+    page: Page,
+    options: {
+      iterations?: number;
+      waitMs?: number;
+      sentinel?: string;
+    } = {}
+  ): Promise<void> {
+    const { iterations = 8, waitMs = 1200, sentinel } = options;
+    
+    for (let i = 0; i < iterations; i++) {
+      const previousHeight = await page.evaluate(() => document.body.scrollHeight);
+      
+      // Scroll to bottom
+      await page.evaluate(() => {
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+      
+      // Wait for content to load
+      await page.waitForTimeout(waitMs);
+      
+      // Check if new content loaded
+      const newHeight = await page.evaluate(() => document.body.scrollHeight);
+      
+      // If sentinel exists, check for it
+      if (sentinel) {
+        const sentinelExists = await page.$(sentinel);
+        if (!sentinelExists) {
+          console.log('Sentinel not found, stopping scroll');
+          break;
+        }
+      }
+      
+      // If height didn't change, no more content
+      if (newHeight === previousHeight) {
+        console.log('No more content to load');
+        break;
+      }
+      
+      // Debug capture would go here if needed
+    }
+  }
+
   protected async extractProducts(page: Page): Promise<ScrapedItem[]> {
     const products = await page.$$(this.selectors.productContainer);
     const items: ScrapedItem[] = [];
