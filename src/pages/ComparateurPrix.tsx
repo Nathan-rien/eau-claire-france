@@ -52,9 +52,9 @@ export default function ComparateurPrix() {
         setLastUpdate(dataStats.lastScrapeAt);
       }
       
-      if (!dataStats.hasPrices) {
-        return; // Ne pas charger les listes si pas de données
-      }
+      // Ne pas bloquer le chargement des listes même si la base semble vide
+      // Cela permet de diagnostiquer un éventuel problème de scraping/RLS
+
 
       // Charger les marques depuis la base
       const brandsData = await listDistinctBrands();
