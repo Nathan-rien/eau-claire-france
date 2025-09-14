@@ -38,11 +38,13 @@ const WaterSelector: React.FC<WaterSelectorProps> = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {filteredWaters.map(water => (
-                  <SelectItem key={water.id} value={water.id}>
-                    <span className="text-base">{water.name} - {water.type}</span>
-                  </SelectItem>
-                ))}
+                {filteredWaters
+                  .filter(water => water.id && water.id.trim() !== '')
+                  .map(water => (
+                    <SelectItem key={water.id} value={water.id}>
+                      <span className="text-base">{water.name} - {water.type}</span>
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>

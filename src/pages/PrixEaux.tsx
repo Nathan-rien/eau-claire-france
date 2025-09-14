@@ -276,9 +276,11 @@ export default function PrixEaux() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Toutes les marques</SelectItem>
-                  {brands.map(brand => (
-                    <SelectItem key={brand} value={brand}>{brand}</SelectItem>
-                  ))}
+                  {brands
+                    .filter(brand => brand && brand.trim() !== '')
+                    .map(brand => (
+                      <SelectItem key={brand} value={brand}>{brand}</SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
 
@@ -288,9 +290,11 @@ export default function PrixEaux() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Toutes les enseignes</SelectItem>
-                  {retailers.map(retailer => (
-                    <SelectItem key={retailer.id} value={retailer.id}>{retailer.name}</SelectItem>
-                  ))}
+                  {retailers
+                    .filter(retailer => retailer.id && retailer.id.trim() !== '')
+                    .map(retailer => (
+                      <SelectItem key={retailer.id} value={retailer.id}>{retailer.name}</SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
 

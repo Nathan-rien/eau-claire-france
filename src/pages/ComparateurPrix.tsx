@@ -277,9 +277,11 @@ export default function ComparateurPrix() {
                         <SelectValue placeholder="Sélectionner une marque" />
                       </SelectTrigger>
                       <SelectContent>
-                        {brands.map(brand => (
-                          <SelectItem key={brand} value={brand}>{brand}</SelectItem>
-                        ))}
+                        {brands
+                          .filter(brand => brand && brand.trim() !== '')
+                          .map(brand => (
+                            <SelectItem key={brand} value={brand}>{brand}</SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -303,9 +305,11 @@ export default function ComparateurPrix() {
                         <SelectValue placeholder="Sélectionner une marque" />
                       </SelectTrigger>
                       <SelectContent>
-                        {brands.filter(b => b !== selectedBrand1).map(brand => (
-                          <SelectItem key={brand} value={brand}>{brand}</SelectItem>
-                        ))}
+                        {brands
+                          .filter(b => b && b.trim() !== '' && b !== selectedBrand1)
+                          .map(brand => (
+                            <SelectItem key={brand} value={brand}>{brand}</SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -323,9 +327,11 @@ export default function ComparateurPrix() {
                         <SelectValue placeholder="Sélectionner une enseigne" />
                       </SelectTrigger>
                       <SelectContent>
-                        {retailers.map(retailer => (
-                          <SelectItem key={retailer.id} value={retailer.id}>{retailer.name}</SelectItem>
-                        ))}
+                        {retailers
+                          .filter(retailer => retailer.id && retailer.id.trim() !== '')
+                          .map(retailer => (
+                            <SelectItem key={retailer.id} value={retailer.id}>{retailer.name}</SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -349,9 +355,11 @@ export default function ComparateurPrix() {
                         <SelectValue placeholder="Sélectionner une enseigne" />
                       </SelectTrigger>
                       <SelectContent>
-                        {retailers.filter(r => r.id !== selectedRetailer1).map(retailer => (
-                          <SelectItem key={retailer.id} value={retailer.id}>{retailer.name}</SelectItem>
-                        ))}
+                        {retailers
+                          .filter(r => r.id && r.id.trim() !== '' && r.id !== selectedRetailer1)
+                          .map(retailer => (
+                            <SelectItem key={retailer.id} value={retailer.id}>{retailer.name}</SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                   </div>

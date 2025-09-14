@@ -108,6 +108,7 @@ const WaterSourceFilters: React.FC<WaterSourceFiltersProps> = ({
               <SelectContent>
                 <SelectItem value="all">Toutes les marques</SelectItem>
                 {bottledWaters
+                  .filter(water => water.id && water.id.trim() !== '')
                   .sort((a, b) => a.name.localeCompare(b.name))
                   .map((water) => (
                     <SelectItem key={water.id} value={water.id}>
