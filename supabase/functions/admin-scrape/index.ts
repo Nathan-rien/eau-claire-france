@@ -1,170 +1,309 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.0';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-type DebugRunResult = {
-  ok: boolean;
-  retailer: string;
-  items_found: number;
-  items_saved: number;
-  error_rate: number;
-  started_at: string;
-  finished_at: string;
-  message?: string;
-  debug?: {
-    debug_enabled: boolean;
-    headful: boolean;
-    slowMoMs?: number;
-    debug_files?: string[]; // best-effort; files exist only for CLI runs
-    hints?: string[];
-  };
-};
-
-class SimpleScraper {
-  constructor(private retailerSlug: string) {}
-  async scrape(options: { brands: string[]; format: string; maxPages: number }) {
-    console.log(`Mock scraping ${this.retailerSlug} for brands: ${options.brands.join(', ')}`);
-    await new Promise(r => setTimeout(r, 800));
-    const mockItems = options.brands.map((brand, index) => ({
-      brand,
-      product_name: `${brand} ${options.format}`,
-      price_total_eur: 1.50 + (index * 0.25),
-      total_volume_l: options.format === '1,5 l' ? 1.5 : 0.5,
-      unit_volume_l: options.format === '1,5 l' ? 1.5 : 0.5,
-      pack_count: 1,
-      price_per_l_eur: null,
-      is_promo: false,
-      availability: 'in_stock',
-      url: `https://example.com/${brand.toLowerCase()}`,
-      image_url: null,
-      sku: `${brand}-${options.format}`,
-      promo_label: null,
-    }));
-    return mockItems;
+function corsHeaders(req: Request) {
+  const origin = req.headers.get('origin') || req.headers.get('referer');
+  const allowedOrigins = Deno.env.get('ALLOWED_ORIGINS');
+  
+  let allowOrigin = '*';
+  if (allowedOrigins && origin) {
+    const allowed = allowedOrigins.split(',').map(o => o.trim());
+    if (allowed.includes(origin) || allowed.includes('*')) {
+      allowOrigin = origin;
+    }
   }
+  
+  return {
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Headers': 'content-type, authorization, x-admin-token',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Vary': 'Origin'
+  };
 }
 
-Deno.serve(async (req) => {
+interface ScrapingResult {
+  retailer: string;
+  success: boolean;
+  count: number;
+  error?: string;
+}
+
+serve(async (req) => {
+  console.log(`${req.method} ${req.url}`);
+
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-  if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+    return new Response(null, { status: 204, headers: corsHeaders(req) });
   }
 
-  const started_at = new Date().toISOString();
   try {
-    const url = new URL(req.url);
-    const body = req.headers.get('content-type')?.includes('application/json') ? await req.json() : {};
-    const retailer = body.retailer || url.searchParams.get('retailer') || 'carrefour';
-    const debug = (body.debug ?? url.searchParams.get('debug')) ? true : false;
-    const headful = (body.headful ?? url.searchParams.get('headful')) ? true : false;
-    const slowMoMs = body.slowMoMs ? Number(body.slowMoMs) : undefined;
-
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
-    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-      const res: DebugRunResult = {
-        ok: false,
-        retailer,
-        items_found: 0,
-        items_saved: 0,
-        error_rate: 1,
-        started_at,
-        finished_at: new Date().toISOString(),
-        message: 'La clé service (écriture) est absente. Ouvrez README > Configuration et collez la clé.',
-      };
-      return new Response(JSON.stringify(res), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    // Verify admin token
+    const adminToken = req.headers.get('x-admin-token');
+    const expectedToken = Deno.env.get('ADMIN_DASHBOARD_TOKEN');
+    
+    if (!expectedToken) {
+      return new Response(
+        JSON.stringify({ 
+          ok: false, 
+          status: 401, 
+          code: 'ADMIN_TOKEN_MISSING', 
+          message: 'X-Admin-Token requis.', 
+          hint: 'Définir ADMIN_DASHBOARD_TOKEN côté serveur.' 
+        }),
+        { status: 401, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
+      );
     }
-    const service = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-    const { data: retailerRow } = await service.from('retailers').select('id, slug, name').eq('slug', retailer).single();
-    if (!retailerRow) {
-      const res: DebugRunResult = {
-        ok: false,
-        retailer,
-        items_found: 0,
-        items_saved: 0,
-        error_rate: 1,
-        started_at,
-        finished_at: new Date().toISOString(),
-        message: `Enseigne inconnue: ${retailer}`,
-      };
-      return new Response(JSON.stringify(res), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    
+    if (!adminToken || adminToken !== expectedToken) {
+      return new Response(
+        JSON.stringify({ 
+          ok: false, 
+          status: 403, 
+          code: 'ADMIN_TOKEN_INVALID', 
+          message: 'Jeton admin invalide.', 
+          hint: 'Vérifier ADMIN_DASHBOARD_TOKEN.' 
+        }),
+        { status: 403, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
+      );
     }
 
-    const { data: run } = await service.from('runs').insert({ retailer_id: retailerRow.id, status: 'running', notes: 'Admin debug run' }).select().single();
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
 
-    const brands = ['Evian', 'Cristaline'];
-    const format = '1,5 l';
-    const scraper = new SimpleScraper(retailerRow.slug);
-    const items = await scraper.scrape({ brands, format, maxPages: 1 });
+    const body = await req.json();
+    const { action } = body;
 
-    const processed = items.map(item => ({
-      retailer_id: retailerRow.id,
-      run_id: run!.id,
-      brand: item.brand,
-      product_name: item.product_name,
-      price_total_eur: item.price_total_eur,
-      total_volume_l: item.total_volume_l,
-      unit_volume_l: item.unit_volume_l,
-      pack_count: item.pack_count,
-      price_per_l_eur: item.price_per_l_eur ?? (item.price_total_eur && item.total_volume_l ? Math.round((item.price_total_eur / item.total_volume_l) * 10000) / 10000 : null),
-      is_promo: item.is_promo,
-      availability: 'in_stock',
-      url: item.url,
-      image_url: item.image_url,
-      sku: item.sku,
-      promo_label: item.promo_label,
-      unique_hash: `${retailerRow.slug}-${item.brand}-${item.product_name}-${Date.now()}`.substring(0, 64),
-      scraped_at: new Date().toISOString(),
-    }));
+    if (action === 'wide-run') {
+      const { retailers, formats, brands } = body;
+      
+      console.log('Starting wide scraping run:', { retailers, formats, brands });
+      
+      // Create a new run record
+      const { data: runData, error: runError } = await supabase
+        .from('runs')
+        .insert({
+          retailer_id: '00000000-0000-0000-0000-000000000000', // Placeholder for wide run
+          status: 'running',
+          notes: `Wide run: ${retailers.length} retailers, ${formats.length} formats, ${brands.length} brands`
+        })
+        .select()
+        .single();
 
-    const { error: insErr } = await service.from('prices').insert(processed);
-    let saved = 0;
-    if (!insErr) {
-      saved = processed.length;
-      await service.from('prices_history').insert(processed.map(p => ({ ...p, id: undefined })));
-    }
-
-    const finished_at = new Date().toISOString();
-    const res: DebugRunResult = {
-      ok: saved > 0,
-      retailer: retailerRow.slug,
-      items_found: items.length,
-      items_saved: saved,
-      error_rate: items.length > 0 ? (items.length - saved) / items.length : 1,
-      started_at,
-      finished_at,
-      message: saved > 0 ? 'Run debug réussi' : (insErr ? 'La base refuse l’écriture (RLS). Appliquez les migrations RLS ou activez le rôle service.' : 'Aucun produit détecté. Les sélecteurs doivent être mis à jour.'),
-      debug: {
-        debug_enabled: debug,
-        headful,
-        slowMoMs,
-        debug_files: [],
-        hints: saved === 0 ? [
-          'Probable : cookies non acceptés / magasin non sélectionné / sélecteurs obsolètes',
-        ] : []
+      if (runError) {
+        console.error('Failed to create run record:', runError);
+        return new Response(
+          JSON.stringify({ 
+            ok: false, 
+            status: 500, 
+            message: 'Failed to create run record',
+            error: runError.message 
+          }),
+          { status: 500, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
+        );
       }
-    };
 
-    await service.from('runs').update({ status: saved > 0 ? 'success' : 'failed', finished_at }).eq('id', run!.id);
+      const results: Record<string, ScrapingResult> = {};
+      let totalItemsFound = 0;
+      let totalItemsSaved = 0;
+      let successfulRetailers = 0;
 
-    return new Response(JSON.stringify(res), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-  } catch (e) {
-    const res: DebugRunResult = {
-      ok: false,
-      retailer: 'unknown',
-      items_found: 0,
-      items_saved: 0,
-      error_rate: 1,
-      started_at,
-      finished_at: new Date().toISOString(),
-      message: 'Erreur lors du run debug: ' + (e as Error).message,
-    };
-    return new Response(JSON.stringify(res), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      // Simulate scraping for each retailer
+      for (const retailer of retailers) {
+        try {
+          console.log(`Scraping ${retailer}...`);
+          
+          // Simulate scraping process with mock data
+          const mockProducts = generateMockProducts(retailer, formats, brands);
+          
+          // Insert mock products into prices table
+          if (mockProducts.length > 0) {
+            const { data: insertData, error: insertError } = await supabase
+              .from('prices')
+              .insert(mockProducts.map(product => ({
+                ...product,
+                run_id: runData.id,
+                scraped_at: new Date().toISOString(),
+                created_at: new Date().toISOString()
+              })));
+
+            if (insertError) {
+              console.error(`Failed to insert products for ${retailer}:`, insertError);
+              results[retailer] = { retailer, success: false, count: 0, error: insertError.message };
+            } else {
+              results[retailer] = { retailer, success: true, count: mockProducts.length };
+              totalItemsFound += mockProducts.length;
+              totalItemsSaved += mockProducts.length;
+              successfulRetailers++;
+            }
+          } else {
+            results[retailer] = { retailer, success: false, count: 0, error: 'No products generated' };
+          }
+        } catch (error) {
+          console.error(`Error scraping ${retailer}:`, error);
+          results[retailer] = { retailer, success: false, count: 0, error: error.message };
+        }
+      }
+
+      // Update run record
+      await supabase
+        .from('runs')
+        .update({
+          status: 'completed',
+          finished_at: new Date().toISOString(),
+          items_found: totalItemsFound,
+          items_saved: totalItemsSaved,
+          error_rate: (retailers.length - successfulRetailers) / retailers.length,
+          quality_score: totalItemsSaved > 80 ? 1.0 : totalItemsSaved / 80
+        })
+        .eq('id', runData.id);
+
+      const response = {
+        ok: true,
+        status: 200,
+        itemsFound: totalItemsFound,
+        itemsSaved: totalItemsSaved,
+        retailersTested: retailers.length,
+        retailersSuccess: successfulRetailers,
+        retailers: results,
+        runId: runData.id,
+        timestamp: new Date().toISOString()
+      };
+
+      console.log('Wide run completed:', response);
+
+      return new Response(
+        JSON.stringify(response),
+        { headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (action === 'export-csv') {
+      console.log('Exporting prices to CSV...');
+      
+      const { data: prices, error: pricesError } = await supabase
+        .from('prices')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1000);
+
+      if (pricesError) {
+        return new Response(
+          JSON.stringify({ 
+            ok: false, 
+            status: 500, 
+            message: 'Failed to fetch prices',
+            error: pricesError.message 
+          }),
+          { status: 500, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Generate CSV
+      const headers = ['brand', 'product_name', 'retailer_id', 'pack_count', 'unit_volume_l', 'total_volume_l', 'price_total_eur', 'price_per_l_eur', 'is_promo', 'availability', 'scraped_at'];
+      const csvContent = [
+        headers.join(','),
+        ...prices.map(price => headers.map(header => 
+          JSON.stringify(price[header] || '')
+        ).join(','))
+      ].join('\n');
+
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          status: 200,
+          csv: csvContent,
+          count: prices.length,
+          timestamp: new Date().toISOString()
+        }),
+        { headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({ 
+        ok: false, 
+        status: 400, 
+        message: 'Action non supportée',
+        supportedActions: ['wide-run', 'export-csv']
+      }),
+      { status: 400, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
+    );
+
+  } catch (error) {
+    console.error('Error in admin-scrape function:', error);
+    return new Response(
+      JSON.stringify({ 
+        ok: false, 
+        status: 500, 
+        code: 'UNEXPECTED_ERROR', 
+        message: 'Erreur serveur interne.', 
+        hint: 'Consulter logs Edge Function.',
+        details: error.message 
+      }),
+      { status: 500, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
+    );
   }
 });
+
+function generateMockProducts(retailer: string, formats: string[], brands: string[]) {
+  const products = [];
+  const retailerMap: Record<string, string> = {
+    'carrefour': '11111111-1111-1111-1111-111111111111',
+    'carrefour_drive': '11111111-1111-1111-1111-111111111112',
+    'auchan': '22222222-2222-2222-2222-222222222222',
+    'auchan_super': '22222222-2222-2222-2222-222222222223',
+    'leclerc': '33333333-3333-3333-3333-333333333333',
+    'intermarche': '44444444-4444-4444-4444-444444444444',
+    'u_drive': '55555555-5555-5555-5555-555555555555',
+    'monoprix': '66666666-6666-6666-6666-666666666666'
+  };
+
+  const volumeMap: Record<string, number> = {
+    '50cl': 0.5,
+    '1l': 1.0,
+    '1.5l': 1.5
+  };
+
+  // Generate 3-5 products per retailer
+  const productCount = Math.floor(Math.random() * 3) + 3;
+  
+  for (let i = 0; i < productCount; i++) {
+    const brand = brands[Math.floor(Math.random() * brands.length)];
+    const format = formats[Math.floor(Math.random() * formats.length)];
+    const volume = volumeMap[format];
+    const packCount = Math.random() > 0.7 ? 6 : 1; // 30% chance of pack
+    const totalVolume = volume * packCount;
+    
+    // Realistic price calculation
+    let basePricePerL = 0.5 + Math.random() * 1.5; // 0.5€ to 2€ per liter
+    if (brand === 'Evian' || brand === 'Perrier') basePricePerL *= 1.5;
+    if (brand === 'Hépar' || brand === 'Contrex') basePricePerL *= 1.3;
+    
+    const priceTotal = parseFloat((totalVolume * basePricePerL).toFixed(2));
+    const pricePerL = parseFloat((priceTotal / totalVolume).toFixed(2));
+    
+    const isPromo = Math.random() > 0.8; // 20% chance of promo
+    
+    products.push({
+      unique_hash: `${retailer}-${brand}-${format}-${packCount}-${Date.now()}-${i}`.substring(0, 255),
+      retailer_id: retailerMap[retailer] || retailer,
+      brand,
+      product_name: `${brand} ${format}${packCount > 1 ? ` pack ${packCount}` : ''}`,
+      pack_count: packCount,
+      unit_volume_l: volume,
+      total_volume_l: totalVolume,
+      price_total_eur: isPromo ? parseFloat((priceTotal * 0.9).toFixed(2)) : priceTotal,
+      price_per_l_eur: isPromo ? parseFloat((pricePerL * 0.9).toFixed(2)) : pricePerL,
+      is_promo: isPromo,
+      promo_label: isPromo ? '-10%' : null,
+      availability: Math.random() > 0.1 ? 'available' : 'out_of_stock',
+      sku: `${retailer.toUpperCase()}_${brand.toUpperCase()}_${format.toUpperCase()}`,
+      url: `https://${retailer}.fr/products/${brand.toLowerCase()}-${format}`,
+      image_url: `https://${retailer}.fr/images/${brand.toLowerCase()}-${format}.jpg`
+    });
+  }
+  
+  return products;
+}

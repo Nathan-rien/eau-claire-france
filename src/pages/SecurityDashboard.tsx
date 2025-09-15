@@ -74,6 +74,7 @@ const SecurityDashboard = () => {
   const [networkDiagnostics, setNetworkDiagnostics] = useState<any>({});
   const [errorDetails, setErrorDetails] = useState<any>(null);
   const [proxyFallback, setProxyFallback] = useState(false);
+  const [scrapingResults, setScrapingResults] = useState<any>(null);
 
   // Load initial data
   useEffect(() => {
@@ -322,6 +323,64 @@ const SecurityDashboard = () => {
   const disableCron = async () => {
     const result = await callSecurityEndpoint('admin-security-cron-disable', 'Désactivation CRON');
     setChecks(prev => ({ ...prev, cronStatus: result }));
+  };
+
+  const runWideScrapingRun = async () => {
+    setLoading(true);
+    setScrapingResults(null);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-scrape', {
+        body: {
+          action: 'wide-run',
+          retailers: ['carrefour', 'carrefour_drive', 'auchan', 'auchan_super', 'leclerc', 'intermarche', 'u_drive', 'monoprix'],
+          formats: ['50cl', '1l', '1.5l'],
+          brands: ['Cristaline', 'Evian', 'Volvic', 'Hépar', 'Contrex', 'Perrier', 'Vittel']
+        }
+      });
+
+      if (error) {
+        toast.error(`Erreur Wide Run: ${error.message}`);
+        return;
+      }
+
+      setScrapingResults(data);
+      toast.success(`Wide Run terminé: ${data.itemsSaved} produits sauvegardés`);
+    } catch (error) {
+      console.error('Wide Run error:', error);
+      toast.error(`Erreur Wide Run: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const exportPricesCSV = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-scrape', {
+        body: { action: 'export-csv' }
+      });
+
+      if (error) {
+        toast.error(`Erreur export CSV: ${error.message}`);
+        return;
+      }
+
+      // Create download link
+      const blob = new Blob([data.csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `infoeau-prices-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast.success('CSV exporté avec succès');
+    } catch (error) {
+      console.error('CSV export error:', error);
+      toast.error(`Erreur export CSV: ${error.message}`);
+    }
   };
 
   const isAllChecksPassed = () => {
@@ -703,6 +762,94 @@ const SecurityDashboard = () => {
           </TabsContent>
 
           <TabsContent value="checks" className="space-y-6">
+            {/* Scraping Élargi */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Database className="h-5 w-5" />
+                  Scraping Élargi (Wide Run)
+                </CardTitle>
+                <CardDescription>
+                  Remplir la base avec plusieurs enseignes et formats pour tester l'ensemble du système
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <strong>Enseignes:</strong> Carrefour, Auchan, Leclerc, Intermarché, U, Monoprix
+                    </div>
+                    <div>
+                      <strong>Formats:</strong> 50cl, 1L, 1.5L
+                    </div>
+                    <div>
+                      <strong>Marques:</strong> Cristaline, Evian, Volvic, Hépar, Contrex, Perrier, Vittel
+                    </div>
+                    <div>
+                      <strong>Objectif:</strong> 80+ produits
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={runWideScrapingRun} 
+                      disabled={loading} 
+                      className="flex items-center gap-2"
+                    >
+                      <Activity className="h-4 w-4" />
+                      Lancer Wide Run
+                    </Button>
+                    <Button 
+                      onClick={() => window.open('/prix-eaux', '_blank')} 
+                      variant="outline" 
+                      size="sm"
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      Voir /prix-eaux
+                    </Button>
+                    <Button 
+                      onClick={exportPricesCSV} 
+                      variant="outline" 
+                      size="sm"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Exporter CSV
+                    </Button>
+                  </div>
+
+                  {scrapingResults && (
+                    <Alert>
+                      <Activity className="h-4 w-4" />
+                      <AlertDescription>
+                        <div className="space-y-2">
+                          <div><strong>Résultats Wide Run:</strong></div>
+                          <div>Items trouvés: {scrapingResults.itemsFound}</div>
+                          <div>Items sauvegardés: {scrapingResults.itemsSaved}</div>
+                          <div>Enseignes testées: {scrapingResults.retailersTested}</div>
+                          <div>Enseignes réussies: {scrapingResults.retailersSuccess}</div>
+                          {scrapingResults.retailers && (
+                            <div className="mt-2">
+                              <strong>Détail par enseigne:</strong>
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-1">
+                                {Object.entries(scrapingResults.retailers).map(([retailer, result]: [string, any]) => (
+                                  <div key={retailer} className="flex items-center gap-1">
+                                    <span className="text-xs">{retailer}:</span>
+                                    <Badge variant={result.success ? 'default' : 'destructive'} className="text-xs">
+                                      {result.success ? `✅ ${result.count}` : '❌ Fail'}
+                                    </Badge>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Individual Check Actions */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
