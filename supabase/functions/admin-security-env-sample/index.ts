@@ -2,12 +2,14 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-admin-token',
+  'Access-Control-Allow-Headers': 'authorization, x-admin-token, content-type',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+  'Vary': 'Origin'
 }
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { status: 204, headers: corsHeaders });
   }
 
   try {
@@ -15,13 +17,29 @@ serve(async (req) => {
     const adminToken = req.headers.get('x-admin-token');
     const expectedToken = Deno.env.get('ADMIN_DASHBOARD_TOKEN');
     
-    if (!expectedToken || adminToken !== expectedToken) {
+    if (!expectedToken) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { 
+        JSON.stringify({ 
+          ok: false, 
           status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
+          code: 'ADMIN_TOKEN_MISSING', 
+          message: 'X-Admin-Token requis.', 
+          hint: 'Définir ADMIN_DASHBOARD_TOKEN côté serveur.' 
+        }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (!adminToken || adminToken !== expectedToken) {
+      return new Response(
+        JSON.stringify({ 
+          ok: false, 
+          status: 403, 
+          code: 'ADMIN_TOKEN_INVALID', 
+          message: 'Jeton admin invalide.', 
+          hint: 'Vérifier ADMIN_DASHBOARD_TOKEN.' 
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -92,10 +110,18 @@ VITE_WATER_MDD_CSV_URL=/data/eaux_MDD_par_distributeur_et_source_FR_v3.csv
 # 3. npm run rls:check       # Tester les politiques RLS Supabase
 `;
 
+    // Check for missing variables
+    const missing = [];
+    if (!Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')) missing.push('SUPABASE_SERVICE_ROLE_KEY');
+    if (!Deno.env.get('VITE_SUPABASE_ANON_KEY')) missing.push('VITE_SUPABASE_ANON_KEY');
+    if (!Deno.env.get('ADMIN_DASHBOARD_TOKEN')) missing.push('ADMIN_DASHBOARD_TOKEN');
+
     return new Response(
       JSON.stringify({
         ok: true,
-        content: envSample,
+        status: 200,
+        envSample,
+        missing,
         instructions: [
           'Copier ce contenu dans votre fichier .env',
           'Remplacer les valeurs placeholder par vos vraies clés',
@@ -120,8 +146,11 @@ VITE_WATER_MDD_CSV_URL=/data/eaux_MDD_par_distributeur_et_source_FR_v3.csv
     return new Response(
       JSON.stringify({ 
         ok: false, 
-        error: 'Internal server error',
-        message: error.message 
+        status: 500, 
+        code: 'UNEXPECTED_ERROR', 
+        message: 'Erreur serveur interne.', 
+        hint: 'Consulter logs Edge Function.',
+        details: error.message 
       }),
       { 
         status: 500, 

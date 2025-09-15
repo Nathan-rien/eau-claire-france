@@ -2,7 +2,9 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-admin-token',
+  'Access-Control-Allow-Headers': 'authorization, x-admin-token, content-type',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+  'Vary': 'Origin'
 };
 
 interface EnvStatus {
@@ -23,7 +25,7 @@ serve(async (req) => {
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { status: 204, headers: corsHeaders });
   }
 
   try {
@@ -31,11 +33,31 @@ serve(async (req) => {
     const adminToken = req.headers.get('x-admin-token');
     const expectedToken = Deno.env.get('ADMIN_DASHBOARD_TOKEN');
     
-    if (!adminToken || !expectedToken || adminToken !== expectedToken) {
+    if (!expectedToken) {
+      console.log('ADMIN_DASHBOARD_TOKEN not configured');
+      return new Response(
+        JSON.stringify({ 
+          ok: false, 
+          status: 401, 
+          code: 'ADMIN_TOKEN_MISSING', 
+          message: 'X-Admin-Token requis.', 
+          hint: 'Définir ADMIN_DASHBOARD_TOKEN côté serveur.' 
+        }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (!adminToken || adminToken !== expectedToken) {
       console.log('Unauthorized access attempt - invalid admin token');
       return new Response(
-        JSON.stringify({ error: 'Unauthorized - Admin token required' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ 
+          ok: false, 
+          status: 403, 
+          code: 'ADMIN_TOKEN_INVALID', 
+          message: 'Jeton admin invalide.', 
+          hint: 'Vérifier ADMIN_DASHBOARD_TOKEN.' 
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -48,7 +70,13 @@ serve(async (req) => {
       if (!allowedIPs.includes(clientIP)) {
         console.log(`Blocked IP: ${clientIP}, allowed: ${allowedIPs}`);
         return new Response(
-          JSON.stringify({ error: 'Forbidden - IP not in allowlist' }),
+          JSON.stringify({ 
+            ok: false, 
+            status: 403, 
+            code: 'IP_NOT_ALLOWED', 
+            message: `IP ${clientIP} non autorisée.`, 
+            hint: `IPs autorisées: ${allowedIPs.join(', ')}` 
+          }),
           { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
@@ -138,6 +166,15 @@ ALERT_WEBHOOK_URL=${Deno.env.get('ALERT_WEBHOOK_URL') || '# https://hooks.slack.
     return new Response(
       JSON.stringify({
         ok: true,
+        status: 200,
+        env: {
+          hasServiceKey: !!Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
+          hasAnonKey: !!Deno.env.get('VITE_SUPABASE_ANON_KEY'),
+          hasServerUrl: !!Deno.env.get('SUPABASE_URL'),
+          hasFrontUrl: !!Deno.env.get('VITE_SUPABASE_URL'),
+          adminTokenSet: !!Deno.env.get('ADMIN_DASHBOARD_TOKEN'),
+          allowedOrigins: Deno.env.get('ALLOWED_ORIGINS') || ''
+        },
         envStatus,
         flags,
         envContent,
@@ -151,8 +188,11 @@ ALERT_WEBHOOK_URL=${Deno.env.get('ALERT_WEBHOOK_URL') || '# https://hooks.slack.
     return new Response(
       JSON.stringify({ 
         ok: false, 
-        error: 'Internal server error',
-        message: error.message 
+        status: 500, 
+        code: 'UNEXPECTED_ERROR', 
+        message: 'Erreur serveur interne.', 
+        hint: 'Consulter logs Edge Function.',
+        details: error.message 
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

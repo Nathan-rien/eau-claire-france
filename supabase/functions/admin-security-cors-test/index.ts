@@ -2,7 +2,9 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-admin-token',
+  'Access-Control-Allow-Headers': 'authorization, x-admin-token, content-type',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+  'Vary': 'Origin'
 };
 
 serve(async (req) => {
@@ -10,7 +12,7 @@ serve(async (req) => {
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { status: 204, headers: corsHeaders });
   }
 
   try {
@@ -18,11 +20,29 @@ serve(async (req) => {
     const adminToken = req.headers.get('x-admin-token');
     const expectedToken = Deno.env.get('ADMIN_DASHBOARD_TOKEN');
     
-    if (!adminToken || !expectedToken || adminToken !== expectedToken) {
-      console.log('Unauthorized access attempt - invalid admin token');
+    if (!expectedToken) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized - Admin token required' }),
+        JSON.stringify({ 
+          ok: false, 
+          status: 401, 
+          code: 'ADMIN_TOKEN_MISSING', 
+          message: 'X-Admin-Token requis.', 
+          hint: 'Définir ADMIN_DASHBOARD_TOKEN côté serveur.' 
+        }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (!adminToken || adminToken !== expectedToken) {
+      return new Response(
+        JSON.stringify({ 
+          ok: false, 
+          status: 403, 
+          code: 'ADMIN_TOKEN_INVALID', 
+          message: 'Jeton admin invalide.', 
+          hint: 'Vérifier ADMIN_DASHBOARD_TOKEN.' 
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -33,9 +53,14 @@ serve(async (req) => {
       const allowedIPs = allowlist.split(',').map(ip => ip.trim());
       
       if (!allowedIPs.includes(clientIP)) {
-        console.log(`Blocked IP: ${clientIP}, allowed: ${allowedIPs}`);
         return new Response(
-          JSON.stringify({ error: 'Forbidden - IP not in allowlist' }),
+          JSON.stringify({ 
+            ok: false, 
+            status: 403, 
+            code: 'IP_NOT_ALLOWED', 
+            message: `IP ${clientIP} non autorisée.`, 
+            hint: `IPs autorisées: ${allowedIPs.join(', ')}` 
+          }),
           { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
@@ -107,8 +132,11 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         ok: false, 
-        error: 'Internal server error',
-        message: error.message 
+        status: 500, 
+        code: 'UNEXPECTED_ERROR', 
+        message: 'Erreur serveur interne.', 
+        hint: 'Consulter logs Edge Function.',
+        details: error.message 
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

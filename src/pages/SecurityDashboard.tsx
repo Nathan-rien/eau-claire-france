@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Shield, CheckCircle, XCircle, AlertTriangle, RefreshCw, Download, Eye, Settings, Clock, Database, Copy, Globe, Server } from 'lucide-react';
+import { Shield, CheckCircle, XCircle, AlertTriangle, RefreshCw, Download, Eye, Settings, Clock, Database, Copy, Globe, Server, Zap, Info, Power, PowerOff, Activity } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -325,6 +325,12 @@ const SecurityDashboard = () => {
                   <p className="text-xs text-muted-foreground mt-1">
                     {checks.rls?.message || 'Vérification des politiques de sécurité'}
                   </p>
+                   {checks.rls && !checks.rls.ok && (checks.rls as any).hint && (
+                     <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-xs">
+                       <p><strong>Code:</strong> {(checks.rls as any).code}</p>
+                       <p><strong>Conseil:</strong> {(checks.rls as any).hint}</p>
+                     </div>
+                   )}
                 </CardContent>
               </Card>
 
@@ -338,6 +344,12 @@ const SecurityDashboard = () => {
                   <p className="text-xs text-muted-foreground mt-1">
                     {checks.hardening?.message || 'Durcissement de sécurité'}
                   </p>
+                   {checks.hardening && !checks.hardening.ok && (checks.hardening as any).hint && (
+                     <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-xs">
+                       <p><strong>Code:</strong> {(checks.hardening as any).code}</p>
+                       <p><strong>Conseil:</strong> {(checks.hardening as any).hint}</p>
+                     </div>
+                   )}
                 </CardContent>
               </Card>
 
