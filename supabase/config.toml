@@ -6,6 +6,45 @@ verify_jwt = false
 [functions.admin-smoke]
 verify_jwt = false
 
+[functions.admin-scrape]
+verify_jwt = false
+
+[functions.admin-security-ping]
+verify_jwt = false
+
+[functions.admin-security-env-status]
+verify_jwt = false
+
+[functions.admin-security-env-sample]
+verify_jwt = false
+
+[functions.admin-security-cors-test]
+verify_jwt = false
+
+[functions.admin-security-rls]
+verify_jwt = false
+
+[functions.admin-security-hardening]
+verify_jwt = false
+
+[functions.admin-security-diagnostic]
+verify_jwt = false
+
+[functions.admin-security-smoke]
+verify_jwt = false
+
+[functions.admin-security-clean]
+verify_jwt = false
+
+[functions.admin-security-cron-enable]
+verify_jwt = false
+
+[functions.admin-security-cron-disable]
+verify_jwt = false
+
+[functions.admin-security-alerts]
+verify_jwt = false
+
 [functions.debug-health]
 verify_jwt = false
 

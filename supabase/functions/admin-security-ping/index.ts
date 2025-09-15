@@ -29,6 +29,52 @@ serve(async (req) => {
   }
 
   try {
+    // Admin token authentication
+    const token = req.headers.get("x-admin-token") ?? "";
+    const expected = Deno.env.get("ADMIN_DASHBOARD_TOKEN") ?? "";
+    if (!expected || !token) {
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          status: 401,
+          code: "ADMIN_TOKEN_MISSING",
+          message: "X-Admin-Token requis.",
+          hint: "Définir ADMIN_DASHBOARD_TOKEN côté serveur."
+        }),
+        { status: 401, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
+      );
+    }
+    if (token !== expected) {
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          status: 403,
+          code: "ADMIN_TOKEN_INVALID",
+          message: "Jeton admin invalide.",
+          hint: "Vérifier ADMIN_DASHBOARD_TOKEN."
+        }),
+        { status: 403, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // IP allowlist check
+    const allowlist = Deno.env.get("ADMIN_IP_ALLOWLIST");
+    if (allowlist) {
+      const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim();
+      const whitelist = allowlist.split(",").map(s => s.trim());
+      if (ip && !whitelist.includes(ip)) {
+        return new Response(
+          JSON.stringify({
+            ok: false,
+            status: 403,
+            code: "IP_NOT_ALLOWED",
+            message: "IP non autorisée.",
+            hint: `Autoriser ${ip} dans ADMIN_IP_ALLOWLIST.`
+          }),
+          { status: 403, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
+        );
+      }
+    }
     return new Response(
       JSON.stringify({ 
         ok: true, 
