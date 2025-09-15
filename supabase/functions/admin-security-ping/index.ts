@@ -1,18 +1,31 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-admin-token, content-type',
-  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-  'Vary': 'Origin'
-};
+function corsHeaders(req: Request) {
+  const origin = req.headers.get('origin') || req.headers.get('referer');
+  const allowedOrigins = Deno.env.get('ALLOWED_ORIGINS');
+  
+  let allowOrigin = '*';
+  if (allowedOrigins && origin) {
+    const allowed = allowedOrigins.split(',').map(o => o.trim());
+    if (allowed.includes(origin) || allowed.includes('*')) {
+      allowOrigin = origin;
+    }
+  }
+  
+  return {
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Headers': 'content-type, authorization, x-admin-token',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Vary': 'Origin'
+  };
+}
 
 serve(async (req) => {
   console.log(`${req.method} ${req.url}`);
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: corsHeaders });
+    return new Response(null, { status: 204, headers: corsHeaders(req) });
   }
 
   try {
@@ -24,7 +37,7 @@ serve(async (req) => {
         message: 'Edge Function disponible',
         timestamp: new Date().toISOString()
       }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
@@ -38,7 +51,7 @@ serve(async (req) => {
         hint: 'Consulter logs Edge Function.',
         details: error.message 
       }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 500, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
     );
   }
 });

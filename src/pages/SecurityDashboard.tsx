@@ -63,6 +63,18 @@ const SecurityDashboard = () => {
   const [envContent, setEnvContent] = useState<string>('');
   const [showEnvStatusDialog, setShowEnvStatusDialog] = useState(false);
 
+  // Edge Functions configuration
+  const EDGE_BASE = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`;
+  const FN = (name: string) => `${EDGE_BASE}/${name}`;
+  
+  const getAdminToken = () => {
+    return localStorage.getItem('admin-token') || 'your-admin-token-here';
+  };
+
+  const [networkDiagnostics, setNetworkDiagnostics] = useState<any>({});
+  const [errorDetails, setErrorDetails] = useState<any>(null);
+  const [proxyFallback, setProxyFallback] = useState(false);
+
   // Load initial data
   useEffect(() => {
     loadInitialData();
@@ -71,6 +83,7 @@ const SecurityDashboard = () => {
   const callSecurityEndpoint = async (endpoint: string, actionName: string) => {
     setLoading(true);
     setAuthError('');
+    setErrorDetails(null);
     
     try {
       const { data, error } = await supabase.functions.invoke(endpoint, {
@@ -107,368 +120,383 @@ const SecurityDashboard = () => {
     }
   };
 
-  const loadInitialData = async () => {
-    // Try to load diagnostic to check auth status
-    const diagnosticResult = await callSecurityEndpoint('admin-security-diagnostic', 'Diagnostic initial');
-    if (diagnosticResult) {
-      setChecks(prev => ({ ...prev, diagnostic: diagnosticResult }));
+  const callEdgeFunctionDirect = async (functionName: string, payload = {}) => {
+    setErrorDetails(null);
+    setProxyFallback(false);
+
+    if (!import.meta.env.VITE_SUPABASE_URL) {
+      setErrorDetails({
+        type: 'config',
+        message: 'VITE_SUPABASE_URL manquant (front)',
+        url: 'N/A',
+        method: 'N/A'
+      });
+      return null;
     }
-    
-    // Load environment status
-    await loadEnvStatus();
+
+    const url = FN(functionName);
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Admin-Token': getAdminToken(),
+      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || ''}`
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(8000)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrorDetails({
+          type: 'api',
+          status: response.status,
+          code: data.code,
+          message: data.message,
+          hint: data.hint,
+          url,
+          method: 'POST',
+          headers: Object.keys(headers).reduce((acc, key) => ({
+            ...acc,
+            [key]: key.includes('Token') || key.includes('Authorization') ? '***masked***' : headers[key]
+          }), {})
+        });
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Direct fetch error:', error);
+      
+      // Try proxy fallback
+      try {
+        const proxyResponse = await fetch(`/api/admin/security/proxy?fn=${functionName}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': getAdminToken()
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (proxyResponse.ok) {
+          const proxyData = await proxyResponse.json();
+          setProxyFallback(true);
+          return { ...proxyData, via: 'proxy' };
+        }
+      } catch (proxyError) {
+        console.error('Proxy fallback failed:', proxyError);
+      }
+
+      setErrorDetails({
+        type: 'network',
+        message: error.name === 'TimeoutError' ? 'Timeout (8s)' : 'Impossible de joindre l\'Edge Function',
+        details: error.message,
+        url,
+        method: 'POST',
+        origin: window.location.origin,
+        protocol: window.location.protocol,
+        mixedContent: url.startsWith('http://') && window.location.protocol === 'https:',
+        headers: Object.keys(headers).reduce((acc, key) => ({
+          ...acc,
+          [key]: key.includes('Token') || key.includes('Authorization') ? '***masked***' : headers[key]
+        }), {})
+      });
+      return null;
+    }
   };
 
   const loadEnvStatus = async () => {
-    const result = await callSecurityEndpoint('admin-security-env-status', 'Status ENV');
-    if (result) {
-      setChecks(prev => ({ ...prev, envStatus: result }));
-      setEnvStatus(result.envStatus || []);
+    const result = await callEdgeFunctionDirect('admin-security-env-status');
+    if (result?.envStatus) {
+      setEnvStatus(result.envStatus);
       setFlags(result.flags || {});
       setEnvContent(result.envContent || '');
     }
   };
 
-  const runRLSCheck = async () => {
-    const result = await callSecurityEndpoint('admin-security-rls', 'Vérification RLS');
-    if (result) {
-      setChecks(prev => ({ ...prev, rls: result }));
-    }
+  const pingEdgeFunction = async () => {
+    const startTime = Date.now();
+    const result = await callEdgeFunctionDirect('admin-security-ping');
+    const latency = Date.now() - startTime;
+    
+    setNetworkDiagnostics(prev => ({
+      ...prev,
+      ping: {
+        ok: !!result,
+        latency: result ? latency : null,
+        timestamp: new Date().toISOString()
+      }
+    }));
   };
 
-  const runHardeningCheck = async () => {
-    const result = await callSecurityEndpoint('admin-security-hardening', 'Vérification Hardening');
-    if (result) {
-      setChecks(prev => ({ ...prev, hardening: result }));
-    }
+  const testCORS = async () => {
+    const result = await callEdgeFunctionDirect('admin-security-cors-test');
+    setNetworkDiagnostics(prev => ({
+      ...prev,
+      cors: {
+        result,
+        timestamp: new Date().toISOString()
+      }
+    }));
   };
 
-  const runDiagnostic = async () => {
-    const result = await callSecurityEndpoint('admin-security-diagnostic', 'Diagnostic Environnement');
-    if (result) {
-      setChecks(prev => ({ ...prev, diagnostic: result }));
+  const showRequestDetails = () => {
+    if (!import.meta.env.VITE_SUPABASE_URL) {
+      alert('VITE_SUPABASE_URL non configuré');
+      return;
     }
+
+    const details = {
+      url: FN('admin-security-env-status'),
+      method: 'POST',
+      origin: window.location.origin,
+      protocol: window.location.protocol,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Token': '***masked***',
+        'Authorization': 'Bearer ***masked***'
+      },
+      payload: {}
+    };
+
+    alert(`Détails de la requête:\n${JSON.stringify(details, null, 2)}`);
   };
 
-  const runSecuritySmoke = async () => {
-    const result = await callSecurityEndpoint('admin-security-smoke', 'Security Smoke Test');
-    if (result) {
-      setChecks(prev => ({ ...prev, smoke: result }));
-      // Refresh other checks if smoke test passed
-      if (result.ok) {
-        await Promise.all([
-          runRLSCheck(),
-          runHardeningCheck(),
-          runDiagnostic()
-        ]);
+  const loadInitialData = async () => {
+    await loadEnvStatus();
+  };
+
+  const copyEnvContent = async () => {
+    if (envContent) {
+      await navigator.clipboard.writeText(envContent);
+      toast.success('Contenu .env copié dans le presse-papier');
+    } else {
+      const result = await callEdgeFunctionDirect('admin-security-env-sample');
+      if (result?.envSample) {
+        await navigator.clipboard.writeText(result.envSample);
+        toast.success('Exemple .env copié dans le presse-papier');
       }
     }
   };
 
-  const runCleanup = async () => {
-    const result = await callSecurityEndpoint('admin-security-clean', 'Nettoyage');
-    if (result) {
-      setChecks(prev => ({ ...prev, clean: result }));
-    }
+  const runRLSCheck = async () => {
+    const result = await callSecurityEndpoint('admin-security-rls', 'Vérification RLS');
+    setChecks(prev => ({ ...prev, rls: result }));
   };
 
-  const checkAlerts = async () => {
-    const result = await callSecurityEndpoint('admin-security-alerts', 'Vérification Alertes');
-    if (result) {
-      setChecks(prev => ({ ...prev, alerts: result }));
-    }
+  const runHardeningCheck = async () => {
+    const result = await callSecurityEndpoint('admin-security-hardening', 'Vérification Hardening');
+    setChecks(prev => ({ ...prev, hardening: result }));
   };
 
-  const loadEnvSample = async () => {
-    const result = await callSecurityEndpoint('admin-security-env-sample', 'Chargement ENV Sample');
-    if (result && result.content) {
-      setEnvSample(result.content);
-      setShowEnvDialog(true);
-    }
+  const runDiagnostic = async () => {
+    const result = await callSecurityEndpoint('admin-security-diagnostic', 'Diagnostic ENV');
+    setChecks(prev => ({ ...prev, diagnostic: result }));
+  };
+
+  const runSmokeTest = async () => {
+    const result = await callSecurityEndpoint('admin-security-smoke', 'Security Smoke Test');
+    setChecks(prev => ({ ...prev, smoke: result }));
+  };
+
+  const getSecurityAlerts = async () => {
+    const result = await callSecurityEndpoint('admin-security-alerts', 'Alertes de sécurité');
+    setChecks(prev => ({ ...prev, alerts: result }));
+  };
+
+  const cleanSecurity = async () => {
+    const result = await callSecurityEndpoint('admin-security-clean', 'Nettoyage sécurité');
+    setChecks(prev => ({ ...prev, clean: result }));
   };
 
   const enableCron = async () => {
     const result = await callSecurityEndpoint('admin-security-cron-enable', 'Activation CRON');
-    if (result) {
-      setChecks(prev => ({ ...prev, cronStatus: result }));
-    }
+    setChecks(prev => ({ ...prev, cronStatus: result }));
   };
 
   const disableCron = async () => {
     const result = await callSecurityEndpoint('admin-security-cron-disable', 'Désactivation CRON');
-    if (result) {
-      setChecks(prev => ({ ...prev, cronStatus: result }));
-      await updateSecurityReport();
-    }
-  };
-
-  const testCors = async () => {
-    const result = await callSecurityEndpoint('admin-security-cors-test', 'Test CORS');
-    if (result) {
-      setChecks(prev => ({ ...prev, corsTest: result }));
-    }
-  };
-
-  const updateSecurityReport = async () => {
-    // This would call a function to update RAPPORT_SÉCURITÉ.md
-    console.log('Updating security report...');
-  };
-
-  const copyEnvContent = () => {
-    navigator.clipboard.writeText(envContent);
-    toast.success('Contenu .env copié dans le presse-papier');
+    setChecks(prev => ({ ...prev, cronStatus: result }));
   };
 
   const isAllChecksPassed = () => {
-    return checks.rls?.ok && 
-           checks.hardening?.ok && 
-           checks.diagnostic?.ok && 
-           checks.smoke?.ok;
+    return checks.rls?.ok && checks.hardening?.ok && checks.diagnostic?.ok && checks.smoke?.ok;
   };
 
   const getStatusBadge = (check: SecurityCheckResult | null) => {
     if (!check) return <Badge variant="outline">Non testé</Badge>;
-    if (check.ok) return <Badge variant="default" className="bg-green-600">✅ PASS</Badge>;
-    return <Badge variant="destructive">❌ FAIL</Badge>;
+    return (
+      <Badge variant={check.ok ? "default" : "destructive"}>
+        {check.ok ? '✅ PASS' : '❌ FAIL'}
+      </Badge>
+    );
   };
 
-  const getStatusIcon = (check: SecurityCheckResult | null) => {
-    if (!check) return <Clock className="h-4 w-4 text-muted-foreground" />;
-    return check.ok ? 
-      <CheckCircle className="h-4 w-4 text-green-600" /> : 
-      <XCircle className="h-4 w-4 text-red-600" />;
+  const getOverallStatus = () => {
+    const passedChecks = Object.values(checks).filter(check => check?.ok).length;
+    const totalChecks = Object.values(checks).filter(check => check !== null).length;
+    
+    if (totalChecks === 0) return { status: 'UNKNOWN', color: 'text-gray-500' };
+    if (passedChecks === totalChecks) return { status: 'SECURE', color: 'text-green-600' };
+    if (passedChecks > totalChecks / 2) return { status: 'WARNING', color: 'text-orange-500' };
+    return { status: 'CRITICAL', color: 'text-red-600' };
   };
+
+  const overallStatus = getOverallStatus();
 
   return (
     <Layout>
       <Helmet>
-        <meta name="robots" content="noindex,nofollow" />
         <title>Security Dashboard - InfoEau Admin</title>
+        <meta name="robots" content="noindex, nofollow" />
       </Helmet>
-      
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
-                <Shield className="h-8 w-8 text-primary" />
-                Security Dashboard
-              </h1>
-              <p className="text-muted-foreground">
-                Tableau de bord de sécurité InfoEau - Contrôles et surveillance
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <Button 
-                onClick={runSecuritySmoke} 
-                disabled={loading}
-                className="flex items-center gap-2"
-              >
-                {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Shield className="h-4 w-4" />}
-                Security Smoke Test
-              </Button>
-              <Dialog open={showEnvDialog} onOpenChange={setShowEnvDialog}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" onClick={loadEnvSample}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Copier .env
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[80vh]">
-                  <DialogHeader>
-                    <DialogTitle>Configuration Environnement</DialogTitle>
-                    <DialogDescription>
-                      Copiez ce contenu dans votre fichier .env
-                    </DialogDescription>
-                  </DialogHeader>
-                  <ScrollArea className="h-[60vh]">
-                    <pre className="text-sm bg-muted p-4 rounded-md overflow-x-auto">
-                      {envSample}
-                    </pre>
-                  </ScrollArea>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </div>
-        </div>
 
-        {/* Auth Error Alert */}
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Auth Error Banner */}
         {authError && (
-          <Alert className="mb-6 border-destructive">
+          <Alert variant="destructive" className="mb-6">
             <AlertTriangle className="h-4 w-4" />
-            <AlertDescription className="flex items-center justify-between">
-              <span>{authError}</span>
-              <Button variant="outline" size="sm" onClick={() => setShowEnvDialog(true)}>
-                Voir ENV_SAMPLE.md
+            <AlertDescription>
+              <div className="font-medium mb-2">Accès Admin Requis</div>
+              <p className="text-sm">{authError}</p>
+              <Button 
+                onClick={() => setShowEnvDialog(true)} 
+                size="sm" 
+                className="mt-2"
+              >
+                Voir configuration ENV
               </Button>
             </AlertDescription>
           </Alert>
         )}
 
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-3">
+              <Shield className="h-8 w-8 text-blue-500" />
+              Security Dashboard
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Tableau de bord de sécurité et monitoring administrateur
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <Badge className={`${overallStatus.color} text-lg px-4 py-2`}>
+              Status: {overallStatus.status}
+            </Badge>
+            <Button 
+              onClick={loadInitialData}
+              variant="outline"
+              disabled={loading}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Actualiser
+            </Button>
+          </div>
+        </div>
+
+        <Tabs defaultValue="environment" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="environment">ENV Helper</TabsTrigger>
-            <TabsTrigger value="checks">Tests détaillés</TabsTrigger>
-            <TabsTrigger value="monitoring">Surveillance</TabsTrigger>
+            <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
+            <TabsTrigger value="checks">Vérifications</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            {/* Status Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Security Overview Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">RLS Policies</CardTitle>
-                  {getStatusIcon(checks.rls)}
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <Database className="h-4 w-4" />
+                    RLS Check
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {getStatusBadge(checks.rls)}
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {checks.rls?.message || 'Vérification des politiques de sécurité'}
-                  </p>
-                   {checks.rls && !checks.rls.ok && (checks.rls as any).hint && (
-                     <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-xs">
-                       <p><strong>Code:</strong> {(checks.rls as any).code}</p>
-                       <p><strong>Conseil:</strong> {(checks.rls as any).hint}</p>
-                     </div>
-                   )}
                 </CardContent>
               </Card>
 
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Security Hardening</CardTitle>
-                  {getStatusIcon(checks.hardening)}
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <Shield className="h-4 w-4" />
+                    Hardening
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {getStatusBadge(checks.hardening)}
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {checks.hardening?.message || 'Durcissement de sécurité'}
-                  </p>
-                   {checks.hardening && !checks.hardening.ok && (checks.hardening as any).hint && (
-                     <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-xs">
-                       <p><strong>Code:</strong> {(checks.hardening as any).code}</p>
-                       <p><strong>Conseil:</strong> {(checks.hardening as any).hint}</p>
-                     </div>
-                   )}
                 </CardContent>
               </Card>
 
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Environment</CardTitle>
-                  {getStatusIcon(checks.diagnostic)}
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    Diagnostic
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {getStatusBadge(checks.diagnostic)}
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {checks.diagnostic?.message || 'Configuration environnement'}
-                  </p>
                 </CardContent>
               </Card>
 
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">CRON Status</CardTitle>
-                  {getStatusIcon(checks.cronStatus)}
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <Server className="h-4 w-4" />
+                    Smoke Test
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
+                  {getStatusBadge(checks.smoke)}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* CRON Status */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  Statut CRON
+                  {isAllChecksPassed() ? 
+                    <CheckCircle className="h-5 w-5 text-green-500" /> : 
+                    <XCircle className="h-5 w-5 text-red-500" />
+                  }
+                </CardTitle>
+                <CardDescription>
+                  Activation automatique des tâches de maintenance
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between mb-4">
                   {getStatusBadge(checks.cronStatus)}
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {checks.cronStatus?.message || 'Statut du scheduler'}
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Global Smoke Test Result */}
-            {checks.smoke && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Shield className="h-5 w-5" />
-                    Security Smoke Test
-                  </CardTitle>
-                  <CardDescription>
-                    Test de fumée global - Statut de sécurité général
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      {getStatusIcon(checks.smoke)}
-                      <div>
-                        <p className="font-medium">{checks.smoke.message}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Dernière vérification: {checks.smoke.timestamp || 'Maintenant'}
-                        </p>
-                      </div>
-                    </div>
-                    {getStatusBadge(checks.smoke)}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* CORS Test & CRON Activation */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Globe className="h-5 w-5" />
-                    Test CORS
-                  </CardTitle>
-                  <CardDescription>
-                    Vérifie que l'origine courante est autorisée
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between mb-4">
-                    {getStatusBadge(checks.corsTest)}
-                    <Button onClick={testCors} disabled={loading} size="sm">
-                      Tester CORS
-                    </Button>
-                  </div>
-                  {checks.corsTest && (
-                    <p className="text-sm text-muted-foreground">
-                      {checks.corsTest.message}
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="h-5 w-5" />
-                    Activation CRON
-                  </CardTitle>
-                  <CardDescription>
-                    Active le scheduler automatique (nécessite tous les checks PASS)
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between mb-4">
-                    {getStatusBadge(checks.cronStatus)}
-                    <Button 
-                      onClick={enableCron} 
-                      disabled={loading || !isAllChecksPassed()} 
-                      size="sm"
-                      className={!isAllChecksPassed() ? 'opacity-50 cursor-not-allowed' : ''}
-                    >
-                      Activer CRON
-                    </Button>
-                  </div>
-                  {!isAllChecksPassed() && (
-                    <Alert>
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertDescription>
-                        Tous les checks (RLS, Hardening, Diagnostic, Smoke) doivent être PASS avant d'activer le CRON.
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+                  <Button 
+                    onClick={enableCron} 
+                    disabled={loading || !isAllChecksPassed()} 
+                    size="sm"
+                    className={!isAllChecksPassed() ? 'opacity-50 cursor-not-allowed' : ''}
+                  >
+                    Activer CRON
+                  </Button>
+                </div>
+                {!isAllChecksPassed() && (
+                  <Alert>
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>
+                      Tous les checks (RLS, Hardening, Diagnostic, Smoke) doivent être PASS avant d'activer le CRON.
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="environment" className="space-y-6">
@@ -534,7 +562,142 @@ const SecurityDashboard = () => {
                     <RefreshCw className="h-4 w-4 mr-2" />
                     Actualiser
                   </Button>
+                  <Button onClick={showRequestDetails} variant="outline" size="sm">
+                    <Info className="h-4 w-4 mr-2" />
+                    Tester appel
+                  </Button>
                 </div>
+
+                {/* Network Diagnostics */}
+                <Separator className="my-6" />
+                <div className="space-y-4">
+                  <h4 className="font-medium flex items-center gap-2">
+                    <Activity className="h-4 w-4" />
+                    Diagnostics Réseau
+                  </h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium">VITE_SUPABASE_URL</span>
+                        {import.meta.env.VITE_SUPABASE_URL ? 
+                          <CheckCircle className="h-4 w-4 text-green-600" /> : 
+                          <XCircle className="h-4 w-4 text-red-600" />
+                        }
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {import.meta.env.VITE_SUPABASE_URL || 'Non défini'}
+                      </p>
+                    </Card>
+
+                    <Card className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium">Protocole</span>
+                        {window.location.protocol === 'https:' ? 
+                          <CheckCircle className="h-4 w-4 text-green-600" /> : 
+                          <AlertTriangle className="h-4 w-4 text-orange-500" />
+                        }
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {window.location.protocol}
+                      </p>
+                    </Card>
+
+                    <Card className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium">Mixed Content</span>
+                        {import.meta.env.VITE_SUPABASE_URL?.startsWith('http://') && window.location.protocol === 'https:' ? 
+                          <XCircle className="h-4 w-4 text-red-600" /> : 
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                        }
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {import.meta.env.VITE_SUPABASE_URL?.startsWith('http://') && window.location.protocol === 'https:' ? 
+                          'Bloqué' : 'OK'
+                        }
+                      </p>
+                    </Card>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button onClick={pingEdgeFunction} variant="outline" size="sm">
+                      <Zap className="h-4 w-4 mr-2" />
+                      Ping Edge
+                    </Button>
+                    <Button onClick={testCORS} variant="outline" size="sm">
+                      <Globe className="h-4 w-4 mr-2" />
+                      Tester CORS
+                    </Button>
+                    {proxyFallback && (
+                      <Badge variant="secondary" className="ml-auto">
+                        via proxy
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Network Results */}
+                  {networkDiagnostics.ping && (
+                    <Alert>
+                      <Activity className="h-4 w-4" />
+                      <AlertDescription>
+                        <strong>Ping Edge:</strong> {networkDiagnostics.ping.ok ? 
+                          `✅ OK (${networkDiagnostics.ping.latency}ms)` : 
+                          '❌ Échec'
+                        }
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  {networkDiagnostics.cors?.result && (
+                    <Alert>
+                      <Globe className="h-4 w-4" />
+                      <AlertDescription>
+                        <strong>CORS Test:</strong> {networkDiagnostics.cors.result.isAllowed ? 
+                          `✅ PASS - Origine ${networkDiagnostics.cors.result.origin} autorisée` : 
+                          `❌ FAIL - Origine ${networkDiagnostics.cors.result.origin} NON autorisée`
+                        }
+                        {networkDiagnostics.cors.result.allowedOrigins?.length > 0 && (
+                          <div className="mt-1 text-sm">
+                            Origines autorisées: {networkDiagnostics.cors.result.allowedOrigins.join(', ')}
+                          </div>
+                        )}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+
+                {/* Error Details */}
+                {errorDetails && (
+                  <Alert variant={errorDetails.code === 'ADMIN_TOKEN_MISSING' ? 'destructive' : 'default'}>
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>
+                      <div className="space-y-2">
+                        <div><strong>Erreur:</strong> {errorDetails.message}</div>
+                        {errorDetails.code && <div><strong>Code:</strong> {errorDetails.code}</div>}
+                        {errorDetails.hint && <div><strong>Solution:</strong> {errorDetails.hint}</div>}
+                        {errorDetails.type === 'network' && (
+                          <div className="text-sm mt-2">
+                            <div><strong>URL:</strong> {errorDetails.url}</div>
+                            <div><strong>Origin:</strong> {errorDetails.origin}</div>
+                            {errorDetails.mixedContent && (
+                              <div className="text-red-600"><strong>⚠️ Mixed Content détecté</strong></div>
+                            )}
+                          </div>
+                        )}
+                        {errorDetails.code === 'ADMIN_TOKEN_MISSING' && (
+                          <Button onClick={() => setShowEnvDialog(true)} size="sm" className="mt-2">
+                            Copier .env
+                          </Button>
+                        )}
+                        {errorDetails.code === 'IP_NOT_ALLOWED' && (
+                          <div className="text-sm mt-1">
+                            IPs autorisées: {envStatus.find(e => e.name === 'ADMIN_IP_ALLOWLIST')?.value || 'non défini'}
+                          </div>
+                        )}
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -549,18 +712,18 @@ const SecurityDashboard = () => {
                     Vérification RLS
                   </CardTitle>
                   <CardDescription>
-                    Teste les politiques Row Level Security
+                    Vérifier les politiques Row Level Security
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-4">
                     {getStatusBadge(checks.rls)}
                     <Button onClick={runRLSCheck} disabled={loading} size="sm">
-                      Vérifier RLS
+                      Exécuter
                     </Button>
                   </div>
                   {checks.rls && (
-                    <p className="text-xs text-muted-foreground mt-2">
+                    <p className="text-sm text-muted-foreground">
                       {checks.rls.message}
                     </p>
                   )}
@@ -571,21 +734,21 @@ const SecurityDashboard = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Shield className="h-4 w-4" />
-                    Vérification Hardening
+                    Hardening Check
                   </CardTitle>
                   <CardDescription>
-                    Contrôle la configuration de sécurité
+                    Vérifications de durcissement sécuritaire
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-4">
                     {getStatusBadge(checks.hardening)}
                     <Button onClick={runHardeningCheck} disabled={loading} size="sm">
-                      Vérifier Hardening
+                      Exécuter
                     </Button>
                   </div>
                   {checks.hardening && (
-                    <p className="text-xs text-muted-foreground mt-2">
+                    <p className="text-sm text-muted-foreground">
                       {checks.hardening.message}
                     </p>
                   )}
@@ -599,18 +762,18 @@ const SecurityDashboard = () => {
                     Diagnostic ENV
                   </CardTitle>
                   <CardDescription>
-                    Vérifie les variables d'environnement
+                    Diagnostic des variables d'environnement
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-4">
                     {getStatusBadge(checks.diagnostic)}
                     <Button onClick={runDiagnostic} disabled={loading} size="sm">
-                      Diagnostic
+                      Exécuter
                     </Button>
                   </div>
                   {checks.diagnostic && (
-                    <p className="text-xs text-muted-foreground mt-2">
+                    <p className="text-sm text-muted-foreground">
                       {checks.diagnostic.message}
                     </p>
                   )}
@@ -620,105 +783,101 @@ const SecurityDashboard = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4" />
-                    Nettoyage
+                    <Server className="h-4 w-4" />
+                    Security Smoke Test
                   </CardTitle>
                   <CardDescription>
-                    Supprime les artefacts de debug
+                    Test complet de sécurité
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between">
-                    {getStatusBadge(checks.clean)}
-                    <Button onClick={runCleanup} disabled={loading} size="sm" variant="outline">
-                      Nettoyer
+                  <div className="flex items-center justify-between mb-4">
+                    {getStatusBadge(checks.smoke)}
+                    <Button onClick={runSmokeTest} disabled={loading} size="sm">
+                      Exécuter
                     </Button>
                   </div>
-                  {checks.clean && (
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {checks.clean.message}
+                  {checks.smoke && (
+                    <p className="text-sm text-muted-foreground">
+                      {checks.smoke.message}
                     </p>
                   )}
                 </CardContent>
               </Card>
             </div>
 
-            {/* CRON Controls */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  Contrôle CRON
-                </CardTitle>
-                <CardDescription>
-                  Activation/désactivation du scheduler automatique
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between mb-4">
-                  {getStatusBadge(checks.cronStatus)}
-                  <div className="flex gap-2">
-                    <Button onClick={disableCron} disabled={loading} size="sm" variant="outline">
-                      Désactiver
-                    </Button>
-                    <Button onClick={enableCron} disabled={loading} size="sm">
-                      Activer
-                    </Button>
-                  </div>
-                </div>
-                <Alert>
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>
-                    Le CRON ne peut être activé que si tous les tests de sécurité sont PASS.
-                  </AlertDescription>
-                </Alert>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="monitoring" className="space-y-6">
-            {/* Alerts Monitoring */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Eye className="h-4 w-4" />
-                  Surveillance Alertes
-                </CardTitle>
-                <CardDescription>
-                  Monitoring des événements de sécurité
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between mb-4">
-                  {getStatusBadge(checks.alerts)}
-                  <Button onClick={checkAlerts} disabled={loading} size="sm">
-                    Vérifier Alertes
+            {/* Additional Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Alertes</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Button onClick={getSecurityAlerts} disabled={loading} size="sm" className="w-full">
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    Voir Alertes
                   </Button>
-                </div>
-                {checks.alerts?.details && (
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">
-                      Webhook: {checks.alerts.details.webhookEnabled ? '✅ Activé' : '❌ Désactivé'}
-                    </p>
-                    {checks.alerts.details.alerts && checks.alerts.details.alerts.length > 0 && (
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Alertes récentes:</p>
-                        {checks.alerts.details.alerts.map((alert: any, index: number) => (
-                          <div key={index} className="p-2 bg-muted rounded text-sm">
-                            <Badge variant={alert.severity === 'high' ? 'destructive' : 'secondary'}>
-                              {alert.severity}
-                            </Badge>
-                            <span className="ml-2">{alert.message}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Nettoyage</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Button onClick={cleanSecurity} disabled={loading} size="sm" className="w-full" variant="outline">
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Nettoyer
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">CRON</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Button 
+                    onClick={enableCron} 
+                    disabled={loading || !isAllChecksPassed()} 
+                    size="sm" 
+                    className="w-full"
+                  >
+                    <Power className="h-4 w-4 mr-2" />
+                    Activer
+                  </Button>
+                  <Button onClick={disableCron} disabled={loading} size="sm" variant="outline" className="w-full">
+                    <PowerOff className="h-4 w-4 mr-2" />
+                    Désactiver
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
+
+        {/* ENV Sample Dialog */}
+        <Dialog open={showEnvDialog} onOpenChange={setShowEnvDialog}>
+          <DialogContent className="max-w-4xl max-h-[80vh]">
+            <DialogHeader>
+              <DialogTitle>Configuration .env</DialogTitle>
+              <DialogDescription>
+                Exemple de fichier .env avec les variables requises
+              </DialogDescription>
+            </DialogHeader>
+            <ScrollArea className="h-96">
+              <pre className="text-sm bg-muted p-4 rounded-lg whitespace-pre-wrap">
+                {envSample || envContent}
+              </pre>
+            </ScrollArea>
+            <div className="flex justify-end gap-2">
+              <Button onClick={() => copyEnvContent()} className="flex items-center gap-2">
+                <Copy className="h-4 w-4" />
+                Copier
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );

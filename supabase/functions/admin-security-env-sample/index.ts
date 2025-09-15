@@ -1,15 +1,28 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-admin-token, content-type',
-  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-  'Vary': 'Origin'
+function corsHeaders(req: Request) {
+  const origin = req.headers.get('origin') || req.headers.get('referer');
+  const allowedOrigins = Deno.env.get('ALLOWED_ORIGINS');
+  
+  let allowOrigin = '*';
+  if (allowedOrigins && origin) {
+    const allowed = allowedOrigins.split(',').map(o => o.trim());
+    if (allowed.includes(origin) || allowed.includes('*')) {
+      allowOrigin = origin;
+    }
+  }
+  
+  return {
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Headers': 'content-type, authorization, x-admin-token',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Vary': 'Origin'
+  };
 }
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: corsHeaders });
+    return new Response(null, { status: 204, headers: corsHeaders(req) });
   }
 
   try {
@@ -26,7 +39,7 @@ serve(async (req) => {
           message: 'X-Admin-Token requis.', 
           hint: 'Définir ADMIN_DASHBOARD_TOKEN côté serveur.' 
         }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 401, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
       );
     }
     
@@ -39,7 +52,7 @@ serve(async (req) => {
           message: 'Jeton admin invalide.', 
           hint: 'Vérifier ADMIN_DASHBOARD_TOKEN.' 
         }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 403, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
       );
     }
 
@@ -137,7 +150,7 @@ VITE_WATER_MDD_CSV_URL=/data/eaux_MDD_par_distributeur_et_source_FR_v3.csv
         ]
       }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } 
       }
     );
 
@@ -154,7 +167,7 @@ VITE_WATER_MDD_CSV_URL=/data/eaux_MDD_par_distributeur_et_source_FR_v3.csv
       }),
       { 
         status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } 
       }
     );
   }
