@@ -75,6 +75,8 @@ const SecurityDashboard = () => {
   const [errorDetails, setErrorDetails] = useState<any>(null);
   const [proxyFallback, setProxyFallback] = useState(false);
   const [scrapingResults, setScrapingResults] = useState<any>(null);
+  const [autoTestResults, setAutoTestResults] = useState<any[]>([]);
+  const [autoTestLoading, setAutoTestLoading] = useState(false);
 
   // Load initial data
   useEffect(() => {
@@ -404,6 +406,54 @@ const SecurityDashboard = () => {
       console.error('CSV export error:', error);
       toast.error(`Erreur export CSV: ${error.message}`);
     }
+  };
+
+  const runAutoTest = async () => {
+    setAutoTestResults([]);
+    setAutoTestLoading(true);
+
+    const tests = [
+      { name: 'Ping Edge', endpoint: 'admin-security-ping', expected: 'ok:true' },
+      { name: 'ENV Status', endpoint: 'admin-security-env-status', expected: 'flags présents' },
+      { name: 'RLS Check', endpoint: 'admin-security-rls', expected: 'checks structurés' },
+      { name: 'Hardening Check', endpoint: 'admin-security-hardening', expected: 'checks structurés' },
+    ];
+
+    for (const test of tests) {
+      try {
+        const result = await callSecurityEndpoint(test.endpoint, `Auto-test ${test.name}`);
+        setAutoTestResults(prev => [...prev, {
+          name: test.name,
+          status: result.ok ? '✅' : '❌',
+          result: result.ok ? 'PASS' : 'FAIL',
+          details: result.checks ? `${result.checks.filter(c => c.ok).length}/${result.checks.length} checks passed` : result.message,
+          via: result.via || 'direct',
+          rawResult: result
+        }]);
+      } catch (error) {
+        let errorDetails = error.message;
+        try {
+          const errorData = JSON.parse(error.message);
+          if (errorData.code && errorData.message) {
+            errorDetails = `${errorData.code}: ${errorData.message}`;
+            if (errorData.hint) {
+              errorDetails += ` (${errorData.hint})`;
+            }
+          }
+        } catch {}
+        
+        setAutoTestResults(prev => [...prev, {
+          name: test.name,
+          status: '❌',
+          result: 'ERROR',
+          details: errorDetails,
+          via: 'failed',
+          rawResult: null
+        }]);
+      }
+    }
+
+    setAutoTestLoading(false);
   };
 
   const isAllChecksPassed = () => {
@@ -1002,27 +1052,66 @@ const SecurityDashboard = () => {
                 </CardContent>
               </Card>
 
+              {/* Auto-Test Admin */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">CRON</CardTitle>
+                  <CardTitle className="text-base">Auto-Test Admin</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button 
-                    onClick={enableCron} 
-                    disabled={loading || !isAllChecksPassed()} 
-                    size="sm" 
-                    className="w-full"
-                  >
-                    <Power className="h-4 w-4 mr-2" />
-                    Activer
-                  </Button>
-                  <Button onClick={disableCron} disabled={loading} size="sm" variant="outline" className="w-full">
-                    <PowerOff className="h-4 w-4 mr-2" />
-                    Désactiver
+                <CardContent>
+                  <Button onClick={runAutoTest} disabled={autoTestLoading} size="sm" className="w-full" variant="default">
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    {autoTestLoading ? 'Testing...' : 'Lancer Tests'}
                   </Button>
                 </CardContent>
               </Card>
             </div>
+
+            {/* Auto-Test Results */}
+            {autoTestResults.length > 0 && (
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4" />
+                    Résultats Auto-Test Admin
+                  </CardTitle>
+                  <CardDescription>
+                    Tests automatisés des fonctions d'administration
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {autoTestResults.map((test, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 rounded-lg border">
+                        <div className="flex items-center gap-3">
+                          <span className="text-lg">{test.status}</span>
+                          <div>
+                            <div className="font-medium">{test.name}</div>
+                            <div className="text-sm text-muted-foreground">{test.details}</div>
+                            {test.via === 'proxy' && (
+                              <Badge variant="outline" className="mt-1">via proxy</Badge>
+                            )}
+                          </div>
+                        </div>
+                        <Badge variant={test.result === 'PASS' ? 'default' : 'destructive'}>
+                          {test.result}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-4 p-4 bg-muted rounded-lg">
+                    <div className="text-sm">
+                      <strong>Résumé:</strong> {autoTestResults.filter(t => t.result === 'PASS').length}/{autoTestResults.length} tests réussis
+                    </div>
+                    {autoTestResults.some(t => t.via === 'proxy') && (
+                      <div className="text-sm text-amber-600 mt-2">
+                        ⚠️ Certains tests utilisent le proxy fallback - vérifier la configuration CORS
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
 
