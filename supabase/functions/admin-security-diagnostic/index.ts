@@ -1,13 +1,28 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-admin-token',
+function corsHeaders(req: Request) {
+  const origin = req.headers.get('origin') || req.headers.get('referer');
+  const allowedOrigins = Deno.env.get('ALLOWED_ORIGINS');
+  
+  let allowOrigin = '*';
+  if (allowedOrigins && origin) {
+    const allowed = allowedOrigins.split(',').map(o => o.trim());
+    if (allowed.includes(origin) || allowed.includes('*')) {
+      allowOrigin = origin;
+    }
+  }
+  
+  return {
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Headers': 'content-type, x-admin-token, authorization',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Vary': 'Origin'
+  };
 }
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { status: 204, headers: corsHeaders(req) });
   }
 
   try {
@@ -15,14 +30,58 @@ serve(async (req) => {
     const adminToken = req.headers.get('x-admin-token');
     const expectedToken = Deno.env.get('ADMIN_DASHBOARD_TOKEN');
     
-    if (!expectedToken || adminToken !== expectedToken) {
+    if (!adminToken || !expectedToken) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
+        JSON.stringify({ 
+          ok: false, 
+          status: 401, 
+          code: "ADMIN_TOKEN_MISSING", 
+          message: "X-Admin-Token requis.", 
+          hint: "Définir ADMIN_DASHBOARD_TOKEN côté serveur et renvoyer le header X-Admin-Token." 
+        }),
         { 
           status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } 
         }
       );
+    }
+    
+    if (adminToken !== expectedToken) {
+      return new Response(
+        JSON.stringify({ 
+          ok: false, 
+          status: 403, 
+          code: "ADMIN_TOKEN_INVALID", 
+          message: "Jeton admin invalide.", 
+          hint: "Vérifier ADMIN_DASHBOARD_TOKEN." 
+        }),
+        { 
+          status: 403, 
+          headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    // Check IP allowlist if configured
+    const ipAllowlist = Deno.env.get('ADMIN_IP_ALLOWLIST');
+    if (ipAllowlist) {
+      const clientIp = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '';
+      const allowedIps = ipAllowlist.split(',').map(ip => ip.trim());
+      if (!allowedIps.includes(clientIp)) {
+        return new Response(
+          JSON.stringify({ 
+            ok: false, 
+            status: 403, 
+            code: "IP_NOT_ALLOWED", 
+            message: "IP non autorisée.", 
+            hint: "Vérifier ADMIN_IP_ALLOWLIST." 
+          }),
+          { 
+            status: 403, 
+            headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } 
+          }
+        );
+      }
     }
 
     // Environment diagnostic
@@ -106,6 +165,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         ok: isHealthy,
+        status: 200,
         warning: hasWarnings,
         message: isHealthy 
           ? (hasWarnings ? 'Configuration valide avec avertissements' : 'Configuration optimale')
@@ -124,7 +184,7 @@ serve(async (req) => {
         ]
       }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } 
       }
     );
 
@@ -133,12 +193,14 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         ok: false, 
-        error: 'Internal server error',
-        message: error.message 
+        status: 500, 
+        code: "UNEXPECTED_ERROR", 
+        message: `Erreur serveur interne: ${error.message}`, 
+        hint: "Consulter logs Edge Function." 
       }),
       { 
         status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } 
       }
     );
   }

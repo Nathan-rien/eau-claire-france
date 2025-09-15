@@ -87,22 +87,45 @@ const SecurityDashboard = () => {
     setErrorDetails(null);
     
     try {
-      const { data, error } = await supabase.functions.invoke(endpoint, {
-        body: {}
+      const EDGE_BASE = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`;
+      const FN = (name: string) => `${EDGE_BASE}/${name}`;
+      const token = getAdminToken();
+      
+      if (!token) {
+        setAuthError('Token admin manquant');
+        toast.error('Token admin requis');
+        return null;
+      }
+      
+      const response = await fetch(FN(endpoint), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Admin-Token": token
+        },
+        body: JSON.stringify({}),
+        signal: AbortSignal.timeout(8000)
       });
-
-      if (error) {
-        // Check for authentication errors
-        if (error.message?.includes('Unauthorized') || error.message?.includes('401')) {
-          setAuthError('Accès admin requis — définissez ADMIN_DASHBOARD_TOKEN côté serveur et envoyez l\'entête X-Admin-Token.');
-          toast.error('Accès non autorisé - Token admin requis');
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        
+        // Display detailed error from Edge Function
+        if (errorData.code && errorData.message && errorData.hint) {
+          setErrorDetails({
+            status: errorData.status || response.status,
+            code: errorData.code,
+            message: errorData.message,
+            hint: errorData.hint
+          });
+          toast.error(`${actionName}: ${errorData.message}`);
           return null;
         }
         
-        toast.error(`Erreur ${actionName}: ${error.message}`);
-        return null;
+        throw new Error(JSON.stringify(errorData));
       }
-
+      
+      const data = await response.json();
       toast.success(`${actionName} terminé avec succès`);
       return data;
     } catch (error) {
