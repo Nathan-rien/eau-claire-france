@@ -163,8 +163,7 @@ const SecurityDashboard = () => {
     const url = FN(functionName);
     const headers = {
       'Content-Type': 'application/json',
-      'X-Admin-Token': getAdminToken(),
-      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || ''}`
+      'X-Admin-Token': getAdminToken()
     };
 
     try {
@@ -284,8 +283,7 @@ const SecurityDashboard = () => {
       protocol: window.location.protocol,
       headers: {
         'Content-Type': 'application/json',
-        'X-Admin-Token': '***masked***',
-        'Authorization': 'Bearer ***masked***'
+        'X-Admin-Token': '***masked***'
       },
       payload: {}
     };

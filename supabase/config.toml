@@ -53,3 +53,9 @@ verify_jwt = false
 
 [functions.debug-brands]
 verify_jwt = false
+
+[functions.admin-security-echo]
+verify_jwt = false
+
+[functions.admin-security-logs]
+verify_jwt = false

@@ -11,12 +11,18 @@ function corsHeaders(req: Request) {
       allowOrigin = origin;
     }
   }
+
+  const url = new URL(req.url);
+  const fnName = url.pathname.split('/').pop() || 'unknown';
+  const buildId = Deno.env.get('VERCEL_GIT_COMMIT_SHA') ?? Deno.env.get('BUILD_ID') ?? 'dev';
   
   return {
     'Access-Control-Allow-Origin': allowOrigin,
-    'Access-Control-Allow-Headers': 'content-type, authorization, x-admin-token',
+    'Access-Control-Allow-Headers': 'content-type, x-admin-token, authorization',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Vary': 'Origin'
+    'Vary': 'Origin',
+    'X-Edge-Build-Id': buildId,
+    'X-Edge-Function': fnName
   };
 }
 
@@ -176,6 +182,11 @@ ALERT_WEBHOOK_URL=${Deno.env.get('ALERT_WEBHOOK_URL') || '# https://hooks.slack.
 
     console.log('Environment status collected successfully');
 
+    const projectEnvUrl = Deno.env.get('SUPABASE_URL') || '';
+    const frontEnvUrl = Deno.env.get('VITE_SUPABASE_URL') || '';
+    const projectMatch = !!(projectEnvUrl && frontEnvUrl && frontEnvUrl.startsWith(projectEnvUrl));
+    const frontOriginClaimed = req.headers.get('origin') || null;
+
     return new Response(
       JSON.stringify({
         ok: true,
@@ -191,6 +202,9 @@ ALERT_WEBHOOK_URL=${Deno.env.get('ALERT_WEBHOOK_URL') || '# https://hooks.slack.
         envStatus,
         flags,
         envContent,
+        front_url_claimed: frontOriginClaimed,
+        project_env_url: projectEnvUrl,
+        project_match: projectMatch,
         timestamp: new Date().toISOString()
       }),
       { headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }

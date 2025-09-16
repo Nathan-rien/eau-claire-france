@@ -285,7 +285,7 @@ Sitemap: https://infoeau.fr/sitemap.xml`;
     return new Response(
       JSON.stringify({ 
         ok: false, 
-        status: 500, 
+        status: 200, 
         code: "UNEXPECTED_ERROR", 
         message: `Erreur serveur interne: ${error.message}`, 
         hint: "Consulter logs Edge Function.",
@@ -293,7 +293,7 @@ Sitemap: https://infoeau.fr/sitemap.xml`;
         errors: [error.message]
       }),
       { 
-        status: 500, 
+        status: 200, 
         headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } 
       }
     );

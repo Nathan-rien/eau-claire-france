@@ -269,7 +269,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         ok: false, 
-        status: 500, 
+        status: 200, 
         code: "UNEXPECTED_ERROR", 
         message: `Erreur serveur interne: ${error.message}`, 
         hint: "Consulter logs Edge Function.",
@@ -277,7 +277,7 @@ serve(async (req) => {
         errors: [error.message]
       }),
       { 
-        status: 500, 
+        status: 200, 
         headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } 
       }
     );
