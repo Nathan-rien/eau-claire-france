@@ -13,7 +13,7 @@ Prefix `VITE_` **OBLIGATOIRE** pour exposition client
 
 ```bash
 VITE_SUPABASE_URL=https://xblogttmomuogdhmaztf.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJ...your-anon-key-here...
+VITE_SUPABASE_ANON_KEY=eyJ...Kerlann10210789!...
 ```
 
 ## Sécurité & Admin
