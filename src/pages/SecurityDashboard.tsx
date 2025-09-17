@@ -12,6 +12,7 @@ import Layout from '@/components/Layout';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
+import EnvDebugger from '@/components/EnvDebugger';
 
 interface SecurityCheckResult {
   ok: boolean;
@@ -536,8 +537,9 @@ const SecurityDashboard = () => {
         </div>
 
         <Tabs defaultValue="environment" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="environment">ENV Helper</TabsTrigger>
+            <TabsTrigger value="env-debug">ENV Debug</TabsTrigger>
             <TabsTrigger value="self-check">Self-check</TabsTrigger>
             <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
             <TabsTrigger value="checks">Vérifications</TabsTrigger>
@@ -1270,6 +1272,11 @@ const SecurityDashboard = () => {
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
+
+          {/* ENV Debug Tab */}
+          <TabsContent value="env-debug" className="space-y-6">
+            <EnvDebugger />
           </TabsContent>
         </Tabs>
 
