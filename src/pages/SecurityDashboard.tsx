@@ -59,7 +59,7 @@ const SecurityDashboard = () => {
   const [showEnvDialog, setShowEnvDialog] = useState(false);
   const [authError, setAuthError] = useState<string>('');
   const [envStatus, setEnvStatus] = useState<EnvStatus[]>([]);
-  const [flags, setFlags] = useState<any>({});
+  const [flags, setFlags] = useState<Record<string, any>>({});
   const [envContent, setEnvContent] = useState<string>('');
   const [showEnvStatusDialog, setShowEnvStatusDialog] = useState(false);
 
@@ -71,7 +71,7 @@ const SecurityDashboard = () => {
     return localStorage.getItem('infoeau_admin_token') || import.meta.env.VITE_ADMIN_DASHBOARD_TOKEN || '';
   };
 
-  const [networkDiagnostics, setNetworkDiagnostics] = useState<any>({});
+  const [networkDiagnostics, setNetworkDiagnostics] = useState<Record<string, any>>({});
   const [errorDetails, setErrorDetails] = useState<any>(null);
   const [proxyFallback, setProxyFallback] = useState(false);
   const [scrapingResults, setScrapingResults] = useState<any>(null);

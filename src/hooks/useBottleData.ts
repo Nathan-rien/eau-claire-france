@@ -8,7 +8,7 @@ export const useBottles = (options: {
   page?: number;
   limit?: number;
   search?: string;
-  filters?: any;
+  filters?: Record<string, any>;
 } = {}) => {
   return useQuery({
     queryKey: ['bottles', options],
@@ -21,7 +21,7 @@ export const useBottles = (options: {
 export const useInfiniteBottles = (options: {
   limit?: number;
   search?: string;
-  filters?: any;
+  filters?: Record<string, any>;
 } = {}) => {
   return useInfiniteQuery({
     queryKey: ['bottles-infinite', options],
@@ -74,9 +74,9 @@ export const useWaterTypes = () => {
 };
 
 export function useBottleData() {
-  const [composition, setComposition] = useState<any[] | null>(null);
-  const [catalog, setCatalog] = useState<any[] | null>(null);
-  const [mdd, setMdd] = useState<any[] | null>(null);
+  const [composition, setComposition] = useState<Record<string, any>[] | null>(null);
+  const [catalog, setCatalog] = useState<Record<string, any>[] | null>(null);
+  const [mdd, setMdd] = useState<Record<string, any>[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<null | string>(null);
 
@@ -93,9 +93,9 @@ export function useBottleData() {
         setComposition(c1);
         setCatalog(c2);
         setMdd(c3);
-      } catch (e: any) {
+      } catch (e: unknown) {
         console.error(e);
-        setError(e?.message ?? "Erreur de chargement des données");
+        setError(e instanceof Error ? e.message : "Erreur de chargement des données");
       } finally {
         setLoading(false);
       }
