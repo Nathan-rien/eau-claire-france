@@ -68,7 +68,7 @@ const SecurityDashboard = () => {
   const FN = (name: string) => `${EDGE_BASE}/${name}`;
   
   const getAdminToken = () => {
-    return localStorage.getItem('admin-token') || 'your-admin-token-here';
+    return localStorage.getItem('infoeau_admin_token') || import.meta.env.VITE_ADMIN_DASHBOARD_TOKEN || '';
   };
 
   const [networkDiagnostics, setNetworkDiagnostics] = useState<any>({});
@@ -77,10 +77,14 @@ const SecurityDashboard = () => {
   const [scrapingResults, setScrapingResults] = useState<any>(null);
   const [autoTestResults, setAutoTestResults] = useState<any[]>([]);
   const [autoTestLoading, setAutoTestLoading] = useState(false);
+  const [adminToken, setAdminToken] = useState<string>('');
+  const [showTokenInput, setShowTokenInput] = useState(false);
+  const [selfCheckResults, setSelfCheckResults] = useState<any>({});
 
   // Load initial data
   useEffect(() => {
     loadInitialData();
+    setAdminToken(getAdminToken());
   }, []);
 
   const callSecurityEndpoint = async (endpoint: string, actionName: string) => {
@@ -532,8 +536,9 @@ const SecurityDashboard = () => {
         </div>
 
         <Tabs defaultValue="environment" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="environment">ENV Helper</TabsTrigger>
+            <TabsTrigger value="self-check">Self-check</TabsTrigger>
             <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
             <TabsTrigger value="checks">Vérifications</TabsTrigger>
           </TabsList>
@@ -828,6 +833,161 @@ const SecurityDashboard = () => {
                     </AlertDescription>
                   </Alert>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="self-check" className="space-y-6">
+            {/* Self-check Dashboard */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="h-5 w-5" />
+                  Self-check - Tests en Temps Réel
+                </CardTitle>
+                <CardDescription>
+                  Vérification rapide des fonctions Edge et de la configuration
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {/* Configuration URLs */}
+                <div className="space-y-4 mb-6">
+                  <h4 className="font-medium">Configuration URL</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-mono bg-muted p-4 rounded">
+                    <div>
+                      <strong>VITE_SUPABASE_URL:</strong>
+                      <div className="text-xs text-muted-foreground truncate">
+                        {import.meta.env.VITE_SUPABASE_URL}
+                      </div>
+                    </div>
+                    <div>
+                      <strong>EDGE_BASE:</strong>
+                      <div className="text-xs text-muted-foreground truncate">
+                        {EDGE_BASE}
+                      </div>
+                    </div>
+                    <div>
+                      <strong>Origin actuel:</strong>
+                      <div className="text-xs text-muted-foreground">
+                        {window.location.origin}
+                      </div>
+                    </div>
+                    <div>
+                      <strong>Token configuré:</strong>
+                      <div className="text-xs text-muted-foreground">
+                        {getAdminToken() ? `${getAdminToken().substring(0, 8)}...` : 'Non configuré'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Self-check Buttons */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <Button 
+                    onClick={async () => {
+                      const result = await fetch(`/api/admin/security/proxy?fn=admin-security-ping`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': getAdminToken() }
+                      }).then(r => r.json()).catch(e => ({ error: e.message }));
+                      setSelfCheckResults(prev => ({ ...prev, pingProxy: result }));
+                    }}
+                    variant="outline"
+                    className="h-20 flex flex-col items-center justify-center"
+                  >
+                    <Server className="h-5 w-5 mb-1" />
+                    Ping via proxy
+                  </Button>
+                  
+                  <Button 
+                    onClick={async () => {
+                      const result = await callEdgeFunctionDirect('admin-security-ping');
+                      setSelfCheckResults(prev => ({ ...prev, pingDirect: result }));
+                    }}
+                    variant="outline"
+                    className="h-20 flex flex-col items-center justify-center"
+                  >
+                    <Zap className="h-5 w-5 mb-1" />
+                    Ping direct
+                  </Button>
+                  
+                  <Button 
+                    onClick={async () => {
+                      const result = await callEdgeFunctionDirect('admin-security-echo');
+                      setSelfCheckResults(prev => ({ ...prev, echo: result }));
+                    }}
+                    variant="outline"
+                    className="h-20 flex flex-col items-center justify-center"
+                  >
+                    <Activity className="h-5 w-5 mb-1" />
+                    Echo Test
+                  </Button>
+                  
+                  <Button 
+                    onClick={async () => {
+                      const result = await callEdgeFunctionDirect('admin-security-logs');
+                      setSelfCheckResults(prev => ({ ...prev, logs: result }));
+                    }}
+                    variant="outline"
+                    className="h-20 flex flex-col items-center justify-center"
+                  >
+                    <Eye className="h-5 w-5 mb-1" />
+                    Logs Edge
+                  </Button>
+                </div>
+
+                {/* Results Display */}
+                <div className="space-y-4">
+                  {Object.entries(selfCheckResults).map(([key, result]: [string, any]) => (
+                    <Card key={key} className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1')}</h4>
+                        <Badge variant={result?.ok ? 'default' : 'destructive'}>
+                          {result?.ok ? '✅ OK' : '❌ FAIL'}
+                        </Badge>
+                      </div>
+                      
+                      {result?.via && (
+                        <Badge variant="secondary" className="mb-2">via {result.via}</Badge>
+                      )}
+                      
+                      <ScrollArea className="h-32">
+                        <pre className="text-xs bg-muted p-2 rounded overflow-auto">
+                          {JSON.stringify(result, null, 2)}
+                        </pre>
+                      </ScrollArea>
+                      
+                      {/* CORS Diagnostic for direct calls */}
+                      {key === 'pingDirect' && !result?.ok && (
+                        <Alert className="mt-2">
+                          <AlertTriangle className="h-4 w-4" />
+                          <AlertDescription>
+                            <div className="text-sm space-y-1">
+                              <div><strong>Origin actuel:</strong> {window.location.origin}</div>
+                              <div><strong>À ajouter dans ALLOWED_ORIGINS:</strong></div>
+                              <div className="font-mono bg-background p-1 rounded text-xs">
+                                {window.location.origin}
+                              </div>
+                            </div>
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                      
+                      {/* Echo Results Validation */}
+                      {key === 'echo' && result?.received && (
+                        <div className="mt-2 text-sm space-y-1">
+                          <div className={`flex items-center gap-2 ${!result.received.headers?.authorization_present ? 'text-green-600' : 'text-red-600'}`}>
+                            {!result.received.headers?.authorization_present ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                            Authorization absent: {String(!result.received.headers?.authorization_present)}
+                          </div>
+                          <div className={`flex items-center gap-2 ${result.received.headers?.x_admin_token ? 'text-green-600' : 'text-red-600'}`}>
+                            {result.received.headers?.x_admin_token ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                            X-Admin-Token présent: {String(!!result.received.headers?.x_admin_token)}
+                          </div>
+                        </div>
+                      )}
+                    </Card>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
