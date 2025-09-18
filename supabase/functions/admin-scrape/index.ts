@@ -3,21 +3,21 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.0';
 
 function corsHeaders(req: Request) {
   const origin = req.headers.get('origin') || req.headers.get('referer');
-  const allowedOrigins = Deno.env.get('ALLOWED_ORIGINS');
+  const frontOrigin = Deno.env.get('FRONT_ORIGIN');
   
-  let allowOrigin = '*';
-  if (allowedOrigins && origin) {
-    const allowed = allowedOrigins.split(',').map(o => o.trim());
-    if (allowed.includes(origin) || allowed.includes('*')) {
-      allowOrigin = origin;
-    }
+  let allowOrigin = frontOrigin ?? '*';
+  if (frontOrigin && origin && origin !== frontOrigin) {
+    allowOrigin = frontOrigin;
+  } else if (origin) {
+    allowOrigin = origin;
   }
   
   return {
     'Access-Control-Allow-Origin': allowOrigin,
-    'Access-Control-Allow-Headers': 'content-type, authorization, x-admin-token',
+    'Access-Control-Allow-Headers': 'content-type, x-admin-token, authorization',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Vary': 'Origin'
+    'Vary': 'Origin',
+    'Content-Type': 'application/json'
   };
 }
 
@@ -33,7 +33,7 @@ serve(async (req) => {
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: corsHeaders(req) });
+    return new Response(null, { status: 200, headers: corsHeaders(req) });
   }
 
   try {
@@ -73,9 +73,22 @@ serve(async (req) => {
     );
 
     const body = await req.json();
-    console.log('Request payload:', JSON.stringify(body, null, 2));
+    console.log('[admin-scrape] Request payload (without secrets):', JSON.stringify({
+      ...body,
+      // Don't log any sensitive data
+    }, null, 2));
     
-    const { mode, action, retailers, brands, formats, maxPages, headful, dryRun } = body;
+    // Set defaults for Wide Run
+    const { 
+      mode = 'wide', 
+      action, 
+      retailers = ['carrefour','auchan','leclerc','intermarche','u','monoprix'], 
+      brands = ['cristaline','evian','volvic','hepar','contrex','perrier','vittel'], 
+      formats = ['0,5 l','1 l','1,5 l'], 
+      maxPages = 2, 
+      headful = false, 
+      dryRun = false 
+    } = body;
 
     // Support both old 'action' field and new 'mode' field for backwards compatibility
     if (action === 'wide-run' || mode === 'wide') {
@@ -93,27 +106,62 @@ serve(async (req) => {
         dryRun 
       });
       
-      // Create a new run record
-      const { data: runData, error: runError } = await supabase
-        .from('runs')
-        .insert({
-          retailer_id: '00000000-0000-0000-0000-000000000000', // Placeholder for wide run
-          status: 'running',
-          notes: `Wide run: ${actualRetailers.length} retailers, ${actualFormats.length} formats, ${actualBrands.length} brands`
-        })
-        .select()
-        .single();
+      // Create a new run record with robust error handling
+      let runData;
+      try {
+        console.log('[admin-scrape] Creating run record with type: wide');
+        const { data, error: runError } = await supabase
+          .from('runs')
+          .insert({
+            type: 'wide',
+            status: 'queued',
+            payload: {
+              retailers: actualRetailers,
+              brands: actualBrands,
+              formats: actualFormats,
+              maxPages,
+              headful,
+              dryRun
+            }
+          })
+          .select()
+          .single();
 
-      if (runError) {
-        console.error('Failed to create run record:', runError);
+        if (runError) {
+          console.error('[admin-scrape] run insert failed', { 
+            code: runError.code, 
+            message: runError.message, 
+            details: runError.details 
+          });
+          return new Response(
+            JSON.stringify({ 
+              ok: false, 
+              status: 200, 
+              code: 'RUN_CREATE_FAILED', 
+              message: runError.message,
+              hint: 'Check RLS and schema' 
+            }),
+            { status: 200, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
+          );
+        }
+
+        runData = data;
+        console.log('[admin-scrape] Run record created successfully:', runData.id);
+      } catch (error) {
+        console.error('[admin-scrape] run insert failed', { 
+          code: error.code, 
+          message: error.message, 
+          details: error.details 
+        });
         return new Response(
           JSON.stringify({ 
             ok: false, 
-            status: 500, 
-            message: 'Failed to create run record',
-            error: runError.message 
+            status: 200, 
+            code: 'RUN_CREATE_FAILED', 
+            message: error.message,
+            hint: 'Check RLS and schema' 
           }),
-          { status: 500, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
+          { status: 200, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
         );
       }
 
@@ -175,16 +223,11 @@ serve(async (req) => {
       const response = {
         ok: true,
         status: 200,
+        runId: runData.id,
         startedAt: new Date().toISOString(),
         retailersCount: actualRetailers.length,
-        queued: totalItemsFound,
-        hint: "Check /admin or /prix-eaux in a minute",
-        itemsFound: totalItemsFound,
-        itemsSaved: totalItemsSaved,
-        retailersTested: actualRetailers.length,
-        retailersSuccess: successfulRetailers,
-        retailers: results,
-        runId: runData.id
+        queued: true,
+        hint: "Suivez /admin ou /prix-eaux dans 1–2 min"
       };
 
       console.log('Wide run completed:', response);

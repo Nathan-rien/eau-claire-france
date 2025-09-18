@@ -390,22 +390,27 @@ const SecurityDashboard = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}`);
+        if (errorData.code && errorData.message) {
+          toast.error(`${errorData.code}: ${errorData.message}`);
+        } else {
+          throw new Error(errorData.message || `HTTP ${response.status}`);
+        }
+        return;
       }
 
       const data = await response.json();
       
       if (!data.ok) {
-        toast.error(`Edge Function error: ${data.code || 'UNKNOWN'} - ${data.message}`);
+        toast.error(`${data.code || 'UNKNOWN'}: ${data.message}`);
         return;
       }
 
       setScrapingResults(data);
-      toast.success(`Wide Run démarré: ${data.startedAt}, ${data.retailersCount} enseignes, ${data.queued} produits attendus`);
+      toast.success(`Run démarré (runId: ${data.runId})`);
       
       // Add link to see results
       setTimeout(() => {
-        toast.success("Voir les résultats dans /prix-eaux", {
+        toast.success("Voir les résultats", {
           action: {
             label: "Voir /prix-eaux",
             onClick: () => window.open('/prix-eaux', '_blank')
@@ -464,12 +469,28 @@ const SecurityDashboard = () => {
 
   const exportPricesCSV = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('admin-scrape', {
-        body: { action: 'export-csv' }
+      const adminToken = import.meta.env.VITE_ADMIN_DASHBOARD_TOKEN;
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      
+      const response = await fetch(`${supabaseUrl}/functions/v1/admin-scrape`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Token': adminToken
+        },
+        body: JSON.stringify({ action: 'export-csv' })
       });
 
-      if (error) {
-        toast.error(`Erreur export CSV: ${error.message}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        toast.error(`Erreur export CSV: ${errorData.message || `HTTP ${response.status}`}`);
+        return;
+      }
+
+      const data = await response.json();
+      
+      if (!data.ok) {
+        toast.error(`Erreur export CSV: ${data.message}`);
         return;
       }
 
@@ -1145,25 +1166,11 @@ const SecurityDashboard = () => {
                       <AlertDescription>
                         <div className="space-y-2">
                           <div><strong>Dernière réponse Wide Run:</strong></div>
+                          <div>Run ID: {scrapingResults.runId}</div>
                           <div>Démarré: {scrapingResults.startedAt}</div>
                           <div>Enseignes: {scrapingResults.retailersCount}</div>
-                          <div>Produits attendus: {scrapingResults.queued}+</div>
+                          <div>Status: {scrapingResults.queued ? '✅ En file' : '❌ Erreur'}</div>
                           <div className="text-sm text-muted-foreground">{scrapingResults.hint}</div>
-                          {scrapingResults.retailers && (
-                            <div className="mt-2">
-                              <strong>Détail par enseigne:</strong>
-                              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-1">
-                                {Object.entries(scrapingResults.retailers).map(([retailer, result]: [string, any]) => (
-                                  <div key={retailer} className="flex items-center gap-1">
-                                    <span className="text-xs">{retailer}:</span>
-                                    <Badge variant={result.success ? 'default' : 'destructive'} className="text-xs">
-                                      {result.success ? `✅ ${result.count}` : '❌ Fail'}
-                                    </Badge>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
                         </div>
                       </AlertDescription>
                     </Alert>

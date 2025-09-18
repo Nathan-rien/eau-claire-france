@@ -344,6 +344,7 @@ export type Database = {
       runs: {
         Row: {
           created_at: string
+          error: Json | null
           error_rate: number | null
           finished_at: string | null
           id: string
@@ -351,14 +352,19 @@ export type Database = {
           items_saved: number | null
           notes: string | null
           outliers_count: number | null
+          payload: Json | null
           quality_score: number | null
+          queued_at: string
+          result: Json | null
           retailer_id: string
           started_at: string
           status: string
+          type: string
           unknown_brands_count: number | null
         }
         Insert: {
           created_at?: string
+          error?: Json | null
           error_rate?: number | null
           finished_at?: string | null
           id?: string
@@ -366,14 +372,19 @@ export type Database = {
           items_saved?: number | null
           notes?: string | null
           outliers_count?: number | null
+          payload?: Json | null
           quality_score?: number | null
+          queued_at?: string
+          result?: Json | null
           retailer_id: string
           started_at?: string
           status?: string
+          type?: string
           unknown_brands_count?: number | null
         }
         Update: {
           created_at?: string
+          error?: Json | null
           error_rate?: number | null
           finished_at?: string | null
           id?: string
@@ -381,10 +392,14 @@ export type Database = {
           items_saved?: number | null
           notes?: string | null
           outliers_count?: number | null
+          payload?: Json | null
           quality_score?: number | null
+          queued_at?: string
+          result?: Json | null
           retailer_id?: string
           started_at?: string
           status?: string
+          type?: string
           unknown_brands_count?: number | null
         }
         Relationships: [
