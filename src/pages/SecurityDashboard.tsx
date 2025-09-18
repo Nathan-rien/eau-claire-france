@@ -358,27 +358,107 @@ const SecurityDashboard = () => {
     setScrapingResults(null);
     
     try {
-      const { data, error } = await supabase.functions.invoke('admin-scrape', {
-        body: {
-          action: 'wide-run',
-          retailers: ['carrefour', 'carrefour_drive', 'auchan', 'auchan_super', 'leclerc', 'intermarche', 'u_drive', 'monoprix'],
-          formats: ['50cl', '1l', '1.5l'],
-          brands: ['Cristaline', 'Evian', 'Volvic', 'Hépar', 'Contrex', 'Perrier', 'Vittel']
-        }
+      const adminToken = import.meta.env.VITE_ADMIN_DASHBOARD_TOKEN;
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      
+      if (!adminToken) {
+        toast.error("VITE_ADMIN_DASHBOARD_TOKEN non configuré");
+        return;
+      }
+      
+      if (!supabaseUrl) {
+        toast.error("VITE_SUPABASE_URL non configuré");
+        return;
+      }
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/admin-scrape`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Token': adminToken
+        },
+        body: JSON.stringify({
+          mode: "wide",
+          retailers: ["carrefour","auchan","leclerc","intermarche","u","monoprix"],
+          brands: ["cristaline","evian","volvic","hepar","contrex","perrier","vittel"],
+          formats: ["0,5 l","1 l","1,5 l"],
+          maxPages: 2,
+          headful: false,
+          dryRun: false
+        })
       });
 
-      if (error) {
-        toast.error(`Erreur Wide Run: ${error.message}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.ok) {
+        toast.error(`Edge Function error: ${data.code || 'UNKNOWN'} - ${data.message}`);
         return;
       }
 
       setScrapingResults(data);
-      toast.success(`Wide Run terminé: ${data.itemsSaved} produits sauvegardés`);
+      toast.success(`Wide Run démarré: ${data.startedAt}, ${data.retailersCount} enseignes, ${data.queued} produits attendus`);
+      
+      // Add link to see results
+      setTimeout(() => {
+        toast.success("Voir les résultats dans /prix-eaux", {
+          action: {
+            label: "Voir /prix-eaux",
+            onClick: () => window.open('/prix-eaux', '_blank')
+          }
+        });
+      }, 1000);
+      
     } catch (error) {
-      console.error('Wide Run error:', error);
-      toast.error(`Erreur Wide Run: ${error.message}`);
+      console.error('Wide Run network error:', error);
+      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        toast.error("Edge Function injoignable (réseau/CORS)");
+      } else {
+        toast.error(`Erreur Wide Run: ${error.message}`);
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const testWideScrapingRun = async () => {
+    const adminToken = import.meta.env.VITE_ADMIN_DASHBOARD_TOKEN;
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    
+    console.log('Testing Wide Run...');
+    console.log('URL:', `${supabaseUrl}/functions/v1/admin-scrape`);
+    console.log('Admin Token:', adminToken ? `${adminToken.substring(0, 8)}***${adminToken.substring(adminToken.length - 4)}` : 'MISSING');
+    
+    try {
+      const response = await fetch(`${supabaseUrl}/functions/v1/admin-scrape`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Token': adminToken
+        },
+        body: JSON.stringify({
+          mode: "wide",
+          retailers: ["carrefour","auchan"],
+          brands: ["cristaline","evian"],
+          formats: ["1 l"],
+          maxPages: 1,
+          headful: false,
+          dryRun: true
+        })
+      });
+      
+      console.log('Response status:', response.status);
+      const data = await response.json();
+      console.log('Response data:', JSON.stringify(data, null, 2));
+      
+      toast.success(`Test terminé - Status: ${response.status}, OK: ${data.ok}`);
+    } catch (error) {
+      console.error('Test error:', error);
+      toast.error(`Test échoué: ${error.message}`);
     }
   };
 
@@ -1033,6 +1113,15 @@ const SecurityDashboard = () => {
                       Lancer Wide Run
                     </Button>
                     <Button 
+                      onClick={testWideScrapingRun} 
+                      variant="outline" 
+                      size="sm"
+                      className="flex items-center gap-2"
+                    >
+                      <Activity className="h-4 w-4" />
+                      Tester Wide Run (console)
+                    </Button>
+                    <Button 
                       onClick={() => window.open('/prix-eaux', '_blank')} 
                       variant="outline" 
                       size="sm"
@@ -1055,11 +1144,11 @@ const SecurityDashboard = () => {
                       <Activity className="h-4 w-4" />
                       <AlertDescription>
                         <div className="space-y-2">
-                          <div><strong>Résultats Wide Run:</strong></div>
-                          <div>Items trouvés: {scrapingResults.itemsFound}</div>
-                          <div>Items sauvegardés: {scrapingResults.itemsSaved}</div>
-                          <div>Enseignes testées: {scrapingResults.retailersTested}</div>
-                          <div>Enseignes réussies: {scrapingResults.retailersSuccess}</div>
+                          <div><strong>Dernière réponse Wide Run:</strong></div>
+                          <div>Démarré: {scrapingResults.startedAt}</div>
+                          <div>Enseignes: {scrapingResults.retailersCount}</div>
+                          <div>Produits attendus: {scrapingResults.queued}+</div>
+                          <div className="text-sm text-muted-foreground">{scrapingResults.hint}</div>
                           {scrapingResults.retailers && (
                             <div className="mt-2">
                               <strong>Détail par enseigne:</strong>

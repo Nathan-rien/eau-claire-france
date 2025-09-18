@@ -73,12 +73,25 @@ serve(async (req) => {
     );
 
     const body = await req.json();
-    const { action } = body;
+    console.log('Request payload:', JSON.stringify(body, null, 2));
+    
+    const { mode, action, retailers, brands, formats, maxPages, headful, dryRun } = body;
 
-    if (action === 'wide-run') {
-      const { retailers, formats, brands } = body;
+    // Support both old 'action' field and new 'mode' field for backwards compatibility
+    if (action === 'wide-run' || mode === 'wide') {
+      // Use data from body destructuring above
+      const actualRetailers = retailers || ['carrefour','auchan','leclerc','intermarche','u','monoprix'];
+      const actualFormats = formats || ['0,5 l','1 l','1,5 l'];
+      const actualBrands = brands || ['cristaline','evian','volvic','hepar','contrex','perrier','vittel'];
       
-      console.log('Starting wide scraping run:', { retailers, formats, brands });
+      console.log('Starting wide scraping run:', { 
+        retailers: actualRetailers, 
+        formats: actualFormats, 
+        brands: actualBrands, 
+        maxPages, 
+        headful, 
+        dryRun 
+      });
       
       // Create a new run record
       const { data: runData, error: runError } = await supabase
@@ -86,7 +99,7 @@ serve(async (req) => {
         .insert({
           retailer_id: '00000000-0000-0000-0000-000000000000', // Placeholder for wide run
           status: 'running',
-          notes: `Wide run: ${retailers.length} retailers, ${formats.length} formats, ${brands.length} brands`
+          notes: `Wide run: ${actualRetailers.length} retailers, ${actualFormats.length} formats, ${actualBrands.length} brands`
         })
         .select()
         .single();
@@ -110,12 +123,12 @@ serve(async (req) => {
       let successfulRetailers = 0;
 
       // Simulate scraping for each retailer
-      for (const retailer of retailers) {
+      for (const retailer of actualRetailers) {
         try {
           console.log(`Scraping ${retailer}...`);
           
           // Simulate scraping process with mock data
-          const mockProducts = generateMockProducts(retailer, formats, brands);
+          const mockProducts = generateMockProducts(retailer, actualFormats, actualBrands);
           
           // Insert mock products into prices table
           if (mockProducts.length > 0) {
@@ -154,7 +167,7 @@ serve(async (req) => {
           finished_at: new Date().toISOString(),
           items_found: totalItemsFound,
           items_saved: totalItemsSaved,
-          error_rate: (retailers.length - successfulRetailers) / retailers.length,
+          error_rate: (actualRetailers.length - successfulRetailers) / actualRetailers.length,
           quality_score: totalItemsSaved > 80 ? 1.0 : totalItemsSaved / 80
         })
         .eq('id', runData.id);
@@ -162,13 +175,16 @@ serve(async (req) => {
       const response = {
         ok: true,
         status: 200,
+        startedAt: new Date().toISOString(),
+        retailersCount: actualRetailers.length,
+        queued: totalItemsFound,
+        hint: "Check /admin or /prix-eaux in a minute",
         itemsFound: totalItemsFound,
         itemsSaved: totalItemsSaved,
-        retailersTested: retailers.length,
+        retailersTested: actualRetailers.length,
         retailersSuccess: successfulRetailers,
         retailers: results,
-        runId: runData.id,
-        timestamp: new Date().toISOString()
+        runId: runData.id
       };
 
       console.log('Wide run completed:', response);
