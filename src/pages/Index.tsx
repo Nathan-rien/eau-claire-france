@@ -81,7 +81,7 @@ const Index = () => {
                       <div className="text-xs text-green-500 mt-2 opacity-75 group-hover:opacity-100 transition-opacity">→ {t('home.quickAccess.clickHere')}</div>
                     </div>
                   </Link>
-                  <Link to="/comparatif-bouteilles" className="group cursor-pointer">
+                  <Link to="/quelle-eau-boire" className="group cursor-pointer">
                     <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-3 md:p-4 lg:p-6 border-2 border-orange-200 hover:border-orange-300 hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1">
                       <TrendingUp className="w-6 h-6 md:w-7 md:h-7 lg:w-9 lg:h-9 text-orange-600 mx-auto mb-3" />
                       <div className="text-sm md:text-base lg:text-lg font-bold text-orange-700">{t('home.quickAccess.bottles')}</div>

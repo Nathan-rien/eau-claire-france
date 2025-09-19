@@ -86,7 +86,7 @@ const App = () => {
                 <Route path="/alertes" element={<Alertes />} />
                 <Route path="/diagnostic" element={<Diagnostic />} />
                 
-                <Route path="/comparatif-bouteilles" element={<ComparatifBouteilles />} />
+                
                 <Route path="/quelle-eau-boire" element={<LazyWaterRecommendation />} />
                 <Route path="/classement" element={<Classement />} />
                 <Route path="/polluants" element={<Polluants />} />

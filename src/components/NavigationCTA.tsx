@@ -23,10 +23,10 @@ const NavigationCTA = () => {
       borderColor: "border-green-200"
     },
     {
-      title: "Comparatif",
-      description: "Comparez les eaux en bouteille",
+      title: "Quelle eau boire ?",
+      description: "Trouvez l'eau qui vous convient",
       icon: <Droplets className="w-8 h-8 text-purple-600" />,
-      href: "/comparatif-bouteilles",
+      href: "/quelle-eau-boire",
       bgColor: "bg-purple-50",
       borderColor: "border-purple-200"
     }
