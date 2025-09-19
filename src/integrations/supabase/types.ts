@@ -356,7 +356,7 @@ export type Database = {
           quality_score: number | null
           queued_at: string
           result: Json | null
-          retailer_id: string
+          retailer_id: string | null
           started_at: string
           status: string
           type: string
@@ -376,7 +376,7 @@ export type Database = {
           quality_score?: number | null
           queued_at?: string
           result?: Json | null
-          retailer_id: string
+          retailer_id?: string | null
           started_at?: string
           status?: string
           type?: string
@@ -396,7 +396,7 @@ export type Database = {
           quality_score?: number | null
           queued_at?: string
           result?: Json | null
-          retailer_id?: string
+          retailer_id?: string | null
           started_at?: string
           status?: string
           type?: string
