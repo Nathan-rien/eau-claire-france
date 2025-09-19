@@ -414,7 +414,30 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      prices_history_last: {
+        Row: {
+          availability: string | null
+          brand: string | null
+          created_at: string | null
+          id: string | null
+          image_url: string | null
+          is_promo: boolean | null
+          pack_count: number | null
+          price_per_l_eur: number | null
+          price_total_eur: number | null
+          product_name: string | null
+          promo_label: string | null
+          retailer_id: string | null
+          run_id: string | null
+          scraped_at: string | null
+          sku: string | null
+          total_volume_l: number | null
+          unique_hash: string | null
+          unit_volume_l: number | null
+          url: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       cleanup_old_rate_limits: {

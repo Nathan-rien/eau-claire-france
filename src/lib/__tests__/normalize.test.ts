@@ -165,14 +165,14 @@ describe('computePricePerL', () => {
 
 describe('generateUniqueHash', () => {
   test('generates consistent hash', () => {
-    const hash1 = generateUniqueHash('carrefour', 'SKU123', 'Evian 1,5L', 1.5, 4.98, '2024-01-01T10:00:00Z');
-    const hash2 = generateUniqueHash('carrefour', 'SKU123', 'Evian 1,5L', 1.5, 4.98, '2024-01-01T10:00:00Z');
+    const hash1 = generateUniqueHash('carrefour', 'SKU123', 'Evian 1,5L', 1.5, 1, 'https://carrefour.fr/evian', '2024-01-01T10:00:00Z');
+    const hash2 = generateUniqueHash('carrefour', 'SKU123', 'Evian 1,5L', 1.5, 1, 'https://carrefour.fr/evian', '2024-01-01T10:00:00Z');
     expect(hash1).toBe(hash2);
   });
 
   test('generates different hash for different inputs', () => {
-    const hash1 = generateUniqueHash('carrefour', 'SKU123', 'Evian 1,5L', 1.5, 4.98, '2024-01-01T10:00:00Z');
-    const hash2 = generateUniqueHash('auchan', 'SKU123', 'Evian 1,5L', 1.5, 4.98, '2024-01-01T10:00:00Z');
+    const hash1 = generateUniqueHash('carrefour', 'SKU123', 'Evian 1,5L', 1.5, 1, 'https://carrefour.fr/evian', '2024-01-01T10:00:00Z');
+    const hash2 = generateUniqueHash('auchan', 'SKU123', 'Evian 1,5L', 1.5, 1, 'https://auchan.fr/evian', '2024-01-01T10:00:00Z');
     expect(hash1).not.toBe(hash2);
   });
 });

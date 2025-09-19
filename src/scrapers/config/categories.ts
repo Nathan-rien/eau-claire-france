@@ -20,6 +20,11 @@ export const WATER_CATEGORIES: Record<string, CategoryConfig> = {
     name: 'Eaux minérales',
     paginationStrategy: 'link'
   },
+  carrefour_market: {
+    url: 'https://market.carrefour.fr/recherche?query=eau%20min%C3%A9rale',
+    name: 'Eaux minérales',
+    paginationStrategy: 'link'
+  },
   auchan: {
     url: 'https://www.auchan.fr/recherche?text=eau%20min%C3%A9rale',
     name: 'Eaux minérales',
@@ -45,10 +50,35 @@ export const WATER_CATEGORIES: Record<string, CategoryConfig> = {
     name: 'Eaux minérales',
     paginationStrategy: 'link'
   },
+  u_express: {
+    url: 'https://www.magasins-u.com/recherche?query=eau%20min%C3%A9rale',
+    name: 'Eaux minérales',
+    paginationStrategy: 'link'
+  },
   monoprix: {
     url: 'https://www.monoprix.fr/recherche?text=eau%20min%C3%A9rale',
     name: 'Eaux minérales',
     paginationStrategy: 'scroll'
+  },
+  franprix: {
+    url: 'https://www.franprix.fr/recherche?q=eau%20min%C3%A9rale',
+    name: 'Eaux minérales',
+    paginationStrategy: 'link'
+  },
+  cora: {
+    url: 'https://www.cora.fr/recherche?q=eau%20min%C3%A9rale',
+    name: 'Eaux minérales',
+    paginationStrategy: 'link'
+  },
+  match: {
+    url: 'https://www.supermarchesmatch.fr/recherche?q=eau%20min%C3%A9rale',
+    name: 'Eaux minérales',
+    paginationStrategy: 'link'
+  },
+  chronodrive: {
+    url: 'https://www.chronodrive.com/recherche?q=eau%20min%C3%A9rale',
+    name: 'Eaux minérales',
+    paginationStrategy: 'link'
   }
 };
 

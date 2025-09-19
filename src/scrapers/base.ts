@@ -40,11 +40,12 @@ export abstract class BaseScraper {
             }
           }
         }
-        // Category fallback if nothing found after all queries
-        if (items.length === 0) {
+        // Category fallback if nothing found after all queries or very few results
+        if (items.length < 5) {
           try {
             const added = await this.scrapeCategoryFallback(browser, options);
             items.push(...added);
+            console.log(`[${this.retailerName}] Category fallback added ${added.length} items`);
           } catch (e) {
             console.error(`[${this.retailerName}] Category fallback failed`, e);
           }
@@ -94,8 +95,9 @@ export abstract class BaseScraper {
       } catch {}
 
       let currentPage = 1;
+      let totalItems = 0;
       
-      while (currentPage <= maxPages) {
+      while (currentPage <= maxPages && totalItems < 100) { // Max 100 items per query
         console.log(`[${this.retailerName}] Scraping page ${currentPage} for query: ${query}`);
 
         try {
@@ -105,8 +107,9 @@ export abstract class BaseScraper {
           // Extract products from current page
           const pageItems = await this.extractProducts(page);
           items.push(...pageItems);
+          totalItems += pageItems.length;
 
-          console.log(`[${this.retailerName}] Found ${pageItems.length} items on page ${currentPage}`);
+          console.log(`[${this.retailerName}] Found ${pageItems.length} items on page ${currentPage} (total: ${totalItems})`);
 
           try {
             const { logMetric, capture } = await import('./helpers/debug');
@@ -116,8 +119,18 @@ export abstract class BaseScraper {
             if ((options as any).debug) await capture(page as any, this.retailerName, options as any, `search-${query}-p${currentPage}`);
           } catch {}
 
+          // If no items found, try pagination strategies
+          if (pageItems.length === 0) {
+            // Try scroll-based pagination
+            await this.paginateByScroll(page, { iterations: 3, waitMs: 2000 });
+            const scrollItems = await this.extractProducts(page);
+            items.push(...scrollItems);
+            totalItems += scrollItems.length;
+            console.log(`[${this.retailerName}] Scroll pagination found ${scrollItems.length} additional items`);
+          }
+
           // Try to go to next page
-          if (currentPage < maxPages && this.selectors.nextPage) {
+          if (currentPage < maxPages && this.selectors.nextPage && pageItems.length > 0) {
             const nextButton = await page.$(this.selectors.nextPage);
             if (nextButton) {
               await nextButton.click();
@@ -344,25 +357,40 @@ export abstract class BaseScraper {
     try {
       const page = await browser.newPage();
       try {
-        const { CATEGORY_FALLBACK } = await import('./config/categories');
-        const urlMap: Record<string, string> = CATEGORY_FALLBACK as any;
+        const { WATER_CATEGORIES } = await import('./config/categories');
         const retailerSlug = this.retailerName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        const categoryUrl = urlMap[retailerSlug];
-        if (!categoryUrl) return items;
-        await page.goto(categoryUrl, { waitUntil: 'networkidle' });
+        const categoryConfig = WATER_CATEGORIES[retailerSlug];
+        if (!categoryConfig) return items;
+        
+        console.log(`[${this.retailerName}] Using category fallback: ${categoryConfig.url}`);
+        await page.goto(categoryConfig.url, { waitUntil: 'networkidle' });
+        
         try {
           const { capture, logMetric } = await import('./helpers/debug');
           // @ts-ignore
           if (options?.debug) await capture(page as any, this.retailerName, options as any, 'category-fallback');
           await logMetric(this.retailerName, options as any, { step: 'category-opened', url: page.url() });
         } catch {}
+        
         await page.waitForSelector(this.selectors.productContainer, { timeout: 10000 }).catch(() => {});
+        
+        // Apply pagination strategy based on config
+        if (categoryConfig.paginationStrategy === 'scroll') {
+          await this.paginateByScroll(page, { iterations: 5, waitMs: 2000 });
+        } else if (categoryConfig.paginationStrategy === 'link' && this.selectors.nextPage) {
+          await this.paginateByLink(page, [this.selectors.nextPage], 3);
+        }
+        
         const pageItems = await this.extractProducts(page);
         items.push(...pageItems);
+        console.log(`[${this.retailerName}] Category fallback found ${pageItems.length} items`);
       } finally {
         await page.close();
       }
-    } catch {}
+    } catch (error) {
+      console.error(`[${this.retailerName}] Category fallback error:`, error);
+    }
+    
     // If still nothing, write NO_RESULTS report
     try {
       if (items.length === 0 && options?.debug) {

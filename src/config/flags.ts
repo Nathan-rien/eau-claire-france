@@ -25,6 +25,9 @@ const DEFAULT_FLAGS = {
   // Debug and development
   FF_VERBOSE_LOGGING: IS_DEV, // Detailed console logging
   FF_SOURCE_MAPS: IS_DEV, // Generate source maps
+  
+  // Scraping flags
+  ALLOW_UNKNOWN_BRANDS: true, // Allow products with unknown brands
 };
 
 // Override flags from environment variables (for runtime configuration)
@@ -48,6 +51,7 @@ export const FLAGS = {
   CRON_ENABLED: getEnvFlag('CRON_ENABLED', DEFAULT_FLAGS.CRON_ENABLED),
   FF_VERBOSE_LOGGING: getEnvFlag('FF_VERBOSE_LOGGING', DEFAULT_FLAGS.FF_VERBOSE_LOGGING),
   FF_SOURCE_MAPS: getEnvFlag('FF_SOURCE_MAPS', DEFAULT_FLAGS.FF_SOURCE_MAPS),
+  ALLOW_UNKNOWN_BRANDS: getEnvFlag('ALLOW_UNKNOWN_BRANDS', DEFAULT_FLAGS.ALLOW_UNKNOWN_BRANDS),
 };
 
 // Security configuration

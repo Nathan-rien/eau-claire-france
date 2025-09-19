@@ -9,7 +9,9 @@ const WATER_BRANDS = [
   'contrex', 'vittel', 'perrier', 'badoit', 'mont roucous', 'saint-amand',
   'st amand', 'quézac', 'quezac', 'wattwiller', 'ozan', 'montcalm',
   'thonon', 'salvetat', 'rozana', 'arcens', 'vernière', 'abatilles',
-  'carrefour', 'leclerc', 'auchan', 'monoprix', 'u', 'casino'
+  'carrefour', 'leclerc', 'auchan', 'monoprix', 'u', 'casino', 'intermarché',
+  'franprix', 'cora', 'match', 'chronodrive', 'système u', 'marque u',
+  'eau de source', 'eau minérale', 'source naturelle'
 ];
 
 // Volume/pack patterns that indicate water bottles
@@ -28,7 +30,7 @@ const EXCLUDE_TERMS = [
   'fraise', 'pêche', 'orange', 'thé', 'infusion', 'boisson gazeuse',
   'soda', 'sirop', 'jus', 'cola', 'limonade', 'energy', 'sport',
   'machine sodastream', 'fontaine', 'carafe filtrante', 'bonbonne 19l',
-  'distributeur', 'réservoir', 'glacière', 'frigo'
+  'distributeur', 'réservoir', 'glacière', 'frigo', 'bouchon sport'
 ];
 
 // Terms that indicate uncertainty (flag for manual review)
@@ -73,8 +75,16 @@ export function filterProduct(title: string, brand?: string): FilterResult {
     return false;
   });
 
-  // Include if has water brand OR volume pattern
-  if (hasWaterBrand || hasVolumePattern) {
+  // Check for basic water indicators (more lenient)
+  const hasWaterIndicator = titleLower.includes('eau') || 
+                           titleLower.includes('water') ||
+                           titleLower.includes('minérale') ||
+                           titleLower.includes('source') ||
+                           titleLower.includes('plate') ||
+                           titleLower.includes('gazeuse');
+
+  // Include if has water brand OR volume pattern OR basic water indicator with volume
+  if (hasWaterBrand || (hasVolumePattern && hasWaterIndicator) || hasVolumePattern) {
     include = true;
   }
 
@@ -105,16 +115,16 @@ export function filterProduct(title: string, brand?: string): FilterResult {
     uncertain = true;
   }
 
-  // If no clear volume pattern and no water brand, mark as uncertain
-  if (!hasVolumePattern && !hasWaterBrand && !exclude) {
-    uncertain = true;
-    reasons.push('No clear volume pattern or water brand detected');
+  // More lenient inclusion - if has volume pattern and basic water indicator, include
+  if (hasVolumePattern && hasWaterIndicator && !exclude) {
+    include = true;
+    uncertain = false;
   }
 
   return {
-    include: include && !exclude && !uncertain,
+    include: include && !exclude,
     exclude,
-    uncertain,
+    uncertain: uncertain && !include && !exclude,
     reasons
   };
 }
@@ -130,27 +140,39 @@ export function generateWaterQueries(): string[] {
   ];
 
   const formatTokens = [
-    '50 cl', '0,5 l', '0.5 l', '1 l', '1,5 l', '1.5 l',
-    '6x1,5 l', '6 x 1,5 l', 'pack 6', 'lot 6'
+    '50cl', '50 cl', '0,5l', '0,5 l', '0.5l', '0.5 l',
+    '1l', '1 l', '1,0l', '1,0 l', '1.0l', '1.0 l',
+    '1,5l', '1,5 l', '1.5l', '1.5 l',
+    '6x1,5l', '6x1,5 l', '6 x 1,5l', '6 x 1,5 l',
+    '6x1l', '6x1 l', '6 x 1l', '6 x 1 l',
+    '12x50cl', '12 x 50cl', '12x50 cl', '12 x 50 cl',
+    'pack 6', 'lot 6', 'pack 12', 'lot 12',
+    '9l', '9 l', '9,0l', '9,0 l'
   ];
 
   const queries = new Set<string>();
 
-  // Brand + format combinations
+  // Brand + format combinations (limited to 6-8 per brand for performance)
   brands.forEach(brand => {
     // Brand only
     queries.add(brand);
     
-    // Brand + 3-4 most common formats
-    const commonFormats = formatTokens.slice(0, 4);
+    // Brand + most common formats (limit to 6)
+    const commonFormats = formatTokens.slice(0, 6);
     commonFormats.forEach(format => {
       queries.add(`${brand} ${format}`);
     });
   });
 
-  // Generic volume searches
-  formatTokens.forEach(format => {
+  // Generic volume searches with normalization variants
+  const genericFormats = [
+    '50cl', '50 cl', '1l', '1 l', '1,5l', '1,5 l', '1.5l', '1.5 l',
+    '6x1,5l', '6x1,5 l', '6 x 1,5l', '6 x 1,5 l'
+  ];
+  
+  genericFormats.forEach(format => {
     queries.add(`eau ${format}`);
+    queries.add(`eau minérale ${format}`);
   });
 
   // Generic searches
@@ -158,6 +180,8 @@ export function generateWaterQueries(): string[] {
   queries.add('eau de source');
   queries.add('eau plate');
   queries.add('eau gazeuse');
+  queries.add('bouteille eau');
+  queries.add('bouteilles eau');
 
   return Array.from(queries);
 }

@@ -27,7 +27,7 @@ export const getBrands = async () => {
   return uniqueBrands;
 };
 
-// GET /api/prices
+// GET /api/prices - reads from latest view for freshness
 export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedResponse<any>> => {
   const {
     brand,
@@ -39,8 +39,9 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
     page = 1
   } = filters;
 
+  // Try to read from prices_history_last first for freshness
   let query = supabase
-    .from('prices')
+    .from('prices_history_last')
     .select(`
       *,
       retailer:retailers(name, slug)
@@ -88,10 +89,56 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
 
   const { data, error, count } = await query;
 
-  if (error) throw error;
+  if (error) {
+    // Fallback to prices table if view doesn't exist or fails
+    console.warn('Failed to read from prices_history_last, falling back to prices table:', error);
+    query = supabase
+      .from('prices')
+      .select(`
+        *,
+        retailer:retailers(name, slug)
+      `, { count: 'exact' });
+
+    // Reapply filters for fallback
+    if (brand) query = query.eq('brand', brand);
+    if (retailer) query = query.eq('retailer_id', retailer);
+    if (format) {
+      if (format === '50cl') {
+        query = query.gte('unit_volume_l', 0.4).lte('unit_volume_l', 0.6);
+      } else if (format === '1L') {
+        query = query.gte('unit_volume_l', 0.9).lte('unit_volume_l', 1.1);
+      } else if (format === '1,5L') {
+        query = query.gte('unit_volume_l', 1.4).lte('unit_volume_l', 1.6);
+      }
+    }
+    if (pack) {
+      if (pack === '6') query = query.eq('pack_count', 6);
+      else if (pack === '8') query = query.eq('pack_count', 8);
+      else if (pack === '12') query = query.eq('pack_count', 12);
+    }
+    if (search) query = query.ilike('product_name', `%${search}%`);
+
+    const offset = (page - 1) * limit;
+    query = query
+      .order('price_per_l_eur', { ascending: true })
+      .order('scraped_at', { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    const { data: fallbackData, error: fallbackError, count: fallbackCount } = await query;
+    
+    if (fallbackError) throw fallbackError;
+    
+    return {
+      items: (fallbackData || []).map(item => ({ ...item, source: 'prices' })),
+      total: fallbackCount || 0,
+      page,
+      pageSize: limit,
+      totalPages: Math.ceil((fallbackCount || 0) / limit)
+    };
+  }
 
   return {
-    items: data || [],
+    items: (data || []).map(item => ({ ...item, source: 'history_last' })),
     total: count || 0,
     page,
     pageSize: limit,
@@ -101,8 +148,9 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
 
 // GET /api/brand/:slug
 export const getBrandStats = async (brand: string): Promise<BrandPriceStats> => {
-  const { data: prices, error } = await supabase
-    .from('prices')
+  // Try history_last first, fallback to prices
+  let query = supabase
+    .from('prices_history_last')
     .select(`
       *,
       retailer:retailers(name, slug)
@@ -111,7 +159,28 @@ export const getBrandStats = async (brand: string): Promise<BrandPriceStats> => 
     .gte('scraped_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
     .not('price_per_l_eur', 'is', null);
 
-  if (error) throw error;
+  const { data: prices, error } = await query;
+  
+  if (error) {
+    // Fallback to prices table
+    const { data: fallbackPrices, error: fallbackError } = await supabase
+      .from('prices')
+      .select(`
+        *,
+        retailer:retailers(name, slug)
+      `)
+      .eq('brand', brand)
+      .gte('scraped_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+      .not('price_per_l_eur', 'is', null);
+    
+    if (fallbackError) throw fallbackError;
+    return calculateBrandStats(brand, fallbackPrices || []);
+  }
+
+  return calculateBrandStats(brand, prices || []);
+};
+
+function calculateBrandStats(brand: string, prices: any[]): BrandPriceStats {
 
   // Group by retailer
   const retailerGroups = prices.reduce((acc, price) => {
@@ -159,7 +228,7 @@ export const getBrandStats = async (brand: string): Promise<BrandPriceStats> => 
     retailer_prices,
     overall_stats
   };
-};
+}
 
 // GET /api/runs
 export const getRuns = async () => {

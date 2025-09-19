@@ -1,4 +1,5 @@
 import CryptoJS from 'crypto-js';
+import { FLAGS } from '@/config/flags';
 
 export interface ParsedFormat {
   pack_count: number | null;
@@ -68,6 +69,22 @@ export function parseFormat(productName: string): ParsedFormat {
   // Ignore les bonus/offres
   const cleanName = name.replace(/\+\s*\d+\s*(offerte?s?|gratuite?s?)/gi, '');
   
+  // Pattern pour format complexe : "9 L (6x1,5 L)" ou "9L (6x1,5L)"
+  const complexPattern = /(\d*[.,]?\d+)\s*l\s*\(\s*(\d+)\s*[x×]\s*(\d*[.,]?\d+)\s*l\s*\)/i;
+  const complexMatch = cleanName.match(complexPattern);
+  
+  if (complexMatch) {
+    const packCount = parseInt(complexMatch[2]);
+    const unitVolume = parseFloat(complexMatch[3].replace(',', '.'));
+    const totalVolume = parseFloat(complexMatch[1].replace(',', '.'));
+    
+    return {
+      pack_count: packCount,
+      unit_volume_l: unitVolume,
+      total_volume_l: totalVolume
+    };
+  }
+  
   // Pattern pour format imbriqué : 2x6x50cl
   const nestedPattern = /(\d+)\s*[x×]\s*(\d+)\s*[x×]\s*(\d*[.,]?\d+)\s*(l|cl)\b/i;
   const nestedMatch = cleanName.match(nestedPattern);
@@ -85,6 +102,24 @@ export function parseFormat(productName: string): ParsedFormat {
       pack_count: totalPacks,
       unit_volume_l: volumeInL,
       total_volume_l: totalPacks * volumeInL
+    };
+  }
+  
+  // Pattern inversé : "1.5L x6" ou "1,5L x 6"
+  const reversedPattern = /(\d*[.,]?\d+)\s*(l|cl)\s*[x×]\s*(\d+)/i;
+  const reversedMatch = cleanName.match(reversedPattern);
+  
+  if (reversedMatch) {
+    const volume = parseFloat(reversedMatch[1].replace(',', '.'));
+    const unit = reversedMatch[2].toLowerCase();
+    const packCount = parseInt(reversedMatch[3]);
+    
+    const volumeInL = unit === 'cl' ? volume / 100 : volume;
+    
+    return {
+      pack_count: packCount,
+      unit_volume_l: volumeInL,
+      total_volume_l: packCount * volumeInL
     };
   }
   
@@ -106,7 +141,24 @@ export function parseFormat(productName: string): ParsedFormat {
     };
   }
   
-  // Pattern secondaire : volume simple (1,5L, 50cl)
+  // Pattern avec virgule française : "1,5 L", "1,0 L"
+  const frenchPattern = /(\d+[.,]\d+)\s*(l|cl)\b/i;
+  const frenchMatch = cleanName.match(frenchPattern);
+  
+  if (frenchMatch) {
+    const volume = parseFloat(frenchMatch[1].replace(',', '.'));
+    const unit = frenchMatch[2].toLowerCase();
+    
+    const volumeInL = unit === 'cl' ? volume / 100 : volume;
+    
+    return {
+      pack_count: 1,
+      unit_volume_l: volumeInL,
+      total_volume_l: volumeInL
+    };
+  }
+  
+  // Pattern secondaire : volume simple (1.5L, 50cl, 1L)
   const simplePattern = /(\d*[.,]?\d+)\s*(l|cl)\b/i;
   const simpleMatch = cleanName.match(simplePattern);
   
@@ -145,6 +197,15 @@ export function guessBrand(productName: string): string | null {
       }
     }
   }
+  
+  // Check for MDD brands by retailer indicators
+  if (name.includes('carrefour')) return 'Carrefour';
+  if (name.includes('leclerc') || name.includes('e.leclerc')) return 'Leclerc';
+  if (name.includes('intermarché') || name.includes('intermarche')) return 'Intermarché';
+  if (name.includes('auchan')) return 'Auchan';
+  if (name.includes('monoprix')) return 'Monoprix';
+  if (name.includes('casino')) return 'Casino';
+  if (name.includes('système u') || name.includes('marque u')) return 'U';
   
   return null;
 }
@@ -202,14 +263,27 @@ export function generateUniqueHash(
   sku: string | null,
   productName: string,
   totalVolumeL: number | null,
-  priceTotal: number | null,
+  packCount: number | null,
+  url: string | null,
   scrapedDate: string
 ): string {
   const normalizedName = productName.toLowerCase().replace(/\s+/g, ' ').trim();
-  const identifier = sku || normalizedName;
+  
+  // More specific identifier to avoid duplicate detection between different formats
+  let identifier = sku;
+  if (!identifier && url) {
+    // Use normalized URL without tracking parameters
+    const cleanUrl = url.split('?')[0].split('#')[0];
+    identifier = cleanUrl;
+  }
+  if (!identifier) {
+    identifier = normalizedName;
+  }
+  
   const dateOnly = scrapedDate.split('T')[0]; // Garde seulement la date YYYY-MM-DD
   
-  const input = `${retailerSlug}|${identifier}|${totalVolumeL || 0}|${priceTotal || 0}|${dateOnly}`;
+  // Include pack count and volume to differentiate formats
+  const input = `${retailerSlug}|${identifier}|${normalizedName}|${totalVolumeL || 0}|${packCount || 1}|${dateOnly}`;
   
   return CryptoJS.SHA256(input).toString();
 }
@@ -234,11 +308,16 @@ export function normalizeScrapedItem(
   scrapedAt: string
 ): NormalizedPrice {
   const format = parseFormat(item.product_name);
-  const brand = guessBrand(item.product_name);
+  let brand = guessBrand(item.product_name);
+  
+  // If no brand found and ALLOW_UNKNOWN_BRANDS is true, keep as "Inconnu"
+  if (!brand && FLAGS.ALLOW_UNKNOWN_BRANDS) {
+    brand = 'Inconnu';
+  }
   
   // Calcule le prix au litre si pas fourni
   let pricePerL = item.price_per_l_eur;
-  if (!pricePerL && item.price_total_eur && format.total_volume_l) {
+  if (!pricePerL && item.price_total_eur && format.total_volume_l && format.total_volume_l > 0) {
     pricePerL = computePricePerL(item.price_total_eur, format.total_volume_l);
   }
   
@@ -247,7 +326,8 @@ export function normalizeScrapedItem(
     item.sku,
     item.product_name,
     format.total_volume_l,
-    item.price_total_eur,
+    format.pack_count,
+    item.url,
     scrapedAt
   );
   
