@@ -114,7 +114,7 @@ serve(async (req) => {
           .from('runs')
           .insert({
             type: 'wide',
-            status: 'queued',
+            status: 'running',
             payload: {
               retailers: actualRetailers,
               brands: actualBrands,
@@ -211,7 +211,7 @@ serve(async (req) => {
       await supabase
         .from('runs')
         .update({
-          status: 'completed',
+          status: 'success',
           finished_at: new Date().toISOString(),
           items_found: totalItemsFound,
           items_saved: totalItemsSaved,
