@@ -66,34 +66,42 @@ const Index = () => {
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">{t('home.quickAccess.title')}</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-2">
                   <Link to="/carte" className="group cursor-pointer">
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-3 md:p-4 lg:p-6 border-2 border-blue-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1">
-                      <MapPin className="w-6 h-6 md:w-7 md:h-7 lg:w-9 lg:h-9 text-blue-600 mx-auto mb-3" />
-                      <div className="text-sm md:text-base lg:text-lg font-bold text-blue-700">{t('home.quickAccess.map')}</div>
-                      <div className="text-xs md:text-sm text-blue-600 mt-1">{t('home.quickAccess.mapSub')}</div>
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-3 md:p-4 lg:p-6 border-2 border-blue-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1 h-32 md:h-36 lg:h-40 flex flex-col justify-between">
+                      <MapPin className="w-6 h-6 md:w-7 md:h-7 lg:w-9 lg:h-9 text-blue-600 mx-auto mb-2" />
+                      <div className="flex-1 flex flex-col justify-center">
+                        <div className="text-sm md:text-base lg:text-lg font-bold text-blue-700">{t('home.quickAccess.map')}</div>
+                        <div className="text-xs md:text-sm text-blue-600 mt-1 min-h-[1rem]">{t('home.quickAccess.mapSub')}</div>
+                      </div>
                       <div className="text-xs text-blue-500 mt-2 opacity-75 group-hover:opacity-100 transition-opacity">→ {t('home.quickAccess.clickHere')}</div>
                     </div>
                   </Link>
                   <Link to="/diagnostic" className="group cursor-pointer">
-                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-3 md:p-4 lg:p-6 border-2 border-green-200 hover:border-green-300 hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1">
-                      <Search className="w-6 h-6 md:w-7 md:h-7 lg:w-9 lg:h-9 text-green-600 mx-auto mb-3" />
-                      <div className="text-sm md:text-base lg:text-lg font-bold text-green-700">{t('home.quickAccess.diagnostic')}</div>
-                      <div className="text-xs md:text-sm text-green-600 mt-1">{t('home.quickAccess.diagnosticSub')}</div>
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-3 md:p-4 lg:p-6 border-2 border-green-200 hover:border-green-300 hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1 h-32 md:h-36 lg:h-40 flex flex-col justify-between">
+                      <Search className="w-6 h-6 md:w-7 md:h-7 lg:w-9 lg:h-9 text-green-600 mx-auto mb-2" />
+                      <div className="flex-1 flex flex-col justify-center">
+                        <div className="text-sm md:text-base lg:text-lg font-bold text-green-700">{t('home.quickAccess.diagnostic')}</div>
+                        <div className="text-xs md:text-sm text-green-600 mt-1 min-h-[1rem]">{t('home.quickAccess.diagnosticSub')}</div>
+                      </div>
                       <div className="text-xs text-green-500 mt-2 opacity-75 group-hover:opacity-100 transition-opacity">→ {t('home.quickAccess.clickHere')}</div>
                     </div>
                   </Link>
                   <Link to="/quelle-eau-boire" className="group cursor-pointer">
-                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-3 md:p-4 lg:p-6 border-2 border-orange-200 hover:border-orange-300 hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1">
-                      <TrendingUp className="w-6 h-6 md:w-7 md:h-7 lg:w-9 lg:h-9 text-orange-600 mx-auto mb-3" />
-                      <div className="text-sm md:text-base lg:text-lg font-bold text-orange-700">{t('home.quickAccess.bottles')}</div>
-                      <div className="text-xs md:text-sm text-orange-600 mt-1">{t('home.quickAccess.bottlesSub')}</div>
+                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-3 md:p-4 lg:p-6 border-2 border-orange-200 hover:border-orange-300 hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1 h-32 md:h-36 lg:h-40 flex flex-col justify-between">
+                      <TrendingUp className="w-6 h-6 md:w-7 md:h-7 lg:w-9 lg:h-9 text-orange-600 mx-auto mb-2" />
+                      <div className="flex-1 flex flex-col justify-center">
+                        <div className="text-sm md:text-base lg:text-lg font-bold text-orange-700">{t('home.quickAccess.bottles')}</div>
+                        <div className="text-xs md:text-sm text-orange-600 mt-1 min-h-[1rem]">{t('home.quickAccess.bottlesSub')}</div>
+                      </div>
                       <div className="text-xs text-orange-500 mt-2 opacity-75 group-hover:opacity-100 transition-opacity">→ {t('home.quickAccess.clickHere')}</div>
                     </div>
                   </Link>
                   <Link to="/polluants" className="group cursor-pointer">
-                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-3 md:p-4 lg:p-6 border-2 border-purple-200 hover:border-purple-300 hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1">
-                      <AlertTriangle className="w-6 h-6 md:w-7 md:h-7 lg:w-9 lg:h-9 text-purple-600 mx-auto mb-3" />
-                      <div className="text-sm md:text-base lg:text-lg font-bold text-purple-700">{t('home.quickAccess.pollutants')}</div>
-                      <div className="text-xs md:text-sm text-purple-600 mt-1">{t('home.quickAccess.pollutantsSub')}</div>
+                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-3 md:p-4 lg:p-6 border-2 border-purple-200 hover:border-purple-300 hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1 h-32 md:h-36 lg:h-40 flex flex-col justify-between">
+                      <AlertTriangle className="w-6 h-6 md:w-7 md:h-7 lg:w-9 lg:h-9 text-purple-600 mx-auto mb-2" />
+                      <div className="flex-1 flex flex-col justify-center">
+                        <div className="text-sm md:text-base lg:text-lg font-bold text-purple-700">{t('home.quickAccess.pollutants')}</div>
+                        <div className="text-xs md:text-sm text-purple-600 mt-1 min-h-[1rem]">{t('home.quickAccess.pollutantsSub')}</div>
+                      </div>
                       <div className="text-xs text-purple-500 mt-2 opacity-75 group-hover:opacity-100 transition-opacity">→ {t('home.quickAccess.clickHere')}</div>
                     </div>
                   </Link>
