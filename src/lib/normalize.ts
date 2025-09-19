@@ -310,8 +310,8 @@ export function normalizeScrapedItem(
   const format = parseFormat(item.product_name);
   let brand = guessBrand(item.product_name);
   
-  // If no brand found and ALLOW_UNKNOWN_BRANDS is true, keep as "Inconnu"
-  if (!brand && FLAGS.ALLOW_UNKNOWN_BRANDS) {
+  // If no brand found, allow as "Inconnu" by default
+  if (!brand) {
     brand = 'Inconnu';
   }
   
