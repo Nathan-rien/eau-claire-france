@@ -1,5 +1,4 @@
 import CryptoJS from 'crypto-js';
-import { FLAGS } from '@/config/flags';
 
 export interface ParsedFormat {
   pack_count: number | null;
@@ -239,20 +238,36 @@ export function computeFallbackPricePerL(price: { price_total_eur?: number | nul
 }
 
 /**
- * Parse un prix depuis un texte (ex: "4,98 €", "€ 2.50")
+ * Parse un prix depuis un texte (ex: "4,98 €", "€ 2.50", "1 23€", "1.23€")
  */
 export function parsePrice(priceText: string): number | null {
   if (!priceText) return null;
   
-  // Nettoie le texte et extrait les nombres
-  const cleaned = priceText.replace(/[^\d.,]/g, '');
-  if (!cleaned) return null;
+  // Normalise les espaces (supprime espaces fines/insécables)
+  let cleaned = priceText.replace(/[\u00A0\u2000-\u200B\u2028\u2029]/g, ' ').trim();
   
-  // Remplace la virgule française par un point
-  const normalized = cleaned.replace(',', '.');
-  const price = parseFloat(normalized);
+  // Patterns pour différents formats de prix
+  const patterns = [
+    /(\d+[\s,.]?\d*)\s*€/,           // "1,23 €", "1.23€", "1 23€"
+    /€\s*(\d+[\s,.]?\d*)/,           // "€ 1,23", "€1.23"
+    /(\d+[\s,.]?\d*)\s*eur/i,        // "1,23 eur"
+    /(\d+[\s,.]?\d*)/                // fallback: juste le nombre
+  ];
   
-  return isNaN(price) ? null : Math.round(price * 100) / 100; // 2 décimales
+  for (const pattern of patterns) {
+    const match = cleaned.match(pattern);
+    if (match) {
+      let priceStr = match[1].replace(/\s/g, ''); // supprime espaces dans "1 23"
+      priceStr = priceStr.replace(',', '.'); // virgule française -> point
+      const price = parseFloat(priceStr);
+      
+      if (!isNaN(price) && price > 0) {
+        return Math.round(price * 100) / 100; // 2 décimales
+      }
+    }
+  }
+  
+  return null;
 }
 
 /**
@@ -300,51 +315,79 @@ export function determineAvailability(hasAddToCartButton: boolean, outOfStockTex
 }
 
 /**
- * Normalise un produit scrapé
+ * Normalise un produit scrapé complet
+ */
+export function computeNormalized(product: {
+  title: string;
+  price_text: string;
+  url: string;
+  sku?: string | null;
+  is_promo?: boolean;
+  promo_label?: string | null;
+  availability?: string | null;
+  image_url?: string | null;
+}, retailerSlug: string, scrapedAt: string): NormalizedPrice {
+  
+  const format = parseFormat(product.title);
+  let brand = guessBrand(product.title);
+  
+  if (!brand) {
+    brand = 'Inconnu';
+  }
+  
+  // Parse le prix depuis le texte
+  const priceTotal = parsePrice(product.price_text);
+  
+  // Calcule le prix au litre
+  let pricePerL: number | null = null;
+  if (priceTotal && format.total_volume_l && format.total_volume_l > 0) {
+    pricePerL = computePricePerL(priceTotal, format.total_volume_l);
+  }
+  
+  const uniqueHash = generateUniqueHash(
+    retailerSlug,
+    product.sku,
+    product.title,
+    format.total_volume_l,
+    format.pack_count,
+    product.url,
+    scrapedAt
+  );
+  
+  return {
+    brand,
+    product_name: product.title,
+    pack_count: format.pack_count,
+    unit_volume_l: format.unit_volume_l,
+    total_volume_l: format.total_volume_l,
+    price_total_eur: priceTotal,
+    price_per_l_eur: pricePerL,
+    is_promo: product.is_promo || false,
+    promo_label: product.promo_label || null,
+    availability: product.availability || 'unknown',
+    sku: product.sku || null,
+    url: product.url,
+    image_url: product.image_url || null,
+    unique_hash: uniqueHash
+  };
+}
+
+/**
+ * Normalise un produit scrapé (fonction legacy maintenue pour compatibilité)
  */
 export function normalizeScrapedItem(
   item: ScrapedItem,
   retailerSlug: string,
   scrapedAt: string
 ): NormalizedPrice {
-  const format = parseFormat(item.product_name);
-  let brand = guessBrand(item.product_name);
-  
-  // If no brand found, allow as "Inconnu" by default
-  if (!brand) {
-    brand = 'Inconnu';
-  }
-  
-  // Calcule le prix au litre si pas fourni
-  let pricePerL = item.price_per_l_eur;
-  if (!pricePerL && item.price_total_eur && format.total_volume_l && format.total_volume_l > 0) {
-    pricePerL = computePricePerL(item.price_total_eur, format.total_volume_l);
-  }
-  
-  const uniqueHash = generateUniqueHash(
-    retailerSlug,
-    item.sku,
-    item.product_name,
-    format.total_volume_l,
-    format.pack_count,
-    item.url,
-    scrapedAt
-  );
-  
-  return {
-    brand: brand || 'Inconnu',
-    product_name: item.product_name,
-    pack_count: format.pack_count,
-    unit_volume_l: format.unit_volume_l,
-    total_volume_l: format.total_volume_l,
-    price_total_eur: item.price_total_eur,
-    price_per_l_eur: pricePerL,
-    is_promo: item.is_promo || false,
-    promo_label: item.promo_label || null,
-    availability: item.availability || 'unknown',
-    sku: item.sku || null,
+  return computeNormalized({
+    title: item.product_name,
+    price_text: item.price_total_eur?.toString() || '',
     url: item.url,
-    image_url: item.image_url || null,
-    unique_hash: uniqueHash
-  };
+    sku: item.sku,
+    is_promo: item.is_promo,
+    promo_label: item.promo_label,
+    availability: item.availability || undefined,
+    image_url: item.image_url
+  }, retailerSlug, scrapedAt);
 }
