@@ -319,48 +319,58 @@ function generateMockProducts(retailer: string, formats: string[], brands: strin
     'monoprix': '66666666-6666-6666-6666-666666666666'
   };
 
-  const volumeMap: Record<string, number> = {
-    '50cl': 0.5,
-    '1l': 1.0,
-    '1.5l': 1.5
-  };
-
-  // Generate 3-5 products per retailer
-  const productCount = Math.floor(Math.random() * 3) + 3;
+  // Generate 5-8 products per retailer for better coverage
+  const productCount = Math.floor(Math.random() * 4) + 5;
   
   for (let i = 0; i < productCount; i++) {
     const brand = brands[Math.floor(Math.random() * brands.length)];
     const format = formats[Math.floor(Math.random() * formats.length)];
-    const volume = volumeMap[format];
-    const packCount = Math.random() > 0.7 ? 6 : 1; // 30% chance of pack
+    
+    // Parse the format to get volume
+    let volume = 1.0;
+    if (format.includes('0,5') || format.includes('0.5')) volume = 0.5;
+    else if (format.includes('1,5') || format.includes('1.5')) volume = 1.5;
+    else if (format.includes('50cl')) volume = 0.5;
+    else if (format.includes('1 l') || format.includes('1l')) volume = 1.0;
+    
+    const packCount = Math.random() > 0.6 ? 6 : 1; // 40% chance of pack
     const totalVolume = volume * packCount;
     
-    // Realistic price calculation
-    let basePricePerL = 0.5 + Math.random() * 1.5; // 0.5€ to 2€ per liter
-    if (brand === 'Evian' || brand === 'Perrier') basePricePerL *= 1.5;
-    if (brand === 'Hépar' || brand === 'Contrex') basePricePerL *= 1.3;
+    // Realistic pricing
+    let basePricePerL = 0.4 + Math.random() * 1.8; // 0.4€ to 2.2€ per liter
+    if (brand === 'Evian' || brand === 'Perrier') basePricePerL *= 1.6;
+    if (brand === 'Hépar' || brand === 'Contrex') basePricePerL *= 1.4;
+    if (brand === 'Cristaline') basePricePerL *= 0.7; // Discount brand
     
     const priceTotal = parseFloat((totalVolume * basePricePerL).toFixed(2));
-    const pricePerL = parseFloat((priceTotal / totalVolume).toFixed(2));
+    const pricePerL = parseFloat((priceTotal / totalVolume).toFixed(3));
     
-    const isPromo = Math.random() > 0.8; // 20% chance of promo
+    const isPromo = Math.random() > 0.85; // 15% chance of promo
+    
+    // Create proper product name with French formatting
+    let productName = `${brand} Eau `;
+    if (packCount > 1) {
+      productName += `${packCount} x ${volume.toString().replace('.', ',')} L`;
+    } else {
+      productName += `${volume.toString().replace('.', ',')} L`;
+    }
     
     products.push({
       unique_hash: `${retailer}-${brand}-${format}-${packCount}-${Date.now()}-${i}`.substring(0, 255),
       retailer_id: retailerMap[retailer] || retailer,
       brand,
-      product_name: `${brand} ${format}${packCount > 1 ? ` pack ${packCount}` : ''}`,
+      product_name: productName,
       pack_count: packCount,
       unit_volume_l: volume,
       total_volume_l: totalVolume,
-      price_total_eur: isPromo ? parseFloat((priceTotal * 0.9).toFixed(2)) : priceTotal,
-      price_per_l_eur: isPromo ? parseFloat((pricePerL * 0.9).toFixed(2)) : pricePerL,
+      price_total_eur: isPromo ? parseFloat((priceTotal * 0.85).toFixed(2)) : priceTotal,
+      price_per_l_eur: isPromo ? parseFloat((pricePerL * 0.85).toFixed(3)) : pricePerL,
       is_promo: isPromo,
-      promo_label: isPromo ? '-10%' : null,
-      availability: Math.random() > 0.1 ? 'available' : 'out_of_stock',
-      sku: `${retailer.toUpperCase()}_${brand.toUpperCase()}_${format.toUpperCase()}`,
-      url: `https://${retailer}.fr/products/${brand.toLowerCase()}-${format}`,
-      image_url: `https://${retailer}.fr/images/${brand.toLowerCase()}-${format}.jpg`
+      promo_label: isPromo ? '-15%' : null,
+      availability: Math.random() > 0.05 ? 'in_stock' : 'out_of_stock',
+      sku: `${retailer.toUpperCase()}_${brand.toUpperCase()}_${format.toUpperCase().replace(/[^A-Z0-9]/g, '_')}`,
+      url: `https://${retailer}.fr/products/${brand.toLowerCase()}-${format.replace(' ', '-')}`,
+      image_url: `https://${retailer}.fr/images/${brand.toLowerCase()}-${format.replace(' ', '-')}.jpg`
     });
   }
   

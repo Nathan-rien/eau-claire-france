@@ -20,6 +20,7 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
   const [scraping, setScraping] = useState<string | null>(null);
   const [stats, setStats] = useState<any>(null);
+  const [pricesHealth, setPricesHealth] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -50,9 +51,14 @@ export default function Admin() {
       if (retailersError) throw retailersError;
       setRetailers((retailersData || []) as Retailer[]);
 
-      // Load database stats
-      const { data: statsData } = await supabase.functions.invoke('admin-stats');
-      setStats(statsData);
+      // Load database stats and prices health
+      const [statsResponse, pricesResponse] = await Promise.all([
+        supabase.functions.invoke('admin-stats'),
+        supabase.functions.invoke('admin-prices-health')
+      ]);
+      
+      setStats(statsResponse.data);
+      setPricesHealth(pricesResponse.data);
 
     } catch (error) {
       console.error('Error loading data:', error);
@@ -155,6 +161,49 @@ export default function Admin() {
                 <div className="text-xs">{new Date(stats.timestamp).toLocaleString('fr-FR')}</div>
               </div>
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Health Prix */}
+      {pricesHealth && (
+        <Card>
+          <CardHeader>
+            <CardTitle>🏥 Santé Prix</CardTitle>
+            <CardDescription>Qualité des données de prix</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">{pricesHealth.rows_today}</div>
+                <div className="text-sm text-muted-foreground">Lignes aujourd'hui</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-500">{pricesHealth.rows_with_null_volume}</div>
+                <div className="text-sm text-muted-foreground">Sans volume</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-500">{pricesHealth.rows_with_null_ppl}</div>
+                <div className="text-sm text-muted-foreground">Sans €/L</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-500">{pricesHealth.rows_in_last_view}</div>
+                <div className="text-sm text-muted-foreground">Vue derniers prix</div>
+              </div>
+            </div>
+            {pricesHealth.sample_rows?.length > 0 && (
+              <details className="mt-4">
+                <summary className="cursor-pointer font-medium">Exemples récents</summary>
+                <div className="mt-2 text-sm space-y-1">
+                  {pricesHealth.sample_rows.slice(0, 3).map((row: any, i: number) => (
+                    <div key={i} className="bg-muted p-2 rounded">
+                      <strong>{row.brand}</strong> - {row.product_name.substring(0, 50)}...
+                      <br />Volume: {row.total_volume_l}L, Prix/L: {row.price_per_l_eur}€
+                    </div>
+                  ))}
+                </div>
+              </details>
+            )}
           </CardContent>
         </Card>
       )}
