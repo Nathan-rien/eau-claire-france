@@ -13,6 +13,17 @@ import path from 'node:path';
 
 const supabase = (() => {
   try {
+    // Try environment variables first for GitHub Actions
+    const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    
+    if (url && serviceKey) {
+      return createClient(url, serviceKey, {
+        auth: { persistSession: false }
+      });
+    }
+    
+    // Fallback to service client
     return createServiceClient();
   } catch (e) {
     console.error('[FATAL] Missing SUPABASE_SERVICE_ROLE_KEY. Aborting scraping.');
@@ -210,6 +221,25 @@ export async function runScraping(config: ScrapingConfig) {
 
         let itemsSaved = 0;
         if (normalizedPrices.length > 0) {
+          // Store in prices_history (append only)
+          const historyData = normalizedPrices.map(price => ({
+            ...price,
+            scraped_at: new Date().toISOString(),
+            created_at: new Date().toISOString()
+          }));
+          
+          const { error: historyError } = await supabase
+            .from('prices_history')
+            .insert(historyData);
+
+          if (historyError) {
+            console.error(`Failed to store prices_history for ${retailerSlug}:`, historyError);
+          } else {
+            itemsSaved = historyData.length;
+            console.log(`Stored ${itemsSaved} prices in history`);
+          }
+          
+          // Also update current prices (upsert)
           const { error: pricesError } = await supabase
             .from('prices')
             .upsert(normalizedPrices, {
@@ -218,10 +248,7 @@ export async function runScraping(config: ScrapingConfig) {
             });
 
           if (pricesError) {
-            console.error(`Failed to store prices for ${retailerSlug}:`, pricesError);
-          } else {
-            itemsSaved = normalizedPrices.length;
-            console.log(`Stored ${itemsSaved} normalized prices`);
+            console.error(`Failed to store current prices for ${retailerSlug}:`, pricesError);
           }
         }
         totalItemsSaved += itemsSaved;

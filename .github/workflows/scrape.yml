@@ -1,0 +1,65 @@
+name: Automated Price Scraping
+
+on:
+  schedule:
+    # Twice daily at 5:00 and 17:00 UTC
+    - cron: '0 5,17 * * *'
+  workflow_dispatch:
+    inputs:
+      retailers:
+        description: 'Comma-separated retailers'
+        required: false
+        default: 'carrefour,auchan,leclerc,intermarche,u,monoprix'
+      brands:
+        description: 'Comma-separated brands'
+        required: false
+        default: 'evian,cristaline,volvic,hepar,contrex,perrier,vittel'
+      formats:
+        description: 'Comma-separated formats'
+        required: false
+        default: '0,5 l,1 l,1,5 l'
+      maxPages:
+        description: 'Max pages per query'
+        required: false
+        default: '3'
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps
+          
+      - name: Run price scraping
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          npm run tsx src/scripts/run-scrape.ts \
+            --retailers "${{ github.event.inputs.retailers || 'carrefour,auchan,leclerc,intermarche,u,monoprix' }}" \
+            --brands "${{ github.event.inputs.brands || 'evian,cristaline,volvic,hepar,contrex,perrier,vittel' }}" \
+            --formats "${{ github.event.inputs.formats || '0,5 l,1 l,1,5 l' }}" \
+            --maxPages "${{ github.event.inputs.maxPages || '3' }}"
+            
+      - name: Upload debug artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraping-debug
+          path: |
+            debug/
+            exports/
+          retention-days: 7

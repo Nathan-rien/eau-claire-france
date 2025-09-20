@@ -12,12 +12,14 @@ import { AdminQuickStart } from '@/components/AdminQuickStart';
 import { AdminGuard, QuickStartGuard } from '@/components/SecurityGuard';
 import { getMetaSecurityTags } from '@/utils/securityHeaders';
 import { Helmet } from 'react-helmet-async';
+import { ExternalLink } from 'lucide-react';
 
 export default function Admin() {
   const [runs, setRuns] = useState<(Run & { retailers: Retailer })[]>([]);
   const [retailers, setRetailers] = useState<Retailer[]>([]);
   const [loading, setLoading] = useState(true);
   const [scraping, setScraping] = useState<string | null>(null);
+  const [stats, setStats] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -47,6 +49,10 @@ export default function Admin() {
 
       if (retailersError) throw retailersError;
       setRetailers((retailersData || []) as Retailer[]);
+
+      // Load database stats
+      const { data: statsData } = await supabase.functions.invoke('admin-stats');
+      setStats(statsData);
 
     } catch (error) {
       console.error('Error loading data:', error);
@@ -123,8 +129,47 @@ export default function Admin() {
           <AdminQuickStart />
         </QuickStartGuard>
       
+      {/* Database Stats */}
+      {stats && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Statistiques base de données</CardTitle>
+            <CardDescription>État actuel des données</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">{stats.prices_history_today}</div>
+                <div className="text-sm text-muted-foreground">Prix scrapés aujourd'hui</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">{stats.prices_history_last_count}</div>
+                <div className="text-sm text-muted-foreground">Derniers prix uniques</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">{stats.current_prices_count}</div>
+                <div className="text-sm text-muted-foreground">Prix actuels</div>
+              </div>
+              <div className="text-center">
+                <div className="text-sm text-muted-foreground">Dernière vérification</div>
+                <div className="text-xs">{new Date(stats.timestamp).toLocaleString('fr-FR')}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Administration - Scraping des prix</h1>
+        <div className="space-x-2">
+          <Button
+            onClick={() => window.open('https://github.com/YOUR_USERNAME/YOUR_REPO/actions', '_blank')}
+            variant="outline"
+          >
+            <ExternalLink className="h-4 w-4 mr-2" />
+            GitHub Actions
+          </Button>
+        </div>
       </div>
 
       {/* Retailers Section */}
