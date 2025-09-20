@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, TrendingUp, Clock } from 'lucide-react';
 import { Price, Retailer, PriceFilters, PaginatedResponse } from '@/types/pricing';
-import { supabase } from '@/integrations/supabase/client';
+import { getPrices } from '@/services/pricesApi';
 import { useToast } from '@/components/ui/use-toast';
 import DataWarmupBanner from '@/components/DataWarmupBanner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -19,6 +19,7 @@ import { DataBanner } from '@/components/DataBanner';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
+  source?: string;
 }
 
 export default function PrixEaux() {
@@ -31,6 +32,7 @@ export default function PrixEaux() {
   const [loading, setLoading] = useState(true);
   const [showDataBanner, setShowDataBanner] = useState(false);
   const [noActiveRetailers, setNoActiveRetailers] = useState(false);
+  const [dataSource, setDataSource] = useState<string>('prices');
   const [pagination, setPagination] = useState({
     page: 1,
     pageSize: 50,
@@ -114,84 +116,29 @@ export default function PrixEaux() {
     const loadPrices = async () => {
       setLoading(true);
       try {
-        let query = supabase
-          .from('prices')
-          .select(`
-            *,
-            retailers!inner(name)
-          `, { count: 'exact' });
-
-        // Appliquer les filtres
-        if (filters.brand) {
-          query = query.eq('brand', filters.brand);
-        }
-        if (filters.retailer) {
-          query = query.eq('retailer_id', filters.retailer);
-        }
-        if (filters.search) {
-          query = query.ilike('product_name', `%${filters.search}%`);
-        }
+        const result = await getPrices(filters);
         
-        // Filtre disponibilité
-        const availability = searchParams.get('availability');
-        if (availability === 'in_stock') {
-          query = query.eq('availability', 'in_stock');
-        }
-        if (filters.format) {
-          switch (filters.format) {
-            case '50cl':
-              query = query.eq('unit_volume_l', 0.5);
-              break;
-            case '1l':
-              query = query.eq('unit_volume_l', 1.0);
-              break;
-            case '1.5l':
-              query = query.eq('unit_volume_l', 1.5);
-              break;
-          }
-        }
-        if (filters.pack) {
-          switch (filters.pack) {
-            case '6':
-              query = query.eq('pack_count', 6);
-              break;
-            case '8':
-              query = query.eq('pack_count', 8);
-              break;
-            case '12':
-              query = query.eq('pack_count', 12);
-              break;
-          }
-        }
-
-        // Pagination et tri
-        const offset = ((filters.page || 1) - 1) * (filters.limit || 50);
-        query = query
-          .order('price_per_l_eur', { ascending: true })
-          .order('scraped_at', { ascending: false })
-          .range(offset, offset + (filters.limit || 50) - 1);
-
-        const { data, count, error } = await query;
-
-        if (error) throw error;
-
-        if (data) {
-          const pricesWithRetailer = data.map(price => {
-            const priceWithFallback = {
-              ...price,
-              retailer_name: (price as any).retailers.name,
-              price_per_l_eur: computeFallbackPricePerL(price) || price.price_per_l_eur
-            };
-            return priceWithFallback;
-          });
-          
-          setPrices(pricesWithRetailer as PriceWithRetailer[]);
-          setPagination({
-            page: filters.page || 1,
-            pageSize: filters.limit || 50,
-            total: count || 0,
-            totalPages: Math.ceil((count || 0) / (filters.limit || 50))
-          });
+        const pricesWithRetailer = result.items.map(price => {
+          const priceWithFallback = {
+            ...price,
+            retailer_name: price.retailer?.name || 'Inconnu',
+            price_per_l_eur: computeFallbackPricePerL(price) || price.price_per_l_eur,
+            source: price.source
+          };
+          return priceWithFallback;
+        });
+        
+        setPrices(pricesWithRetailer as PriceWithRetailer[]);
+        setPagination({
+          page: result.page,
+          pageSize: result.pageSize,
+          total: result.total,
+          totalPages: result.totalPages
+        });
+        
+        // Set data source for badge
+        if (result.items.length > 0) {
+          setDataSource(result.items[0].source || 'prices');
         }
       } catch (error) {
         console.error('Erreur lors du chargement des prix:', error);
@@ -347,9 +294,14 @@ export default function PrixEaux() {
 
           {/* Résultats */}
           <div className="flex justify-between items-center mb-4">
-            <p className="text-sm text-muted-foreground">
-              {pagination.total} produits trouvés
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-muted-foreground">
+                {pagination.total} produits trouvés
+              </p>
+              <Badge variant="outline" className="text-xs">
+                source: {dataSource}
+              </Badge>
+            </div>
             <div className="flex gap-2">
               <Button
                 variant="outline"

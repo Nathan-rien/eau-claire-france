@@ -178,10 +178,10 @@ serve(async (req) => {
           // Simulate scraping process with mock data
           const mockProducts = generateMockProducts(retailer, actualFormats, actualBrands);
           
-          // Insert mock products into prices table
+          // Insert mock products into prices_history table
           if (mockProducts.length > 0) {
             const { data: insertData, error: insertError } = await supabase
-              .from('prices')
+              .from('prices_history')
               .insert(mockProducts.map(product => ({
                 ...product,
                 run_id: runData.id,
