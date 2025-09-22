@@ -464,6 +464,10 @@ export type Database = {
         Args: { "": unknown }
         Returns: unknown
       }
+      refresh_prices_view: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       set_limit: {
         Args: { "": number }
         Returns: number
