@@ -170,55 +170,82 @@ serve(async (req) => {
       let totalItemsSaved = 0;
       let successfulRetailers = 0;
 
-      // Simulate scraping for each retailer
-      for (const retailer of actualRetailers) {
-        try {
-          console.log(`Scraping ${retailer}...`);
-          
-          // Simulate scraping process with mock data
-          const mockProducts = generateMockProducts(retailer, actualFormats, actualBrands);
-          
-          // Insert mock products into prices_history table
-          if (mockProducts.length > 0) {
-            const { data: insertData, error: insertError } = await supabase
-              .from('prices_history')
-              .insert(mockProducts.map(product => ({
-                ...product,
-                run_id: runData.id,
-                scraped_at: new Date().toISOString(),
-                created_at: new Date().toISOString()
-              })));
-
-            if (insertError) {
-              console.error(`Failed to insert products for ${retailer}:`, insertError);
-              results[retailer] = { retailer, success: false, count: 0, error: insertError.message };
-            } else {
-              results[retailer] = { retailer, success: true, count: mockProducts.length };
-              totalItemsFound += mockProducts.length;
-              totalItemsSaved += mockProducts.length;
-              successfulRetailers++;
-            }
-          } else {
-            results[retailer] = { retailer, success: false, count: 0, error: 'No products generated' };
-          }
-        } catch (error) {
-          console.error(`Error scraping ${retailer}:`, error);
-          results[retailer] = { retailer, success: false, count: 0, error: error.message };
+      // Import the real scraping function
+      const { runScraping } = await import('../../src/scripts/run-scrape.ts');
+      
+      // Configure real scraping
+      const scrapingConfig = {
+        retailers: actualRetailers,
+        brands: actualBrands,
+        formats: actualFormats,
+        maxPages,
+        throttleMs: 1000, // 1 second between requests
+        headful: headful,
+        dryRun: dryRun,
+        debug: false
+      };
+      
+      console.log('Starting real scraping with config:', scrapingConfig);
+      
+      // Run actual scraping
+      try {
+        await runScraping(scrapingConfig);
+        
+        // Check results from the run
+        const { data: finalRun } = await supabase
+          .from('runs')
+          .select('items_found, items_saved, error_rate')
+          .eq('id', runData.id)
+          .single();
+        
+        if (finalRun) {
+          totalItemsFound = finalRun.items_found || 0;
+          totalItemsSaved = finalRun.items_saved || 0;
+          successfulRetailers = actualRetailers.length - Math.floor((finalRun.error_rate || 0) * actualRetailers.length);
+        }
+        
+        // Set all retailers as success for now (detailed results come from runScraping)
+        for (const retailer of actualRetailers) {
+          results[retailer] = { retailer, success: true, count: Math.floor(totalItemsSaved / actualRetailers.length) };
+        }
+        
+      } catch (scrapingError) {
+        console.error('Real scraping failed:', scrapingError);
+        
+        // Fallback: set all as failed
+        for (const retailer of actualRetailers) {
+          results[retailer] = { retailer, success: false, count: 0, error: scrapingError.message };
         }
       }
 
-      // Update run record
-      await supabase
+      // Refresh materialized view to show new data immediately
+      try {
+        await supabase.rpc('refresh_prices_view');
+        console.log('Materialized view refreshed successfully');
+      } catch (refreshError) {
+        console.error('Failed to refresh materialized view:', refreshError);
+      }
+
+      // Update run record (if not already updated by runScraping)
+      const { data: currentRun } = await supabase
         .from('runs')
-        .update({
-          status: 'success',
-          finished_at: new Date().toISOString(),
-          items_found: totalItemsFound,
-          items_saved: totalItemsSaved,
-          error_rate: (actualRetailers.length - successfulRetailers) / actualRetailers.length,
-          quality_score: totalItemsSaved > 80 ? 1.0 : totalItemsSaved / 80
-        })
-        .eq('id', runData.id);
+        .select('status')
+        .eq('id', runData.id)
+        .single();
+
+      if (currentRun?.status === 'running') {
+        await supabase
+          .from('runs')
+          .update({
+            status: totalItemsSaved > 0 ? 'success' : 'failed',
+            finished_at: new Date().toISOString(),
+            items_found: totalItemsFound,
+            items_saved: totalItemsSaved,
+            error_rate: (actualRetailers.length - successfulRetailers) / actualRetailers.length,
+            quality_score: totalItemsSaved > 80 ? 1.0 : totalItemsSaved / 80
+          })
+          .eq('id', runData.id);
+      }
 
       const response = {
         ok: true,
@@ -226,8 +253,9 @@ serve(async (req) => {
         runId: runData.id,
         startedAt: new Date().toISOString(),
         retailersCount: actualRetailers.length,
+        itemsSaved: totalItemsSaved,
         queued: true,
-        hint: "Suivez /admin ou /prix-eaux dans 1–2 min"
+        hint: "Wide Run terminé, consultez /prix-eaux"
       };
 
       console.log('Wide run completed:', response);
@@ -306,73 +334,4 @@ serve(async (req) => {
   }
 });
 
-function generateMockProducts(retailer: string, formats: string[], brands: string[]) {
-  const products = [];
-  const retailerMap: Record<string, string> = {
-    'carrefour': '11111111-1111-1111-1111-111111111111',
-    'carrefour_drive': '11111111-1111-1111-1111-111111111112',
-    'auchan': '22222222-2222-2222-2222-222222222222',
-    'auchan_super': '22222222-2222-2222-2222-222222222223',
-    'leclerc': '33333333-3333-3333-3333-333333333333',
-    'intermarche': '44444444-4444-4444-4444-444444444444',
-    'u_drive': '55555555-5555-5555-5555-555555555555',
-    'monoprix': '66666666-6666-6666-6666-666666666666'
-  };
-
-  // Generate 5-8 products per retailer for better coverage
-  const productCount = Math.floor(Math.random() * 4) + 5;
-  
-  for (let i = 0; i < productCount; i++) {
-    const brand = brands[Math.floor(Math.random() * brands.length)];
-    const format = formats[Math.floor(Math.random() * formats.length)];
-    
-    // Parse the format to get volume
-    let volume = 1.0;
-    if (format.includes('0,5') || format.includes('0.5')) volume = 0.5;
-    else if (format.includes('1,5') || format.includes('1.5')) volume = 1.5;
-    else if (format.includes('50cl')) volume = 0.5;
-    else if (format.includes('1 l') || format.includes('1l')) volume = 1.0;
-    
-    const packCount = Math.random() > 0.6 ? 6 : 1; // 40% chance of pack
-    const totalVolume = volume * packCount;
-    
-    // Realistic pricing
-    let basePricePerL = 0.4 + Math.random() * 1.8; // 0.4€ to 2.2€ per liter
-    if (brand === 'Evian' || brand === 'Perrier') basePricePerL *= 1.6;
-    if (brand === 'Hépar' || brand === 'Contrex') basePricePerL *= 1.4;
-    if (brand === 'Cristaline') basePricePerL *= 0.7; // Discount brand
-    
-    const priceTotal = parseFloat((totalVolume * basePricePerL).toFixed(2));
-    const pricePerL = parseFloat((priceTotal / totalVolume).toFixed(3));
-    
-    const isPromo = Math.random() > 0.85; // 15% chance of promo
-    
-    // Create proper product name with French formatting
-    let productName = `${brand} Eau `;
-    if (packCount > 1) {
-      productName += `${packCount} x ${volume.toString().replace('.', ',')} L`;
-    } else {
-      productName += `${volume.toString().replace('.', ',')} L`;
-    }
-    
-    products.push({
-      unique_hash: `${retailer}-${brand}-${format}-${packCount}-${Date.now()}-${i}`.substring(0, 255),
-      retailer_id: retailerMap[retailer] || retailer,
-      brand,
-      product_name: productName,
-      pack_count: packCount,
-      unit_volume_l: volume,
-      total_volume_l: totalVolume,
-      price_total_eur: isPromo ? parseFloat((priceTotal * 0.85).toFixed(2)) : priceTotal,
-      price_per_l_eur: isPromo ? parseFloat((pricePerL * 0.85).toFixed(3)) : pricePerL,
-      is_promo: isPromo,
-      promo_label: isPromo ? '-15%' : null,
-      availability: Math.random() > 0.05 ? 'in_stock' : 'out_of_stock',
-      sku: `${retailer.toUpperCase()}_${brand.toUpperCase()}_${format.toUpperCase().replace(/[^A-Z0-9]/g, '_')}`,
-      url: `https://${retailer}.fr/products/${brand.toLowerCase()}-${format.replace(' ', '-')}`,
-      image_url: `https://${retailer}.fr/images/${brand.toLowerCase()}-${format.replace(' ', '-')}.jpg`
-    });
-  }
-  
-  return products;
-}
+// Function removed - now using real scraping via runScraping()
