@@ -46,7 +46,10 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
   // Try to read from prices_history_last first for freshness
   let query = supabase
     .from('prices_history_last')
-    .select('*', { count: 'exact' });
+    .select(`
+      *,
+      retailer:retailers(name, slug)
+    `, { count: 'exact' });
 
   // Apply filters
   if (brand) {
@@ -118,7 +121,10 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
     console.warn('Failed to read from prices_history_last, falling back to prices table:', error);
     query = supabase
       .from('prices')
-      .select('*', { count: 'exact' });
+      .select(`
+        *,
+        retailer:retailers(name, slug)
+      `, { count: 'exact' });
 
     // Reapply filters for fallback
     if (brand) query = query.eq('brand', brand);

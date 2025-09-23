@@ -125,7 +125,7 @@ export default function PrixEaux() {
         const pricesWithRetailer = result.items.map(price => {
           const priceWithFallback = {
             ...price,
-            retailer_name: price.retailer?.name || 'Inconnu',
+            retailer_name: price.retailer?.name || 'Enseigne inconnue',
             price_per_l_eur: computeFallbackPricePerL(price) || price.price_per_l_eur,
             source: price.source
           };
@@ -161,13 +161,25 @@ export default function PrixEaux() {
 
   const updateFilter = (key: string, value: string | null) => {
     const newParams = new URLSearchParams(searchParams);
-    if (value) {
+    if (value && value !== 'all') {
       newParams.set(key, value);
     } else {
       newParams.delete(key);
     }
     newParams.delete('page'); // Reset page on filter change
     setSearchParams(newParams);
+  };
+
+  const handleSort = (column: string) => {
+    const currentSort = searchParams.get('sort_by');
+    const currentOrder = searchParams.get('sort_order') || 'asc';
+    
+    let newOrder: 'asc' | 'desc' = 'asc';
+    if (currentSort === column && currentOrder === 'asc') {
+      newOrder = 'desc';
+    }
+    
+    updateFilters({ sort_by: column, sort_order: newOrder, page: 1 });
   };
 
   const formatPrice = (price: number | null) => {
@@ -233,7 +245,7 @@ export default function PrixEaux() {
                   <SelectValue placeholder="Marque" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Toutes les marques</SelectItem>
+                  <SelectItem value="">Toutes les marques</SelectItem>
                   {brands
                     .filter(brand => brand && brand.trim() !== '')
                     .map(brand => (
@@ -247,7 +259,7 @@ export default function PrixEaux() {
                   <SelectValue placeholder="Enseigne" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Toutes les enseignes</SelectItem>
+                  <SelectItem value="">Toutes les enseignes</SelectItem>
                   {retailers
                     .filter(retailer => retailer.id && retailer.id.trim() !== '')
                     .map(retailer => (
@@ -261,7 +273,7 @@ export default function PrixEaux() {
                   <SelectValue placeholder="Format" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les formats</SelectItem>
+                  <SelectItem value="">Tous les formats</SelectItem>
                   <SelectItem value="50cl">50cl</SelectItem>
                   <SelectItem value="1L">1L</SelectItem>
                   <SelectItem value="1,5L">1,5L</SelectItem>
@@ -275,7 +287,7 @@ export default function PrixEaux() {
                     <SelectValue placeholder="Pack" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Tous les packs</SelectItem>
+                    <SelectItem value="">Tous les packs</SelectItem>
                     <SelectItem value="6">Pack de 6</SelectItem>
                     <SelectItem value="8">Pack de 8</SelectItem>
                     <SelectItem value="12">Pack de 12</SelectItem>
@@ -283,12 +295,12 @@ export default function PrixEaux() {
                   </SelectContent>
                 </Select>
 
-                <Select value={searchParams.get('availability') || 'all'} onValueChange={(value) => updateFilter('availability', value === 'all' ? null : value)}>
+                <Select value={searchParams.get('availability') || ''} onValueChange={(value) => updateFilter('availability', value || null)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Disponibilité" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Tous produits</SelectItem>
+                    <SelectItem value="">Tous produits</SelectItem>
                     <SelectItem value="in_stock">En stock</SelectItem>
                   </SelectContent>
                 </Select>
@@ -297,12 +309,12 @@ export default function PrixEaux() {
 
             {/* Ligne séparée pour les nouveaux filtres */}
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4 border-t">
-              <Select value={searchParams.get('is_promo') || 'all'} onValueChange={(value) => updateFilter('is_promo', value === 'all' ? null : value)}>
+              <Select value={searchParams.get('is_promo') || ''} onValueChange={(value) => updateFilter('is_promo', value || null)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Promotions" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous</SelectItem>
+                  <SelectItem value="">Tous</SelectItem>
                   <SelectItem value="true">En promo</SelectItem>
                   <SelectItem value="false">Prix normal</SelectItem>
                 </SelectContent>
@@ -392,13 +404,49 @@ export default function PrixEaux() {
               <table className="w-full border-collapse border border-gray-200 dark:border-gray-700">
                 <thead>
                   <tr className="bg-muted">
-                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Marque</th>
+                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleSort('brand')}
+                        className="h-auto p-0 font-medium text-left"
+                      >
+                        Marque {searchParams.get('sort_by') === 'brand' && (searchParams.get('sort_order') === 'desc' ? '↓' : '↑')}
+                      </Button>
+                    </th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Produit</th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Format</th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Enseigne</th>
-                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-right">Prix pack</th>
-                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-right">€/L</th>
-                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-center">Mise à jour</th>
+                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-right">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleSort('price_total_eur')}
+                        className="h-auto p-0 font-medium text-right w-full"
+                      >
+                        Prix pack {searchParams.get('sort_by') === 'price_total_eur' && (searchParams.get('sort_order') === 'desc' ? '↓' : '↑')}
+                      </Button>
+                    </th>
+                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-right">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleSort('price_per_l_eur')}
+                        className="h-auto p-0 font-medium text-right w-full"
+                      >
+                        €/L {searchParams.get('sort_by') === 'price_per_l_eur' && (searchParams.get('sort_order') === 'desc' ? '↓' : '↑')}
+                      </Button>
+                    </th>
+                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-center">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleSort('scraped_at')}
+                        className="h-auto p-0 font-medium text-center w-full"
+                      >
+                        Mise à jour {searchParams.get('sort_by') === 'scraped_at' && (searchParams.get('sort_order') === 'desc' ? '↓' : '↑')}
+                      </Button>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -420,7 +468,7 @@ export default function PrixEaux() {
                         {formatVolume(price.pack_count, price.unit_volume_l)}
                       </td>
                       <td className="border border-gray-200 dark:border-gray-700 p-3">
-                        {price.retailer_name}
+                        {price.retailer_name || 'Enseigne inconnue'}
                       </td>
                       <td className="border border-gray-200 dark:border-gray-700 p-3 text-right font-medium">
                         {formatPrice(price.price_total_eur)}
