@@ -90,6 +90,10 @@ export interface PriceFilters {
   format?: string;
   pack?: string;
   search?: string;
+  is_promo?: boolean;
+  availability?: string;
+  sort_by?: string;
+  sort_order?: 'asc' | 'desc';
   limit?: number;
   page?: number;
 }

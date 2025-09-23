@@ -35,6 +35,10 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
     format,
     pack,
     search,
+    is_promo,
+    availability,
+    sort_by = 'price_per_l_eur',
+    sort_order = 'asc',
     limit = 20,
     page = 1
   } = filters;
@@ -77,12 +81,35 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
     query = query.ilike('product_name', `%${search}%`);
   }
 
+  if (is_promo !== undefined) {
+    query = query.eq('is_promo', is_promo);
+  }
+
+  if (availability && availability !== 'all') {
+    query = query.eq('availability', availability);
+  }
+
   // Apply pagination
   const offset = (page - 1) * limit;
-  query = query
-    .order('price_per_l_eur', { ascending: true })
-    .order('scraped_at', { ascending: false })
-    .range(offset, offset + limit - 1);
+  
+  // Apply sorting
+  const sortAscending = sort_order === 'asc';
+  if (sort_by === 'price_per_l_eur') {
+    query = query.order('price_per_l_eur', { ascending: sortAscending });
+  } else if (sort_by === 'price_total_eur') {
+    query = query.order('price_total_eur', { ascending: sortAscending });
+  } else if (sort_by === 'scraped_at') {
+    query = query.order('scraped_at', { ascending: sortAscending });
+  } else if (sort_by === 'brand') {
+    query = query.order('brand', { ascending: sortAscending });
+  }
+  
+  // Secondary sort by scraped_at (most recent first) if not primary sort
+  if (sort_by !== 'scraped_at') {
+    query = query.order('scraped_at', { ascending: false });
+  }
+  
+  query = query.range(offset, offset + limit - 1);
 
   const { data, error, count } = await query;
 
@@ -111,12 +138,28 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
       else if (pack === '12') query = query.eq('pack_count', 12);
     }
     if (search) query = query.ilike('product_name', `%${search}%`);
+    if (is_promo !== undefined) query = query.eq('is_promo', is_promo);
+    if (availability && availability !== 'all') query = query.eq('availability', availability);
 
     const offset = (page - 1) * limit;
-    query = query
-      .order('price_per_l_eur', { ascending: true })
-      .order('scraped_at', { ascending: false })
-      .range(offset, offset + limit - 1);
+    
+    // Apply sorting for fallback
+    const sortAscending = sort_order === 'asc';
+    if (sort_by === 'price_per_l_eur') {
+      query = query.order('price_per_l_eur', { ascending: sortAscending });
+    } else if (sort_by === 'price_total_eur') {
+      query = query.order('price_total_eur', { ascending: sortAscending });
+    } else if (sort_by === 'scraped_at') {
+      query = query.order('scraped_at', { ascending: sortAscending });
+    } else if (sort_by === 'brand') {
+      query = query.order('brand', { ascending: sortAscending });
+    }
+    
+    if (sort_by !== 'scraped_at') {
+      query = query.order('scraped_at', { ascending: false });
+    }
+    
+    query = query.range(offset, offset + limit - 1);
 
     const { data: fallbackData, error: fallbackError, count: fallbackCount } = await query;
     

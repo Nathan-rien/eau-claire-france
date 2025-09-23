@@ -47,6 +47,10 @@ export default function PrixEaux() {
     format: searchParams.get('format') || undefined,
     pack: searchParams.get('pack') || undefined,
     search: searchParams.get('search') || undefined,
+    is_promo: searchParams.get('is_promo') === 'true' ? true : searchParams.get('is_promo') === 'false' ? false : undefined,
+    availability: searchParams.get('availability') || undefined,
+    sort_by: searchParams.get('sort_by') || 'price_per_l_eur',
+    sort_order: (searchParams.get('sort_order') as 'asc' | 'desc') || 'asc',
     page: parseInt(searchParams.get('page') || '1'),
     limit: parseInt(searchParams.get('pageSize') || '50')
   }), [searchParams]);
@@ -213,7 +217,7 @@ export default function PrixEaux() {
 
           {/* Filtres */}
           <Card className="p-6 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -289,6 +293,53 @@ export default function PrixEaux() {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            {/* Ligne séparée pour les nouveaux filtres */}
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4 border-t">
+              <Select value={searchParams.get('is_promo') || 'all'} onValueChange={(value) => updateFilter('is_promo', value === 'all' ? null : value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Promotions" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous</SelectItem>
+                  <SelectItem value="true">En promo</SelectItem>
+                  <SelectItem value="false">Prix normal</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={searchParams.get('sort_by') || 'price_per_l_eur'} onValueChange={(value) => updateFilter('sort_by', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Trier par" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="price_per_l_eur">Prix au litre</SelectItem>
+                  <SelectItem value="price_total_eur">Prix total</SelectItem>
+                  <SelectItem value="brand">Marque</SelectItem>
+                  <SelectItem value="scraped_at">Date de mise à jour</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={searchParams.get('sort_order') || 'asc'} onValueChange={(value) => updateFilter('sort_order', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Ordre" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="asc">Croissant</SelectItem>
+                  <SelectItem value="desc">Décroissant</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchParams(new URLSearchParams());
+                }}
+                className="flex items-center gap-2"
+              >
+                <Filter className="h-4 w-4" />
+                Réinitialiser
+              </Button>
             </div>
           </Card>
 
