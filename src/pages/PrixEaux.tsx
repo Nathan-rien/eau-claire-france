@@ -42,8 +42,8 @@ export default function PrixEaux() {
 
   // Filtres depuis l'URL avec persistance
   const filters: PriceFilters = useMemo(() => ({
-    brand: searchParams.get('brands') || undefined, // Changed to 'brands' for multi-select
-    retailer: searchParams.get('retailers') || undefined, // Changed to 'retailers' for multi-select
+    brand: searchParams.get('brand') || undefined,
+    retailer: searchParams.get('retailer') || undefined,
     format: searchParams.get('format') || undefined,
     pack: searchParams.get('pack') || undefined,
     search: searchParams.get('search') || undefined,
@@ -259,9 +259,9 @@ export default function PrixEaux() {
                 <SelectContent>
                   <SelectItem value="all">Tous les formats</SelectItem>
                   <SelectItem value="50cl">50cl</SelectItem>
-                  <SelectItem value="1l">1L</SelectItem>
-                   <SelectItem value="1.5l">1,5L</SelectItem>
-                   <SelectItem value="autre">Autre</SelectItem>
+                  <SelectItem value="1L">1L</SelectItem>
+                  <SelectItem value="1,5L">1,5L</SelectItem>
+                  <SelectItem value="autre">Autre</SelectItem>
                 </SelectContent>
               </Select>
 
