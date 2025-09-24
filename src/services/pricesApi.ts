@@ -43,13 +43,9 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
     page = 1
   } = filters;
 
-  // Use prices_history directly for the latest scraped data
   let query = supabase
     .from('prices_history')
-    .select(`
-      *,
-      retailer:retailers(name, slug)
-    `, { count: 'exact' });
+    .select('*', { count: 'exact' });
 
   // Apply filters
   if (brand) {

@@ -123,9 +123,10 @@ export default function PrixEaux() {
         const result = await getPrices(filters);
         
         const pricesWithRetailer = result.items.map(price => {
+          const retailerObj = retailers.find(r => r.id === price.retailer_id);
           const priceWithFallback = {
             ...price,
-            retailer_name: price.retailer?.name || 'Enseigne inconnue',
+            retailer_name: retailerObj?.name || 'Enseigne inconnue',
             price_per_l_eur: computeFallbackPricePerL(price) || price.price_per_l_eur,
             source: price.source
           };
@@ -320,27 +321,6 @@ export default function PrixEaux() {
                 </SelectContent>
               </Select>
 
-              <Select value={searchParams.get('sort_by') || 'price_per_l_eur'} onValueChange={(value) => updateFilter('sort_by', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Trier par" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="price_per_l_eur">Prix au litre</SelectItem>
-                  <SelectItem value="price_total_eur">Prix total</SelectItem>
-                  <SelectItem value="brand">Marque</SelectItem>
-                  <SelectItem value="scraped_at">Date de mise à jour</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={searchParams.get('sort_order') || 'asc'} onValueChange={(value) => updateFilter('sort_order', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Ordre" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="asc">Croissant</SelectItem>
-                  <SelectItem value="desc">Décroissant</SelectItem>
-                </SelectContent>
-              </Select>
 
               <div className="flex gap-2">
                 <Button
