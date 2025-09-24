@@ -245,7 +245,7 @@ export default function PrixEaux() {
                   <SelectValue placeholder="Marque" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Toutes les marques</SelectItem>
+                  <SelectItem value="all">Toutes les marques</SelectItem>
                   {brands
                     .filter(brand => brand && brand.trim() !== '')
                     .map(brand => (
@@ -259,7 +259,7 @@ export default function PrixEaux() {
                   <SelectValue placeholder="Enseigne" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Toutes les enseignes</SelectItem>
+                  <SelectItem value="all">Toutes les enseignes</SelectItem>
                   {retailers
                     .filter(retailer => retailer.id && retailer.id.trim() !== '')
                     .map(retailer => (
@@ -273,7 +273,7 @@ export default function PrixEaux() {
                   <SelectValue placeholder="Format" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tous les formats</SelectItem>
+                  <SelectItem value="all">Tous les formats</SelectItem>
                   <SelectItem value="50cl">50cl</SelectItem>
                   <SelectItem value="1L">1L</SelectItem>
                   <SelectItem value="1,5L">1,5L</SelectItem>
@@ -287,7 +287,7 @@ export default function PrixEaux() {
                     <SelectValue placeholder="Pack" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Tous les packs</SelectItem>
+                    <SelectItem value="all">Tous les packs</SelectItem>
                     <SelectItem value="6">Pack de 6</SelectItem>
                     <SelectItem value="8">Pack de 8</SelectItem>
                     <SelectItem value="12">Pack de 12</SelectItem>
@@ -300,7 +300,7 @@ export default function PrixEaux() {
                     <SelectValue placeholder="Disponibilité" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Tous produits</SelectItem>
+                    <SelectItem value="all">Tous produits</SelectItem>
                     <SelectItem value="in_stock">En stock</SelectItem>
                   </SelectContent>
                 </Select>
@@ -314,7 +314,7 @@ export default function PrixEaux() {
                   <SelectValue placeholder="Promotions" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tous</SelectItem>
+                  <SelectItem value="all">Tous</SelectItem>
                   <SelectItem value="true">En promo</SelectItem>
                   <SelectItem value="false">Prix normal</SelectItem>
                 </SelectContent>
