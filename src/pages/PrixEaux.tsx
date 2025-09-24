@@ -307,8 +307,8 @@ export default function PrixEaux() {
               </div>
             </div>
 
-            {/* Ligne séparée pour les nouveaux filtres */}
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4 border-t">
+            {/* Ligne séparée pour les filtres promotions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4 border-t">
               <Select value={searchParams.get('is_promo') || ''} onValueChange={(value) => updateFilter('is_promo', value || null)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Promotions" />
@@ -416,37 +416,16 @@ export default function PrixEaux() {
                 <thead>
                   <tr className="bg-muted">
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => handleSort('brand')}
-                        className="h-auto p-0 font-medium text-left"
-                      >
-                        Marque {searchParams.get('sort_by') === 'brand' && (searchParams.get('sort_order') === 'desc' ? '↓' : '↑')}
-                      </Button>
+                      Marque
                     </th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Produit</th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Format</th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Enseigne</th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-right">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => handleSort('price_total_eur')}
-                        className="h-auto p-0 font-medium text-right w-full"
-                      >
-                        Prix pack {searchParams.get('sort_by') === 'price_total_eur' && (searchParams.get('sort_order') === 'desc' ? '↓' : '↑')}
-                      </Button>
+                      Prix pack
                     </th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-right">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => handleSort('price_per_l_eur')}
-                        className="h-auto p-0 font-medium text-right w-full"
-                      >
-                        €/L {searchParams.get('sort_by') === 'price_per_l_eur' && (searchParams.get('sort_order') === 'desc' ? '↓' : '↑')}
-                      </Button>
+                      Prix €/L
                     </th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-center">
                       <Button 

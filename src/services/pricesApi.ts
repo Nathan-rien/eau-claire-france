@@ -43,9 +43,9 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
     page = 1
   } = filters;
 
-  // Try to read from prices_history_last first for freshness
+  // Use prices_history directly for the latest scraped data
   let query = supabase
-    .from('prices_history_last')
+    .from('prices_history')
     .select(`
       *,
       retailer:retailers(name, slug)
@@ -117,8 +117,8 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
   const { data, error, count } = await query;
 
   if (error) {
-    // Fallback to prices table if view doesn't exist or fails
-    console.warn('Failed to read from prices_history_last, falling back to prices table:', error);
+    // Fallback to prices table if history doesn't work
+    console.warn('Failed to read from prices_history, falling back to prices table:', error);
     query = supabase
       .from('prices')
       .select(`
@@ -191,9 +191,9 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
 
 // GET /api/brand/:slug
 export const getBrandStats = async (brand: string): Promise<BrandPriceStats> => {
-  // Try history_last first, fallback to prices
+  // Use prices_history directly
   let query = supabase
-    .from('prices_history_last')
+    .from('prices_history')
     .select(`
       *,
       retailer:retailers(name, slug)
