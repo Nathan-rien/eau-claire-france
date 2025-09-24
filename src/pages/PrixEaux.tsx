@@ -35,7 +35,7 @@ export default function PrixEaux() {
   const [dataSource, setDataSource] = useState<string>('prices');
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 50,
+    pageSize: 100,
     total: 0,
     totalPages: 0
   });
@@ -52,7 +52,7 @@ export default function PrixEaux() {
     sort_by: searchParams.get('sort_by') || 'price_per_l_eur',
     sort_order: (searchParams.get('sort_order') as 'asc' | 'desc') || 'asc',
     page: parseInt(searchParams.get('page') || '1'),
-    limit: parseInt(searchParams.get('pageSize') || '50')
+    limit: parseInt(searchParams.get('pageSize') || '100')
   }), [searchParams]);
 
   // Update URL when filters change
@@ -342,16 +342,27 @@ export default function PrixEaux() {
                 </SelectContent>
               </Select>
 
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setSearchParams(new URLSearchParams());
-                }}
-                className="flex items-center gap-2"
-              >
-                <Filter className="h-4 w-4" />
-                Réinitialiser
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearchParams(new URLSearchParams());
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <Filter className="h-4 w-4" />
+                  Réinitialiser
+                </Button>
+                <Button
+                  variant="default"
+                  onClick={() => {
+                    setSearchParams(new URLSearchParams({ pageSize: '500' }));
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  Afficher tous
+                </Button>
+              </div>
             </div>
           </Card>
 
