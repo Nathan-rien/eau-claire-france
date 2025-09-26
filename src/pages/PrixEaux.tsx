@@ -124,13 +124,12 @@ export default function PrixEaux() {
         
         const pricesWithRetailer = result.items.map(price => {
           const retailerObj = retailers.find(r => r.id === price.retailer_id);
-          const priceWithFallback = {
+          return {
             ...price,
             retailer_name: retailerObj?.name || 'Enseigne inconnue',
             price_per_l_eur: computeFallbackPricePerL(price) || price.price_per_l_eur,
             source: price.source || 'prices_history'
           };
-          return priceWithFallback;
         });
         
         setPrices(pricesWithRetailer as PriceWithRetailer[]);
