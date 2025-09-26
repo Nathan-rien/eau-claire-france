@@ -128,7 +128,7 @@ export default function PrixEaux() {
             ...price,
             retailer_name: retailerObj?.name || 'Enseigne inconnue',
             price_per_l_eur: computeFallbackPricePerL(price) || price.price_per_l_eur,
-            source: price.source
+            source: price.source || 'prices_history'
           };
           return priceWithFallback;
         });

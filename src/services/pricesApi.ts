@@ -45,7 +45,14 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
 
   let query = supabase
     .from('prices_history')
-    .select('*', { count: 'exact' });
+    .select('*', { count: 'exact' })
+    // Filter out incomplete records - require all essential fields
+    .not('brand', 'is', null)
+    .not('product_name', 'is', null)
+    .not('unit_volume_l', 'is', null)
+    .not('retailer_id', 'is', null)
+    .not('price_total_eur', 'is', null)
+    .not('price_per_l_eur', 'is', null);
 
   // Apply filters
   if (brand) {
