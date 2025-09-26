@@ -148,17 +148,13 @@ serve(async (req) => {
         runData = data;
         console.log('[admin-scrape] Run record created successfully:', runData.id);
       } catch (error) {
-        console.error('[admin-scrape] run insert failed', { 
-          code: error.code, 
-          message: error.message, 
-          details: error.details 
-        });
+        console.error('[admin-scrape] run insert failed', error);
         return new Response(
           JSON.stringify({ 
             ok: false, 
             status: 200, 
             code: 'RUN_CREATE_FAILED', 
-            message: error.message,
+            message: (error as any)?.message || 'Unknown error',
             hint: 'Check RLS and schema' 
           }),
           { status: 200, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
@@ -283,7 +279,7 @@ serve(async (req) => {
         
         // Fallback: set all as failed
         for (const retailer of actualRetailers) {
-          results[retailer] = { retailer, success: false, count: 0, error: scrapingError.message };
+          results[retailer] = { retailer, success: false, count: 0, error: (scrapingError as any)?.message || 'Unknown error' };
         }
       }
 
@@ -396,7 +392,7 @@ serve(async (req) => {
         code: 'UNEXPECTED_ERROR', 
         message: 'Erreur serveur interne.', 
         hint: 'Consulter logs Edge Function.',
-        details: error.message 
+        details: (error as any)?.message || 'Unknown error' 
       }),
       { status: 500, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
     );

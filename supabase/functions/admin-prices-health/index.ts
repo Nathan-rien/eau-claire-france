@@ -61,10 +61,10 @@ Deno.serve(async (req: Request) => {
     if (sampleError) throw sampleError;
 
     const result = {
-      rows_today: todayStats?.length || 0,
-      rows_with_null_volume: nullVolumeStats?.length || 0,
-      rows_with_null_ppl: nullPplStats?.length || 0,
-      rows_in_last_view: lastStats?.length || 0,
+      rows_today: todayCount || 0,
+      rows_with_null_volume: nullVolumeCount || 0,
+      rows_with_null_ppl: nullPplCount || 0,
+      rows_in_last_view: lastCount || 0,
       sample_rows: sampleRows || []
     };
 
@@ -77,11 +77,11 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({ 
         error: 'Internal server error',
-        details: error.message
+        details: error instanceof Error ? error.message : 'Unknown error'
       }),
       { 
         status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
   }
