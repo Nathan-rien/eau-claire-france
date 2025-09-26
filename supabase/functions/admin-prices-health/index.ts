@@ -1,4 +1,4 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -18,39 +18,35 @@ Deno.serve(async (req: Request) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // Query today's stats
-    const { data: todayStats, error: todayError } = await supabase
+    const { count: todayCount, error: todayError } = await supabase
       .from('prices_history')
-      .select('count')
-      .gte('scraped_at', new Date().toISOString().split('T')[0])
-      .head();
+      .select('*', { count: 'exact', head: true })
+      .gte('scraped_at', new Date().toISOString().split('T')[0]);
 
     if (todayError) throw todayError;
 
     // Count rows with null volume today
-    const { data: nullVolumeStats, error: nullVolumeError } = await supabase
+    const { count: nullVolumeCount, error: nullVolumeError } = await supabase
       .from('prices_history')
-      .select('count')
+      .select('*', { count: 'exact', head: true })
       .gte('scraped_at', new Date().toISOString().split('T')[0])
-      .or('total_volume_l.is.null,total_volume_l.eq.0')
-      .head();
+      .or('total_volume_l.is.null,total_volume_l.eq.0');
 
     if (nullVolumeError) throw nullVolumeError;
 
     // Count rows with null price per liter today
-    const { data: nullPplStats, error: nullPplError } = await supabase
+    const { count: nullPplCount, error: nullPplError } = await supabase
       .from('prices_history')
-      .select('count')
+      .select('*', { count: 'exact', head: true })
       .gte('scraped_at', new Date().toISOString().split('T')[0])
-      .is('price_per_l_eur', null)
-      .head();
+      .is('price_per_l_eur', null);
 
     if (nullPplError) throw nullPplError;
 
     // Count rows in prices_history_last
-    const { data: lastStats, error: lastError } = await supabase
+    const { count: lastCount, error: lastError } = await supabase
       .from('prices_history_last')
-      .select('count')
-      .head();
+      .select('*', { count: 'exact', head: true });
 
     if (lastError) throw lastError;
 

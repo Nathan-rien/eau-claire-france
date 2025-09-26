@@ -122,22 +122,60 @@ export default function PrixEaux() {
       try {
         const result = await getPrices(filters);
         
-        const pricesWithRetailer = result.items.map(price => {
-          const retailerObj = retailers.find(r => r.id === price.retailer_id);
+        // Résoudre l'enseigne même si l'ID ne correspond pas (slug/URL/unique_hash)
+        const resolveRetailer = (price: any) => {
+          const byId = retailers.find(r => r.id === price.retailer_id);
+          if (byId) return byId;
+          const skuSlug = price.sku?.split('_')?.[0]?.toLowerCase();
+          const hashSlug = price.unique_hash?.split('-')?.[0]?.toLowerCase();
+          let urlHost = '';
+          try { urlHost = price.url ? new URL(price.url).hostname.replace('www.', '') : ''; } catch {}
+          return (
+            retailers.find(r => r.slug?.toLowerCase() === skuSlug) ||
+            retailers.find(r => r.slug?.toLowerCase() === hashSlug) ||
+            retailers.find(r => urlHost && r.domain && urlHost.includes(r.domain.replace('www.', '')))
+          );
+        };
+
+        let pricesWithRetailer = result.items.map(price => {
+          const retailerObj = resolveRetailer(price);
           return {
             ...price,
             retailer_name: retailerObj?.name || 'Enseigne inconnue',
+            retailer_slug: retailerObj?.slug,
+            retailer_resolved_id: retailerObj?.id,
             price_per_l_eur: computeFallbackPricePerL(price) || price.price_per_l_eur,
             source: price.source || 'prices_history'
-          };
+          } as any;
         });
-        
+
+        // Filtre par enseigne côté client si demandé
+        if (filters.retailer) {
+          const selected = retailers.find(r => r.id === filters.retailer);
+          if (selected) {
+            pricesWithRetailer = pricesWithRetailer.filter(p => (
+              p.retailer_resolved_id === selected.id ||
+              p.retailer_slug === selected.slug ||
+              (p.url && selected.domain && p.url.includes(selected.domain))
+            ));
+          }
+        }
+
+        // Déduplication (unique_hash sinon signature produit)
+        const seen = new Set<string>();
+        pricesWithRetailer = pricesWithRetailer.filter(p => {
+          const key = p.unique_hash || `${p.brand}|${p.product_name}|${p.unit_volume_l}|${p.pack_count}|${p.retailer_resolved_id || p.retailer_id}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+
         setPrices(pricesWithRetailer as PriceWithRetailer[]);
         setPagination({
           page: result.page,
           pageSize: result.pageSize,
-          total: result.total,
-          totalPages: result.totalPages
+          total: pricesWithRetailer.length,
+          totalPages: Math.ceil(pricesWithRetailer.length / result.pageSize)
         });
         
         // Set data source for badge

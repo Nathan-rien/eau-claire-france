@@ -59,9 +59,9 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
     query = query.eq('brand', brand);
   }
 
-  if (retailer) {
-    query = query.eq('retailer_id', retailer);
-  }
+  // Note: on ne filtre plus côté serveur par enseigne car les IDs ne correspondent pas toujours
+  // Le filtrage enseigne est fait côté client après résolution par slug/domain
+
 
   if (format) {
     if (format === '50cl') {
