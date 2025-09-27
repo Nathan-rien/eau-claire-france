@@ -132,7 +132,7 @@ serve(async (req) => {
           ok: false,
           cronEnabled: false,
           message: 'Impossible de vérifier les prérequis de sécurité',
-          error: error.message
+          error: (error as any)?.message || 'Unknown error'
         }),
         { 
           status: 500,
@@ -189,7 +189,7 @@ serve(async (req) => {
         ok: false,
         cronEnabled: false,
         error: 'Internal server error',
-        message: `Erreur lors de l'activation CRON: ${error.message}`
+        message: `Erreur lors de l'activation CRON: ${(error as any)?.message || 'Unknown error'}`
       }),
       { 
         status: 500, 

@@ -103,9 +103,9 @@ serve(async (req) => {
     );
   } catch (error) {
     ;(globalThis as any).__ADMIN_LAST_ERROR = {
-      message: error?.message || 'Unknown error',
+      message: (error as any)?.message || 'Unknown error',
       ts: Date.now(),
-      stackRedacted: typeof error?.stack === 'string' ? error.stack.split('\n').slice(0,2).join(' | ') : undefined
+      stackRedacted: typeof (error as any)?.stack === 'string' ? (error as any).stack.split('\n').slice(0,2).join(' | ') : undefined
     };
     return new Response(
       JSON.stringify({

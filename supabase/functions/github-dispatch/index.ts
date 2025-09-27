@@ -77,7 +77,7 @@ Deno.serve(async (req) => {
     
     return new Response(
       JSON.stringify({ 
-        error: error.message,
+        error: (error as any)?.message || 'Unknown error',
         hint: 'Check GITHUB_TOKEN_REPO secret and repository configuration' 
       }),
       { 

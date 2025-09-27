@@ -93,7 +93,7 @@ serve(async (req) => {
         .eq('type', type)
         .single();
 
-      if (rateLimitData && rateLimitError?.code !== 'PGRST116') {
+      if (rateLimitData && (rateLimitError as any)?.code !== 'PGRST116') {
         const lastReset = new Date(rateLimitData.last_reset);
         const resetTime = new Date(now.getTime() - windowMs);
         

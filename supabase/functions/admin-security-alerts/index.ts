@@ -235,7 +235,7 @@ serve(async (req) => {
       JSON.stringify({ 
         ok: false, 
         error: 'Internal server error',
-        message: error.message,
+        message: (error as any)?.message || 'Unknown error',
         alerts: []
       }),
       { 

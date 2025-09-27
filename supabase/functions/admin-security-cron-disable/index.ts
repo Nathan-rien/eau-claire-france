@@ -137,7 +137,7 @@ serve(async (req) => {
         ok: false,
         cronEnabled: true, // Assume it's still enabled if we can't disable
         error: 'Internal server error',
-        message: `Erreur lors de la désactivation CRON: ${error.message}`
+        message: `Erreur lors de la désactivation CRON: ${(error as any)?.message || 'Unknown error'}`
       }),
       { 
         status: 500, 

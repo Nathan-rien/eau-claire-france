@@ -163,7 +163,7 @@ VITE_WATER_MDD_CSV_URL=/data/eaux_MDD_par_distributeur_et_source_FR_v3.csv
         code: 'UNEXPECTED_ERROR', 
         message: 'Erreur serveur interne.', 
         hint: 'Consulter logs Edge Function.',
-        details: error.message 
+        details: (error as any)?.message || 'Unknown error' 
       }),
       { 
         status: 500, 

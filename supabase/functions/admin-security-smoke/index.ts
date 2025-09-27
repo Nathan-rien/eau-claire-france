@@ -196,7 +196,7 @@ serve(async (req) => {
       steps.push({
         name: 'RLS Policies',
         ok: false,
-        message: `Erreur lors de la vérification RLS: ${error.message}`,
+        message: `Erreur lors de la vérification RLS: ${(error as any)?.message || 'Unknown error'}`,
         details: null
       });
       overallPass = false;
@@ -217,7 +217,7 @@ serve(async (req) => {
       steps.push({
         name: 'Security Hardening',
         ok: false,
-        message: `Erreur lors de la vérification hardening: ${error.message}`,
+        message: `Erreur lors de la vérification hardening: ${(error as any)?.message || 'Unknown error'}`,
         details: null
       });
       overallPass = false;
@@ -238,7 +238,7 @@ serve(async (req) => {
       steps.push({
         name: 'Environment & Config',
         ok: false,
-        message: `Erreur lors du diagnostic: ${error.message}`,
+        message: `Erreur lors du diagnostic: ${(error as any)?.message || 'Unknown error'}`,
         details: null
       });
       overallPass = false;
@@ -318,7 +318,7 @@ serve(async (req) => {
         status: 500,
         code: "UNEXPECTED_ERROR",
         pass: false,
-        message: `Erreur serveur interne: ${error.message}`,
+        message: `Erreur serveur interne: ${(error as any)?.message || 'Unknown error'}`,
         hint: "Consulter logs Edge Function.",
         steps: [],
         summary: { total_checks: 0, passed: 0, failed: 1, cron_eligible: false, security_level: 'error' }

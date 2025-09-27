@@ -92,7 +92,7 @@ serve(async (req) => {
         results.push({
           test: 'retailers_public_read',
           status: 'FAIL',
-          message: `Erreur lecture publique retailers: ${retailersError.message}`
+          message: `Erreur lecture publique retailers: ${(retailersError as any)?.message || 'Unknown error'}`
         });
         allPassed = false;
       } else {
@@ -106,7 +106,7 @@ serve(async (req) => {
       results.push({
         test: 'retailers_public_read',
         status: 'FAIL',
-        message: `Exception retailers: ${error.message}`
+        message: `Exception retailers: ${(error as any)?.message || 'Unknown error'}`
       });
       allPassed = false;
     }
@@ -122,7 +122,7 @@ serve(async (req) => {
         results.push({
           test: 'prices_public_read',
           status: 'FAIL',
-          message: `Erreur lecture publique prices: ${pricesError.message}`
+          message: `Erreur lecture publique prices: ${(pricesError as any)?.message || 'Unknown error'}`
         });
         allPassed = false;
       } else {
@@ -136,7 +136,7 @@ serve(async (req) => {
       results.push({
         test: 'prices_public_read',
         status: 'FAIL',
-        message: `Exception prices: ${error.message}`
+        message: `Exception prices: ${(error as any)?.message || 'Unknown error'}`
       });
       allPassed = false;
     }
@@ -153,7 +153,7 @@ serve(async (req) => {
         results.push({
           test: 'prices_history_90d_read',
           status: 'FAIL',
-          message: `Erreur lecture prices_history 90j: ${historyError.message}`
+          message: `Erreur lecture prices_history 90j: ${(historyError as any)?.message || 'Unknown error'}`
         });
         allPassed = false;
       } else {
@@ -167,7 +167,7 @@ serve(async (req) => {
       results.push({
         test: 'prices_history_90d_read',
         status: 'FAIL',
-        message: `Exception prices_history: ${error.message}`
+        message: `Exception prices_history: ${(error as any)?.message || 'Unknown error'}`
       });
       allPassed = false;
     }
@@ -190,7 +190,7 @@ serve(async (req) => {
         results.push({
           test: 'runs_service_write',
           status: 'FAIL',
-          message: `Erreur écriture service runs: ${runError.message}`
+          message: `Erreur écriture service runs: ${(runError as any)?.message || 'Unknown error'}`
         });
         allPassed = false;
       } else {
@@ -206,7 +206,7 @@ serve(async (req) => {
       results.push({
         test: 'runs_service_write',
         status: 'FAIL',
-        message: `Exception runs service: ${error.message}`
+        message: `Exception runs service: ${(error as any)?.message || 'Unknown error'}`
       });
       allPassed = false;
     }
@@ -222,7 +222,7 @@ serve(async (req) => {
         results.push({
           test: 'audit_logs_service_access',
           status: 'FAIL',
-          message: `Erreur accès audit_logs: ${auditError.message}`
+          message: `Erreur accès audit_logs: ${(auditError as any)?.message || 'Unknown error'}`
         });
         allPassed = false;
       } else {
@@ -236,7 +236,7 @@ serve(async (req) => {
       results.push({
         test: 'audit_logs_service_access',
         status: 'FAIL',
-        message: `Exception audit_logs: ${error.message}`
+        message: `Exception audit_logs: ${(error as any)?.message || 'Unknown error'}`
       });
       allPassed = false;
     }
@@ -271,10 +271,10 @@ serve(async (req) => {
         ok: false, 
         status: 200, 
         code: "UNEXPECTED_ERROR", 
-        message: `Erreur serveur interne: ${error.message}`, 
+        message: `Erreur serveur interne: ${(error as any)?.message || 'Unknown error'}`, 
         hint: "Consulter logs Edge Function.",
         checks: [],
-        errors: [error.message]
+        errors: [(error as any)?.message || 'Unknown error']
       }),
       { 
         status: 200, 

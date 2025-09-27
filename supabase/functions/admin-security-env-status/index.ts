@@ -219,7 +219,7 @@ ALERT_WEBHOOK_URL=${Deno.env.get('ALERT_WEBHOOK_URL') || '# https://hooks.slack.
         code: 'UNEXPECTED_ERROR', 
         message: 'Erreur serveur interne.', 
         hint: 'Consulter logs Edge Function.',
-        details: error.message 
+        details: (error as any)?.message || 'Unknown error' 
       }),
       { status: 500, headers: { ...corsHeaders(req), 'Content-Type': 'application/json' } }
     );

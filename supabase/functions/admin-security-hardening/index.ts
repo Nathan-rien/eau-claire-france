@@ -166,7 +166,7 @@ Sitemap: https://infoeau.fr/sitemap.xml`;
         test: 'robots_txt',
         status: 'FAIL',
         message: 'Impossible de vérifier robots.txt',
-        details: { error: error.message }
+        details: { error: (error as any)?.message || 'Unknown error' }
       });
       allPassed = false;
     }
@@ -287,10 +287,10 @@ Sitemap: https://infoeau.fr/sitemap.xml`;
         ok: false, 
         status: 200, 
         code: "UNEXPECTED_ERROR", 
-        message: `Erreur serveur interne: ${error.message}`, 
+        message: `Erreur serveur interne: ${(error as any)?.message || 'Unknown error'}`,
         hint: "Consulter logs Edge Function.",
         checks: [],
-        errors: [error.message]
+        errors: [(error as any)?.message || 'Unknown error']
       }),
       { 
         status: 200, 

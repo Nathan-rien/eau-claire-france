@@ -195,7 +195,7 @@ serve(async (req) => {
         ok: false, 
         status: 500, 
         code: "UNEXPECTED_ERROR", 
-        message: `Erreur serveur interne: ${error.message}`, 
+        message: `Erreur serveur interne: ${(error as any)?.message || 'Unknown error'}`, 
         hint: "Consulter logs Edge Function." 
       }),
       { 

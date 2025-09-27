@@ -73,7 +73,7 @@ serve(async (req) => {
         console.error(`Failed to remove ${path}:`, error);
         errors.push({
           path,
-          error: error.message
+          error: (error as any)?.message || 'Unknown error'
         });
       }
     }
@@ -96,7 +96,7 @@ serve(async (req) => {
         } catch (error) {
           errors.push({
             path: file,
-            error: error.message
+            error: (error as any)?.message || 'Unknown error'
           });
         }
       }
@@ -135,7 +135,7 @@ serve(async (req) => {
         console.error(`Failed task ${task.name}:`, error);
         errors.push({
           path: task.name,
-          error: error.message
+          error: (error as any)?.message || 'Unknown error'
         });
       }
     }
@@ -175,9 +175,9 @@ serve(async (req) => {
       JSON.stringify({ 
         ok: false, 
         error: 'Internal server error',
-        message: `Erreur durant le nettoyage: ${error.message}`,
+        message: `Erreur durant le nettoyage: ${(error as any)?.message || 'Unknown error'}`,
         removedPaths: [],
-        errors: [{ path: 'global', error: error.message }]
+        errors: [{ path: 'global', error: (error as any)?.message || 'Unknown error' }]
       }),
       { 
         status: 500, 
