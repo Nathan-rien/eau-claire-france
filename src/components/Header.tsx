@@ -24,8 +24,7 @@ const Header = () => {
   const navigationItems = [
     { href: '/diagnostic', label: 'Diagnostic' },
     { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
-    
-    { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
+    { href: '/prix-eaux', label: 'Prix des eaux' },
     { href: '/classement', label: 'Classement' },
     { href: '/polluants', label: 'Polluants' },
     { href: '/alertes', label: 'Alertes' },
