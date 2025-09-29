@@ -14,6 +14,7 @@ import { useToast } from '@/components/ui/use-toast';
 import DataWarmupBanner from '@/components/DataWarmupBanner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { listDistinctBrands, listActiveRetailers, hasData } from '@/services/dataStatsApi';
+import { getBrandRetailerMapping } from '@/services/brandRetailerMappingApi';
 import { computeFallbackPricePerL } from '@/lib/normalize';
 import { DataBanner } from '@/components/DataBanner';
 import { supabase } from '@/integrations/supabase/client';
@@ -95,6 +96,10 @@ export default function PrixEaux() {
         // Charger les marques distinctes
         const brandsData = await listDistinctBrands();
         setBrands(brandsData);
+
+        // Charger le mapping marques-enseignes
+        const mappingData = await getBrandRetailerMapping();
+        setBrandRetailerMapping(mappingData);
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error);
         toast({
@@ -153,9 +158,12 @@ export default function PrixEaux() {
             retailer_name: retailerObj?.name || 'Enseigne inconnue',
             retailer_slug: retailerObj?.slug,
             retailer_resolved_id: retailerObj?.id,
-            price_position: brandMapping?.price_position,
             price_per_l_eur: computeFallbackPricePerL(price) || price.price_per_l_eur,
-            source: price.source || 'prices_history'
+            source: price.source || 'prices_history',
+            // Enrichissement avec les données de mapping
+            has_brand_mapping: !!brandMapping,
+            price_position: brandMapping?.price_position || 'unknown',
+            is_brand_available: brandMapping?.is_available !== false
           } as any;
         });
 
