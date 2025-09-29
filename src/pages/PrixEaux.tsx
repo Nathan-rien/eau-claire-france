@@ -16,9 +16,12 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { listDistinctBrands, listActiveRetailers, hasData } from '@/services/dataStatsApi';
 import { computeFallbackPricePerL } from '@/lib/normalize';
 import { DataBanner } from '@/components/DataBanner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
+  retailer_slug?: string;
+  price_position?: string;
   source?: string;
 }
 
@@ -29,6 +32,7 @@ export default function PrixEaux() {
   const [prices, setPrices] = useState<PriceWithRetailer[]>([]);
   const [retailers, setRetailers] = useState<Retailer[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
+  const [brandRetailerMapping, setBrandRetailerMapping] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDataBanner, setShowDataBanner] = useState(false);
   const [noActiveRetailers, setNoActiveRetailers] = useState(false);
@@ -139,11 +143,17 @@ export default function PrixEaux() {
 
         let pricesWithRetailer = result.items.map(price => {
           const retailerObj = resolveRetailer(price);
+          const brandMapping = brandRetailerMapping.find(m => 
+            m.brand_name.toLowerCase() === price.brand?.toLowerCase() && 
+            m.retailer_id === retailerObj?.id
+          );
+          
           return {
             ...price,
             retailer_name: retailerObj?.name || 'Enseigne inconnue',
             retailer_slug: retailerObj?.slug,
             retailer_resolved_id: retailerObj?.id,
+            price_position: brandMapping?.price_position,
             price_per_l_eur: computeFallbackPricePerL(price) || price.price_per_l_eur,
             source: price.source || 'prices_history'
           } as any;
@@ -195,7 +205,7 @@ export default function PrixEaux() {
     };
 
     loadPrices();
-  }, [filters, toast]);
+  }, [filters, toast, retailers, brandRetailerMapping]);
 
   const updateFilter = (key: string, value: string | null) => {
     const newParams = new URLSearchParams(searchParams);
@@ -474,9 +484,19 @@ export default function PrixEaux() {
                       <td className="border border-gray-200 dark:border-gray-700 p-3">
                         {formatVolume(price.pack_count, price.unit_volume_l)}
                       </td>
-                      <td className="border border-gray-200 dark:border-gray-700 p-3">
-                        {price.retailer_name || 'Enseigne inconnue'}
-                      </td>
+                       <td className="border border-gray-200 dark:border-gray-700 p-3">
+                         <div>
+                           {price.retailer_name || 'Enseigne inconnue'}
+                           {price.price_position && (
+                             <Badge 
+                               variant={price.price_position === 'low' ? 'default' : price.price_position === 'high' ? 'destructive' : 'secondary'} 
+                               className="ml-2 text-xs"
+                             >
+                               {price.price_position === 'low' ? 'Économique' : price.price_position === 'high' ? 'Premium' : 'Standard'}
+                             </Badge>
+                           )}
+                         </div>
+                       </td>
                       <td className="border border-gray-200 dark:border-gray-700 p-3 text-right font-medium">
                         {formatPrice(price.price_total_eur)}
                       </td>

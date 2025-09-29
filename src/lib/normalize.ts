@@ -304,6 +304,39 @@ export function generateUniqueHash(
 }
 
 /**
+ * Map retailer names to their proper UUIDs from the database
+ */
+export function getRetailerUUID(retailerName: string): string {
+  const retailerSlug = retailerName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  
+  // Mapping des noms/slugs vers les vrais UUIDs de la base de données
+  const retailerUUIDs: Record<string, string> = {
+    'carrefour': '53379a4f-6f9e-4047-827c-e63ed985e643',
+    'e-leclerc': '515d6c6a-ee5f-4837-8bf9-ebc0631bf874',
+    'leclerc': '515d6c6a-ee5f-4837-8bf9-ebc0631bf874',
+    'intermarche': '42ccdcf2-7b85-4aaa-a32b-709f7dea6e2e',
+    'intermarché': '42ccdcf2-7b85-4aaa-a32b-709f7dea6e2e',
+    'auchan': 'e8b1cca5-1340-4496-bcc8-926879ff9f9c',
+    'casino': 'b3db5d57-714b-45b8-afb4-a647ea41346a',
+    'franprix': '4caf0a4e-91fc-4c0a-84ac-4291e4e06f95',
+    'houra': 'bbc32b21-45ae-4270-874c-01cc7bfbfb8d',
+    'chronodrive': '2434b422-e219-4171-b5cc-124c848352ab',
+    'cora': '2054391c-2a43-41ba-81ed-a34db5feb7b1'
+  };
+
+  return retailerUUIDs[retailerSlug] || generateGenericUUID(retailerSlug);
+}
+
+/**
+ * Génère un UUID générique pour les retailers non mappés
+ */
+function generateGenericUUID(input: string): string {
+  // Génère un UUID déterministe basé sur le nom du retailer
+  const hash = CryptoJS.SHA256(input).toString();
+  return `${hash.substring(0, 8)}-${hash.substring(8, 12)}-${hash.substring(12, 16)}-${hash.substring(16, 20)}-${hash.substring(20, 32)}`;
+}
+
+/**
  * Détermine la disponibilité à partir des indicateurs DOM
  */
 export function determineAvailability(hasAddToCartButton: boolean, outOfStockText?: string): string {

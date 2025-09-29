@@ -86,6 +86,44 @@ export type Database = {
         }
         Relationships: []
       }
+      brand_retailer_mapping: {
+        Row: {
+          brand_name: string
+          created_at: string
+          id: string
+          is_available: boolean
+          price_position: string | null
+          retailer_id: string
+          updated_at: string
+        }
+        Insert: {
+          brand_name: string
+          created_at?: string
+          id?: string
+          is_available?: boolean
+          price_position?: string | null
+          retailer_id: string
+          updated_at?: string
+        }
+        Update: {
+          brand_name?: string
+          created_at?: string
+          id?: string
+          is_available?: boolean
+          price_position?: string | null
+          retailer_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_retailer_mapping_retailer_id_fkey"
+            columns: ["retailer_id"]
+            isOneToOne: false
+            referencedRelation: "retailers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       prices: {
         Row: {
           availability: string | null
