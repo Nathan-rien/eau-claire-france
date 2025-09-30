@@ -179,17 +179,28 @@ export default function PrixEaux() {
           }
         }
 
-        // Déduplication améliorée - garder le plus récent par produit
+        // Déduplication améliorée - garder le plus récent par produit (ignorer unique_hash)
         const productMap = new Map<string, any>();
+        const norm = (s: any) => (s ?? '')
+          .toString()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '') // enlever accents
+          .replace(/\s+/g, ' ') // espaces multiples -> simple espace
+          .trim();
         
         pricesWithRetailer.forEach(p => {
-          const key = p.unique_hash || `${p.brand?.toLowerCase()}|${p.product_name?.toLowerCase()}|${p.unit_volume_l}|${p.pack_count}|${p.retailer_resolved_id || p.retailer_id}`;
+          const vol = Number(p.unit_volume_l ?? 0);
+          const volKey = Number.isFinite(vol) ? vol.toFixed(3) : '0.000';
+          const pack = Number(p.pack_count ?? 1) || 1;
+          const rid = p.retailer_resolved_id || p.retailer_id || '';
+          const key = `${norm(p.brand)}|${norm(p.product_name)}|${volKey}|${pack}|${rid}`;
+
           const existing = productMap.get(key);
-          
           if (!existing) {
             productMap.set(key, p);
           } else {
-            // Garder le plus récent (scraped_at plus récent)
+            // Garder le plus récent (scraped_at ou created_at)
             const existingDate = new Date(existing.scraped_at || existing.created_at);
             const newDate = new Date(p.scraped_at || p.created_at);
             if (newDate > existingDate) {
