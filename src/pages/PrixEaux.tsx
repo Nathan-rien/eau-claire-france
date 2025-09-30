@@ -304,6 +304,7 @@ export default function PrixEaux() {
                   <SelectItem value="all">Toutes les marques</SelectItem>
                   {brands
                     .filter(brand => brand && brand.trim() !== '')
+                    .sort((a, b) => a.localeCompare(b))
                     .map(brand => (
                       <SelectItem key={brand} value={brand}>{brand}</SelectItem>
                     ))}
@@ -450,12 +451,12 @@ export default function PrixEaux() {
               <table className="w-full border-collapse border border-gray-200 dark:border-gray-700">
                 <thead>
                   <tr className="bg-muted">
+                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Enseigne</th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">
                       Marque
                     </th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Produit</th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Format</th>
-                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Enseigne</th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-right">
                       Prix pack
                     </th>
@@ -477,6 +478,19 @@ export default function PrixEaux() {
                 <tbody>
                   {prices.map((price) => (
                     <tr key={price.id} className="hover:bg-muted/50">
+                       <td className="border border-gray-200 dark:border-gray-700 p-3">
+                          <div>
+                            {price.retailer_name || 'Enseigne inconnue'}
+                            {price.price_position && (
+                              <Badge 
+                                variant={price.price_position === 'low' ? 'default' : price.price_position === 'high' ? 'destructive' : 'secondary'} 
+                                className="ml-2 text-xs"
+                              >
+                                {price.price_position === 'low' ? 'Économique' : price.price_position === 'high' ? 'Premium' : 'Standard'}
+                              </Badge>
+                            )}
+                          </div>
+                        </td>
                       <td className="border border-gray-200 dark:border-gray-700 p-3">
                         <span className="font-medium">{price.brand}</span>
                         {price.is_promo && (
@@ -492,19 +506,6 @@ export default function PrixEaux() {
                       <td className="border border-gray-200 dark:border-gray-700 p-3">
                         {formatVolume(price.pack_count, price.unit_volume_l)}
                       </td>
-                       <td className="border border-gray-200 dark:border-gray-700 p-3">
-                         <div>
-                           {price.retailer_name || 'Enseigne inconnue'}
-                           {price.price_position && (
-                             <Badge 
-                               variant={price.price_position === 'low' ? 'default' : price.price_position === 'high' ? 'destructive' : 'secondary'} 
-                               className="ml-2 text-xs"
-                             >
-                               {price.price_position === 'low' ? 'Économique' : price.price_position === 'high' ? 'Premium' : 'Standard'}
-                             </Badge>
-                           )}
-                         </div>
-                       </td>
                       <td className="border border-gray-200 dark:border-gray-700 p-3 text-right font-medium">
                         {formatPrice(price.price_total_eur)}
                       </td>
@@ -512,15 +513,15 @@ export default function PrixEaux() {
                         {formatPrice(price.price_per_l_eur)}
                       </td>
                       <td className="border border-gray-200 dark:border-gray-700 p-3 text-center text-sm text-muted-foreground">
-                         <div className="flex items-center justify-center gap-1">
-                           <Clock className="h-3 w-3" />
-                           {new Date(price.scraped_at).toLocaleDateString('fr-FR', {
-                             day: '2-digit',
-                             month: '2-digit',
-                             hour: '2-digit',
-                             minute: '2-digit'
-                           })}
-                         </div>
+                          <div className="flex items-center justify-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {new Date(price.scraped_at).toLocaleDateString('fr-FR', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </div>
                       </td>
                     </tr>
                   ))}
