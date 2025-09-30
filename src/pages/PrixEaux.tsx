@@ -40,7 +40,7 @@ export default function PrixEaux() {
   const [dataSource, setDataSource] = useState<string>('prices');
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 100,
+    pageSize: 500,
     total: 0,
     totalPages: 0
   });
@@ -57,7 +57,7 @@ export default function PrixEaux() {
     sort_by: searchParams.get('sort_by') || 'price_per_l_eur',
     sort_order: (searchParams.get('sort_order') as 'asc' | 'desc') || 'asc',
     page: parseInt(searchParams.get('page') || '1'),
-    limit: parseInt(searchParams.get('pageSize') || '100')
+    limit: parseInt(searchParams.get('pageSize') || '500')
   }), [searchParams]);
 
   // Update URL when filters change
@@ -415,9 +415,6 @@ export default function PrixEaux() {
               <p className="text-sm text-muted-foreground">
                 {pagination.total} produits trouvés
               </p>
-              <Badge variant="outline" className="text-xs">
-                source: {dataSource}
-              </Badge>
             </div>
             <div className="flex gap-2">
               <Button
