@@ -179,14 +179,26 @@ export default function PrixEaux() {
           }
         }
 
-        // Déduplication (unique_hash sinon signature produit)
-        const seen = new Set<string>();
-        pricesWithRetailer = pricesWithRetailer.filter(p => {
-          const key = p.unique_hash || `${p.brand}|${p.product_name}|${p.unit_volume_l}|${p.pack_count}|${p.retailer_resolved_id || p.retailer_id}`;
-          if (seen.has(key)) return false;
-          seen.add(key);
-          return true;
+        // Déduplication améliorée - garder le plus récent par produit
+        const productMap = new Map<string, any>();
+        
+        pricesWithRetailer.forEach(p => {
+          const key = p.unique_hash || `${p.brand?.toLowerCase()}|${p.product_name?.toLowerCase()}|${p.unit_volume_l}|${p.pack_count}|${p.retailer_resolved_id || p.retailer_id}`;
+          const existing = productMap.get(key);
+          
+          if (!existing) {
+            productMap.set(key, p);
+          } else {
+            // Garder le plus récent (scraped_at plus récent)
+            const existingDate = new Date(existing.scraped_at || existing.created_at);
+            const newDate = new Date(p.scraped_at || p.created_at);
+            if (newDate > existingDate) {
+              productMap.set(key, p);
+            }
+          }
         });
+        
+        pricesWithRetailer = Array.from(productMap.values());
 
         // Tri par enseigne puis par marque
         pricesWithRetailer.sort((a, b) => {
