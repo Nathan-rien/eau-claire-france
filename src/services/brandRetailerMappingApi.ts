@@ -27,12 +27,19 @@ export const getBrandRetailerMapping = async (): Promise<BrandRetailerMapping[]>
     `)
     .eq('is_available', true)
     .eq('retailers.status', 'active')
-    .order('brand_name')
-    .order('retailers.name');
+    .order('brand_name');
 
   if (error) throw error;
 
-  return data.map(item => ({
+  // Sort by retailer name in JavaScript since PostgREST doesn't support nested ordering
+  const sortedData = data?.sort((a, b) => {
+    if (a.retailers?.name && b.retailers?.name) {
+      return a.retailers.name.localeCompare(b.retailers.name);
+    }
+    return 0;
+  });
+
+  return sortedData?.map(item => ({
     ...item,
     retailer_name: item.retailers?.name
   })) as BrandRetailerMapping[];
