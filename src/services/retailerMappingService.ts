@@ -144,7 +144,8 @@ export async function validateBrandRetailerConsistency() {
     .from('prices_history')
     .select('DISTINCT brand, retailer_id')
     .not('brand', 'is', null)
-    .gte('scraped_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()); // 30 derniers jours
+    .gte('scraped_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()) // 30 derniers jours
+    .returns<Array<{ brand: string; retailer_id: string }>>();
 
   if (pricesError) throw pricesError;
 
