@@ -188,6 +188,13 @@ export default function PrixEaux() {
           return true;
         });
 
+        // Tri par enseigne puis par marque
+        pricesWithRetailer.sort((a, b) => {
+          const retailerCompare = (a.retailer_name || 'Z').localeCompare(b.retailer_name || 'Z');
+          if (retailerCompare !== 0) return retailerCompare;
+          return (a.brand || 'Z').localeCompare(b.brand || 'Z');
+        });
+
         setPrices(pricesWithRetailer as PriceWithRetailer[]);
         setPagination({
           page: result.page,
@@ -481,14 +488,6 @@ export default function PrixEaux() {
                        <td className="border border-gray-200 dark:border-gray-700 p-3">
                           <div>
                             {price.retailer_name || 'Enseigne inconnue'}
-                            {price.price_position && (
-                              <Badge 
-                                variant={price.price_position === 'low' ? 'default' : price.price_position === 'high' ? 'destructive' : 'secondary'} 
-                                className="ml-2 text-xs"
-                              >
-                                {price.price_position === 'low' ? 'Économique' : price.price_position === 'high' ? 'Premium' : 'Standard'}
-                              </Badge>
-                            )}
                           </div>
                         </td>
                       <td className="border border-gray-200 dark:border-gray-700 p-3">
