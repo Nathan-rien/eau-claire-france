@@ -92,6 +92,7 @@ export interface PriceFilters {
   search?: string;
   is_promo?: boolean;
   availability?: string;
+  channel_type?: string;
   sort_by?: string;
   sort_order?: 'asc' | 'desc';
   limit?: number;

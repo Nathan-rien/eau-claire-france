@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Search, Filter, TrendingUp, Clock } from 'lucide-react';
+import { Search, Filter, TrendingUp, Clock, Store, Truck, Package, ShoppingCart, Info } from 'lucide-react';
 import { Price, Retailer, PriceFilters, PaginatedResponse } from '@/types/pricing';
 import { getPrices } from '@/services/pricesApi';
 import { useToast } from '@/components/ui/use-toast';
@@ -18,12 +18,17 @@ import { getBrandRetailerMapping } from '@/services/brandRetailerMappingApi';
 import { computeFallbackPricePerL } from '@/lib/normalize';
 import { DataBanner } from '@/components/DataBanner';
 import { supabase } from '@/integrations/supabase/client';
+import { extractSourceInfo, detectChannelType, getChannelDescription, ChannelType } from '@/utils/sourceDetection';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
   retailer_slug?: string;
   price_position?: string;
   source?: string;
+  source_domain?: string;
+  source_display?: string;
+  channel_type?: ChannelType;
 }
 
 export default function PrixEaux() {
@@ -54,6 +59,7 @@ export default function PrixEaux() {
     search: searchParams.get('search') || undefined,
     is_promo: searchParams.get('is_promo') === 'true' ? true : searchParams.get('is_promo') === 'false' ? false : undefined,
     availability: searchParams.get('availability') || undefined,
+    channel_type: searchParams.get('channel_type') || undefined,
     sort_by: searchParams.get('sort_by') || 'price_per_l_eur',
     sort_order: (searchParams.get('sort_order') as 'asc' | 'desc') || 'asc',
     page: parseInt(searchParams.get('page') || '1'),
@@ -153,6 +159,9 @@ export default function PrixEaux() {
             m.retailer_id === retailerObj?.id
           );
           
+          // Extraire les informations de source
+          const sourceInfo = extractSourceInfo(price.url, retailerObj?.name || 'Enseigne inconnue');
+          
           return {
             ...price,
             retailer_name: retailerObj?.name || 'Enseigne inconnue',
@@ -160,6 +169,9 @@ export default function PrixEaux() {
             retailer_resolved_id: retailerObj?.id,
             price_per_l_eur: computeFallbackPricePerL(price) || price.price_per_l_eur,
             source: price.source || 'prices_history',
+            source_domain: sourceInfo.fullDomain,
+            source_display: sourceInfo.displayName,
+            channel_type: sourceInfo.channelType,
             // Enrichissement avec les données de mapping
             has_brand_mapping: !!brandMapping,
             price_position: brandMapping?.price_position || 'unknown',
@@ -177,6 +189,11 @@ export default function PrixEaux() {
               (p.url && selected.domain && p.url.includes(selected.domain))
             ));
           }
+        }
+
+        // Filtre par type de canal côté client
+        if (filters.channel_type && filters.channel_type !== 'all') {
+          pricesWithRetailer = pricesWithRetailer.filter(p => p.channel_type === filters.channel_type);
         }
 
         // Déduplication améliorée - garder le plus récent par produit (ignorer unique_hash)
@@ -298,6 +315,32 @@ export default function PrixEaux() {
             Données mises à jour quotidiennement.
           </p>
 
+          {/* Légende des types de sources */}
+          <Alert className="mb-6 bg-muted/50">
+            <Info className="h-4 w-4" />
+            <AlertTitle>Sources de prix</AlertTitle>
+            <AlertDescription>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 text-sm">
+                <div className="flex items-center gap-2">
+                  <Store className="h-4 w-4" />
+                  <span><strong>Site principal :</strong> Prix grand public</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Truck className="h-4 w-4" />
+                  <span><strong>Drive :</strong> Click & Collect</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Package className="h-4 w-4" />
+                  <span><strong>Grossiste/Pro :</strong> Peut nécessiter conditions</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ShoppingCart className="h-4 w-4" />
+                  <span><strong>Marketplace :</strong> Vendeur tiers</span>
+                </div>
+              </div>
+            </AlertDescription>
+          </Alert>
+
           <DataBanner onDataUpdate={refreshData} />
 
           {/* Data warmup banner */}
@@ -394,8 +437,8 @@ export default function PrixEaux() {
               </div>
             </div>
 
-            {/* Ligne séparée pour les filtres promotions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4 border-t">
+            {/* Ligne séparée pour les filtres promotions et type de source */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t">
               <Select value={searchParams.get('is_promo') || ''} onValueChange={(value) => updateFilter('is_promo', value || null)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Promotions" />
@@ -407,6 +450,18 @@ export default function PrixEaux() {
                 </SelectContent>
               </Select>
 
+              <Select value={searchParams.get('channel_type') || ''} onValueChange={(value) => updateFilter('channel_type', value || null)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Type de source" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Toutes les sources</SelectItem>
+                  <SelectItem value="retail">🏪 Site principal</SelectItem>
+                  <SelectItem value="drive">🚗 Drive</SelectItem>
+                  <SelectItem value="wholesale">📦 Grossiste/Pro</SelectItem>
+                  <SelectItem value="marketplace">🛒 Marketplace</SelectItem>
+                </SelectContent>
+              </Select>
 
               <div className="flex gap-2">
                 <Button
@@ -478,7 +533,9 @@ export default function PrixEaux() {
               <table className="w-full border-collapse border border-gray-200 dark:border-gray-700">
                 <thead>
                   <tr className="bg-muted">
-                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Enseigne</th>
+                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">
+                      Source
+                    </th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">
                       Marque
                     </th>
@@ -503,12 +560,44 @@ export default function PrixEaux() {
                   </tr>
                 </thead>
                 <tbody>
-                  {prices.map((price) => (
+                  {prices.map((price) => {
+                    const getChannelIcon = () => {
+                      switch (price.channel_type) {
+                        case 'retail': return <Store className="h-4 w-4" />;
+                        case 'drive': return <Truck className="h-4 w-4" />;
+                        case 'wholesale': return <Package className="h-4 w-4" />;
+                        case 'marketplace': return <ShoppingCart className="h-4 w-4" />;
+                        default: return <Store className="h-4 w-4" />;
+                      }
+                    };
+
+                    return (
                     <tr key={price.id} className="hover:bg-muted/50">
                        <td className="border border-gray-200 dark:border-gray-700 p-3">
-                          <div>
-                            {price.retailer_name || 'Enseigne inconnue'}
-                          </div>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="flex items-center gap-2 cursor-help">
+                                  {getChannelIcon()}
+                                  <div>
+                                    <div className="font-medium">{price.source_display || price.retailer_name}</div>
+                                    {price.source_domain && (
+                                      <div className="text-xs text-muted-foreground">{price.source_domain}</div>
+                                    )}
+                                  </div>
+                                  {price.channel_type === 'wholesale' && (
+                                    <Badge variant="secondary" className="text-xs">PRO</Badge>
+                                  )}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-xs">
+                                <p className="font-medium">{getChannelDescription(price.channel_type || 'retail')}</p>
+                                {price.url && (
+                                  <p className="text-xs mt-1 text-muted-foreground truncate">{price.url}</p>
+                                )}
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </td>
                       <td className="border border-gray-200 dark:border-gray-700 p-3">
                         <span className="font-medium">{price.brand}</span>
@@ -543,7 +632,8 @@ export default function PrixEaux() {
                           </div>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
