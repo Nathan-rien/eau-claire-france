@@ -170,13 +170,14 @@ serve(async (req) => {
       try {
         console.log('Starting simulated scraping...');
         
-        // Get retailer IDs from database
+        // Get retailer IDs and domains from database
         const { data: retailerData } = await supabase
           .from('retailers')
-          .select('id, slug')
+          .select('id, slug, domain')
           .in('slug', actualRetailers);
         
         const retailerMap = new Map(retailerData?.map(r => [r.slug, r.id]) || []);
+        const retailerDomainMap = new Map(retailerData?.map(r => [r.slug, r.domain]) || []);
         
         // Generate products for each combination
         const products = [];
@@ -184,7 +185,11 @@ serve(async (req) => {
         
         for (const retailerSlug of actualRetailers) {
           const retailerId = retailerMap.get(retailerSlug);
-          if (!retailerId) continue;
+          const retailerDomain = retailerDomainMap.get(retailerSlug);
+          if (!retailerId || !retailerDomain) continue;
+          
+          // Generate URLs with realistic variations (drive, market, main site, pro)
+          const sourceTypes = ['main', 'drive', 'market', 'pro'];
           
           for (const brand of actualBrands) {
             for (const format of actualFormats) {
@@ -207,6 +212,25 @@ serve(async (req) => {
                 const totalPrice = priceTotal * packCount;
                 const isPromo = Math.random() < 0.2; // 20% promo chance
                 
+                // Generate realistic URL based on source type
+                const sourceType = sourceTypes[Math.floor(Math.random() * sourceTypes.length)];
+                let productUrl = '';
+                const productSlug = `${brand.toLowerCase()}-eau-${format.replace(/[,\s]/g, '-')}`;
+                
+                switch (sourceType) {
+                  case 'drive':
+                    productUrl = `https://drive.${retailerDomain}/produits/${productSlug}`;
+                    break;
+                  case 'market':
+                    productUrl = `https://market.${retailerDomain}/p/${productSlug}`;
+                    break;
+                  case 'pro':
+                    productUrl = `https://pro.${retailerDomain}/catalogue/${productSlug}`;
+                    break;
+                  default:
+                    productUrl = `https://www.${retailerDomain}/produits/${productSlug}`;
+                }
+                
                 const uniqueHash = `${retailerSlug}-${brand}-${brand} ${format}-${Date.now()}-${Math.random()}`;
                 
                 products.push({
@@ -223,7 +247,7 @@ serve(async (req) => {
                   promo_label: isPromo ? 'Promo spéciale' : null,
                   availability: 'in_stock',
                   sku: `${brand}-${format}`,
-                  url: `https://example.com/${brand.toLowerCase()}`,
+                  url: productUrl,
                   image_url: null,
                   unique_hash: uniqueHash.substring(0, 80),
                   scraped_at: new Date(baseDate.getTime() + Math.random() * 3600000).toISOString()
