@@ -76,16 +76,29 @@ export default function Admin() {
     setScraping(retailerSlug);
     
     try {
-      // TODO: Implement API endpoint for triggering scraping
-      // await fetch(`/api/scrape?retailer=${retailerSlug}`, { method: 'POST' });
+      const brands = Object.keys(BRAND_CONFIG);
+      const formats = ['0,5 l', '1 l', '1,5 l'];
       
-      toast({
-        title: "Scraping en cours",
-        description: `Le scraping de ${retailerSlug} va être implémenté via API`
+      const { data, error } = await supabase.functions.invoke('admin-scrape', {
+        body: {
+          mode: 'wide',
+          retailers: [retailerSlug],
+          brands,
+          formats,
+          maxPages: 2,
+          dryRun: false
+        }
       });
 
-      // Reload data after delay
-      setTimeout(() => loadData(), 2000);
+      if (error) throw error;
+
+      toast({
+        title: "Scraping lancé",
+        description: `Le scraping de ${retailerSlug} a été lancé avec succès`
+      });
+
+      // Reload data after a few seconds
+      setTimeout(() => loadData(), 3000);
       
     } catch (error) {
       console.error('Error during scraping:', error);
