@@ -19,6 +19,7 @@ export default function Admin() {
   const [retailers, setRetailers] = useState<Retailer[]>([]);
   const [loading, setLoading] = useState(true);
   const [scraping, setScraping] = useState<string | null>(null);
+  const [scrapingAll, setScrapingAll] = useState(false);
   const [stats, setStats] = useState<any>(null);
   const [pricesHealth, setPricesHealth] = useState<any>(null);
   const { toast } = useToast();
@@ -109,6 +110,58 @@ export default function Admin() {
       });
     } finally {
       setScraping(null);
+    }
+  };
+
+  const handleScrapeAll = async () => {
+    const activeRetailers = retailers.filter(r => r.status === 'active');
+    
+    if (activeRetailers.length === 0) {
+      toast({
+        title: "Aucune enseigne active",
+        description: "Impossible de lancer le scraping",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setScrapingAll(true);
+    
+    try {
+      const brands = Object.keys(BRAND_CONFIG);
+      const formats = ['0,5 l', '1 l', '1,5 l'];
+      const retailerSlugs = activeRetailers.map(r => r.slug);
+      
+      const { data, error } = await supabase.functions.invoke('admin-scrape', {
+        body: {
+          mode: 'wide',
+          retailers: retailerSlugs,
+          brands,
+          formats,
+          maxPages: 2,
+          dryRun: false
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Scraping global lancé",
+        description: `Le scraping de ${activeRetailers.length} enseignes a été lancé avec succès`
+      });
+
+      // Reload data after delay
+      setTimeout(() => loadData(), 5000);
+      
+    } catch (error) {
+      console.error('Error during global scraping:', error);
+      toast({
+        title: "Erreur",
+        description: "Le scraping global a échoué",
+        variant: "destructive"
+      });
+    } finally {
+      setScrapingAll(false);
     }
   };
 
@@ -223,7 +276,14 @@ export default function Admin() {
 
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Administration - Scraping des prix</h1>
-        <div className="space-x-2">
+        <div className="flex gap-2">
+          <Button
+            onClick={handleScrapeAll}
+            disabled={scrapingAll || retailers.filter(r => r.status === 'active').length === 0}
+            variant="default"
+          >
+            {scrapingAll ? 'Scraping en cours...' : '⚡ Scraper toutes les enseignes'}
+          </Button>
           <Button
             onClick={() => window.open('https://github.com/YOUR_USERNAME/YOUR_REPO/actions', '_blank')}
             variant="outline"
