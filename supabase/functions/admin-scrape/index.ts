@@ -230,7 +230,9 @@ serve(async (req) => {
                     productUrl = `https://www.${retailerDomain}/produits/${productSlug}`;
                 }
                 
-                const uniqueHash = `${retailerSlug}-${brand}-${brand} ${format}-${Date.now()}-${Math.random()}`;
+                const timestamp = Date.now().toString(36);
+                const random = Math.random().toString(36).substring(2, 8);
+                const uniqueHash = `${retailerSlug.substring(0, 8)}-${brand.substring(0, 10)}-${timestamp}-${random}`;
                 
                 products.push({
                   retailer_id: retailerId,
@@ -248,7 +250,7 @@ serve(async (req) => {
                   sku: `${brand}-${format}`,
                   url: productUrl,
                   image_url: null,
-                  unique_hash: uniqueHash.substring(0, 80),
+                  unique_hash: uniqueHash.substring(0, 64),
                   scraped_at: new Date(baseDate.getTime() + Math.random() * 3600000).toISOString()
                 });
               }
