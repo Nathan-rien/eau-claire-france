@@ -13,10 +13,9 @@ function corsHeaders(req: Request) {
   }
   
   return {
-    'Access-Control-Allow-Origin': allowOrigin,
-    'Access-Control-Allow-Headers': 'content-type, x-admin-token, authorization',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-admin-token',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Vary': 'Origin',
     'Content-Type': 'application/json'
   };
 }

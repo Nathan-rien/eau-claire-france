@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { Run, Retailer } from '@/types/pricing';
 // Server-side scraping removed from client
-import { BRAND_CONFIG } from '@/config/brands';
+import { BRAND_CONFIG, TARGET_BRANDS } from '@/config/brands';
 import { AdminQuickStart } from '@/components/AdminQuickStart';
 import { AdminGuard, QuickStartGuard } from '@/components/SecurityGuard';
 import { getMetaSecurityTags } from '@/utils/securityHeaders';
@@ -77,7 +77,7 @@ export default function Admin() {
     setScraping(retailerSlug);
     
     try {
-      const brands = Object.keys(BRAND_CONFIG);
+      const brands = TARGET_BRANDS.map(b => b.toLowerCase());
       const formats = ['0,5 l', '1 l', '1,5 l'];
       const adminToken = import.meta.env.VITE_ADMIN_DASHBOARD_TOKEN;
       
@@ -132,7 +132,7 @@ export default function Admin() {
     setScrapingAll(true);
     
     try {
-      const brands = Object.keys(BRAND_CONFIG);
+      const brands = TARGET_BRANDS.map(b => b.toLowerCase());
       const formats = ['0,5 l', '1 l', '1,5 l'];
       const retailerSlugs = activeRetailers.map(r => r.slug);
       const adminToken = import.meta.env.VITE_ADMIN_DASHBOARD_TOKEN;
