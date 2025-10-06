@@ -79,6 +79,7 @@ export default function Admin() {
     try {
       const brands = Object.keys(BRAND_CONFIG);
       const formats = ['0,5 l', '1 l', '1,5 l'];
+      const adminToken = import.meta.env.VITE_ADMIN_DASHBOARD_TOKEN;
       
       const { data, error } = await supabase.functions.invoke('admin-scrape', {
         body: {
@@ -88,6 +89,9 @@ export default function Admin() {
           formats,
           maxPages: 2,
           dryRun: false
+        },
+        headers: {
+          'x-admin-token': adminToken
         }
       });
 
@@ -131,6 +135,7 @@ export default function Admin() {
       const brands = Object.keys(BRAND_CONFIG);
       const formats = ['0,5 l', '1 l', '1,5 l'];
       const retailerSlugs = activeRetailers.map(r => r.slug);
+      const adminToken = import.meta.env.VITE_ADMIN_DASHBOARD_TOKEN;
       
       const { data, error } = await supabase.functions.invoke('admin-scrape', {
         body: {
@@ -140,6 +145,9 @@ export default function Admin() {
           formats,
           maxPages: 2,
           dryRun: false
+        },
+        headers: {
+          'x-admin-token': adminToken
         }
       });
 
