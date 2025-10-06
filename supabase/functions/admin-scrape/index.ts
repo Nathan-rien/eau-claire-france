@@ -260,23 +260,35 @@ serve(async (req) => {
         
         console.log(`Generated ${products.length} products for scraping`);
         
-        // Insert products in batches
+        // Insert products in batches (into both prices and prices_history)
         const batchSize = 50;
         let savedCount = 0;
         
         for (let i = 0; i < products.length; i += batchSize) {
           const batch = products.slice(i, i + batchSize);
           
+          // Insert into prices table
           const { data: inserted, error: insertError } = await supabase
             .from('prices')
             .insert(batch)
             .select('id');
           
           if (insertError) {
-            console.error(`Batch insert failed:`, insertError);
+            console.error(`Batch insert into prices failed:`, insertError);
           } else {
             savedCount += inserted?.length || 0;
-            console.log(`Saved batch ${Math.floor(i/batchSize) + 1}, ${inserted?.length} items`);
+            console.log(`Saved batch ${Math.floor(i/batchSize) + 1}, ${inserted?.length} items to prices`);
+          }
+          
+          // Insert same batch into prices_history
+          const { error: historyError } = await supabase
+            .from('prices_history')
+            .insert(batch);
+          
+          if (historyError) {
+            console.error(`Batch insert into prices_history failed:`, historyError);
+          } else {
+            console.log(`Saved batch ${Math.floor(i/batchSize) + 1} to prices_history`);
           }
         }
         
