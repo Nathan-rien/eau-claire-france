@@ -271,6 +271,24 @@ export type Database = {
         }
         Relationships: []
       }
+      prices_view_refresh_log: {
+        Row: {
+          id: string
+          refreshed_at: string
+          refreshed_by: string | null
+        }
+        Insert: {
+          id?: string
+          refreshed_at?: string
+          refreshed_by?: string | null
+        }
+        Update: {
+          id?: string
+          refreshed_at?: string
+          refreshed_by?: string | null
+        }
+        Relationships: []
+      }
       rate_limits: {
         Row: {
           count: number
@@ -450,6 +468,30 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       prices_history_last: {
@@ -502,6 +544,14 @@ export type Database = {
         Args: { "": unknown }
         Returns: unknown
       }
+      has_admin_role: {
+        Args: { check_user_id: string }
+        Returns: boolean
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       refresh_prices_view: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -520,7 +570,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -647,6 +697,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

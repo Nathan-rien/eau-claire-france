@@ -7,6 +7,24 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import SearchBar from './SearchBar';
+import { z } from 'zod';
+
+// Schéma de validation Zod pour les abonnements
+const alertSchema = z.object({
+  email: z.string()
+    .email("Email invalide")
+    .max(255, "Email trop long")
+    .toLowerCase()
+    .trim(),
+  commune: z.string()
+    .min(1, "La commune est requise")
+    .max(100, "Nom de commune trop long")
+    .regex(/^[a-zA-ZÀ-ÿ\s\-']+$/, "Caractères invalides dans le nom de commune")
+    .trim(),
+  consent_rgpd: z.boolean().refine(val => val === true, {
+    message: "Vous devez accepter la politique de confidentialité"
+  })
+});
 
 const AlertSubscriptionForm = () => {
   const [email, setEmail] = useState('');
@@ -22,39 +40,54 @@ const AlertSubscriptionForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !commune || !consentRgpd) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez remplir tous les champs obligatoires et accepter les conditions.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsSubmitting(true);
-
+    
     try {
+      // Validation côté client avec Zod
+      const validated = alertSchema.safeParse({ 
+        email, 
+        commune, 
+        consent_rgpd: consentRgpd 
+      });
+      
+      if (!validated.success) {
+        const firstError = validated.error.errors[0];
+        toast({
+          title: "Erreur de validation",
+          description: firstError.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Vérifier que l'utilisateur est authentifié
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Authentification requise",
+          description: "Vous devez être connecté pour vous abonner aux alertes.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Insertion avec données validées (typage explicite)
       const { error } = await supabase
         .from('alertes_utilisateurs')
-        .insert([
-          {
-            email: email.trim(),
-            commune: commune.trim(),
-            consent_rgpd: consentRgpd,
-          }
-        ]);
+        .insert([{
+          email: validated.data.email,
+          commune: validated.data.commune,
+          consent_rgpd: validated.data.consent_rgpd
+        }]);
 
       if (error) {
-        if (error.code === '23505') { // Unique constraint violation
-          toast({
-            title: "Abonnement existant",
-            description: "Vous êtes déjà abonné(e) aux alertes pour cette commune.",
-            variant: "destructive",
-          });
-        } else {
-          throw error;
-        }
+        // Message d'erreur générique pour éviter l'énumération d'emails
+        console.error("Erreur d'inscription:", error);
+        toast({
+          title: "Erreur d'inscription",
+          description: "Impossible de traiter votre demande. Vérifiez vos informations et réessayez.",
+          variant: "destructive",
+        });
       } else {
         setIsSubmitted(true);
         toast({
