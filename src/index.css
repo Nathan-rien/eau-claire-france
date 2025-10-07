@@ -6,9 +6,30 @@
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+:root {
+  /* Responsive spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  
+  /* Container widths */
+  --container-max: 680px;
+  --container-wide: 1280px;
+  
+  /* Touch targets */
+  --touch-target-min: 44px;
+  
+  /* Safe areas for iOS notch */
+  --safe-area-top: env(safe-area-inset-top);
+  --safe-area-bottom: env(safe-area-inset-bottom);
+  --safe-area-left: env(safe-area-inset-left);
+  --safe-area-right: env(safe-area-inset-right);
+
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -98,8 +119,47 @@
     @apply border-border;
   }
 
+  html {
+    /* Base font-size for mobile (16px) */
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     @apply bg-background text-foreground;
+    /* Safe area padding for iOS notches */
+    padding-top: var(--safe-area-top);
+    padding-bottom: var(--safe-area-bottom);
+    /* Prevent horizontal scroll */
+    overflow-x: hidden;
+  }
+
+  /* Responsive images by default */
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Touch-friendly links and buttons */
+  a, button, [role="button"] {
+    min-height: var(--touch-target-min);
+    min-width: var(--touch-target-min);
+  }
+
+  /* Focus visible for accessibility */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
@@ -123,4 +183,93 @@
 :root {
   --success: 142 69% 35%; /* Dark green for WCAG AA compliance */
   --warning: 25 95% 40%; /* Dark orange for WCAG AA compliance */
+}
+
+/* Responsive typography with clamp() */
+h1 {
+  font-size: clamp(1.375rem, 5vw, 1.75rem); /* 22px to 28px */
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: clamp(1.25rem, 4.5vw, 1.5rem); /* 20px to 24px */
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: clamp(1.125rem, 4vw, 1.25rem); /* 18px to 20px */
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+p, li {
+  font-size: clamp(1rem, 3.8vw, 1.125rem); /* 16px to 18px */
+  line-height: 1.6;
+}
+
+/* Container utilities */
+.wrapper {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.wrapper-wide {
+  max-width: var(--container-wide);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+/* Table responsive utilities */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+
+/* Shadow indicator for horizontal scroll */
+.table-wrap::after {
+  content: "";
+  position: sticky;
+  right: 0;
+  top: 0;
+  width: 16px;
+  height: 100%;
+  pointer-events: none;
+  box-shadow: inset -16px 0 16px -16px rgba(0, 0, 0, 0.15);
+}
+
+/* Sticky first column in tables */
+.table-sticky-col th:first-child,
+.table-sticky-col td:first-child {
+  position: sticky;
+  left: 0;
+  background: hsl(var(--background));
+  z-index: 10;
+}
+
+/* Card grid for mobile table alternative */
+@media (max-width: 480px) {
+  .table-cards-mobile table {
+    display: none;
+  }
+  
+  .table-cards-mobile .table-cards {
+    display: grid;
+    gap: var(--space-4);
+  }
+}
+
+/* Sticky header with safe area */
+.sticky-header {
+  position: sticky;
+  top: var(--safe-area-top);
+  z-index: 50;
+}
+
+/* Sticky footer with safe area */
+.sticky-footer {
+  padding-bottom: calc(12px + var(--safe-area-bottom));
 }

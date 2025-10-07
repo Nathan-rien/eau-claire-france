@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import LazyInteractiveMap from './LazyInteractiveMap';
+import { MapLoader } from '@/components/ui/map-loader';
 
 const QualityMap = () => {
   const [showWaterSources, setShowWaterSources] = useState<boolean>(true);
@@ -93,8 +94,10 @@ const QualityMap = () => {
         </CardContent>
       </Card>
 
-      {/* Interactive Map */}
-      <LazyInteractiveMap showWaterSources={showWaterSources} />
+      {/* Interactive Map - Lazy loaded on mobile */}
+      <MapLoader loadOnInteraction={true} minHeight="60vh">
+        <LazyInteractiveMap showWaterSources={showWaterSources} />
+      </MapLoader>
 
       {/* Regional Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

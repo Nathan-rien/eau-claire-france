@@ -57,15 +57,15 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" role="banner">
-      <div className="container mx-auto px-4">
-        <div className="flex h-14 items-center justify-between">
+    <header className="sticky-header sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" role="banner">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="flex h-14 sm:h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity flex-shrink-0" aria-label="InfoEau.fr - Retour à l'accueil">
-            <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center" aria-hidden="true">
-              <Droplets className="w-4 h-4 text-white" />
+          <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity flex-shrink-0 min-h-[44px]" aria-label="InfoEau.fr - Retour à l'accueil">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center" aria-hidden="true">
+              <Droplets className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+            <span className="text-base sm:text-lg font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
               InfoEau.fr
             </span>
           </Link>
@@ -154,8 +154,13 @@ const Header = () => {
             <div className="xl:hidden">
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="xl:hidden p-2 flex items-center space-x-2">
-                    <Menu className="h-4 w-4" />
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="xl:hidden min-h-[44px] min-w-[44px] p-2 flex items-center space-x-2"
+                    aria-label="Ouvrir le menu"
+                  >
+                    <Menu className="h-5 w-5" />
                     <span className="hidden md:inline text-sm font-medium">Menu</span>
                     <span className="sr-only">Toggle menu</span>
                   </Button>
