@@ -384,10 +384,93 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
                   </div>
                 </div>
 
+                {/* Composition minérale */}
+                {(selectedSource.Ca_mg_L || selectedSource.Mg_mg_L || selectedSource.Na_mg_L || 
+                  selectedSource.NO3_mg_L !== undefined || selectedSource.pH || selectedSource.HCO3_mg_L ||
+                  selectedSource.SO4_mg_L || selectedSource.Cl_mg_L || selectedSource.residu_sec_180_mg_L) && (
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-sm">Composition minérale</h4>
+                    <div className="grid grid-cols-1 gap-2">
+                      {selectedSource.pH && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">pH</span>
+                          <span className="font-medium">{selectedSource.pH}</span>
+                        </div>
+                      )}
+                      {selectedSource.residu_sec_180_mg_L && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">Résidu sec</span>
+                          <span className="font-medium">{selectedSource.residu_sec_180_mg_L} mg/L</span>
+                        </div>
+                      )}
+                      {selectedSource.Ca_mg_L && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">Calcium (Ca)</span>
+                          <span className="font-medium">{selectedSource.Ca_mg_L} mg/L</span>
+                        </div>
+                      )}
+                      {selectedSource.Mg_mg_L && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">Magnésium (Mg)</span>
+                          <span className="font-medium">{selectedSource.Mg_mg_L} mg/L</span>
+                        </div>
+                      )}
+                      {selectedSource.Na_mg_L && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">Sodium (Na)</span>
+                          <span className="font-medium">{selectedSource.Na_mg_L} mg/L</span>
+                        </div>
+                      )}
+                      {selectedSource.NO3_mg_L !== undefined && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">Nitrates (NO₃)</span>
+                          <span className="font-medium">{selectedSource.NO3_mg_L} mg/L</span>
+                        </div>
+                      )}
+                      {selectedSource.HCO3_mg_L && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">Bicarbonates (HCO₃)</span>
+                          <span className="font-medium">{selectedSource.HCO3_mg_L} mg/L</span>
+                        </div>
+                      )}
+                      {selectedSource.SO4_mg_L && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">Sulfates (SO₄)</span>
+                          <span className="font-medium">{selectedSource.SO4_mg_L} mg/L</span>
+                        </div>
+                      )}
+                      {selectedSource.Cl_mg_L && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">Chlorures (Cl)</span>
+                          <span className="font-medium">{selectedSource.Cl_mg_L} mg/L</span>
+                        </div>
+                      )}
+                      {selectedSource.K_mg_L && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">Potassium (K)</span>
+                          <span className="font-medium">{selectedSource.K_mg_L} mg/L</span>
+                        </div>
+                      )}
+                      {selectedSource.F_mg_L && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">Fluor (F)</span>
+                          <span className="font-medium">{selectedSource.F_mg_L} mg/L</span>
+                        </div>
+                      )}
+                      {selectedSource.SiO2_mg_L && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">Silice (SiO₂)</span>
+                          <span className="font-medium">{selectedSource.SiO2_mg_L} mg/L</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* Informations techniques détaillées */}
                 <div className="space-y-3">
                   <h4 className="font-semibold text-sm">Caractéristiques techniques</h4>
-                  <div className="grid grid-cols-1 gap-3">
+                  <div className="grid grid-cols-1 gap-2">
                     {typeof selectedSource.flow_rate === 'number' && (
                       <div className="flex justify-between py-2 border-b">
                         <span className="text-sm text-muted-foreground">Débit autorisé</span>
@@ -404,12 +487,6 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
                       <div className="flex justify-between py-2 border-b">
                         <span className="text-sm text-muted-foreground">Température émergence</span>
                         <span className="font-medium">{selectedSource.temperature} °C</span>
-                      </div>
-                    )}
-                    {typeof selectedSource.residue === 'number' && (
-                      <div className="flex justify-between py-2 border-b">
-                        <span className="text-sm text-muted-foreground">Résidu sec</span>
-                        <span className="font-medium">{selectedSource.residue} mg/L</span>
                       </div>
                     )}
                     <div className="flex justify-between py-2 border-b">

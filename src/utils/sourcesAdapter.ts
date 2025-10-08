@@ -13,6 +13,19 @@ export type SourceItem = {
   flow_rate?: number;
   depth?: number;
   temperature?: number;
+  // Composition minérale
+  pH?: number;
+  residu_sec_180_mg_L?: number;
+  HCO3_mg_L?: number;
+  Ca_mg_L?: number;
+  Cl_mg_L?: number;
+  F_mg_L?: number;
+  Mg_mg_L?: number;
+  NO3_mg_L?: number;
+  K_mg_L?: number;
+  SiO2_mg_L?: number;
+  Na_mg_L?: number;
+  SO4_mg_L?: number;
 };
 
 const mapCategory = (raw?: string): SourceItem["water_category"] => {
@@ -49,7 +62,26 @@ export async function buildSources(): Promise<SourceItem[]> {
   log("rows", { coords: coords.rows.length, comp: comp.rows.length });
 
   // Index composition par clé souple
-  const compIndex = new Map<string, { residue?: number; flow_rate?: number; depth?: number; temperature?: number }>();
+  type CompositionData = {
+    residue?: number;
+    flow_rate?: number;
+    depth?: number;
+    temperature?: number;
+    pH?: number;
+    residu_sec_180_mg_L?: number;
+    HCO3_mg_L?: number;
+    Ca_mg_L?: number;
+    Cl_mg_L?: number;
+    F_mg_L?: number;
+    Mg_mg_L?: number;
+    NO3_mg_L?: number;
+    K_mg_L?: number;
+    SiO2_mg_L?: number;
+    Na_mg_L?: number;
+    SO4_mg_L?: number;
+  };
+
+  const compIndex = new Map<string, CompositionData>();
   for (const row of comp.rows) {
     const k =
       key(row["source_name"], row["brand"], row["commune"]) ||
@@ -63,6 +95,18 @@ export async function buildSources(): Promise<SourceItem[]> {
       flow_rate: toNumber(row["flow_rate"]),
       depth: toNumber(row["depth"]),
       temperature: toNumber(row["temperature"]),
+      pH: toNumber(row["pH"]),
+      residu_sec_180_mg_L: toNumber(row["residu_sec_180_mg_L"]),
+      HCO3_mg_L: toNumber(row["HCO3_mg_L"]),
+      Ca_mg_L: toNumber(row["Ca_mg_L"]),
+      Cl_mg_L: toNumber(row["Cl_mg_L"]),
+      F_mg_L: toNumber(row["F_mg_L"]),
+      Mg_mg_L: toNumber(row["Mg_mg_L"]),
+      NO3_mg_L: toNumber(row["NO3_mg_L"]),
+      K_mg_L: toNumber(row["K_mg_L"]),
+      SiO2_mg_L: toNumber(row["SiO2_mg_L"]),
+      Na_mg_L: toNumber(row["Na_mg_L"]),
+      SO4_mg_L: toNumber(row["SO4_mg_L"]),
     });
   }
   log("compIndex", compIndex.size);
@@ -103,10 +147,22 @@ export async function buildSources(): Promise<SourceItem[]> {
       flow_rate: meta.flow_rate,
       depth: meta.depth,
       temperature: meta.temperature,
+      pH: meta.pH,
+      residu_sec_180_mg_L: meta.residu_sec_180_mg_L,
+      HCO3_mg_L: meta.HCO3_mg_L,
+      Ca_mg_L: meta.Ca_mg_L,
+      Cl_mg_L: meta.Cl_mg_L,
+      F_mg_L: meta.F_mg_L,
+      Mg_mg_L: meta.Mg_mg_L,
+      NO3_mg_L: meta.NO3_mg_L,
+      K_mg_L: meta.K_mg_L,
+      SiO2_mg_L: meta.SiO2_mg_L,
+      Na_mg_L: meta.Na_mg_L,
+      SO4_mg_L: meta.SO4_mg_L,
     };
 
     // Nettoyage des champs indéfinis/NaN
-    (["residue","flow_rate","depth","temperature"] as const).forEach(k => {
+    (["residue","flow_rate","depth","temperature","pH","residu_sec_180_mg_L","HCO3_mg_L","Ca_mg_L","Cl_mg_L","F_mg_L","Mg_mg_L","NO3_mg_L","K_mg_L","SiO2_mg_L","Na_mg_L","SO4_mg_L"] as const).forEach(k => {
       const v = it[k];
       if (v === undefined || Number.isNaN(v)) delete (it as any)[k];
     });
