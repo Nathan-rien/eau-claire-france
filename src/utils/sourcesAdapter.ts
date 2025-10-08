@@ -133,6 +133,11 @@ export async function buildSources(): Promise<SourceItem[]> {
       key(undefined, brand);
 
     const meta = (k && compIndex.get(k)) || {};
+    
+    // Log pour debug
+    if (srcName.toLowerCase().includes('romains') || brand.toLowerCase().includes('rozana')) {
+      log('🔍 Des Romains/Rozana found:', { srcName, brand, commune, k, hasMeta: !!k && compIndex.has(k), meta });
+    }
 
     const it: SourceItem = {
       source_id: `src_${i++}`,
