@@ -43,6 +43,7 @@ const PrixEaux = React.lazy(() => import("./pages/PrixEaux"));
 const ComparateurPrix = React.lazy(() => import("./pages/ComparateurPrix"));
 const MarquePrix = React.lazy(() => import("./pages/MarquePrix"));
 const Admin = React.lazy(() => import("./pages/Admin"));
+const AdminSetup = React.lazy(() => import("./pages/AdminSetup"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -112,6 +113,7 @@ const App = () => {
                 <Route path="/comparateur-prix" element={<ComparateurPrix />} />
                 <Route path="/marque/:slug" element={<MarquePrix />} />
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/admin-setup" element={<AdminSetup />} />
                 <Route 
                   path="/admin/security" 
                   element={
