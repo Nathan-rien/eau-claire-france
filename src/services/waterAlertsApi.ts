@@ -112,16 +112,13 @@ function getMeasuresText(type: string, severity: string): string {
 
 async function fetchRealAlerts(): Promise<WaterAlert[]> {
   try {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const dateMin = thirtyDaysAgo.toISOString().split('T')[0];
-
+    // Call our Edge Function instead of Hub'Eau directly to avoid CORS
     const response = await fetch(
-      `${HUBEAU_API}?date_min_prelevement=${dateMin}&conclusion_conformite_prelevement=N&size=100`
+      'https://xblogttmomuogdhmaztf.supabase.co/functions/v1/fetch-water-alerts'
     );
 
     if (!response.ok) {
-      throw new Error(`API Hub'Eau error: ${response.status}`);
+      throw new Error(`Edge Function error: ${response.status}`);
     }
 
     const data = await response.json();
@@ -217,8 +214,12 @@ export async function getWaterAlerts(): Promise<{ alerts: WaterAlert[]; lastUpda
       source: 'mock'
     };
   } catch (error) {
-    console.warn("Fallback to mock data due to API error");
-    toast.error("Impossible de récupérer les alertes en temps réel. Données de démonstration affichées.");
+    console.warn("Fallback to mock data due to API error:", error);
+    
+    // Only show toast if it's a real error (not just no alerts)
+    if (error instanceof Error && error.message.includes('Edge Function error')) {
+      toast.warning("API temporairement indisponible. Données de démonstration affichées.");
+    }
     
     return {
       alerts: getMockAlerts(),
