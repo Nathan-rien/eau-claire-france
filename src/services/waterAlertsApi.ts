@@ -19,9 +19,9 @@ interface HubEauResult {
   libelle_parametre: string;
   code_parametre: string;
   resultat_alphanumerique: string;
-  limite_de_qualite_parametre: number;
-  conclusion_conformite_prelevement: string;
   date_prelevement: string;
+  limite_de_qualite_parametre: string;
+  unite_mesure?: string;
 }
 
 const HUBEAU_API = "https://hubeau.eaufrance.fr/api/v1/qualite_eau_potable/resultats_dis";
@@ -75,24 +75,28 @@ const PARAMETER_TYPES: Record<string, { name: string; severity: 'high' | 'medium
 };
 
 function classifyAlert(result: HubEauResult): WaterAlert | null {
-  if (result.conclusion_conformite_prelevement !== 'N') return null;
+  const value = parseFloat(result.resultat_alphanumerique);
+  const limit = parseFloat(result.limite_de_qualite_parametre);
 
-  const paramInfo = PARAMETER_TYPES[result.code_parametre] || {
+  // Check if measurement exceeds quality limit
+  if (isNaN(value) || isNaN(limit) || value <= limit) {
+    return null;
+  }
+
+  const paramType = PARAMETER_TYPES[result.code_parametre] || {
     name: result.libelle_parametre,
     severity: 'medium' as const
   };
 
-  const region = REGIONS_MAP[result.code_departement] || 'Région inconnue';
-  
   return {
     id: `${result.code_commune}-${result.code_parametre}-${result.date_prelevement}`,
     city: result.nom_commune,
-    region,
-    type: paramInfo.name,
-    severity: paramInfo.severity,
+    region: REGIONS_MAP[result.code_departement] || 'Région inconnue',
+    type: paramType.name,
+    severity: paramType.severity,
     date: result.date_prelevement,
-    affectedPopulation: Math.floor(Math.random() * 5000 + 1000), // Estimation
-    measures: getMeasuresText(paramInfo.name, paramInfo.severity),
+    affectedPopulation: Math.floor(Math.random() * 5000) + 1000,
+    measures: getMeasuresText(paramType.name, paramType.severity),
     source: 'Hub\'Eau'
   };
 }
@@ -122,17 +126,25 @@ async function fetchRealAlerts(): Promise<WaterAlert[]> {
     }
 
     const data = await response.json();
+    const results: HubEauResult[] = data.data || [];
     
-    if (!data.data || data.data.length === 0) {
-      console.log("No non-conformities found in the last 30 days");
-      return [];
-    }
-
-    const alerts = data.data
-      .map((result: HubEauResult) => classifyAlert(result))
-      .filter((alert: WaterAlert | null): alert is WaterAlert => alert !== null);
-
-    return alerts;
+    const alerts = results
+      .map(classifyAlert)
+      .filter((alert): alert is WaterAlert => alert !== null);
+    
+    // Deduplicate by city + type + date
+    const uniqueAlerts = Array.from(
+      new Map(
+        alerts.map(alert => [
+          `${alert.city}-${alert.type}-${alert.date}`,
+          alert
+        ])
+      ).values()
+    );
+    
+    console.log(`Unique alerts after deduplication: ${uniqueAlerts.length}`);
+    
+    return uniqueAlerts;
   } catch (error) {
     console.error("Error fetching water alerts:", error);
     throw error;
@@ -199,6 +211,7 @@ export async function getWaterAlerts(): Promise<{ alerts: WaterAlert[]; lastUpda
   try {
     const alerts = await fetchRealAlerts();
     
+    // If we got results from API, return them (even if empty)
     if (alerts.length > 0) {
       return {
         alerts,
@@ -207,19 +220,16 @@ export async function getWaterAlerts(): Promise<{ alerts: WaterAlert[]; lastUpda
       };
     }
     
-    // Si pas d'alertes réelles, utiliser les données de démonstration
+    // If API succeeded but no alerts found
+    console.info("No active alerts found from Hub'Eau API");
     return {
-      alerts: getMockAlerts(),
+      alerts: [],
       lastUpdate: new Date(),
-      source: 'mock'
+      source: 'api'
     };
   } catch (error) {
     console.warn("Fallback to mock data due to API error:", error);
-    
-    // Only show toast if it's a real error (not just no alerts)
-    if (error instanceof Error && error.message.includes('Edge Function error')) {
-      toast.warning("API temporairement indisponible. Données de démonstration affichées.");
-    }
+    toast.warning("API temporairement indisponible. Données de démonstration affichées.");
     
     return {
       alerts: getMockAlerts(),

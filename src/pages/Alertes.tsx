@@ -161,80 +161,80 @@ export default function Alertes() {
         </div>
 
         {/* Liste des alertes par région */}
-        <div className="space-y-8">
-          {Object.entries(groupedAlerts).length === 0 ? (
-            <Card>
-              <CardContent className="pt-6 text-center text-muted-foreground">
-                <Droplet className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Aucune alerte active en ce moment</p>
-              </CardContent>
-            </Card>
-          ) : (
-            Object.entries(groupedAlerts).map(([region, regionAlerts]) => (
-              <div key={region}>
-                <div className="flex items-center gap-3 mb-4">
-                  <h2 className="text-2xl font-bold">{region}</h2>
-                  <Badge variant="secondary">
-                    {regionAlerts.length} alerte{regionAlerts.length > 1 ? 's' : ''}
-                  </Badge>
+        {Object.entries(groupedAlerts).length === 0 ? (
+          <Card>
+            <CardContent className="pt-6 text-center text-muted-foreground">
+              <Droplet className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Aucune alerte active en ce moment</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {Object.entries(groupedAlerts).map(([region, regionAlerts]) => (
+              <Card key={region} className="overflow-hidden">
+                <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-4 border-b">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-foreground">{region}</h3>
+                    <Badge variant="secondary" className="text-sm">
+                      {regionAlerts.length} alerte{regionAlerts.length > 1 ? 's' : ''}
+                    </Badge>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-6 p-6">
                   {regionAlerts.map(alert => {
                     const SeverityIcon = getSeverityIcon(alert.severity);
                     return (
-                      <Card key={alert.id} className="hover:shadow-lg transition-shadow">
-                        <CardContent className="pt-6">
-                          <div className="space-y-4">
-                            <div className="flex items-start justify-between">
-                              <div className="flex items-start gap-3">
-                                <SeverityIcon className="h-5 w-5 mt-1" />
-                                <div>
-                                  <h3 className="font-semibold text-lg">{alert.city}</h3>
-                                  <p className="text-sm text-muted-foreground">{alert.type}</p>
-                                </div>
-                              </div>
-                              <Badge className={getSeverityColor(alert.severity)}>
-                                {alert.severity === 'high' ? 'Critique' : alert.severity === 'medium' ? 'Modérée' : 'Faible'}
-                              </Badge>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
-                              <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4 text-muted-foreground" />
-                                <div>
-                                  <p className="text-muted-foreground">Date</p>
-                                  <p className="font-medium">{new Date(alert.date).toLocaleDateString('fr-FR')}</p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Users className="h-4 w-4 text-muted-foreground" />
-                                <div>
-                                  <p className="text-muted-foreground">Population affectée</p>
-                                  <p className="font-medium">{alert.affectedPopulation.toLocaleString('fr-FR')}</p>
-                                </div>
+                      <div key={alert.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div className="space-y-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-start gap-3">
+                              <SeverityIcon className="h-5 w-5 mt-1" />
+                              <div>
+                                <h3 className="font-semibold text-lg">{alert.city}</h3>
+                                <p className="text-sm text-muted-foreground">{alert.type}</p>
                               </div>
                             </div>
+                            <Badge className={getSeverityColor(alert.severity)}>
+                              {alert.severity === 'high' ? 'Critique' : alert.severity === 'medium' ? 'Modérée' : 'Faible'}
+                            </Badge>
+                          </div>
 
-                            <div className="mt-4 p-3 bg-muted/50 rounded-md">
-                              <div className="flex items-start gap-2">
-                                <Shield className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                                <div>
-                                  <p className="text-sm font-medium mb-1">Mesures prises :</p>
-                                  <p className="text-sm text-muted-foreground">{alert.measures}</p>
-                                </div>
+                          <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4 text-muted-foreground" />
+                              <div>
+                                <p className="text-muted-foreground">Date</p>
+                                <p className="font-medium">{new Date(alert.date).toLocaleDateString('fr-FR')}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4 text-muted-foreground" />
+                              <div>
+                                <p className="text-muted-foreground">Population affectée</p>
+                                <p className="font-medium">{alert.affectedPopulation.toLocaleString('fr-FR')}</p>
                               </div>
                             </div>
                           </div>
-                        </CardContent>
-                      </Card>
+
+                          <div className="mt-4 p-3 bg-muted/50 rounded-md">
+                            <div className="flex items-start gap-2">
+                              <Shield className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                              <div>
+                                <p className="text-sm font-medium mb-1">Mesures prises :</p>
+                                <p className="text-sm text-muted-foreground">{alert.measures}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
-              </div>
-            ))
-          )}
-        </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
