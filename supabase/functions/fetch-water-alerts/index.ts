@@ -49,6 +49,29 @@ serve(async (req) => {
     
     console.log(`Total results before filtering: ${allResults.length}`);
     
+    // DIAGNOSTIC: Log sample data
+    if (allResults.length > 0) {
+      console.log('Sample data (first 5 results):', JSON.stringify(allResults.slice(0, 5), null, 2));
+    }
+    
+    // DIAGNOSTIC: Count results with valid limits
+    const withLimits = allResults.filter((r: any) => 
+      r.limite_de_qualite_parametre && !isNaN(parseFloat(r.limite_de_qualite_parametre))
+    );
+    console.log(`Results with valid limits: ${withLimits.length}/${allResults.length}`);
+    
+    // DIAGNOSTIC: Log sample comparisons
+    const comparisons = allResults.slice(0, 10).map((r: any) => ({
+      param: r.code_parametre,
+      param_name: r.libelle_parametre,
+      value: r.resultat_alphanumerique,
+      limit: r.limite_de_qualite_parametre,
+      exceeds: !isNaN(parseFloat(r.resultat_alphanumerique)) && 
+               !isNaN(parseFloat(r.limite_de_qualite_parametre)) &&
+               parseFloat(r.resultat_alphanumerique) > parseFloat(r.limite_de_qualite_parametre)
+    }));
+    console.log('Sample comparisons (first 10):', JSON.stringify(comparisons, null, 2));
+    
     // Filter results where measurement exceeds quality limit
     const alerts = allResults.filter((result: any) => {
       const value = parseFloat(result.resultat_alphanumerique);
