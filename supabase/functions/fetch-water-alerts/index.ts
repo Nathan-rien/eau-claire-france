@@ -22,6 +22,18 @@ serve(async (req) => {
     // Key water quality parameters (heavy metals, bacteria, pesticides, nitrates)
     const parameters = '1340,1335,1336,1337,1302,1506,1303,1375,1369,1350,1382,1383,1841';
     
+    // Predefined thresholds for key parameters (when limite_qualite_parametre is null)
+    const PREDEFINED_THRESHOLDS: Record<string, { limit: number; unit: string; name: string }> = {
+      '1340': { limit: 50, unit: 'mg/L', name: 'Nitrates' },           // Nitrates
+      '1335': { limit: 0.1, unit: 'mg/L', name: 'Ammonium' },          // Ammonium
+      '1382': { limit: 0.1, unit: 'µg/L', name: 'Pesticides totaux' }, // Total pesticides
+      '1383': { limit: 0.5, unit: 'µg/L', name: 'Pesticides' },        // Individual pesticides
+      '1375': { limit: 10, unit: 'µg/L', name: 'Plomb' },              // Lead
+      '1369': { limit: 5, unit: 'µg/L', name: 'Cuivre' },              // Copper
+      '1350': { limit: 200, unit: 'µg/L', name: 'Aluminium' },         // Aluminum
+      '1841': { limit: 1, unit: 'µg/L', name: 'Arsenic' },             // Arsenic
+    };
+    
     let allResults: any[] = [];
     
     // Fetch multiple pages to get more results
@@ -72,14 +84,68 @@ serve(async (req) => {
     }));
     console.log('Sample comparisons (first 10):', JSON.stringify(comparisons, null, 2));
     
-    // Filter results where measurement exceeds quality limit
+    // Filter results using multiple detection criteria
     const alerts = allResults.filter((result: any) => {
+      // Criterion 1: Non-conformity detected in conclusion
+      const hasNonConformity = result.conclusion_conformite_prelevement && 
+        !result.conclusion_conformite_prelevement.toLowerCase().includes('conforme');
+      
+      if (hasNonConformity) {
+        console.log('Non-conformity found:', {
+          city: result.nom_commune,
+          param: result.libelle_parametre,
+          conclusion: result.conclusion_conformite_prelevement
+        });
+        return true;
+      }
+      
+      // Criterion 2: Check conformity flags
+      const hasLimitNonConformity = result.conformite_limites_bact_prelevement === 'N' || 
+                                     result.conformite_limites_pc_prelevement === 'N';
+      const hasRefNonConformity = result.conformite_references_bact_prelevement === 'N' || 
+                                   result.conformite_references_pc_prelevement === 'N';
+      
+      if (hasLimitNonConformity || hasRefNonConformity) {
+        console.log('Conformity flag issue:', {
+          city: result.nom_commune,
+          param: result.libelle_parametre,
+          limitConf: result.conformite_limites_pc_prelevement,
+          refConf: result.conformite_references_pc_prelevement
+        });
+        return true;
+      }
+      
+      // Criterion 3: Value exceeds official limit (if present)
       const value = parseFloat(result.resultat_alphanumerique);
       const limit = parseFloat(result.limite_de_qualite_parametre);
       
-      if (isNaN(value) || isNaN(limit)) return false;
+      if (!isNaN(value) && !isNaN(limit) && value > limit) {
+        console.log('Exceeds official limit:', {
+          city: result.nom_commune,
+          param: result.libelle_parametre,
+          value,
+          limit
+        });
+        return true;
+      }
       
-      return value > limit;
+      // Criterion 4: Check against predefined thresholds
+      const paramCode = result.code_parametre;
+      if (PREDEFINED_THRESHOLDS[paramCode] && !isNaN(value)) {
+        const threshold = PREDEFINED_THRESHOLDS[paramCode];
+        if (value > threshold.limit) {
+          console.log('Exceeds predefined threshold:', {
+            city: result.nom_commune,
+            param: result.libelle_parametre,
+            value,
+            threshold: threshold.limit,
+            unit: threshold.unit
+          });
+          return true;
+        }
+      }
+      
+      return false;
     });
     
     console.log(`Alerts found after filtering: ${alerts.length}`);
