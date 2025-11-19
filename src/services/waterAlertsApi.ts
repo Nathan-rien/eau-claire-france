@@ -20,7 +20,12 @@ interface HubEauResult {
   code_parametre: string;
   resultat_alphanumerique: string;
   date_prelevement: string;
-  limite_de_qualite_parametre: string;
+  limite_qualite_parametre: string;
+  conclusion_conformite_prelevement?: string;
+  conformite_limites_bact_prelevement?: string;
+  conformite_limites_pc_prelevement?: string;
+  conformite_references_bact_prelevement?: string;
+  conformite_references_pc_prelevement?: string;
   unite_mesure?: string;
 }
 
@@ -75,14 +80,9 @@ const PARAMETER_TYPES: Record<string, { name: string; severity: 'high' | 'medium
 };
 
 function classifyAlert(result: HubEauResult): WaterAlert | null {
-  const value = parseFloat(result.resultat_alphanumerique);
-  const limit = parseFloat(result.limite_de_qualite_parametre);
-
-  // Check if measurement exceeds quality limit
-  if (isNaN(value) || isNaN(limit) || value <= limit) {
-    return null;
-  }
-
+  // L'Edge Function a déjà filtré les alertes avec les critères Phase 2
+  // On transforme simplement chaque résultat en WaterAlert
+  
   const paramType = PARAMETER_TYPES[result.code_parametre] || {
     name: result.libelle_parametre,
     severity: 'medium' as const
