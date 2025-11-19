@@ -43,6 +43,32 @@ export default function Alertes() {
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [severityFilter, setSeverityFilter] = useState<string>("all");
 
+  const { alerts = [], lastUpdate = new Date(), source = 'mock' as const } = data || {};
+  
+  // Filtrer les alertes - MUST be before any early returns
+  const filteredAlerts = useMemo(() => {
+    return alerts.filter(alert => {
+      const alertDate = new Date(alert.date);
+      
+      // Filtre par date de début
+      if (startDate && alertDate < startDate) {
+        return false;
+      }
+      
+      // Filtre par date de fin
+      if (endDate && alertDate > endDate) {
+        return false;
+      }
+      
+      // Filtre par sévérité
+      if (severityFilter !== "all" && alert.severity !== severityFilter) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [alerts, startDate, endDate, severityFilter]);
+
   const handleRefresh = async () => {
     toast.info("Actualisation des données en cours...");
     await queryClient.invalidateQueries({ queryKey: ['waterAlerts'] });
@@ -84,32 +110,6 @@ export default function Alertes() {
     );
   }
 
-  const { alerts, lastUpdate, source } = data || { alerts: [], lastUpdate: new Date(), source: 'mock' as const };
-  
-  // Filtrer les alertes
-  const filteredAlerts = useMemo(() => {
-    return alerts.filter(alert => {
-      const alertDate = new Date(alert.date);
-      
-      // Filtre par date de début
-      if (startDate && alertDate < startDate) {
-        return false;
-      }
-      
-      // Filtre par date de fin
-      if (endDate && alertDate > endDate) {
-        return false;
-      }
-      
-      // Filtre par sévérité
-      if (severityFilter !== "all" && alert.severity !== severityFilter) {
-        return false;
-      }
-      
-      return true;
-    });
-  }, [alerts, startDate, endDate, severityFilter]);
-  
   const groupedAlerts = groupAlertsByRegion(filteredAlerts);
 
   return (
