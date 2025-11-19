@@ -169,9 +169,10 @@ export default function Alertes() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
             {Object.entries(groupedAlerts).map(([region, regionAlerts]) => (
-              <Card key={region} className="overflow-hidden">
+              <Card key={region} className="overflow-hidden h-full">
+
                 <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-4 border-b">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-foreground">{region}</h3>
