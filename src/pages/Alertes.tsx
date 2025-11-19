@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Droplet, AlertCircle, Users, Calendar, Shield, RefreshCw } from "lucide-react";
+import { AlertTriangle, Droplet, AlertCircle, Users, Calendar as CalendarIcon, Shield, RefreshCw, Filter, X } from "lucide-react";
 import AlertSubscriptionForm from "@/components/AlertSubscriptionForm";
 import SEOHead from "@/components/SEOHead";
 import { useWaterAlerts, groupAlertsByRegion } from "@/hooks/useWaterAlerts";
@@ -9,6 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { useState, useMemo } from "react";
+import { cn } from "@/lib/utils";
 
 const getSeverityColor = (severity: string) => {
   switch (severity) {
@@ -31,6 +38,10 @@ const getSeverityIcon = (severity: string) => {
 export default function Alertes() {
   const { data, isLoading, error, refetch, isFetching } = useWaterAlerts();
   const queryClient = useQueryClient();
+  
+  const [startDate, setStartDate] = useState<Date | undefined>();
+  const [endDate, setEndDate] = useState<Date | undefined>();
+  const [severityFilter, setSeverityFilter] = useState<string>("all");
 
   const handleRefresh = async () => {
     toast.info("Actualisation des données en cours...");
@@ -74,7 +85,32 @@ export default function Alertes() {
   }
 
   const { alerts, lastUpdate, source } = data || { alerts: [], lastUpdate: new Date(), source: 'mock' as const };
-  const groupedAlerts = groupAlertsByRegion(alerts);
+  
+  // Filtrer les alertes
+  const filteredAlerts = useMemo(() => {
+    return alerts.filter(alert => {
+      const alertDate = new Date(alert.date);
+      
+      // Filtre par date de début
+      if (startDate && alertDate < startDate) {
+        return false;
+      }
+      
+      // Filtre par date de fin
+      if (endDate && alertDate > endDate) {
+        return false;
+      }
+      
+      // Filtre par sévérité
+      if (severityFilter !== "all" && alert.severity !== severityFilter) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [alerts, startDate, endDate, severityFilter]);
+  
+  const groupedAlerts = groupAlertsByRegion(filteredAlerts);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
@@ -112,6 +148,131 @@ export default function Alertes() {
           </Button>
         </div>
 
+        {/* Filtres */}
+        <Card className="mb-8">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Filter className="h-5 w-5 text-primary" />
+              <h2 className="text-lg font-semibold">Filtres</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Filtre date de début */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Date de début</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !startDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? format(startDate, "PPP", { locale: fr }) : "Sélectionner"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={setStartDate}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+                {startDate && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setStartDate(undefined)}
+                    className="w-full"
+                  >
+                    <X className="mr-2 h-4 w-4" />
+                    Effacer
+                  </Button>
+                )}
+              </div>
+
+              {/* Filtre date de fin */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Date de fin</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !endDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {endDate ? format(endDate, "PPP", { locale: fr }) : "Sélectionner"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={setEndDate}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+                {endDate && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setEndDate(undefined)}
+                    className="w-full"
+                  >
+                    <X className="mr-2 h-4 w-4" />
+                    Effacer
+                  </Button>
+                )}
+              </div>
+
+              {/* Filtre sévérité */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Sévérité</label>
+                <Select value={severityFilter} onValueChange={setSeverityFilter}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Toutes" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Toutes</SelectItem>
+                    <SelectItem value="high">Critique</SelectItem>
+                    <SelectItem value="medium">Modérée</SelectItem>
+                    <SelectItem value="low">Faible</SelectItem>
+                  </SelectContent>
+                </Select>
+                {severityFilter !== "all" && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSeverityFilter("all")}
+                    className="w-full"
+                  >
+                    <X className="mr-2 h-4 w-4" />
+                    Effacer
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Indicateur de filtres actifs */}
+            {(startDate || endDate || severityFilter !== "all") && (
+              <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="font-medium">{filteredAlerts.length}</span>
+                alerte{filteredAlerts.length > 1 ? 's' : ''} trouvée{filteredAlerts.length > 1 ? 's' : ''} sur {alerts.length}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Formulaire d'abonnement */}
         <AlertSubscriptionForm />
 
@@ -123,7 +284,7 @@ export default function Alertes() {
                 <div>
                   <p className="text-sm text-muted-foreground">Alertes critiques</p>
                   <p className="text-3xl font-bold text-destructive">
-                    {alerts.filter(a => a.severity === 'high').length}
+                    {filteredAlerts.filter(a => a.severity === 'high').length}
                   </p>
                 </div>
                 <AlertTriangle className="h-12 w-12 text-destructive" />
@@ -137,7 +298,7 @@ export default function Alertes() {
                 <div>
                   <p className="text-sm text-muted-foreground">Alertes modérées</p>
                   <p className="text-3xl font-bold text-orange-500">
-                    {alerts.filter(a => a.severity === 'medium').length}
+                    {filteredAlerts.filter(a => a.severity === 'medium').length}
                   </p>
                 </div>
                 <AlertCircle className="h-12 w-12 text-orange-500" />
@@ -151,7 +312,7 @@ export default function Alertes() {
                 <div>
                   <p className="text-sm text-muted-foreground">Population affectée</p>
                   <p className="text-3xl font-bold text-blue-600">
-                    {(alerts.reduce((sum, a) => sum + a.affectedPopulation, 0) / 1000).toFixed(0)}k
+                    {(filteredAlerts.reduce((sum, a) => sum + a.affectedPopulation, 0) / 1000).toFixed(0)}k
                   </p>
                 </div>
                 <Users className="h-12 w-12 text-blue-600" />
@@ -203,7 +364,7 @@ export default function Alertes() {
 
                           <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
                             <div className="flex items-center gap-2">
-                              <Calendar className="h-4 w-4 text-muted-foreground" />
+                              <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                               <div>
                                 <p className="text-muted-foreground">Date</p>
                                 <p className="font-medium">{new Date(alert.date).toLocaleDateString('fr-FR')}</p>
