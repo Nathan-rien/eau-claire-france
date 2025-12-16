@@ -1,32 +1,44 @@
 "use client";
-import { Profile } from "@/utils/rankingV2";
+import { Profile, PROFILES, getProfileInfo } from "@/utils/rankingV2";
 
-const LABELS: Record<Profile, string> = {
-  daily: "Quotidien",
-  baby: "Bébé",
-  sport: "Sport",
-  low_sodium: "Faible sodium",
-  tea: "Thé / Café",
-};
+interface Props {
+  value: Profile;
+  onChange: (p: Profile) => void;
+}
 
-export default function RankingProfileSelector({
-  value, onChange
-}: { value: Profile; onChange: (p:Profile)=>void }) {
+export default function RankingProfileSelector({ value, onChange }: Props) {
+  const profiles = Object.keys(PROFILES) as Profile[];
+
   return (
-    <div className="flex flex-wrap gap-2 mb-4">
-      {Object.entries(LABELS).map(([key,label]) => (
-        <button
-          key={key}
-          onClick={() => onChange(key as Profile)}
-          className={`px-3 py-1 rounded-full border transition-colors ${
-            value===key 
-              ? "bg-blue-600 text-white border-blue-600" 
-              : "bg-white text-gray-700 border-gray-300 hover:bg-blue-50"
-          }`}
-        >
-          {label}
-        </button>
-      ))}
+    <div className="mb-6">
+      <h2 className="text-sm font-medium text-gray-700 mb-3">Choisissez votre profil d'usage :</h2>
+      <div className="flex flex-wrap gap-2">
+        {profiles.map((p) => {
+          const info = getProfileInfo(p);
+          const isSelected = value === p;
+          return (
+            <button
+              key={p}
+              onClick={() => onChange(p)}
+              className={`
+                px-3 py-2 rounded-lg text-sm font-medium transition-all
+                flex items-center gap-2
+                ${isSelected 
+                  ? 'bg-blue-600 text-white shadow-md scale-105' 
+                  : 'bg-white text-gray-700 border border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                }
+              `}
+              title={info.description}
+            >
+              <span>{info.icon}</span>
+              <span>{info.label}</span>
+            </button>
+          );
+        })}
+      </div>
+      <p className="mt-2 text-sm text-gray-500">
+        {getProfileInfo(value).description}
+      </p>
     </div>
   );
 }
