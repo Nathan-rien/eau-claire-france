@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import Layout from "@/components/Layout";
 
 const getSeverityColor = (severity: string) => {
   switch (severity) {
@@ -113,7 +114,8 @@ export default function Alertes() {
   const groupedAlerts = groupAlertsByRegion(filteredAlerts);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <SEOHead 
         title="Alertes qualité de l'eau - InfoEau"
         description="Suivez en temps réel les alertes sanitaires concernant la qualité de l'eau potable en France. Informations officielles de l'API Hub'Eau."
@@ -399,5 +401,6 @@ export default function Alertes() {
         )}
       </div>
     </div>
+    </Layout>
   );
 }
