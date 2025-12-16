@@ -187,10 +187,18 @@ Deno.serve(async (req) => {
           console.log(`Saved ${items.length} items for ${retailer.name}`);
         }
 
-        // Also insert into prices_history
-        await service
+        // Also insert into prices_history (without id field)
+        const historyItems = processedItems.map(({ ...item }) => {
+          const { id, ...rest } = item as any;
+          return rest;
+        });
+        const { error: historyError } = await service
           .from('prices_history')
-          .insert(processedItems.map(item => ({ ...item, id: undefined })));
+          .insert(historyItems);
+        
+        if (historyError) {
+          console.error(`Error inserting prices_history for ${retailer.name}:`, historyError);
+        }
 
       } catch (error) {
         console.error(`Error scraping ${retailer.name}:`, error);
