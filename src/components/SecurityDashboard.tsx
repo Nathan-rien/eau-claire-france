@@ -102,12 +102,11 @@ const SecurityDashboard = () => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Intégrité données</CardTitle>
+            <CardTitle className="text-sm font-medium">Stockage local</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm">
-              <div className="text-green-600">{securityReport?.dataIntegrity?.valid} OK</div>
-              <div className="text-red-600">{securityReport?.dataIntegrity?.corrupted} Corrompus</div>
+            <div className="text-sm text-muted-foreground">
+              Stockage client actif
             </div>
           </CardContent>
         </Card>

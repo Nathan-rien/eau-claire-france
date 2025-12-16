@@ -1,135 +1,77 @@
-// Data integrity service for client-side storage protection
-import CryptoJS from 'crypto-js';
+// Data storage service for client-side localStorage operations
+// Note: Client-side storage cannot be truly "secure" - this provides convenience, not security
 
 export class DataIntegrityService {
-  private static readonly INTEGRITY_KEY = 'data_integrity';
-  private static readonly SECRET_KEY = 'InfoEau2024SecureKey';
+  private static readonly STORAGE_PREFIX = 'infoeau_';
 
-  // Generate checksum for data
-  static generateChecksum(data: any): string {
-    const serialized = JSON.stringify(data);
-    return CryptoJS.SHA256(serialized + this.SECRET_KEY).toString();
-  }
-
-  // Store data with integrity check
-  static setSecureData(key: string, data: any): void {
+  // Store data with timestamp for expiry checking
+  static setData(key: string, data: any, maxAgeMs: number = 7 * 24 * 60 * 60 * 1000): void {
     try {
-      const checksum = this.generateChecksum(data);
-      const secureData = {
+      const storedData = {
         data,
-        checksum,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        maxAge: maxAgeMs
       };
-      
-      localStorage.setItem(key, JSON.stringify(secureData));
-      
-      // Store integrity mapping
-      this.updateIntegrityMap(key, checksum);
+      localStorage.setItem(this.STORAGE_PREFIX + key, JSON.stringify(storedData));
     } catch (error) {
-      console.warn('Failed to store secure data:', error);
+      console.warn('Failed to store data:', error);
     }
   }
 
-  // Retrieve data with integrity verification
-  static getSecureData<T>(key: string): T | null {
+  // Retrieve data with expiry check
+  static getData<T>(key: string): T | null {
     try {
-      const stored = localStorage.getItem(key);
+      const stored = localStorage.getItem(this.STORAGE_PREFIX + key);
       if (!stored) return null;
 
-      const { data, checksum, timestamp } = JSON.parse(stored);
+      const { data, timestamp, maxAge } = JSON.parse(stored);
       
-      // Verify checksum
-      const expectedChecksum = this.generateChecksum(data);
-      if (checksum !== expectedChecksum) {
-        console.warn(`Data integrity check failed for key: ${key}`);
-        this.handleIntegrityViolation(key);
-        return null;
-      }
-
-      // Check if data is too old (7 days)
-      const maxAge = 7 * 24 * 60 * 60 * 1000;
-      if (Date.now() - timestamp > maxAge) {
-        localStorage.removeItem(key);
+      // Check if data has expired
+      if (maxAge && Date.now() - timestamp > maxAge) {
+        localStorage.removeItem(this.STORAGE_PREFIX + key);
         return null;
       }
 
       return data;
     } catch (error) {
-      console.warn('Failed to retrieve secure data:', error);
+      console.warn('Failed to retrieve data:', error);
       return null;
     }
   }
 
-  // Encrypt sensitive data (if needed)
-  static encryptData(data: string): string {
-    return CryptoJS.AES.encrypt(data, this.SECRET_KEY).toString();
-  }
-
-  // Decrypt sensitive data
-  static decryptData(encryptedData: string): string {
+  // Remove data
+  static removeData(key: string): void {
     try {
-      const bytes = CryptoJS.AES.decrypt(encryptedData, this.SECRET_KEY);
-      return bytes.toString(CryptoJS.enc.Utf8);
+      localStorage.removeItem(this.STORAGE_PREFIX + key);
     } catch (error) {
-      console.warn('Failed to decrypt data:', error);
-      return '';
+      console.warn('Failed to remove data:', error);
     }
   }
 
-  // Update integrity mapping
-  private static updateIntegrityMap(key: string, checksum: string): void {
-    try {
-      const map = this.getIntegrityMap();
-      map[key] = checksum;
-      localStorage.setItem(this.INTEGRITY_KEY, JSON.stringify(map));
-    } catch (error) {
-      console.warn('Failed to update integrity map:', error);
-    }
+  // Legacy compatibility methods (no longer use encryption/checksums)
+  static setSecureData(key: string, data: any): void {
+    this.setData(key, data);
   }
 
-  // Get integrity mapping
-  private static getIntegrityMap(): Record<string, string> {
-    try {
-      const map = localStorage.getItem(this.INTEGRITY_KEY);
-      return map ? JSON.parse(map) : {};
-    } catch (error) {
-      return {};
-    }
+  static getSecureData<T>(key: string): T | null {
+    return this.getData<T>(key);
   }
 
-  // Handle integrity violation
-  private static handleIntegrityViolation(key: string): void {
-    // Log security event
-    import('./auditService').then(({ AuditService }) => {
-      AuditService.logEvent({
-        type: 'security',
-        action: 'data_integrity_violation',
-        details: { key },
-        severity: 'high'
-      });
-    });
-
-    // Remove corrupted data
-    localStorage.removeItem(key);
-  }
-
-  // Verify all stored data integrity
+  // Verify storage health (simplified - just checks if items exist and are valid JSON)
   static verifyAllData(): { valid: number; corrupted: number; keys: string[] } {
     const result = { valid: 0, corrupted: 0, keys: [] as string[] };
     
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (!key || key === this.INTEGRITY_KEY) continue;
+      if (!key || !key.startsWith(this.STORAGE_PREFIX)) continue;
 
       try {
-        const data = this.getSecureData(key);
-        if (data !== null) {
+        const item = localStorage.getItem(key);
+        if (item) {
+          JSON.parse(item);
           result.valid++;
-        } else {
-          result.corrupted++;
-          result.keys.push(key);
         }
-      } catch (error) {
+      } catch {
         result.corrupted++;
         result.keys.push(key);
       }

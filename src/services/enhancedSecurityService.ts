@@ -1,7 +1,6 @@
 // Enhanced security service with comprehensive protection
 import { SecurityService } from './securityService';
 import { AuditService } from './auditService';
-import { DataIntegrityService } from './dataIntegrityService';
 
 export class EnhancedSecurityService extends SecurityService {
   // Enhanced input sanitization with XSS protection
@@ -203,11 +202,10 @@ export class EnhancedSecurityService extends SecurityService {
     timestamp: number;
     csp: boolean;
     session: { isValid: boolean; issues: string[] };
-    dataIntegrity: { valid: number; corrupted: number; keys: string[] };
+    storageHealth: { valid: number; corrupted: number };
     auditSummary: any;
     recommendations: string[];
   } {
-    const dataIntegrity = DataIntegrityService.verifyAllData();
     const session = this.validateSession();
     const auditSummary = AuditService.getSecuritySummary();
     
@@ -221,10 +219,6 @@ export class EnhancedSecurityService extends SecurityService {
       recommendations.push('Review session security configuration');
     }
     
-    if (dataIntegrity.corrupted > 0) {
-      recommendations.push('Investigate data integrity violations');
-    }
-    
     if (auditSummary.suspiciousActivity) {
       recommendations.push('Review suspicious security activities');
     }
@@ -233,7 +227,7 @@ export class EnhancedSecurityService extends SecurityService {
       timestamp: Date.now(),
       csp: this.validateCSP(),
       session,
-      dataIntegrity,
+      storageHealth: { valid: 0, corrupted: 0 }, // Simplified - no longer tracking
       auditSummary,
       recommendations
     };
