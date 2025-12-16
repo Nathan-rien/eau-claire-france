@@ -1,4 +1,25 @@
-import CryptoJS from 'crypto-js';
+// Simple deterministic hash function (no crypto needed for non-security purposes)
+function simpleHash(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  // Convert to hex and ensure consistent length
+  const hex = Math.abs(hash).toString(16).padStart(8, '0');
+  // Generate a longer hash by combining multiple passes
+  let result = hex;
+  for (let i = 1; i < 8; i++) {
+    let h = hash + i * 0x9e3779b9;
+    for (let j = 0; j < str.length; j++) {
+      h = ((h << 5) - h) + str.charCodeAt(j);
+      h = h & h;
+    }
+    result += Math.abs(h).toString(16).padStart(8, '0');
+  }
+  return result;
+}
 
 export interface ParsedFormat {
   pack_count: number | null;
@@ -300,7 +321,7 @@ export function generateUniqueHash(
   // Include pack count and volume to differentiate formats
   const input = `${retailerSlug}|${identifier}|${normalizedName}|${totalVolumeL || 0}|${packCount || 1}|${dateOnly}`;
   
-  return CryptoJS.SHA256(input).toString();
+  return simpleHash(input);
 }
 
 /**
@@ -332,7 +353,7 @@ export function getRetailerUUID(retailerName: string): string {
  */
 function generateGenericUUID(input: string): string {
   // Génère un UUID déterministe basé sur le nom du retailer
-  const hash = CryptoJS.SHA256(input).toString();
+  const hash = simpleHash(input);
   return `${hash.substring(0, 8)}-${hash.substring(8, 12)}-${hash.substring(12, 16)}-${hash.substring(16, 20)}-${hash.substring(20, 32)}`;
 }
 
