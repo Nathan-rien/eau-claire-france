@@ -2,8 +2,8 @@ name: Automated Price Scraping
 
 on:
   schedule:
-    # Weekly on Sunday at 6:00 UTC (7:00 Paris time)
-    - cron: '0 6 * * 0'
+    # Daily at 6:00 UTC (7:00 Paris time)
+    - cron: '0 6 * * *'
   workflow_dispatch:
     inputs:
       retailers:
