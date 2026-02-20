@@ -1,46 +1,47 @@
 
-## Intégration Amplitude Analytics dans le `<head>`
+## Clarifier l'affichage des dates sur /alertes
 
-### Ce que je vais faire
+### Diagnostic
 
-Ajouter les deux balises `<script>` Amplitude directement dans le `<head>` de `index.html`, juste avant la fermeture `</head>`.
+L'Edge Function `fetch-water-alerts` fonctionne correctement et appelle Hub'Eau en temps réel. Les données retournées sont bien actuelles (testées en direct : réponse `200 OK` avec des données fraîches).
 
-### Pourquoi c'est sûr
+Le champ `date_prelevement` affiché dans les cartes d'alerte correspond à la **date à laquelle l'échantillon d'eau a été prélevé dans la commune**, pas à une date de publication ou de mise à jour du système.
 
-La clé `72c4c3199e84554e813d8264960c10e2` est une **clé publique côté client** (elle est d'ailleurs déjà visible dans l'URL CDN). Elle n'a pas besoin d'être stockée comme secret.
+L'API Hub'Eau publie les résultats avec un **délai naturel de 4 à 8 semaines** (temps de traitement en laboratoire + validation administrative). En février 2026, les prélèvements les plus récents disponibles datent donc de fin décembre 2025 — ce comportement est attendu et conforme.
 
-### Fonctionnalités activées par ce snippet
+### Ce qui est trompeur pour l'utilisateur
 
-- **Session Replay** avec `sampleRate: 1` (100% des sessions enregistrées)
-- **Autocapture complet** :
-  - Attribution UTM / campagnes marketing
-  - Téléchargements de fichiers
-  - Interactions formulaires
-  - Pages vues
-  - Sessions
-  - Interactions éléments
-  - Suivi réseau
-  - Web Vitals (LCP, FID, CLS…)
-  - Frustration tracking : curseur agité, clics sur erreurs, clics morts, rage clicks
-- Serveur EU (`serverZone: "EU"`) — conforme RGPD
+Actuellement, la carte d'alerte affiche sous le label `"Date"` la valeur brute de `date_prelevement` (ex: `31/12/2025`). L'utilisateur comprend naturellement que c'est une date de publication ou d'actualité de l'alerte, et pense que les données sont figées depuis le 31 décembre.
 
-### Modification technique
+### Modifications prévues
 
-**Fichier `index.html`** — Ajout des deux scripts juste avant `</head>` :
+**1. Renommer le label "Date" → "Date de prélèvement"** dans les cartes d'alerte (`src/pages/Alertes.tsx`)
 
-```html
-<!-- Amplitude Analytics -->
-<script src="https://cdn.eu.amplitude.com/script/72c4c3199e84554e813d8264960c10e2.js"></script>
-<script>
-  window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));
-  window.amplitude.init('72c4c3199e84554e813d8264960c10e2', {
-    "fetchRemoteConfig": true,
-    "serverZone": "EU",
-    "autocapture": { ... }
-  });
-</script>
+Actuellement :
+```
+<p className="text-muted-foreground">Date</p>
+```
+Remplacer par :
+```
+<p className="text-muted-foreground">Prélevé le</p>
 ```
 
-### Note RGPD
+**2. Ajouter une note explicative** dans la section des filtres ou en haut de la liste, expliquant que les données Hub'Eau sont publiées avec un délai réglementaire de 4 à 8 semaines.
 
-Le serveur EU est déjà configuré (`serverZone: "EU"`). Si vous avez une bannière de consentement cookies, il peut être utile de ne charger Amplitude qu'après acceptation. Je peux adapter si besoin.
+Une petite bannière informative de type `Alert` avec un icône `Info` :
+> "Les résultats d'analyses sont publiés par les laboratoires agréés avec un délai réglementaire de 4 à 8 semaines. Les données affichées sont à jour au regard de ce que l'API Hub'Eau met à disposition."
+
+**3. Ajouter la date de publication Hub'Eau** si disponible dans la réponse, ou afficher "Publié le" avec la date à laquelle l'alerte a été récupérée par notre système (c'est-à-dire `lastUpdate`).
+
+**4. Mettre à jour le `DataFreshnessIndicator`** pour préciser que la fraîcheur mesurée est celle de la dernière interrogation de l'API, et non la date des prélèvements.
+
+### Fichiers modifiés
+
+- `src/pages/Alertes.tsx` :
+  - Label "Date" → "Prélevé le" dans les cartes
+  - Ajout d'une bannière informative sur le délai de publication Hub'Eau
+  - Ajout d'une note dans `DataFreshnessIndicator` expliquant le décalage
+
+### Aucune modification backend nécessaire
+
+L'Edge Function, le hook `useWaterAlerts`, et le service `waterAlertsApi.ts` fonctionnent correctement. Seul l'affichage côté page doit être amélioré pour ne pas induire l'utilisateur en erreur.
