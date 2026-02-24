@@ -43,6 +43,20 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
     page = 1
   } = filters;
 
+  const { data: latestHistoryRow, error: latestHistoryRowError } = await supabase
+    .from('prices_history')
+    .select('run_id, scraped_at')
+    .not('run_id', 'is', null)
+    .order('scraped_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (latestHistoryRowError) {
+    console.warn('Failed to resolve latest run from prices_history, querying full history:', latestHistoryRowError);
+  }
+
+  const latestRunId = latestHistoryRow?.run_id ?? null;
+
   let query = supabase
     .from('prices_history')
     .select('*', { count: 'exact' })
@@ -53,6 +67,10 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
     .not('retailer_id', 'is', null)
     .not('price_total_eur', 'is', null)
     .not('price_per_l_eur', 'is', null);
+
+  if (latestRunId) {
+    query = query.eq('run_id', latestRunId);
+  }
 
   // Apply filters
   if (brand) {
@@ -128,6 +146,10 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
         *,
         retailer:retailers(name, slug)
       `, { count: 'exact' });
+
+    if (latestRunId) {
+      query = query.eq('run_id', latestRunId);
+    }
 
     // Reapply filters for fallback
     if (brand) query = query.eq('brand', brand);
