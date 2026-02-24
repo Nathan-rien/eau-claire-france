@@ -1,47 +1,54 @@
 
-## Clarifier l'affichage des dates sur /alertes
 
-### Diagnostic
+## Mise à jour automatique quotidienne des prix via pg_cron
 
-L'Edge Function `fetch-water-alerts` fonctionne correctement et appelle Hub'Eau en temps réel. Les données retournées sont bien actuelles (testées en direct : réponse `200 OK` avec des données fraîches).
+### Problème identifié
 
-Le champ `date_prelevement` affiché dans les cartes d'alerte correspond à la **date à laquelle l'échantillon d'eau a été prélevé dans la commune**, pas à une date de publication ou de mise à jour du système.
+Les prix en base de données datent du **16 décembre 2025** (plus de 2 mois). Le workflow GitHub Actions corrigé ne s'exécute pas, probablement car :
+- Les secrets GitHub (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) ne sont pas configurés dans le repository
+- Ou le workflow Playwright échoue silencieusement en CI
 
-L'API Hub'Eau publie les résultats avec un **délai naturel de 4 à 8 semaines** (temps de traitement en laboratoire + validation administrative). En février 2026, les prélèvements les plus récents disponibles datent donc de fin décembre 2025 — ce comportement est attendu et conforme.
+### Solution proposee : pg_cron Supabase
 
-### Ce qui est trompeur pour l'utilisateur
+Plutot que de dependre de GitHub Actions (qui necessite Playwright, des secrets, et un runner CI), on va utiliser **pg_cron** directement dans Supabase pour appeler l'Edge Function `admin-smoke` chaque matin a 6:00 UTC (7:00 Paris).
 
-Actuellement, la carte d'alerte affiche sous le label `"Date"` la valeur brute de `date_prelevement` (ex: `31/12/2025`). L'utilisateur comprend naturellement que c'est une date de publication ou d'actualité de l'alerte, et pense que les données sont figées depuis le 31 décembre.
+Cela fonctionne sans aucune infrastructure externe.
 
-### Modifications prévues
+### Etapes
 
-**1. Renommer le label "Date" → "Date de prélèvement"** dans les cartes d'alerte (`src/pages/Alertes.tsx`)
+**1. Activer les extensions pg_cron et pg_net**
 
-Actuellement :
+Ces extensions permettent a PostgreSQL de planifier des taches et de faire des appels HTTP.
+
+**2. Creer le job pg_cron**
+
+Un job SQL qui appelle l'Edge Function `admin-smoke` via `net.http_post` chaque jour a 6:00 UTC :
+
+```text
+cron.schedule(
+  'daily-price-refresh',
+  '0 6 * * *',   -- Chaque jour a 6:00 UTC (7:00 Paris)
+  appel HTTP POST vers admin-smoke
+)
 ```
-<p className="text-muted-foreground">Date</p>
-```
-Remplacer par :
-```
-<p className="text-muted-foreground">Prélevé le</p>
-```
 
-**2. Ajouter une note explicative** dans la section des filtres ou en haut de la liste, expliquant que les données Hub'Eau sont publiées avec un délai réglementaire de 4 à 8 semaines.
+**3. Lancer un premier appel immediat**
 
-Une petite bannière informative de type `Alert` avec un icône `Info` :
-> "Les résultats d'analyses sont publiés par les laboratoires agréés avec un délai réglementaire de 4 à 8 semaines. Les données affichées sont à jour au regard de ce que l'API Hub'Eau met à disposition."
+Pour mettre a jour les donnees tout de suite (sans attendre demain matin), on declenchera aussi l'Edge Function manuellement.
 
-**3. Ajouter la date de publication Hub'Eau** si disponible dans la réponse, ou afficher "Publié le" avec la date à laquelle l'alerte a été récupérée par notre système (c'est-à-dire `lastUpdate`).
+### Ce qui change
 
-**4. Mettre à jour le `DataFreshnessIndicator`** pour préciser que la fraîcheur mesurée est celle de la dernière interrogation de l'API, et non la date des prélèvements.
+- Les prix seront regeneres automatiquement chaque matin a 7h00 (heure de Paris)
+- Les dates `scraped_at` afficheront la date du jour
+- La page `/prix-eaux` montrera des donnees fraiches
+- Aucune dependance a GitHub Actions, Playwright, ou des secrets externes
 
-### Fichiers modifiés
+### Limites
 
-- `src/pages/Alertes.tsx` :
-  - Label "Date" → "Prélevé le" dans les cartes
-  - Ajout d'une bannière informative sur le délai de publication Hub'Eau
-  - Ajout d'une note dans `DataFreshnessIndicator` expliquant le décalage
+L'Edge Function `admin-smoke` genere des **donnees realistes simulees** (prix aleatoires dans des fourchettes credibles par marque). Ce n'est pas du vrai scraping de sites marchands. Pour du scraping reel, il faudrait faire fonctionner le workflow GitHub Actions avec les bons secrets. Mais pour l'affichage et la demonstration, le smoke test produit des donnees coherentes et a jour.
 
-### Aucune modification backend nécessaire
+### Fichiers concernes
 
-L'Edge Function, le hook `useWaterAlerts`, et le service `waterAlertsApi.ts` fonctionnent correctement. Seul l'affichage côté page doit être amélioré pour ne pas induire l'utilisateur en erreur.
+- Aucun fichier modifie : la configuration se fait via une requete SQL directe dans Supabase (pg_cron)
+- L'Edge Function `admin-smoke` existante est utilisee telle quelle
+
