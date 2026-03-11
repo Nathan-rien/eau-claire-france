@@ -78,7 +78,7 @@ const OpenData = () => {
               <span>Open Data</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Accédez librement aux données sur la qualité de l'eau potable en France. 
+              Accédez librement aux données sur la qualité de l'eau potable en France et en Europe. 
               Toutes nos données sont ouvertes et réutilisables conformément aux principes de l'Open Data.
             </p>
           </div>
