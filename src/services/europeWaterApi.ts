@@ -1,4 +1,5 @@
 import { parseCSV, toNumber } from '@/utils/csv';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface EUCountryWaterQuality {
   countryCode: string;
@@ -25,6 +26,15 @@ export interface EUPollutant {
   exceedanceRatePct: number;
   affectedZones: number;
   reportYear: number;
+  dataSource?: 'api' | 'csv';
+}
+
+export interface DiscodataPollutant {
+  countryCode: string;
+  pollutant: string;
+  avgValue: number;
+  unit: string;
+  samples: number;
 }
 
 // Country coordinates for map display
@@ -42,6 +52,7 @@ export const EU_COUNTRY_COORDS: Record<string, [number, number]> = {
 
 let cachedQuality: EUCountryWaterQuality[] | null = null;
 let cachedPollutants: EUPollutant[] | null = null;
+let lastApiCheck: string | null = null;
 
 export async function getEUWaterQuality(): Promise<EUCountryWaterQuality[]> {
   if (cachedQuality) return cachedQuality;
@@ -60,21 +71,56 @@ export async function getEUWaterQuality(): Promise<EUCountryWaterQuality[]> {
     bacteriaViolations: toNumber(r.bacteria_violations) ?? 0,
     populationServedMillions: toNumber(r.population_served_millions) ?? 0,
     waterSupplyZones: toNumber(r.water_supply_zones) ?? 0,
-    reportYear: toNumber(r.report_year) ?? 2023,
+    reportYear: toNumber(r.report_year) ?? 2024,
     qualityScore: r.quality_score || 'B',
   }));
 
   return cachedQuality;
 }
 
+/**
+ * Fetch DISCODATA pollutants for a specific country via edge function
+ */
+async function fetchDiscodataPollutants(countryCode: string): Promise<DiscodataPollutant[] | null> {
+  try {
+    const { data, error } = await supabase.functions.invoke('eu-water-quality', {
+      body: null,
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    // Use URL params approach since invoke doesn't support query params directly
+    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+    if (!projectId) return null;
+
+    const url = `https://${projectId}.supabase.co/functions/v1/eu-water-quality?type=pollutants&country=${countryCode}`;
+    const res = await fetch(url, {
+      headers: {
+        'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '',
+      },
+    });
+
+    if (!res.ok) return null;
+    const result = await res.json();
+    lastApiCheck = new Date().toISOString();
+
+    if (result.source === 'discodata' && result.data) {
+      return result.data as DiscodataPollutant[];
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getEUPollutants(): Promise<EUPollutant[]> {
   if (cachedPollutants) return cachedPollutants;
 
+  // Load CSV baseline
   const res = await fetch('/data/eu/eu_pollutants_by_country.csv');
   const text = await res.text();
   const { rows } = parseCSV(text);
 
-  cachedPollutants = rows.map(r => ({
+  const csvPollutants: EUPollutant[] = rows.map(r => ({
     countryCode: r.country_code,
     countryName: r.country_name,
     pollutant: r.pollutant,
@@ -84,10 +130,79 @@ export async function getEUPollutants(): Promise<EUPollutant[]> {
     limitValue: toNumber(r.limit_value) ?? 0,
     exceedanceRatePct: toNumber(r.exceedance_rate_pct) ?? 0,
     affectedZones: toNumber(r.affected_zones) ?? 0,
-    reportYear: toNumber(r.report_year) ?? 2023,
+    reportYear: toNumber(r.report_year) ?? 2024,
+    dataSource: 'csv' as const,
   }));
 
+  // Try enriching with DISCODATA for key countries
+  const discodataCountries = ['AT', 'BE', 'CZ', 'DE', 'DK', 'ES', 'MT', 'RO'];
+  
+  try {
+    // Attempt DISCODATA enrichment in parallel for available countries
+    const enrichmentPromises = discodataCountries.map(async (cc) => {
+      const apiData = await fetchDiscodataPollutants(cc);
+      if (!apiData) return [];
+      
+      const countryName = csvPollutants.find(p => p.countryCode === cc)?.countryName || cc;
+      
+      // Map known DISCODATA determinands to our pollutant names
+      const determinandMap: Record<string, { name: string; category: string; limit: number }> = {
+        'Nitrate': { name: 'Nitrates', category: 'Chimique', limit: 50 },
+        'Lead and its compounds': { name: 'Plomb', category: 'Métaux lourds', limit: 10 },
+        'Pesticides - Total': { name: 'Pesticides total', category: 'Chimique', limit: 0.5 },
+      };
+
+      return apiData
+        .filter(d => determinandMap[d.pollutant])
+        .map(d => {
+          const mapping = determinandMap[d.pollutant];
+          // Find existing CSV entry to preserve exceedance/zone data
+          const csvEntry = csvPollutants.find(
+            p => p.countryCode === cc && p.pollutant === mapping.name
+          );
+          return {
+            countryCode: cc,
+            countryName,
+            pollutant: mapping.name,
+            category: mapping.category,
+            avgValue: d.avgValue,
+            unit: d.unit || csvEntry?.unit || 'mg/L',
+            limitValue: mapping.limit,
+            exceedanceRatePct: csvEntry?.exceedanceRatePct ?? 0,
+            affectedZones: csvEntry?.affectedZones ?? 0,
+            reportYear: 2024,
+            dataSource: 'api' as const,
+          } as EUPollutant;
+        });
+    });
+
+    const enrichments = await Promise.allSettled(enrichmentPromises);
+    const apiEntries: EUPollutant[] = enrichments
+      .filter((r): r is PromiseFulfilledResult<EUPollutant[]> => r.status === 'fulfilled')
+      .flatMap(r => r.value);
+
+    // Merge: API entries override CSV entries for matching country+pollutant
+    if (apiEntries.length > 0) {
+      const merged = csvPollutants.map(csvEntry => {
+        const apiEntry = apiEntries.find(
+          a => a.countryCode === csvEntry.countryCode && a.pollutant === csvEntry.pollutant
+        );
+        return apiEntry || csvEntry;
+      });
+      cachedPollutants = merged;
+    } else {
+      cachedPollutants = csvPollutants;
+    }
+  } catch {
+    // Fallback to CSV on any error
+    cachedPollutants = csvPollutants;
+  }
+
   return cachedPollutants;
+}
+
+export function getLastApiCheck(): string | null {
+  return lastApiCheck;
 }
 
 export function getScoreColor(score: string): string {
