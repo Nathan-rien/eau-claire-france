@@ -44,23 +44,34 @@ async function fetchDiscodata(queryType: string): Promise<unknown> {
   const cached = getCached(queryType);
   if (cached) return cached;
 
-  const sql = QUERIES[queryType];
-  if (!sql) throw new Error(`Unknown query type: ${queryType}`);
+  const sqlVariants = QUERIES[queryType];
+  if (!sqlVariants) throw new Error(`Unknown query type: ${queryType}`);
 
-  const url = `${DISCODATA_BASE}?query=${encodeURIComponent(sql.trim())}&p=1&nrOfHits=10000`;
+  let lastError = '';
+  for (const sql of sqlVariants) {
+    const url = `${DISCODATA_BASE}?query=${encodeURIComponent(sql.trim())}&p=1&nrOfHits=10000`;
 
-  const res = await fetch(url, {
-    headers: { 'Accept': 'application/json' },
-  });
+    const res = await fetch(url, {
+      headers: { 'Accept': 'application/json' },
+    });
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`DISCODATA returned ${res.status}: ${text.slice(0, 200)}`);
+    if (!res.ok) {
+      lastError = await res.text();
+      continue;
+    }
+
+    const data = await res.json();
+    // Check if there are errors in the JSON response
+    if (data.errors && data.errors.length > 0) {
+      lastError = JSON.stringify(data.errors);
+      continue;
+    }
+
+    cache.set(queryType, { data, ts: Date.now() });
+    return data;
   }
 
-  const data = await res.json();
-  cache.set(queryType, { data, ts: Date.now() });
-  return data;
+  throw new Error(`All DISCODATA queries failed for ${queryType}. Last error: ${lastError.slice(0, 300)}`);
 }
 
 Deno.serve(async (req) => {
