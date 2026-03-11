@@ -1,54 +1,45 @@
 
 
-## Mise à jour automatique quotidienne des prix via pg_cron
+## Version 2 visuelle du Parcours de l'eau : `/parcours-eau-v2`
 
-### Problème identifié
+Nouvelle page immersive conservant les memes donnees que `/parcours-eau` mais avec une presentation de type scrollytelling visuel : hero plein ecran, images Unsplash, animations staggerees, compteurs animes, et illustrations SVG inline.
 
-Les prix en base de données datent du **16 décembre 2025** (plus de 2 mois). Le workflow GitHub Actions corrigé ne s'exécute pas, probablement car :
-- Les secrets GitHub (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) ne sont pas configurés dans le repository
-- Ou le workflow Playwright échoue silencieusement en CI
+### Fichiers a creer/modifier
 
-### Solution proposee : pg_cron Supabase
+**1. Creer `src/pages/ParcoursEauV2.tsx`**
 
-Plutot que de dependre de GitHub Actions (qui necessite Playwright, des secrets, et un runner CI), on va utiliser **pg_cron** directement dans Supabase pour appeler l'Edge Function `admin-smoke` chaque matin a 6:00 UTC (7:00 Paris).
+Page complete avec :
 
-Cela fonctionne sans aucune infrastructure externe.
+- **Hero 100vh** : fond gradient bleu profond avec animation de goutte d'eau CSS, particules flottantes (divs absolues animees), titre en apparition staggeree, bouton "Commencer le voyage" scroll smooth
+- **6 sections full-width** (~80vh min) avec fonds alternants (gradients subtils bleu, indigo, purple, amber, teal, green)
+- **Images Unsplash** via URL directe pour chaque section :
+  - Captage : nappe phreatique / paysage aquifere
+  - Pompage : forage / station de pompage
+  - Traitement : usine de traitement d'eau
+  - Stockage : chateau d'eau
+  - Distribution : canalisations
+  - Robinet : eau du robinet
+- **Layout 2 colonnes desktop** : image a gauche / contenu a droite, alternance gauche-droite
+- **Compteurs animes** : chiffres qui comptent de 0 a la valeur cible quand la section entre dans le viewport (IntersectionObserver + requestAnimationFrame)
+- **Cards sources avec barre de pourcentage animee** au lieu du simple badge
+- **Timeline traitement horizontale** : nodes circulaires connectes par une ligne avec animation de progression (gradient anime via CSS)
+- **Animations staggerees** : chaque element enfant apparait avec un delai incremental (style `transition-delay: ${i * 100}ms`)
+- **Illustrations SVG inline simplifiees** : coupe geologique pour le captage (couches colorees), silhouette chateau d'eau avec niveau anime
+- **Barre de progression sticky** identique a V1 mais avec style plus visuel (cercles plus grands, labels visibles)
 
-### Etapes
+**2. Modifier `src/App.tsx`**
+- Ajouter lazy import `ParcoursEauV2`
+- Ajouter route `/parcours-eau-v2`
 
-**1. Activer les extensions pg_cron et pg_net**
+**3. Modifier `src/index.css`**
+- Ajouter keyframes : `water-drop` (goutte tombante), `float` (particules), `fill-up` (niveau d'eau), `count-up-fade`
+- Classes utilitaires pour les animations staggerees
 
-Ces extensions permettent a PostgreSQL de planifier des taches et de faire des appels HTTP.
+**4. Modifier `src/utils/seoData.ts`**
+- Ajouter metadonnees SEO pour `parcoursEauV2`
 
-**2. Creer le job pg_cron**
+**5. Modifier `src/components/Navigation.tsx`**
+- Remplacer ou ajouter le lien vers V2 dans la navigation (garder V1 accessible)
 
-Un job SQL qui appelle l'Edge Function `admin-smoke` via `net.http_post` chaque jour a 6:00 UTC :
-
-```text
-cron.schedule(
-  'daily-price-refresh',
-  '0 6 * * *',   -- Chaque jour a 6:00 UTC (7:00 Paris)
-  appel HTTP POST vers admin-smoke
-)
-```
-
-**3. Lancer un premier appel immediat**
-
-Pour mettre a jour les donnees tout de suite (sans attendre demain matin), on declenchera aussi l'Edge Function manuellement.
-
-### Ce qui change
-
-- Les prix seront regeneres automatiquement chaque matin a 7h00 (heure de Paris)
-- Les dates `scraped_at` afficheront la date du jour
-- La page `/prix-eaux` montrera des donnees fraiches
-- Aucune dependance a GitHub Actions, Playwright, ou des secrets externes
-
-### Limites
-
-L'Edge Function `admin-smoke` genere des **donnees realistes simulees** (prix aleatoires dans des fourchettes credibles par marque). Ce n'est pas du vrai scraping de sites marchands. Pour du scraping reel, il faudrait faire fonctionner le workflow GitHub Actions avec les bons secrets. Mais pour l'affichage et la demonstration, le smoke test produit des donnees coherentes et a jour.
-
-### Fichiers concernes
-
-- Aucun fichier modifie : la configuration se fait via une requete SQL directe dans Supabase (pg_cron)
-- L'Edge Function `admin-smoke` existante est utilisee telle quelle
+### Pas de nouvelle dependance. Tout en CSS natif + IntersectionObserver + images Unsplash hotlink.
 
