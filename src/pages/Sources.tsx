@@ -47,6 +47,38 @@ const Sources = () => {
       type: "Open Data",
       frequency: "Variable",
       coverage: "Données publiques françaises"
+    },
+    {
+      name: "Agence Européenne de l'Environnement (EEA)",
+      description: "Données officielles de qualité de l'eau potable dans les 27 pays de l'Union européenne",
+      url: "https://www.eea.europa.eu/",
+      type: "Officiel",
+      frequency: "Triennale",
+      coverage: "27 pays de l'UE"
+    },
+    {
+      name: "WISE DWD - Drinking Water Directive",
+      description: "Base de données européenne sur la conformité à la Directive Eau Potable (2020/2184)",
+      url: "https://water.europa.eu/",
+      type: "Officiel",
+      frequency: "Triennale",
+      coverage: "Union européenne"
+    },
+    {
+      name: "Eurostat - Statistiques européennes de l'eau",
+      description: "Statistiques comparatives sur l'eau potable et l'assainissement en Europe",
+      url: "https://ec.europa.eu/eurostat/",
+      type: "Statistique",
+      frequency: "Annuelle",
+      coverage: "UE 27 + pays associés"
+    },
+    {
+      name: "OMS / WHO Europe",
+      description: "Indicateurs de santé liés à l'eau potable : accès, maladies hydriques, normes sanitaires",
+      url: "https://www.who.int/europe/",
+      type: "Scientifique",
+      frequency: "Annuelle",
+      coverage: "Région européenne OMS"
     }
   ];
 
