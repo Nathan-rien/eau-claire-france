@@ -25,6 +25,7 @@ const Footer = () => {
               <li><a href="/sources" className="hover:text-white transition-colors" rel="nofollow">Sources</a></li>
               <li><a href="/methodologie" className="hover:text-white transition-colors" rel="nofollow">Méthodologie</a></li>
               <li><a href="/api-publique" className="hover:text-white transition-colors" rel="nofollow">API publique</a></li>
+              <li><a href="/parcours-eau" className="hover:text-white transition-colors">Parcours de l'eau</a></li>
             </ul>
           </nav>
           
