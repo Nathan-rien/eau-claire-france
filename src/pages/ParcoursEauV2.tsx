@@ -750,7 +750,7 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2",
                 visibleSections.has('robinet') ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
               )}>
-                <div className="rounded-2xl shadow-2xl bg-green-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                <div className="rounded-2xl shadow-2xl bg-green-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center" style={getParallaxStyle(5)}>
                   <RobinetAnimation />
                 </div>
               </div>
