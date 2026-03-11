@@ -177,7 +177,9 @@ const ParcoursEauV2 = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getParallaxStyle = (sectionIdx: number) => {
+    void scrollY; // triggers re-render on scroll
     const ref = sectionRefs.current[sectionIdx];
     if (!ref) return {};
     const rect = ref.getBoundingClientRect();
