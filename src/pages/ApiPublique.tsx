@@ -92,7 +92,7 @@ const ApiPublique = () => {
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Accédez programmatiquement aux données de qualité de l'eau potable française 
-              via notre API REST gratuite et ouverte.
+              et européenne via notre API REST gratuite et ouverte.
             </p>
           </div>
 
