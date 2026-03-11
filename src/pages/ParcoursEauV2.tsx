@@ -442,7 +442,9 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2",
                 visibleSections.has('pompage') ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
               )}>
-                <img src={IMAGES.pompage} alt="Station de pompage" className="rounded-2xl shadow-2xl w-full aspect-[4/3] object-cover" loading="lazy" />
+                <div className="rounded-2xl shadow-2xl bg-indigo-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                  <PompageAnimation />
+                </div>
               </div>
             </div>
           </div>
