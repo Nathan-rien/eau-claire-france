@@ -39,7 +39,7 @@ const Navigation = () => {
         { href: '/classement-europe', label: 'Classement' },
         { href: '/polluants-europe', label: 'Polluants' },
         { href: '/alertes-europe', label: 'Alertes' },
-        { href: '/parcours-eau', label: 'Parcours de l\'eau' },
+        { href: '/parcours-eau-v2', label: 'Parcours de l\'eau' },
       ]
     : [
         { href: '/diagnostic', label: 'Diagnostic' },
@@ -48,7 +48,7 @@ const Navigation = () => {
         { href: '/classement', label: 'Classement' },
         { href: '/polluants', label: 'Polluants' },
         { href: '/alertes', label: 'Alertes' },
-        { href: '/parcours-eau', label: 'Parcours de l\'eau' },
+        { href: '/parcours-eau-v2', label: 'Parcours de l\'eau' },
       ];
 
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
