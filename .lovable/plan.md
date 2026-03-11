@@ -1,34 +1,54 @@
 
 
-## Objectif
+## Mise à jour automatique quotidienne des prix via pg_cron
 
-Remplacer le compteur agrege "X violations totales" par un detail par type (pesticides, plomb, bacteries) dans la section "Pays en alerte" de la page AlertesEurope. On peut aussi croiser avec les donnees `pollutants` pour afficher les polluants specifiques du pays avec leurs valeurs.
+### Problème identifié
 
-## Modifications
+Les prix en base de données datent du **16 décembre 2025** (plus de 2 mois). Le workflow GitHub Actions corrigé ne s'exécute pas, probablement car :
+- Les secrets GitHub (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) ne sont pas configurés dans le repository
+- Ou le workflow Playwright échoue silencieusement en CI
 
-**`src/pages/AlertesEurope.tsx`** :
+### Solution proposee : pg_cron Supabase
 
-- Dans le bloc de chaque pays en alerte (lignes 49-66), remplacer la ligne "X violations totales" par un detail ventile :
-  - `🧪 Pesticides : {pesticideViolations}` 
-  - `🔩 Plomb : {leadViolations}`
-  - `🦠 Bactéries : {bacteriaViolations}`
-- Ajouter une sous-section depliable (Collapsible ou simple toggle) montrant les polluants du pays concerne (filtre depuis `pollutants` par `countryCode`) avec valeur moyenne, limite et taux de depassement
-- Utiliser les donnees deja disponibles dans `quality` (violations par type) et `pollutants` (details par polluant/pays)
+Plutot que de dependre de GitHub Actions (qui necessite Playwright, des secrets, et un runner CI), on va utiliser **pg_cron** directement dans Supabase pour appeler l'Edge Function `admin-smoke` chaque matin a 6:00 UTC (7:00 Paris).
 
-### Structure visuelle par pays
+Cela fonctionne sans aucune infrastructure externe.
+
+### Etapes
+
+**1. Activer les extensions pg_cron et pg_net**
+
+Ces extensions permettent a PostgreSQL de planifier des taches et de faire des appels HTTP.
+
+**2. Creer le job pg_cron**
+
+Un job SQL qui appelle l'Edge Function `admin-smoke` via `net.http_post` chaque jour a 6:00 UTC :
 
 ```text
-┌─────────────────────────────────────────────────┐
-│ ⚠ Bulgarie  [Score C]          Conformité: 95.2%│
-│                                                  │
-│  Pesticides: 12  │  Plomb: 8  │  Bactéries: 15  │
-│                                                  │
-│  Polluants détectés:                             │
-│  ├ Nitrates    22.1 mg/L  (limite 50)  3.5%     │
-│  ├ Plomb       5.8 µg/L   (limite 10)  1.5%     │
-│  └ Bact. col.  2.8 UFC    (limite 0)   2.9%     │
-└─────────────────────────────────────────────────┘
+cron.schedule(
+  'daily-price-refresh',
+  '0 6 * * *',   -- Chaque jour a 6:00 UTC (7:00 Paris)
+  appel HTTP POST vers admin-smoke
+)
 ```
 
-Pas de nouveau composant — tout reste dans `AlertesEurope.tsx`. Les donnees `pollutants` sont deja chargees dans le state.
+**3. Lancer un premier appel immediat**
+
+Pour mettre a jour les donnees tout de suite (sans attendre demain matin), on declenchera aussi l'Edge Function manuellement.
+
+### Ce qui change
+
+- Les prix seront regeneres automatiquement chaque matin a 7h00 (heure de Paris)
+- Les dates `scraped_at` afficheront la date du jour
+- La page `/prix-eaux` montrera des donnees fraiches
+- Aucune dependance a GitHub Actions, Playwright, ou des secrets externes
+
+### Limites
+
+L'Edge Function `admin-smoke` genere des **donnees realistes simulees** (prix aleatoires dans des fourchettes credibles par marque). Ce n'est pas du vrai scraping de sites marchands. Pour du scraping reel, il faudrait faire fonctionner le workflow GitHub Actions avec les bons secrets. Mais pour l'affichage et la demonstration, le smoke test produit des donnees coherentes et a jour.
+
+### Fichiers concernes
+
+- Aucun fichier modifie : la configuration se fait via une requete SQL directe dans Supabase (pg_cron)
+- L'Edge Function `admin-smoke` existante est utilisee telle quelle
 
