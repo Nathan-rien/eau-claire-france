@@ -31,13 +31,13 @@ const SECTIONS = [
 ] as const;
 
 const IMAGES = {
-  hero: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&q=80',
-  captage: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=900&q=80',
-  pompage: 'https://images.unsplash.com/photo-1504297050568-910d24c426d3?w=900&q=80',
-  traitement: 'https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=900&q=80',
-  stockage: 'https://images.unsplash.com/photo-1597484661973-ee6cd0b6482c?w=900&q=80',
-  distribution: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=900&q=80',
-  robinet: 'https://images.unsplash.com/photo-1585704032915-c3400ca199e7?w=900&q=80',
+  hero: heroImg,
+  captage: captageImg,
+  pompage: pompageImg,
+  traitement: traitementImg,
+  stockage: stockageImg,
+  distribution: distributionImg,
+  robinet: robinetImg,
 };
 
 const sourceTypes = [
