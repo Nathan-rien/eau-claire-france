@@ -734,7 +734,6 @@ const ParcoursEauV2 = () => {
                   <RobinetAnimation />
                 </div>
               </div>
-              </div>
             </div>
           </div>
         </section>
