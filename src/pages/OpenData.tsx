@@ -43,6 +43,22 @@ const OpenData = () => {
       size: "8.7 MB",
       lastUpdate: "2024-01-12",
       license: "Creative Commons CC-BY-SA 4.0"
+    },
+    {
+      name: "Qualité de l'eau par pays (UE 27)",
+      description: "Taux de conformité, population desservie et violations par pays européen (source EEA WISE DWD)",
+      format: "JSON, CSV",
+      size: "1.2 MB",
+      lastUpdate: "2025-01-15",
+      license: "EEA Standard re-use policy"
+    },
+    {
+      name: "Polluants européens par pays",
+      description: "Concentrations moyennes et dépassements pour nitrates, pesticides, PFAS, microplastiques, THM dans les 27 pays UE",
+      format: "JSON, CSV",
+      size: "0.8 MB",
+      lastUpdate: "2025-01-15",
+      license: "EEA Standard re-use policy"
     }
   ];
 
