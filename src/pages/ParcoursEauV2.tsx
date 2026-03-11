@@ -38,12 +38,6 @@ const SECTIONS = [
 
 const IMAGES = {
   hero: heroImg,
-  captage: captageImg,
-  pompage: pompageImg,
-  traitement: traitementImg,
-  stockage: stockageImg,
-  distribution: distributionImg,
-  robinet: robinetImg,
 };
 
 const sourceTypes = [
