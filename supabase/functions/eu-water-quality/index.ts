@@ -1,0 +1,97 @@
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
+};
+
+const DISCODATA_BASE = 'https://discodata.eea.europa.eu/sql';
+
+// In-memory cache with 24h TTL
+const cache = new Map<string, { data: unknown; ts: number }>();
+const TTL = 24 * 60 * 60 * 1000;
+
+function getCached(key: string): unknown | null {
+  const entry = cache.get(key);
+  if (entry && Date.now() - entry.ts < TTL) return entry.data;
+  cache.delete(key);
+  return null;
+}
+
+// SQL queries for each endpoint type
+const QUERIES: Record<string, string> = {
+  'national-summary': `
+    SELECT CountryCode, ReportingPeriod, 
+           ComplianceRateTotal, ComplianceRateChemical, ComplianceRateMicro,
+           NumberWSZ, PopulationServed
+    FROM [WISE_DWD].[latest].[DWD_NS]
+  `,
+  'quality-info': `
+    SELECT CountryCode, ParameterName, ParameterGroup,
+           SamplesNumber, SamplesExceedingPV, 
+           ParametricValue, Unit,
+           NumberWSZExceeding
+    FROM [WISE_DWD].[latest].[DWD_QI]
+  `,
+  'non-compliance': `
+    SELECT CountryCode, ParameterName,
+           NonComplianceBeginDate, NonComplianceEndDate,
+           NCICause, NCIRemedialAction,
+           PopulationAffected
+    FROM [WISE_DWD].[latest].[DWD_NCI]
+  `,
+};
+
+async function fetchDiscodata(queryType: string): Promise<unknown> {
+  const cached = getCached(queryType);
+  if (cached) return cached;
+
+  const sql = QUERIES[queryType];
+  if (!sql) throw new Error(`Unknown query type: ${queryType}`);
+
+  const url = `${DISCODATA_BASE}?query=${encodeURIComponent(sql.trim())}&p=1&nrOfHits=10000`;
+
+  const res = await fetch(url, {
+    headers: { 'Accept': 'application/json' },
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`DISCODATA returned ${res.status}: ${text.slice(0, 200)}`);
+  }
+
+  const data = await res.json();
+  cache.set(queryType, { data, ts: Date.now() });
+  return data;
+}
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const url = new URL(req.url);
+    const type = url.searchParams.get('type');
+
+    if (!type || !QUERIES[type]) {
+      return new Response(
+        JSON.stringify({
+          error: 'Missing or invalid "type" parameter. Use: national-summary, quality-info, non-compliance',
+          available: Object.keys(QUERIES),
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const data = await fetchDiscodata(type);
+
+    return new Response(JSON.stringify(data), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=86400' },
+    });
+  } catch (err) {
+    console.error('eu-water-quality error:', err);
+    return new Response(
+      JSON.stringify({ error: err.message, source: 'discodata-proxy' }),
+      { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+});
