@@ -1,47 +1,54 @@
 
 
-## Lignes depliables sur /classement-europe
+## Mise à jour automatique quotidienne des prix via pg_cron
 
-Ajouter un state `expandedCountry` (string | null). Au clic sur une ligne du tableau, afficher une ligne supplementaire en dessous avec toutes les informations detaillees du pays.
+### Problème identifié
 
-### Modifications — `src/pages/ClassementEurope.tsx`
+Les prix en base de données datent du **16 décembre 2025** (plus de 2 mois). Le workflow GitHub Actions corrigé ne s'exécute pas, probablement car :
+- Les secrets GitHub (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) ne sont pas configurés dans le repository
+- Ou le workflow Playwright échoue silencieusement en CI
 
-**1. Imports et donnees supplementaires**
-- Importer `getEUPollutants`, `EUPollutant` depuis `europeWaterApi`
-- Importer `ChevronDown`, `FlaskConical`, `Shield`, `Users`, `Droplets` depuis lucide
-- Ajouter un state `pollutants` charge au mount via `getEUPollutants()`
-- Ajouter un state `expandedCountry: string | null`
+### Solution proposee : pg_cron Supabase
 
-**2. Ligne cliquable**
-- Rendre chaque `TableRow` cliquable (`cursor-pointer`, `onClick` toggle `expandedCountry`)
-- Ajouter un chevron qui tourne quand le pays est deplie
+Plutot que de dependre de GitHub Actions (qui necessite Playwright, des secrets, et un runner CI), on va utiliser **pg_cron** directement dans Supabase pour appeler l'Edge Function `admin-smoke` chaque matin a 6:00 UTC (7:00 Paris).
 
-**3. Ligne de detail (colspan full)**
-- Quand `expandedCountry === c.countryCode`, inserer une `TableRow` supplementaire avec une `TableCell` colSpan={6} contenant :
-  - **Resume** : Population desservie, zones d'approvisionnement, annee du rapport
-  - **Violations detaillees** : Pesticides / Plomb / Bacteries avec icones et compteurs
-  - **Polluants detectes** : Liste filtree depuis `pollutants` par `countryCode`, affichant nom, categorie, valeur moyenne, limite, unite, taux de depassement (badge colore si >1%), zones affectees
-  - **Liens** : vers `/carte-polluants-europe` et `/alertes-europe`
+Cela fonctionne sans aucune infrastructure externe.
 
-### Structure visuelle du detail
+### Etapes
+
+**1. Activer les extensions pg_cron et pg_net**
+
+Ces extensions permettent a PostgreSQL de planifier des taches et de faire des appels HTTP.
+
+**2. Creer le job pg_cron**
+
+Un job SQL qui appelle l'Edge Function `admin-smoke` via `net.http_post` chaque jour a 6:00 UTC :
 
 ```text
-┌──────────────────────────────────────────────────────────┐
-│  👥 8.9M habitants  │  🏭 1200 zones  │  📅 2023        │
-│                                                          │
-│  Violations:  🧪 Pesticides: 2  🔩 Plomb: 0  🦠 Bact: 1│
-│                                                          │
-│  Polluants détectés:                                     │
-│  ┌─────────┬──────────┬────────┬───────┬────────┬──────┐ │
-│  │Polluant │Catégorie │Moyenne │Limite │Dépass. │Zones │ │
-│  ├─────────┼──────────┼────────┼───────┼────────┼──────┤ │
-│  │Nitrates │Chimique  │12.3   │50     │0.5%    │6     │ │
-│  │Pestici. │Chimique  │0.08   │0.5    │0.2%    │2     │ │
-│  └─────────┴──────────┴────────┴───────┴────────┴──────┘ │
-│                                                          │
-│  🔗 Voir la carte des polluants  │  🔗 Alertes Europe   │
-└──────────────────────────────────────────────────────────┘
+cron.schedule(
+  'daily-price-refresh',
+  '0 6 * * *',   -- Chaque jour a 6:00 UTC (7:00 Paris)
+  appel HTTP POST vers admin-smoke
+)
 ```
 
-Pas de nouveau fichier — tout dans `ClassementEurope.tsx`.
+**3. Lancer un premier appel immediat**
+
+Pour mettre a jour les donnees tout de suite (sans attendre demain matin), on declenchera aussi l'Edge Function manuellement.
+
+### Ce qui change
+
+- Les prix seront regeneres automatiquement chaque matin a 7h00 (heure de Paris)
+- Les dates `scraped_at` afficheront la date du jour
+- La page `/prix-eaux` montrera des donnees fraiches
+- Aucune dependance a GitHub Actions, Playwright, ou des secrets externes
+
+### Limites
+
+L'Edge Function `admin-smoke` genere des **donnees realistes simulees** (prix aleatoires dans des fourchettes credibles par marque). Ce n'est pas du vrai scraping de sites marchands. Pour du scraping reel, il faudrait faire fonctionner le workflow GitHub Actions avec les bons secrets. Mais pour l'affichage et la demonstration, le smoke test produit des donnees coherentes et a jour.
+
+### Fichiers concernes
+
+- Aucun fichier modifie : la configuration se fait via une requete SQL directe dans Supabase (pg_cron)
+- L'Edge Function `admin-smoke` existante est utilisee telle quelle
 
