@@ -7,13 +7,19 @@ import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 
 import heroImg from '@/assets/parcours/hero-water.jpg';
-import captageImg from '@/assets/parcours/captage.jpg';
-import pompageImg from '@/assets/parcours/pompage.jpg';
-import traitementImg from '@/assets/parcours/traitement.jpg';
-import stockageImg from '@/assets/parcours/stockage.jpg';
-import distributionImg from '@/assets/parcours/distribution.jpg';
-import robinetImg from '@/assets/parcours/robinet.jpg';
 import {
+  CaptageAnimation,
+  PompageAnimation,
+  TraitementAnimation,
+  StockageAnimation,
+  DistributionAnimation,
+  RobinetAnimation,
+} from '@/components/parcours/StageAnimations';
+import {
+  Droplets, ArrowDown, FlaskConical, Cylinder, Network, Home,
+  Mountain, Waves, Layers, CircleDot, Filter, Zap, Sun, Shield,
+  ChevronDown, CheckCircle2, Gauge,
+} from 'lucide-react';
   Droplets, ArrowDown, FlaskConical, Cylinder, Network, Home,
   Mountain, Waves, Layers, CircleDot, Filter, Zap, Sun, Shield,
   ChevronDown, CheckCircle2, Gauge,
