@@ -169,6 +169,28 @@ const ParcoursEauV2 = () => {
   const [activeSection, setActiveSection] = useState(0);
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const getParallaxStyle = (sectionIdx: number) => {
+    void scrollY; // triggers re-render on scroll
+    const ref = sectionRefs.current[sectionIdx];
+    if (!ref) return {};
+    const rect = ref.getBoundingClientRect();
+    const offset = rect.top / window.innerHeight;
+    const translateY = offset * -30;
+    const scale = 1 + Math.max(0, -offset * 0.03);
+    return {
+      transform: `translateY(${translateY}px) scale(${Math.min(scale, 1.05)})`,
+      transition: 'transform 0.1s linear',
+    };
+  };
 
   const observerCallback = useCallback((entries: IntersectionObserverEntry[]) => {
     entries.forEach(entry => {
@@ -312,7 +334,7 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2 md:order-1",
                 visibleSections.has('captage') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
               )}>
-                <div className="rounded-2xl shadow-2xl bg-blue-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                <div className="rounded-2xl shadow-2xl bg-blue-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center" style={getParallaxStyle(0)}>
                   <CaptageAnimation />
                 </div>
                 <div className="mt-6">
@@ -442,7 +464,7 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2",
                 visibleSections.has('pompage') ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
               )}>
-                <div className="rounded-2xl shadow-2xl bg-indigo-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                <div className="rounded-2xl shadow-2xl bg-indigo-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center" style={getParallaxStyle(1)}>
                   <PompageAnimation />
                 </div>
               </div>
@@ -463,7 +485,7 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2 md:order-1",
                 visibleSections.has('traitement') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
               )}>
-                <div className="rounded-2xl shadow-2xl bg-purple-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                <div className="rounded-2xl shadow-2xl bg-purple-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center" style={getParallaxStyle(2)}>
                   <TraitementAnimation />
                 </div>
               </div>
@@ -586,7 +608,7 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2",
                 visibleSections.has('stockage') ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
               )}>
-                <div className="rounded-2xl shadow-2xl bg-amber-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                <div className="rounded-2xl shadow-2xl bg-amber-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center" style={getParallaxStyle(3)}>
                   <StockageAnimation />
                 </div>
               </div>
@@ -607,7 +629,7 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2 md:order-1",
                 visibleSections.has('distribution') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
               )}>
-                <div className="rounded-2xl shadow-2xl bg-teal-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                <div className="rounded-2xl shadow-2xl bg-teal-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center" style={getParallaxStyle(4)}>
                   <DistributionAnimation />
                 </div>
               </div>
@@ -730,7 +752,7 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2",
                 visibleSections.has('robinet') ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
               )}>
-                <div className="rounded-2xl shadow-2xl bg-green-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                <div className="rounded-2xl shadow-2xl bg-green-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center" style={getParallaxStyle(5)}>
                   <RobinetAnimation />
                 </div>
               </div>
