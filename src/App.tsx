@@ -45,6 +45,9 @@ const ComparateurPrix = React.lazy(() => import("./pages/ComparateurPrix"));
 const MarquePrix = React.lazy(() => import("./pages/MarquePrix"));
 const Admin = React.lazy(() => import("./pages/Admin"));
 const AdminSetup = React.lazy(() => import("./pages/AdminSetup"));
+const CarteEurope = React.lazy(() => import("./pages/CarteEurope"));
+const ClassementEurope = React.lazy(() => import("./pages/ClassementEurope"));
+const PolluantsEurope = React.lazy(() => import("./pages/PolluantsEurope"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
