@@ -124,6 +124,7 @@ const App = () => {
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/admin-setup" element={<AdminSetup />} />
                 <Route path="/carte-europe" element={<CarteEurope />} />
+                <Route path="/carte-polluants-europe" element={<CartePolluantsEurope />} />
                 <Route path="/classement-europe" element={<ClassementEurope />} />
                 <Route path="/polluants-europe" element={<PolluantsEurope />} />
                 <Route path="/diagnostic-europe" element={<DiagnosticEurope />} />
