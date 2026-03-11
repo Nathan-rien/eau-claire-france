@@ -1,11 +1,147 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getEUWaterQuality, getScoreBadgeClass, type EUCountryWaterQuality } from '@/services/europeWaterApi';
+import { getEUWaterQuality, getScoreBadgeClass, EU_COUNTRY_COORDS, type EUCountryWaterQuality } from '@/services/europeWaterApi';
+import { MapboxSecurityService } from '@/services/mapboxSecurityService';
 import { Droplets, MapPin, Users, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { MapLoader } from '@/components/ui/map-loader';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+
+const SCORE_COLORS: Record<string, string> = {
+  A: '#16a34a',
+  B: '#eab308',
+  C: '#dc2626',
+};
+
+interface EuropeMapSectionProps {
+  data: EUCountryWaterQuality[];
+  onSelectCountry: (code: string | null) => void;
+  selectedCode: string | null;
+}
+
+const EuropeMapSection: React.FC<EuropeMapSectionProps> = ({ data, onSelectCountry, selectedCode }) => {
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const popupRef = useRef<mapboxgl.Popup | null>(null);
+
+  const openPopup = useCallback((country: EUCountryWaterQuality, map: mapboxgl.Map) => {
+    popupRef.current?.remove();
+    const coords = EU_COUNTRY_COORDS[country.countryCode];
+    if (!coords) return;
+
+    const popup = new mapboxgl.Popup({ offset: 15, maxWidth: '280px' })
+      .setLngLat([coords[1], coords[0]])
+      .setHTML(`
+        <div style="font-family:system-ui;padding:4px">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+            <strong style="font-size:15px">${country.countryName}</strong>
+            <span style="background:${SCORE_COLORS[country.qualityScore] || '#888'};color:#fff;padding:1px 8px;border-radius:9999px;font-size:12px;font-weight:600">${country.qualityScore}</span>
+          </div>
+          <div style="font-size:13px;line-height:1.6;color:#444">
+            <div><b>Conformité :</b> ${country.complianceRate}%</div>
+            <div><b>Nitrates moy. :</b> ${country.nitrateAvg} mg/L</div>
+            <div><b>Violations pesticides :</b> ${country.pesticideViolations}</div>
+            <div><b>Violations plomb :</b> ${country.leadViolations}</div>
+            <div><b>Violations bactéries :</b> ${country.bacteriaViolations}</div>
+            <div><b>Population :</b> ${country.populationServedMillions}M</div>
+          </div>
+        </div>
+      `)
+      .addTo(map);
+
+    popupRef.current = popup;
+  }, []);
+
+  useEffect(() => {
+    if (!mapContainer.current || data.length === 0) return;
+
+    MapboxSecurityService.configureMapbox(mapboxgl);
+
+    const map = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: [10, 50],
+      zoom: 3.5,
+      minZoom: 2,
+      maxZoom: 8,
+    });
+
+    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    mapRef.current = map;
+
+    map.on('load', () => {
+      data.forEach(country => {
+        const coords = EU_COUNTRY_COORDS[country.countryCode];
+        if (!coords) return;
+
+        const size = Math.max(16, Math.min(40, 10 + country.populationServedMillions * 0.35));
+        const color = SCORE_COLORS[country.qualityScore] || '#888';
+
+        const el = document.createElement('div');
+        el.style.cssText = `
+          width:${size}px;height:${size}px;border-radius:50%;
+          background:${color};border:2px solid #fff;
+          box-shadow:0 2px 6px rgba(0,0,0,0.3);cursor:pointer;
+          display:flex;align-items:center;justify-content:center;
+          font-size:${size > 24 ? 11 : 9}px;font-weight:700;color:#fff;
+          transition:transform 0.15s;
+        `;
+        el.textContent = country.countryCode;
+        el.addEventListener('mouseenter', () => { el.style.transform = 'scale(1.25)'; });
+        el.addEventListener('mouseleave', () => { el.style.transform = 'scale(1)'; });
+
+        const marker = new mapboxgl.Marker({ element: el })
+          .setLngLat([coords[1], coords[0]])
+          .addTo(map);
+
+        marker.getElement().addEventListener('click', () => {
+          onSelectCountry(country.countryCode);
+          openPopup(country, map);
+        });
+
+        markersRef.current.push(marker);
+      });
+    });
+
+    return () => {
+      markersRef.current.forEach(m => m.remove());
+      markersRef.current = [];
+      popupRef.current?.remove();
+      map.remove();
+      mapRef.current = null;
+    };
+  }, [data, onSelectCountry, openPopup]);
+
+  // Sync external selection with popup
+  useEffect(() => {
+    if (!mapRef.current || !selectedCode) return;
+    const country = data.find(c => c.countryCode === selectedCode);
+    if (country) openPopup(country, mapRef.current);
+  }, [selectedCode, data, openPopup]);
+
+  return (
+    <Card className="overflow-hidden">
+      <CardContent className="p-0">
+        <div ref={mapContainer} className="w-full h-[500px] md:h-[600px]" />
+        <div className="flex items-center gap-4 px-4 py-2 text-xs text-muted-foreground border-t border-border">
+          <span className="font-medium">Légende :</span>
+          {Object.entries(SCORE_COLORS).map(([score, color]) => (
+            <span key={score} className="flex items-center gap-1">
+              <span className="inline-block w-3 h-3 rounded-full" style={{ background: color }} />
+              Score {score}
+            </span>
+          ))}
+          <span className="ml-auto">Taille ∝ population</span>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 const CarteEurope: React.FC = () => {
   const [data, setData] = useState<EUCountryWaterQuality[]>([]);
@@ -19,6 +155,12 @@ const CarteEurope: React.FC = () => {
     });
   }, []);
 
+  const handleSelectCountry = useCallback((code: string | null) => {
+    if (!code) { setSelected(null); return; }
+    const country = data.find(c => c.countryCode === code);
+    setSelected(prev => prev?.countryCode === code ? null : country ?? null);
+  }, [data]);
+
   const avgCompliance = data.length ? (data.reduce((s, c) => s + c.complianceRate, 0) / data.length).toFixed(1) : '—';
   const totalPop = data.reduce((s, c) => s + c.populationServedMillions, 0).toFixed(0);
   const countA = data.filter(c => c.qualityScore === 'A').length;
@@ -31,7 +173,6 @@ const CarteEurope: React.FC = () => {
       />
 
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-        {/* Header */}
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center gap-2">
             <span className="text-3xl">🇪🇺</span>
@@ -79,6 +220,17 @@ const CarteEurope: React.FC = () => {
           </Card>
         </div>
 
+        {/* Interactive Map */}
+        <MapLoader loadOnInteraction={true} minHeight="500px">
+          {!loading && (
+            <EuropeMapSection
+              data={data}
+              onSelectCountry={handleSelectCountry}
+              selectedCode={selected?.countryCode ?? null}
+            />
+          )}
+        </MapLoader>
+
         {/* Country grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {loading ? (
@@ -114,7 +266,7 @@ const CarteEurope: React.FC = () => {
                         className="h-2 rounded-full transition-all"
                         style={{
                           width: `${country.complianceRate}%`,
-                          backgroundColor: country.complianceRate >= 99 ? 'hsl(142, 76%, 36%)' : country.complianceRate >= 97 ? 'hsl(48, 96%, 53%)' : 'hsl(0, 84%, 60%)',
+                          backgroundColor: SCORE_COLORS[country.qualityScore] || '#888',
                         }}
                       />
                     </div>
@@ -134,7 +286,6 @@ const CarteEurope: React.FC = () => {
           )}
         </div>
 
-        {/* Source */}
         <p className="text-xs text-muted-foreground text-center">
           Source : EEA Waterbase – WISE Drinking Water Directive (DWD), rapport 2023. Données agrégées au niveau national.
         </p>
