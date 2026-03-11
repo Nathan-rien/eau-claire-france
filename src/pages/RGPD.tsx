@@ -188,6 +188,22 @@ const RGPD = () => {
             </CardContent>
           </Card>
 
+          {/* Données européennes */}
+          <Card className="mb-8 md:mb-12">
+            <CardHeader>
+              <CardTitle>Données européennes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600">
+                Les données européennes affichées sur InfoEau.fr (qualité de l'eau, polluants par pays) 
+                sont des données publiques agrégées et anonymisées provenant de l'Agence Européenne de 
+                l'Environnement (EEA) et du reporting WISE DWD. Elles ne constituent pas des données 
+                personnelles au sens du RGPD et sont librement réutilisables selon la politique de 
+                réutilisation standard de l'EEA.
+              </p>
+            </CardContent>
+          </Card>
+
           {/* Conservation des données */}
           <Card className="mb-8 md:mb-12">
             <CardHeader>

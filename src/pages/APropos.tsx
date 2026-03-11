@@ -46,9 +46,9 @@ const APropos = () => {
       description: "Ouverture de l'API pour démocratiser l'accès aux données"
     },
     {
-      year: "À venir",
-      title: "Extension européenne",
-      description: "Projet d'extension aux données européennes de qualité de l'eau"
+      year: "2025",
+      title: "Lancement du portail Europe",
+      description: "Extension aux 27 pays de l'UE avec données EEA : polluants (PFAS, microplastiques, THM), classement, carte et alertes européennes"
     }
   ];
 
@@ -75,10 +75,10 @@ const APropos = () => {
             </CardHeader>
             <CardContent>
               <p className="text-lg text-blue-700 text-center leading-relaxed">
-                InfoEau.fr a été créé avec une conviction simple : <strong>chaque citoyen français 
-                a le droit de connaître la qualité de son eau potable de manière claire, 
+              InfoEau.fr a été créé avec une conviction simple : <strong>chaque citoyen français 
+                et européen a le droit de connaître la qualité de son eau potable de manière claire, 
                 accessible et transparente</strong>. Nous transformons les données officielles 
-                complexes en informations compréhensibles pour tous.
+                complexes en informations compréhensibles pour tous, en France et dans les 27 pays de l'UE.
               </p>
             </CardContent>
           </Card>
@@ -161,10 +161,14 @@ const APropos = () => {
               <CardTitle className="text-center text-2xl text-green-800">Notre impact</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
                 <div>
                   <div className="text-3xl font-bold text-green-700 mb-2">36 000+</div>
                   <p className="text-green-600">Communes couvertes</p>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-green-700 mb-2">27</div>
+                  <p className="text-green-600">Pays UE couverts</p>
                 </div>
                 <div>
                   <div className="text-3xl font-bold text-green-700 mb-2">100%</div>

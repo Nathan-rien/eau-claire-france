@@ -43,6 +43,22 @@ const OpenData = () => {
       size: "8.7 MB",
       lastUpdate: "2024-01-12",
       license: "Creative Commons CC-BY-SA 4.0"
+    },
+    {
+      name: "Qualité de l'eau par pays (UE 27)",
+      description: "Taux de conformité, population desservie et violations par pays européen (source EEA WISE DWD)",
+      format: "JSON, CSV",
+      size: "1.2 MB",
+      lastUpdate: "2025-01-15",
+      license: "EEA Standard re-use policy"
+    },
+    {
+      name: "Polluants européens par pays",
+      description: "Concentrations moyennes et dépassements pour nitrates, pesticides, PFAS, microplastiques, THM dans les 27 pays UE",
+      format: "JSON, CSV",
+      size: "0.8 MB",
+      lastUpdate: "2025-01-15",
+      license: "EEA Standard re-use policy"
     }
   ];
 
@@ -64,6 +80,18 @@ const OpenData = () => {
       method: "GET",
       description: "Récupère les alertes en cours par département ou région",
       example: "curl https://api.infoeau.fr/v1/alerts?department=33"
+    },
+    {
+      endpoint: "/api/v1/eu/water-quality/{country}",
+      method: "GET",
+      description: "Qualité de l'eau potable pour un pays européen (conformité, violations)",
+      example: "curl https://api.infoeau.fr/v1/eu/water-quality/DE"
+    },
+    {
+      endpoint: "/api/v1/eu/pollutants/{country}",
+      method: "GET",
+      description: "Polluants détectés dans un pays européen (PFAS, microplastiques, THM...)",
+      example: "curl https://api.infoeau.fr/v1/eu/pollutants/FR"
     }
   ];
 
@@ -78,7 +106,7 @@ const OpenData = () => {
               <span>Open Data</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Accédez librement aux données sur la qualité de l'eau potable en France. 
+              Accédez librement aux données sur la qualité de l'eau potable en France et en Europe. 
               Toutes nos données sont ouvertes et réutilisables conformément aux principes de l'Open Data.
             </p>
           </div>

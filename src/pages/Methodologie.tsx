@@ -87,7 +87,7 @@ const Methodologie = () => {
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Découvrez notre approche scientifique et transparente pour collecter, analyser 
-              et présenter les données sur la qualité de l'eau potable en France.
+              et présenter les données sur la qualité de l'eau potable en France et en Europe.
             </p>
           </div>
 
@@ -192,6 +192,41 @@ const Methodologie = () => {
               ))}
             </div>
           </div>
+
+          {/* Données européennes */}
+          <Card className="mb-12 border-blue-200 bg-blue-50">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2 text-blue-800">
+                <BarChart3 className="w-6 h-6" />
+                <span>Données européennes (UE 27)</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-blue-700 leading-relaxed mb-4">
+                Le portail Europe d'InfoEau.fr s'appuie sur les données officielles de l'Agence Européenne 
+                de l'Environnement (EEA), issues du reporting de la Directive Eau Potable (WISE DWD).
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-semibold text-blue-800 mb-2">Sources et couverture</h4>
+                  <ul className="space-y-1 text-blue-700 text-sm">
+                    <li>• 27 pays membres de l'Union européenne</li>
+                    <li>• Datasets EEA WISE DWD : DWD_NS (résumé national), DWD_QI (qualité par paramètre), DWD_NCI (non-conformités)</li>
+                    <li>• Polluants couverts : nitrates, pesticides, plomb, bactéries, PFAS, microplastiques, trihalométhanes, arsenic, chlore résiduel</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-blue-800 mb-2">Traitement et scoring</h4>
+                  <ul className="space-y-1 text-blue-700 text-sm">
+                    <li>• Score de conformité (A/B/C) calculé à partir du taux de conformité national</li>
+                    <li>• Fréquence de mise à jour : tous les 3 ans (cycle de reporting EEA)</li>
+                    <li>• Dernières données disponibles : cycle 2020-2022 (EEA 2023)</li>
+                    <li>• Fallback sur fichiers CSV enrichis en cas d'indisponibilité de l'API</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Limitations et avertissements */}
           <Card className="mb-8 border-orange-200 bg-orange-50">

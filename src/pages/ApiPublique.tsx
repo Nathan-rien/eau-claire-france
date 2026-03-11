@@ -46,6 +46,33 @@ const ApiPublique = () => {
         { name: "operator", type: "string", required: false, description: "Nom de l'opérateur" }
       ],
       example: "https://api.infoeau.fr/v1/networks?department=75"
+    },
+    {
+      method: "GET",
+      path: "/api/v1/eu/water-quality/{country}",
+      description: "Données de qualité de l'eau pour un pays européen (conformité, population, violations)",
+      parameters: [
+        { name: "country", type: "string", required: true, description: "Code pays ISO 2 lettres (FR, DE, ES...)" }
+      ],
+      example: "https://api.infoeau.fr/v1/eu/water-quality/DE"
+    },
+    {
+      method: "GET",
+      path: "/api/v1/eu/pollutants",
+      description: "Liste des polluants européens avec moyennes et dépassements par pays",
+      parameters: [
+        { name: "category", type: "string", required: false, description: "Catégorie (Chimique, Métaux lourds, Microbiologique, Chimique émergent, Sous-produits)" }
+      ],
+      example: "https://api.infoeau.fr/v1/eu/pollutants?category=Chimique%20émergent"
+    },
+    {
+      method: "GET",
+      path: "/api/v1/eu/pollutants/{country}",
+      description: "Polluants détaillés pour un pays européen spécifique",
+      parameters: [
+        { name: "country", type: "string", required: true, description: "Code pays ISO 2 lettres" }
+      ],
+      example: "https://api.infoeau.fr/v1/eu/pollutants/FR"
     }
   ];
 
@@ -92,7 +119,7 @@ const ApiPublique = () => {
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Accédez programmatiquement aux données de qualité de l'eau potable française 
-              via notre API REST gratuite et ouverte.
+              et européenne via notre API REST gratuite et ouverte.
             </p>
           </div>
 
