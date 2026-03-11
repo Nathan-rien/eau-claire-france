@@ -286,6 +286,46 @@ p, li {
   50% { transform: translateY(-30px) scale(1.15); opacity: 0.6; }
 }
 
+@keyframes v2-rain-drop {
+  0% { transform: translateY(-10px); opacity: 0; }
+  20% { opacity: 0.8; }
+  100% { transform: translateY(180px); opacity: 0; }
+}
+
+@keyframes v2-pump-piston {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-25px); }
+}
+
+@keyframes v2-bubble-rise {
+  0% { transform: translateY(0) scale(1); opacity: 0.7; }
+  100% { transform: translateY(-140px) scale(0.4); opacity: 0; }
+}
+
+@keyframes v2-flow-particle {
+  0% { offset-distance: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+@keyframes v2-faucet-drip {
+  0% { transform: translateY(0) scaleY(1); opacity: 1; }
+  60% { transform: translateY(50px) scaleY(1.3); opacity: 0.8; }
+  80% { transform: translateY(60px) scaleY(0.6) scaleX(1.4); opacity: 0.5; }
+  100% { transform: translateY(65px) scaleY(0); opacity: 0; }
+}
+
+@keyframes v2-fill-glass {
+  0% { height: 0; }
+  100% { height: 45px; }
+}
+
+@keyframes v2-wave-surface {
+  0%, 100% { d: path("M50,95 Q75,90 100,95 Q125,100 150,95"); }
+  50% { d: path("M50,95 Q75,100 100,95 Q125,90 150,95"); }
+}
+
 .animate-v2-water-drop {
   animation: v2-water-drop 2.5s ease-in-out infinite;
 }
