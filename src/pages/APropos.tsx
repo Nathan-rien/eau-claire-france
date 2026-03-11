@@ -46,9 +46,9 @@ const APropos = () => {
       description: "Ouverture de l'API pour démocratiser l'accès aux données"
     },
     {
-      year: "À venir",
-      title: "Extension européenne",
-      description: "Projet d'extension aux données européennes de qualité de l'eau"
+      year: "2025",
+      title: "Lancement du portail Europe",
+      description: "Extension aux 27 pays de l'UE avec données EEA : polluants (PFAS, microplastiques, THM), classement, carte et alertes européennes"
     }
   ];
 
