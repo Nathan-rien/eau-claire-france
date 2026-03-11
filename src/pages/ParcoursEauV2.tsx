@@ -215,11 +215,11 @@ const ParcoursEauV2 = () => {
       <SEOHead title={seo.title} description={seo.description} keywords={seo.keywords} />
 
       {/* ━━━ HERO ━━━ */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-blue-950 via-blue-900 to-blue-950">
         {/* Background image */}
         <div className="absolute inset-0">
           <img src={IMAGES.hero} alt="" className="w-full h-full object-cover" loading="eager" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+          <div className="absolute inset-0 bg-gradient-to-b from-blue-950/60 via-blue-900/40 to-blue-950/70" />
         </div>
 
         {/* Floating particles */}
