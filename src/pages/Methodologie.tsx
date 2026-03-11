@@ -87,7 +87,7 @@ const Methodologie = () => {
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Découvrez notre approche scientifique et transparente pour collecter, analyser 
-              et présenter les données sur la qualité de l'eau potable en France.
+              et présenter les données sur la qualité de l'eau potable en France et en Europe.
             </p>
           </div>
 
