@@ -161,10 +161,14 @@ const APropos = () => {
               <CardTitle className="text-center text-2xl text-green-800">Notre impact</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
                 <div>
                   <div className="text-3xl font-bold text-green-700 mb-2">36 000+</div>
                   <p className="text-green-600">Communes couvertes</p>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-green-700 mb-2">27</div>
+                  <p className="text-green-600">Pays UE couverts</p>
                 </div>
                 <div>
                   <div className="text-3xl font-bold text-green-700 mb-2">100%</div>
