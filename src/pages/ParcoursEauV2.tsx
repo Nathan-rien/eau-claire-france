@@ -169,6 +169,26 @@ const ParcoursEauV2 = () => {
   const [activeSection, setActiveSection] = useState(0);
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const getParallaxStyle = (sectionIdx: number) => {
+    const ref = sectionRefs.current[sectionIdx];
+    if (!ref) return {};
+    const rect = ref.getBoundingClientRect();
+    const offset = rect.top / window.innerHeight;
+    const translateY = offset * -30;
+    const scale = 1 + Math.max(0, -offset * 0.03);
+    return {
+      transform: `translateY(${translateY}px) scale(${Math.min(scale, 1.05)})`,
+      transition: 'transform 0.1s linear',
+    };
+  };
 
   const observerCallback = useCallback((entries: IntersectionObserverEntry[]) => {
     entries.forEach(entry => {
