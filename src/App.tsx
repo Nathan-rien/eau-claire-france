@@ -53,6 +53,7 @@ const DiagnosticEurope = React.lazy(() => import("./pages/DiagnosticEurope"));
 const AlertesEurope = React.lazy(() => import("./pages/AlertesEurope"));
 const PrixEauxEurope = React.lazy(() => import("./pages/PrixEauxEurope"));
 const ParcoursEau = React.lazy(() => import("./pages/ParcoursEau"));
+const ParcoursEauV2 = React.lazy(() => import("./pages/ParcoursEauV2"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
