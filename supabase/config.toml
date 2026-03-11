@@ -62,3 +62,6 @@ verify_jwt = false
 
 [functions.fetch-water-alerts]
 verify_jwt = false
+
+[functions.eu-water-quality]
+verify_jwt = false

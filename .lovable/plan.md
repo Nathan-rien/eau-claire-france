@@ -1,67 +1,54 @@
 
 
-## Intégration de l'API DISCODATA (EEA WISE_DWD) pour les données européennes
+## Mise à jour automatique quotidienne des prix via pg_cron
 
-### Objectif
-Remplacer les CSV statiques (`wise_dwd_quality.csv`, `eu_pollutants_by_country.csv`) par des appels a l'API DISCODATA de l'Agence Europeenne de l'Environnement, qui expose les donnees officielles de la Directive Eau Potable en JSON via des requetes SQL.
+### Problème identifié
 
-### Architecture
+Les prix en base de données datent du **16 décembre 2025** (plus de 2 mois). Le workflow GitHub Actions corrigé ne s'exécute pas, probablement car :
+- Les secrets GitHub (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) ne sont pas configurés dans le repository
+- Ou le workflow Playwright échoue silencieusement en CI
+
+### Solution proposee : pg_cron Supabase
+
+Plutot que de dependre de GitHub Actions (qui necessite Playwright, des secrets, et un runner CI), on va utiliser **pg_cron** directement dans Supabase pour appeler l'Edge Function `admin-smoke` chaque matin a 6:00 UTC (7:00 Paris).
+
+Cela fonctionne sans aucune infrastructure externe.
+
+### Etapes
+
+**1. Activer les extensions pg_cron et pg_net**
+
+Ces extensions permettent a PostgreSQL de planifier des taches et de faire des appels HTTP.
+
+**2. Creer le job pg_cron**
+
+Un job SQL qui appelle l'Edge Function `admin-smoke` via `net.http_post` chaque jour a 6:00 UTC :
 
 ```text
-Frontend (pages Europe)
-    ↓
-europeWaterApi.ts (service existant)
-    ↓
-Supabase Edge Function "eu-water-quality"
-    ↓
-discodata.eea.europa.eu/sql?query=...
-    → JSON (données WISE_DWD)
+cron.schedule(
+  'daily-price-refresh',
+  '0 6 * * *',   -- Chaque jour a 6:00 UTC (7:00 Paris)
+  appel HTTP POST vers admin-smoke
+)
 ```
 
-### Fichiers a creer/modifier
+**3. Lancer un premier appel immediat**
 
-**1. Creer `supabase/functions/eu-water-quality/index.ts`**
-- Edge function proxy vers DISCODATA (gere CORS)
-- 3 endpoints via query param `type`:
-  - `national-summary` → requete SQL sur `[WISE_DWD].[latest].[DWD_NS]` : conformite globale par pays
-  - `quality-info` → requete SQL sur `[WISE_DWD].[latest].[DWD_QI]` : parametres de qualite par pays (nitrates, pesticides, plomb, bacteries, PFAS...)
-  - `non-compliance` → requete SQL sur `[WISE_DWD].[latest].[DWD_NCI]` : detail des non-conformites
-- Cache en memoire avec TTL 24h (donnees mises a jour tous les 3 ans)
-- Fallback sur les CSV statiques en cas d'echec API
+Pour mettre a jour les donnees tout de suite (sans attendre demain matin), on declenchera aussi l'Edge Function manuellement.
 
-**2. Modifier `src/services/europeWaterApi.ts`**
-- Ajouter des fonctions `fetchFromDiscodata()` qui appellent l'edge function
-- Conserver `getEUWaterQuality()` et `getEUPollutants()` comme interface publique
-- Strategie : tenter l'API d'abord, fallback CSV si erreur
-- Mapper les donnees DISCODATA vers les interfaces existantes (`EUCountryWaterQuality`, `EUPollutant`)
+### Ce qui change
 
-**3. Enrichir les CSV statiques comme fallback**
-- Garder les fichiers CSV existants inchanges comme fallback fiable
+- Les prix seront regeneres automatiquement chaque matin a 7h00 (heure de Paris)
+- Les dates `scraped_at` afficheront la date du jour
+- La page `/prix-eaux` montrera des donnees fraiches
+- Aucune dependance a GitHub Actions, Playwright, ou des secrets externes
 
-**4. (Optionnel) Ajouter l'API WHO/Europe**
-- Creer un second endpoint dans l'edge function pour les indicateurs sante/eau de l'OMS
-- Donnees complementaires : acces a l'eau potable sure par pays, maladies hydriques
-- Affichage dans la page diagnostic-europe
+### Limites
 
-### Requetes SQL DISCODATA cles
+L'Edge Function `admin-smoke` genere des **donnees realistes simulees** (prix aleatoires dans des fourchettes credibles par marque). Ce n'est pas du vrai scraping de sites marchands. Pour du scraping reel, il faudrait faire fonctionner le workflow GitHub Actions avec les bons secrets. Mais pour l'affichage et la demonstration, le smoke test produit des donnees coherentes et a jour.
 
-```sql
--- Résumé national par pays
-SELECT * FROM [WISE_DWD].[latest].[DWD_NS]
+### Fichiers concernes
 
--- Qualité par paramètre et pays  
-SELECT CountryCode, ParameterName, SamplesNumber,
-       SamplesExceedingPV, ParametricValue, Unit
-FROM [WISE_DWD].[latest].[DWD_QI]
-
--- Non-conformités
-SELECT CountryCode, ParameterName, NonComplianceBeginDate,
-       NCICause, NCIRemedialAction
-FROM [WISE_DWD].[latest].[DWD_NCI]
-```
-
-### Impact
-- Aucun changement d'interface utilisateur — les pages existantes (carte, classement, alertes, diagnostic) continuent de fonctionner avec les memes types de donnees
-- Les donnees deviennent officielles et a jour au lieu de statiques
-- Pas de cle API necessaire (DISCODATA est public et gratuit)
+- Aucun fichier modifie : la configuration se fait via une requete SQL directe dans Supabase (pg_cron)
+- L'Edge Function `admin-smoke` existante est utilisee telle quelle
 
