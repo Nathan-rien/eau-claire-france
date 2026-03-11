@@ -1,54 +1,99 @@
 
 
-## Mise à jour automatique quotidienne des prix via pg_cron
+## Recherche des API europeennes et plan d'implementation
 
-### Problème identifié
+### Erreur de build a corriger d'abord
 
-Les prix en base de données datent du **16 décembre 2025** (plus de 2 mois). Le workflow GitHub Actions corrigé ne s'exécute pas, probablement car :
-- Les secrets GitHub (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) ne sont pas configurés dans le repository
-- Ou le workflow Playwright échoue silencieusement en CI
+Les fichiers de test `src/lib/__tests__/*.test.ts` sont inclus dans `tsconfig.app.json` (via `"include": ["src"]`) mais les types Jest ne sont pas reconnus par le compilateur Vite. Il faut exclure ces fichiers du build applicatif.
 
-### Solution proposee : pg_cron Supabase
+---
 
-Plutot que de dependre de GitHub Actions (qui necessite Playwright, des secrets, et un runner CI), on va utiliser **pg_cron** directement dans Supabase pour appeler l'Edge Function `admin-smoke` chaque matin a 6:00 UTC (7:00 Paris).
+### API europeennes disponibles et pertinentes
 
-Cela fonctionne sans aucune infrastructure externe.
+Voici le resultat de ma recherche, classe par fonctionnalite existante du site :
 
-### Etapes
+#### 1. Qualite de l'eau potable (equivalent de Hub'Eau)
 
-**1. Activer les extensions pg_cron et pg_net**
+| Source | Couverture | Format | Acces | Pertinence |
+|--------|-----------|--------|-------|------------|
+| **EEA Waterbase - WISE DWD** (Drinking Water Directive) | 27 pays EU | CSV bulk download | Gratuit, pas de REST API temps reel | Donnees de conformite par pays, nitrates, pesticides, bacteries. Mises a jour annuelles. |
+| **EEA Waterbase - Water Quality ICM** | 27 pays EU + | CSV/SQLite bulk | Gratuit | Qualite des eaux de surface (rivieres, lacs). Pas eau potable directement. |
+| **UK Environment Agency - Water Quality API** | Angleterre | REST JSON | Gratuit, temps reel | `environment.data.gov.uk/water-quality` - Equivalent Hub'Eau pour l'Angleterre |
+| **Germany - Wasser-DE / WasserBLIcK** | Allemagne | REST API | Gratuit | `wasserblick.net` - Donnees federales sur la qualite de l'eau |
+| **Netherlands - Digitale Delta API** | Pays-Bas | REST API | Gratuit | `ihw.nl` - Donnees de qualite de l'eau normalisees |
+| **EEA Bathing Water Quality** | 27 pays EU | JSON/Map viewer | Gratuit | ~22 000 sites de baignade, qualite E. coli / enterococci |
 
-Ces extensions permettent a PostgreSQL de planifier des taches et de faire des appels HTTP.
+#### 2. Carte des eaux (equivalent de /carte)
 
-**2. Creer le job pg_cron**
+| Source | Couverture | Usage |
+|--------|-----------|-------|
+| **EEA WISE Spatial Data** (WFD) | EU 27 | Contours des masses d'eau, stations de mesure georeferencees |
+| **EEA Bathing Water Map Viewer** | EU 27 | Points de baignade avec coordonnees GPS |
 
-Un job SQL qui appelle l'Edge Function `admin-smoke` via `net.http_post` chaque jour a 6:00 UTC :
+#### 3. Polluants / Alertes (equivalent de /alertes, /polluants)
 
-```text
-cron.schedule(
-  'daily-price-refresh',
-  '0 6 * * *',   -- Chaque jour a 6:00 UTC (7:00 Paris)
-  appel HTTP POST vers admin-smoke
-)
-```
+| Source | Couverture | Usage |
+|--------|-----------|-------|
+| **WISE DWD - QualityInformation (DWD_QI)** | EU 27 | Depassements de seuils par parametre et par pays |
+| **EEA Waterbase ICM - Hazardous substances** | EU 27 | Substances dangereuses dans les eaux de surface |
 
-**3. Lancer un premier appel immediat**
+#### 4. Eaux en bouteille / Composition minerale
 
-Pour mettre a jour les donnees tout de suite (sans attendre demain matin), on declenchera aussi l'Edge Function manuellement.
+**Aucune API europeenne centralisee n'existe.** Chaque pays a ses propres bases. Il faudrait constituer un CSV europeen manuellement a partir de sources nationales.
 
-### Ce qui change
+---
 
-- Les prix seront regeneres automatiquement chaque matin a 7h00 (heure de Paris)
-- Les dates `scraped_at` afficheront la date du jour
-- La page `/prix-eaux` montrera des donnees fraiches
-- Aucune dependance a GitHub Actions, Playwright, ou des secrets externes
+### Limites importantes
 
-### Limites
+- **Pas d'API REST temps reel pan-europeenne** : contrairement a Hub'Eau (France), l'EEA fournit des **datasets bulk en CSV/SQLite**, mis a jour annuellement. Il n'y a pas d'equivalent `?code_commune=XXX` a l'echelle EU.
+- **Granularite variable** : la France offre des donnees a la commune. L'EEA fournit des donnees a la "Water Supply Zone" ou au pays.
+- **Seuls quelques pays** (UK, Allemagne, Pays-Bas) ont des API REST nationales exploitables en temps reel.
 
-L'Edge Function `admin-smoke` genere des **donnees realistes simulees** (prix aleatoires dans des fourchettes credibles par marque). Ce n'est pas du vrai scraping de sites marchands. Pour du scraping reel, il faudrait faire fonctionner le workflow GitHub Actions avec les bons secrets. Mais pour l'affichage et la demonstration, le smoke test produit des donnees coherentes et a jour.
+---
+
+### Plan d'implementation propose
+
+#### Phase 1 : Infrastructure et correctif build
+
+1. **Corriger l'erreur de build** : exclure `__tests__` du `tsconfig.app.json`
+2. **Ajouter un scope switcher France/Europe** dans le `LanguageContext` ou un nouveau `RegionContext`
+3. **Creer un service `europeWaterApi.ts`** qui interroge les datasets EEA
+
+#### Phase 2 : Donnees EU statiques (via CSV pre-traites)
+
+Puisque l'EEA ne fournit pas de REST API, la strategie est :
+- Telecharger les datasets WISE DWD (CSV) et les stocker dans `public/data/eu/`
+- Creer une Edge Function qui sert les donnees filtrees par pays
+- Alimenter les pages existantes avec un switch France/Europe
+
+#### Phase 3 : Pages europeennes
+
+- **Carte EU** : carte Mapbox avec les 27 pays, coloree par score de conformite national
+- **Diagnostic EU** : selection par pays > donnees nationales aggregees
+- **Polluants EU** : top polluants par pays (nitrates, pesticides, plomb)
+- **Alertes EU** : depassements de seuils par pays (donnees WISE DWD_QI)
+- **Classement EU** : classement des pays par qualite de l'eau potable
+
+#### Phase 4 : API nationales specifiques (optionnel)
+
+Pour les pays avec des API REST (UK, DE, NL), ajouter des services dedies permettant une granularite ville/region similaire a la France.
+
+---
 
 ### Fichiers concernes
 
-- Aucun fichier modifie : la configuration se fait via une requete SQL directe dans Supabase (pg_cron)
-- L'Edge Function `admin-smoke` existante est utilisee telle quelle
+```text
+tsconfig.app.json                          -- exclure __tests__
+src/contexts/RegionContext.tsx              -- nouveau contexte France/Europe
+src/services/europeWaterApi.ts             -- service API EEA
+src/components/RegionSwitcher.tsx          -- composant switch FR/EU
+src/pages/CarteEurope.tsx                  -- carte europeenne
+public/data/eu/wise_dwd_quality.csv        -- donnees EEA pre-traitees
+src/contexts/LanguageContext.tsx           -- traductions EU ajoutees
+src/components/Navigation.tsx              -- liens Europe ajoutes
+```
+
+### Recommandation
+
+Je suggere de commencer par la **Phase 1** (fix build + RegionContext) puis la **Phase 2** (donnees EU statiques). Voulez-vous que je procede par etapes, ou souhaitez-vous prioriser certaines fonctionnalites ?
 
