@@ -312,7 +312,9 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2 md:order-1",
                 visibleSections.has('captage') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
               )}>
-                <img src={IMAGES.captage} alt="Nappe phréatique et paysage aquifère" className="rounded-2xl shadow-2xl w-full aspect-[4/3] object-cover" loading="lazy" />
+                <div className="rounded-2xl shadow-2xl bg-blue-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                  <CaptageAnimation />
+                </div>
                 <div className="mt-6">
                   <GeologicalSVG isVisible={visibleSections.has('captage')} />
                 </div>
