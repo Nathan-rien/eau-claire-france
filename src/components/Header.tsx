@@ -5,30 +5,47 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useRegion } from '@/contexts/RegionContext';
+import RegionSwitcher from '@/components/RegionSwitcher';
 
 const Header = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
+  const { isEurope } = useRegion();
 
   const handleLanguageChange = (newLanguage: string) => {
     setLanguage(newLanguage as 'fr' | 'en');
   };
 
-  const mapsItems = [
-    { href: '/carte', label: 'Carte des sources du robinet' },
-    { href: '/sources-eau', label: 'Carte des sources des bouteilles' },
-    { href: '/carte-polluants', label: 'Carte des polluants' },
-  ];
+  const mapsItems = isEurope
+    ? [
+        { href: '/carte-europe', label: 'Carte qualité Europe' },
+        { href: '/sources-eau', label: 'Sources bouteilles' },
+      ]
+    : [
+        { href: '/carte', label: 'Carte des sources du robinet' },
+        { href: '/sources-eau', label: 'Carte des sources des bouteilles' },
+        { href: '/carte-polluants', label: 'Carte des polluants' },
+      ];
 
-  const navigationItems = [
-    { href: '/diagnostic', label: 'Diagnostic' },
-    { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
-    { href: '/prix-eaux', label: 'Prix des eaux' },
-    { href: '/classement', label: 'Classement' },
-    { href: '/polluants', label: 'Polluants' },
-    { href: '/alertes', label: 'Alertes' },
-  ];
+  const navigationItems = isEurope
+    ? [
+        { href: '/diagnostic-europe', label: 'Diagnostic' },
+        { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
+        { href: '/prix-eaux-europe', label: 'Prix des eaux' },
+        { href: '/classement-europe', label: 'Classement' },
+        { href: '/polluants-europe', label: 'Polluants' },
+        { href: '/alertes-europe', label: 'Alertes' },
+      ]
+    : [
+        { href: '/diagnostic', label: 'Diagnostic' },
+        { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
+        { href: '/prix-eaux', label: 'Prix des eaux' },
+        { href: '/classement', label: 'Classement' },
+        { href: '/polluants', label: 'Polluants' },
+        { href: '/alertes', label: 'Alertes' },
+      ];
 
   const isActive = (path: string) => location.pathname === path;
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
@@ -36,24 +53,16 @@ const Header = () => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setMapsMenuOpen(true);
   };
 
   const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setMapsMenuOpen(false);
-    }, 150); // Délai de 150ms pour permettre de naviguer vers le sous-menu
+    timeoutRef.current = setTimeout(() => setMapsMenuOpen(false), 150);
   };
 
   useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
+    return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
   }, []);
 
   return (
@@ -72,8 +81,7 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden xl:flex items-center space-x-1 flex-1 justify-center max-w-4xl" role="navigation" aria-label="Navigation principale">
-            {/* Sous-menu "Les cartes" */}
-            <div 
+            <div
               className="relative group"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
@@ -87,7 +95,7 @@ const Header = () => {
                 <ChevronDown className="h-3 w-3" />
               </button>
               {mapsMenuOpen && (
-                <div 
+                <div
                   className="absolute left-0 top-full w-64 bg-background border border-border shadow-lg rounded-md z-50 mt-0"
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
@@ -107,7 +115,6 @@ const Header = () => {
               )}
             </div>
 
-            {/* Liens directs */}
             {navigationItems.map((item) => (
               <Link
                 key={item.href}
@@ -121,14 +128,19 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Right Side - Language & Mobile Menu */}
+          {/* Right Side - Region, Language & Mobile Menu */}
           <div className="flex items-center space-x-2">
-            {/* Language Selector - Always visible */}
+            {/* Region Switcher - Desktop */}
+            <div className="hidden sm:block">
+              <RegionSwitcher />
+            </div>
+
+            {/* Language Selector */}
             <Select value={language} onValueChange={handleLanguageChange}>
               <SelectTrigger className="w-auto border-none bg-transparent px-2 py-1 h-auto">
                 <SelectValue>
                   <div className="flex items-center space-x-1">
-                    <span className="text-lg">🇬🇧</span>
+                    <span className="text-lg">{language === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
                     <span className="hidden sm:inline text-sm font-medium">{language === 'fr' ? 'FR' : 'EN'}</span>
                     <ChevronDown className="h-3 w-3 opacity-50" />
                   </div>
@@ -154,12 +166,7 @@ const Header = () => {
             <div className="xl:hidden">
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="xl:hidden min-h-[44px] min-w-[44px] p-2 flex items-center space-x-2"
-                    aria-label="Ouvrir le menu"
-                  >
+                  <Button variant="ghost" size="sm" className="xl:hidden min-h-[44px] min-w-[44px] p-2 flex items-center space-x-2" aria-label="Ouvrir le menu">
                     <Menu className="h-5 w-5" />
                     <span className="hidden md:inline text-sm font-medium">Menu</span>
                     <span className="sr-only">Toggle menu</span>
@@ -167,7 +174,7 @@ const Header = () => {
                 </SheetTrigger>
                 <SheetContent side="right" className="w-72 sm:w-80">
                   <div className="flex flex-col space-y-1 mt-6">
-                    <div className="flex items-center space-x-2 mb-6 pb-4 border-b">
+                    <div className="flex items-center space-x-2 mb-4 pb-4 border-b">
                       <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center">
                         <Droplets className="w-4 h-4 text-white" />
                       </div>
@@ -175,7 +182,13 @@ const Header = () => {
                         InfoEau.fr
                       </span>
                     </div>
-                    {/* Section cartes dans mobile */}
+
+                    {/* Region Switcher - Mobile */}
+                    <div className="px-3 pb-4">
+                      <RegionSwitcher />
+                    </div>
+
+                    {/* Section cartes */}
                     <div className="mb-4">
                       <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
                         Les cartes
@@ -193,8 +206,7 @@ const Header = () => {
                         </Link>
                       ))}
                     </div>
-                    
-                    {/* Autres liens */}
+
                     <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
                       Navigation
                     </div>
