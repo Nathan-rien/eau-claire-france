@@ -135,6 +135,7 @@ const App = () => {
             </Suspense>
             </BrowserRouter>
             </TooltipProvider>
+            </RegionProvider>
           </LanguageProvider>
         </AuthProvider>
       </QueryClientProvider>
