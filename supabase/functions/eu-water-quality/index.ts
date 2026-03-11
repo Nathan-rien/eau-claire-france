@@ -64,7 +64,8 @@ async function fetchSDG6(type: string): Promise<unknown> {
   if (!info) throw new Error(`Unknown type: ${type}`);
 
   // Fetch with high per_page to get all EU data in one call
-  const url = `https://sdg6data.org/api/indicator/${info.code}?_format=json&country=${EU_ISO3_LIST}&per_page=5000`;
+  // Filter for recent data only (2015+) to avoid pagination issues
+  const url = `https://sdg6data.org/api/indicator/${info.code}?_format=json&country=${EU_ISO3_LIST}&per_page=5000&timePeriod=2015,2016,2017,2018,2019,2020,2021,2022,2023,2024`;
 
   const res = await fetch(url, {
     headers: { 'Accept': 'application/json' },
