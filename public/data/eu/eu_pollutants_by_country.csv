@@ -1,219 +1,219 @@
 country_code,country_name,pollutant,category,avg_value,unit,limit_value,exceedance_rate_pct,affected_zones,report_year
-AT,Autriche,Nitrates,Chimique,12.3,mg/L,50,0.5,6,2023
-AT,Autriche,Pesticides total,Chimique,0.08,µg/L,0.5,0.2,2,2023
-AT,Autriche,Plomb,Métaux lourds,2.1,µg/L,10,0.0,0,2023
-AT,Autriche,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.1,1,2023
-AT,Autriche,Trihalométhanes,Sous-produits,18.5,µg/L,100,0.0,0,2023
-AT,Autriche,Chlore résiduel,Désinfectant,0.12,mg/L,0.3,0.0,0,2023
-AT,Autriche,Microplastiques,Chimique émergent,1.2,particules/L,,0.0,0,2023
-BE,Belgique,Nitrates,Chimique,18.5,mg/L,50,1.2,10,2023
-BE,Belgique,Pesticides total,Chimique,0.15,µg/L,0.5,0.6,5,2023
-BE,Belgique,PFAS (somme),Chimique émergent,0.08,µg/L,0.1,0.4,3,2023
-BE,Belgique,Plomb,Métaux lourds,3.5,µg/L,10,0.3,2,2023
-BE,Belgique,Trihalométhanes,Sous-produits,32.1,µg/L,100,0.1,1,2023
-BE,Belgique,Chlore résiduel,Désinfectant,0.15,mg/L,0.3,0.0,0,2023
-BE,Belgique,Microplastiques,Chimique émergent,2.8,particules/L,,0.0,0,2023
-BE,Belgique,Bactéries coliformes,Microbiologique,1.2,UFC/100mL,0,0.5,3,2023
-BG,Bulgarie,Nitrates,Chimique,22.1,mg/L,50,3.5,18,2023
-BG,Bulgarie,Plomb,Métaux lourds,5.8,µg/L,10,1.5,8,2023
-BG,Bulgarie,Bactéries coliformes,Microbiologique,2.8,UFC/100mL,0,2.9,15,2023
-BG,Bulgarie,Pesticides total,Chimique,0.22,µg/L,0.5,1.2,6,2023
-BG,Bulgarie,PFAS (somme),Chimique émergent,0.04,µg/L,0.1,0.1,1,2023
-BG,Bulgarie,Trihalométhanes,Sous-produits,45.2,µg/L,100,0.8,4,2023
-BG,Bulgarie,Chlore résiduel,Désinfectant,0.18,mg/L,0.3,0.2,1,2023
-BG,Bulgarie,Microplastiques,Chimique émergent,3.5,particules/L,,0.0,0,2023
-BG,Bulgarie,Arsenic,Métaux lourds,3.2,µg/L,10,0.4,2,2023
-HR,Croatie,Nitrates,Chimique,14.2,mg/L,50,0.8,4,2023
-HR,Croatie,Pesticides total,Chimique,0.09,µg/L,0.5,0.3,2,2023
-HR,Croatie,Plomb,Métaux lourds,3.1,µg/L,10,0.2,1,2023
-HR,Croatie,PFAS (somme),Chimique émergent,0.02,µg/L,0.1,0.0,0,2023
-HR,Croatie,Trihalométhanes,Sous-produits,28.4,µg/L,100,0.1,1,2023
-HR,Croatie,Chlore résiduel,Désinfectant,0.14,mg/L,0.3,0.0,0,2023
-HR,Croatie,Bactéries coliformes,Microbiologique,1.8,UFC/100mL,0,1.0,5,2023
-HR,Croatie,Microplastiques,Chimique émergent,1.5,particules/L,,0.0,0,2023
-CY,Chypre,Nitrates,Chimique,16.8,mg/L,50,0.9,1,2023
-CY,Chypre,Pesticides total,Chimique,0.07,µg/L,0.5,0.2,1,2023
-CY,Chypre,Plomb,Métaux lourds,2.5,µg/L,10,0.1,0,2023
-CY,Chypre,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.0,0,2023
-CY,Chypre,Trihalométhanes,Sous-produits,52.3,µg/L,100,1.5,2,2023
-CY,Chypre,Chlore résiduel,Désinfectant,0.20,mg/L,0.3,0.1,0,2023
-CY,Chypre,Microplastiques,Chimique émergent,2.1,particules/L,,0.0,0,2023
-CZ,Tchéquie,Nitrates,Chimique,15.4,mg/L,50,0.7,6,2023
-CZ,Tchéquie,Pesticides total,Chimique,0.10,µg/L,0.5,0.3,3,2023
-CZ,Tchéquie,Plomb,Métaux lourds,2.8,µg/L,10,0.1,1,2023
-CZ,Tchéquie,PFAS (somme),Chimique émergent,0.05,µg/L,0.1,0.2,2,2023
-CZ,Tchéquie,Trihalométhanes,Sous-produits,22.8,µg/L,100,0.0,0,2023
-CZ,Tchéquie,Chlore résiduel,Désinfectant,0.13,mg/L,0.3,0.0,0,2023
-CZ,Tchéquie,Microplastiques,Chimique émergent,1.8,particules/L,,0.0,0,2023
-DK,Danemark,Nitrates,Chimique,8.2,mg/L,50,0.1,3,2023
-DK,Danemark,Pesticides total,Chimique,0.03,µg/L,0.5,0.04,1,2023
-DK,Danemark,Plomb,Métaux lourds,1.5,µg/L,10,0.0,0,2023
-DK,Danemark,PFAS (somme),Chimique émergent,0.04,µg/L,0.1,0.15,4,2023
-DK,Danemark,Trihalométhanes,Sous-produits,5.2,µg/L,100,0.0,0,2023
-DK,Danemark,Chlore résiduel,Désinfectant,0.02,mg/L,0.3,0.0,0,2023
-DK,Danemark,Microplastiques,Chimique émergent,0.8,particules/L,,0.0,0,2023
-EE,Estonie,Nitrates,Chimique,10.1,mg/L,50,0.4,2,2023
-EE,Estonie,Pesticides total,Chimique,0.05,µg/L,0.5,0.1,1,2023
-EE,Estonie,Plomb,Métaux lourds,2.3,µg/L,10,0.1,1,2023
-EE,Estonie,PFAS (somme),Chimique émergent,0.02,µg/L,0.1,0.0,0,2023
-EE,Estonie,Trihalométhanes,Sous-produits,15.8,µg/L,100,0.0,0,2023
-EE,Estonie,Chlore résiduel,Désinfectant,0.10,mg/L,0.3,0.0,0,2023
-EE,Estonie,Bactéries coliformes,Microbiologique,1.5,UFC/100mL,0,0.8,3,2023
-EE,Estonie,Microplastiques,Chimique émergent,1.3,particules/L,,0.0,0,2023
-FI,Finlande,Nitrates,Chimique,5.1,mg/L,50,0.0,0,2023
-FI,Finlande,Fer,Chimique,0.08,mg/L,0.2,0.1,2,2023
-FI,Finlande,Pesticides total,Chimique,0.02,µg/L,0.5,0.0,0,2023
-FI,Finlande,Plomb,Métaux lourds,1.2,µg/L,10,0.0,0,2023
-FI,Finlande,PFAS (somme),Chimique émergent,0.02,µg/L,0.1,0.05,1,2023
-FI,Finlande,Trihalométhanes,Sous-produits,8.5,µg/L,100,0.0,0,2023
-FI,Finlande,Chlore résiduel,Désinfectant,0.08,mg/L,0.3,0.0,0,2023
-FI,Finlande,Microplastiques,Chimique émergent,0.6,particules/L,,0.0,0,2023
-FR,France,Nitrates,Chimique,19.8,mg/L,50,1.5,375,2023
-FR,France,Pesticides total,Chimique,0.18,µg/L,0.5,0.8,200,2023
-FR,France,PFAS (somme),Chimique émergent,0.07,µg/L,0.1,0.5,125,2023
-FR,France,Plomb,Métaux lourds,3.2,µg/L,10,0.3,75,2023
-FR,France,Bactéries coliformes,Microbiologique,1.5,UFC/100mL,0,0.8,200,2023
-FR,France,Trihalométhanes,Sous-produits,38.5,µg/L,100,0.6,150,2023
-FR,France,Chlore résiduel,Désinfectant,0.15,mg/L,0.3,0.1,25,2023
-FR,France,Microplastiques,Chimique émergent,3.2,particules/L,,0.0,0,2023
-FR,France,Arsenic,Métaux lourds,2.1,µg/L,10,0.2,50,2023
-FR,France,Sélénium,Métaux lourds,3.8,µg/L,20,0.1,12,2023
-DE,Allemagne,Nitrates,Chimique,17.2,mg/L,50,0.8,128,2023
-DE,Allemagne,Pesticides total,Chimique,0.05,µg/L,0.5,0.2,32,2023
-DE,Allemagne,PFAS (somme),Chimique émergent,0.06,µg/L,0.1,0.3,48,2023
-DE,Allemagne,Plomb,Métaux lourds,2.0,µg/L,10,0.05,8,2023
-DE,Allemagne,Trihalométhanes,Sous-produits,12.3,µg/L,100,0.0,0,2023
-DE,Allemagne,Chlore résiduel,Désinfectant,0.05,mg/L,0.3,0.0,0,2023
-DE,Allemagne,Microplastiques,Chimique émergent,1.5,particules/L,,0.0,0,2023
-DE,Allemagne,Bactéries coliformes,Microbiologique,0.5,UFC/100mL,0,0.2,32,2023
-GR,Grèce,Nitrates,Chimique,20.5,mg/L,50,1.8,20,2023
-GR,Grèce,Pesticides total,Chimique,0.11,µg/L,0.5,0.4,4,2023
-GR,Grèce,Plomb,Métaux lourds,3.8,µg/L,10,0.5,6,2023
-GR,Grèce,PFAS (somme),Chimique émergent,0.04,µg/L,0.1,0.1,1,2023
-GR,Grèce,Trihalométhanes,Sous-produits,62.4,µg/L,100,2.1,23,2023
-GR,Grèce,Chlore résiduel,Désinfectant,0.22,mg/L,0.3,0.3,3,2023
-GR,Grèce,Bactéries coliformes,Microbiologique,2.2,UFC/100mL,0,1.5,17,2023
-GR,Grèce,Microplastiques,Chimique émergent,3.8,particules/L,,0.0,0,2023
-HU,Hongrie,Nitrates,Chimique,18.9,mg/L,50,1.3,9,2023
-HU,Hongrie,Pesticides total,Chimique,0.12,µg/L,0.5,0.5,3,2023
-HU,Hongrie,Plomb,Métaux lourds,4.2,µg/L,10,0.6,4,2023
-HU,Hongrie,Arsenic,Métaux lourds,6.8,µg/L,10,1.8,12,2023
-HU,Hongrie,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.1,1,2023
-HU,Hongrie,Trihalométhanes,Sous-produits,35.2,µg/L,100,0.3,2,2023
-HU,Hongrie,Chlore résiduel,Désinfectant,0.16,mg/L,0.3,0.1,1,2023
-HU,Hongrie,Bactéries coliformes,Microbiologique,1.8,UFC/100mL,0,0.9,6,2023
-HU,Hongrie,Microplastiques,Chimique émergent,2.2,particules/L,,0.0,0,2023
-IE,Irlande,Nitrates,Chimique,11.5,mg/L,50,0.5,5,2023
-IE,Irlande,Pesticides total,Chimique,0.06,µg/L,0.5,0.2,2,2023
-IE,Irlande,Plomb,Métaux lourds,3.5,µg/L,10,0.4,4,2023
-IE,Irlande,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.05,0,2023
-IE,Irlande,Trihalométhanes,Sous-produits,58.2,µg/L,100,1.8,16,2023
-IE,Irlande,Chlore résiduel,Désinfectant,0.18,mg/L,0.3,0.1,1,2023
-IE,Irlande,Bactéries coliformes,Microbiologique,2.5,UFC/100mL,0,1.8,16,2023
-IE,Irlande,Microplastiques,Chimique émergent,2.0,particules/L,,0.0,0,2023
-IT,Italie,Nitrates,Chimique,21.3,mg/L,50,2.1,168,2023
-IT,Italie,Arsenic,Métaux lourds,4.5,µg/L,10,0.8,64,2023
-IT,Italie,Pesticides total,Chimique,0.14,µg/L,0.5,0.7,56,2023
-IT,Italie,Plomb,Métaux lourds,3.5,µg/L,10,0.4,32,2023
-IT,Italie,PFAS (somme),Chimique émergent,0.09,µg/L,0.1,0.6,48,2023
-IT,Italie,Trihalométhanes,Sous-produits,42.1,µg/L,100,0.5,40,2023
-IT,Italie,Chlore résiduel,Désinfectant,0.14,mg/L,0.3,0.1,8,2023
-IT,Italie,Bactéries coliformes,Microbiologique,1.8,UFC/100mL,0,0.9,72,2023
-IT,Italie,Microplastiques,Chimique émergent,3.5,particules/L,,0.0,0,2023
-LV,Lettonie,Nitrates,Chimique,9.8,mg/L,50,0.4,1,2023
-LV,Lettonie,Pesticides total,Chimique,0.04,µg/L,0.5,0.1,0,2023
-LV,Lettonie,Plomb,Métaux lourds,3.0,µg/L,10,0.3,2,2023
-LV,Lettonie,PFAS (somme),Chimique émergent,0.02,µg/L,0.1,0.0,0,2023
-LV,Lettonie,Trihalométhanes,Sous-produits,20.5,µg/L,100,0.0,0,2023
-LV,Lettonie,Chlore résiduel,Désinfectant,0.12,mg/L,0.3,0.0,0,2023
-LV,Lettonie,Bactéries coliformes,Microbiologique,1.6,UFC/100mL,0,0.9,4,2023
-LV,Lettonie,Fer,Chimique,0.15,mg/L,0.2,0.5,3,2023
-LV,Lettonie,Microplastiques,Chimique émergent,1.4,particules/L,,0.0,0,2023
-LT,Lituanie,Nitrates,Chimique,12.4,mg/L,50,0.6,2,2023
-LT,Lituanie,Pesticides total,Chimique,0.06,µg/L,0.5,0.2,1,2023
-LT,Lituanie,Plomb,Métaux lourds,2.8,µg/L,10,0.2,1,2023
-LT,Lituanie,PFAS (somme),Chimique émergent,0.02,µg/L,0.1,0.0,0,2023
-LT,Lituanie,Trihalométhanes,Sous-produits,18.2,µg/L,100,0.0,0,2023
-LT,Lituanie,Chlore résiduel,Désinfectant,0.11,mg/L,0.3,0.0,0,2023
-LT,Lituanie,Bactéries coliformes,Microbiologique,1.4,UFC/100mL,0,0.7,3,2023
-LT,Lituanie,Fer,Chimique,0.12,mg/L,0.2,0.3,2,2023
-LT,Lituanie,Microplastiques,Chimique émergent,1.2,particules/L,,0.0,0,2023
-LU,Luxembourg,Nitrates,Chimique,13.1,mg/L,50,0.3,1,2023
-LU,Luxembourg,Pesticides total,Chimique,0.07,µg/L,0.5,0.15,1,2023
-LU,Luxembourg,Plomb,Métaux lourds,1.8,µg/L,10,0.0,0,2023
-LU,Luxembourg,PFAS (somme),Chimique émergent,0.04,µg/L,0.1,0.1,1,2023
-LU,Luxembourg,Trihalométhanes,Sous-produits,15.3,µg/L,100,0.0,0,2023
-LU,Luxembourg,Chlore résiduel,Désinfectant,0.10,mg/L,0.3,0.0,0,2023
-LU,Luxembourg,Microplastiques,Chimique émergent,1.0,particules/L,,0.0,0,2023
-MT,Malte,Nitrates,Chimique,25.2,mg/L,50,2.5,3,2023
-MT,Malte,Pesticides total,Chimique,0.08,µg/L,0.5,0.2,1,2023
-MT,Malte,Plomb,Métaux lourds,2.8,µg/L,10,0.2,1,2023
-MT,Malte,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.0,0,2023
-MT,Malte,Trihalométhanes,Sous-produits,68.5,µg/L,100,2.8,2,2023
-MT,Malte,Chlore résiduel,Désinfectant,0.25,mg/L,0.3,0.5,1,2023
-MT,Malte,Bactéries coliformes,Microbiologique,1.2,UFC/100mL,0,0.5,2,2023
-MT,Malte,Microplastiques,Chimique émergent,4.5,particules/L,,0.0,0,2023
-NL,Pays-Bas,Nitrates,Chimique,10.5,mg/L,50,0.2,20,2023
-NL,Pays-Bas,PFAS (somme),Chimique émergent,0.05,µg/L,0.1,0.1,10,2023
-NL,Pays-Bas,Pesticides total,Chimique,0.04,µg/L,0.5,0.1,10,2023
-NL,Pays-Bas,Plomb,Métaux lourds,1.8,µg/L,10,0.05,5,2023
-NL,Pays-Bas,Trihalométhanes,Sous-produits,8.2,µg/L,100,0.0,0,2023
-NL,Pays-Bas,Chlore résiduel,Désinfectant,0.01,mg/L,0.3,0.0,0,2023
-NL,Pays-Bas,Microplastiques,Chimique émergent,1.8,particules/L,,0.0,0,2023
-PL,Pologne,Nitrates,Chimique,16.7,mg/L,50,1.5,36,2023
-PL,Pologne,Plomb,Métaux lourds,4.8,µg/L,10,0.8,19,2023
-PL,Pologne,Bactéries coliformes,Microbiologique,2.1,UFC/100mL,0,1.2,29,2023
-PL,Pologne,Pesticides total,Chimique,0.13,µg/L,0.5,0.5,12,2023
-PL,Pologne,PFAS (somme),Chimique émergent,0.04,µg/L,0.1,0.1,2,2023
-PL,Pologne,Trihalométhanes,Sous-produits,35.8,µg/L,100,0.4,10,2023
-PL,Pologne,Chlore résiduel,Désinfectant,0.16,mg/L,0.3,0.1,2,2023
-PL,Pologne,Microplastiques,Chimique émergent,2.5,particules/L,,0.0,0,2023
-PT,Portugal,Nitrates,Chimique,14.9,mg/L,50,0.9,6,2023
-PT,Portugal,Trihalométhanes,Sous-produits,48.5,µg/L,100,0.8,6,2023
-PT,Portugal,Pesticides total,Chimique,0.10,µg/L,0.5,0.3,2,2023
-PT,Portugal,Plomb,Métaux lourds,3.2,µg/L,10,0.3,2,2023
-PT,Portugal,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.05,0,2023
-PT,Portugal,Chlore résiduel,Désinfectant,0.17,mg/L,0.3,0.1,1,2023
-PT,Portugal,Bactéries coliformes,Microbiologique,1.3,UFC/100mL,0,0.6,4,2023
-PT,Portugal,Microplastiques,Chimique émergent,2.8,particules/L,,0.0,0,2023
-RO,Roumanie,Nitrates,Chimique,24.3,mg/L,50,4.2,50,2023
-RO,Roumanie,Plomb,Métaux lourds,6.5,µg/L,10,2.5,30,2023
-RO,Roumanie,Bactéries coliformes,Microbiologique,3.5,UFC/100mL,0,3.8,46,2023
-RO,Roumanie,Pesticides total,Chimique,0.25,µg/L,0.5,1.5,18,2023
-RO,Roumanie,PFAS (somme),Chimique émergent,0.05,µg/L,0.1,0.2,2,2023
-RO,Roumanie,Trihalométhanes,Sous-produits,55.8,µg/L,100,1.2,14,2023
-RO,Roumanie,Chlore résiduel,Désinfectant,0.20,mg/L,0.3,0.3,4,2023
-RO,Roumanie,Arsenic,Métaux lourds,4.2,µg/L,10,0.6,7,2023
-RO,Roumanie,Microplastiques,Chimique émergent,4.2,particules/L,,0.0,0,2023
-SK,Slovaquie,Nitrates,Chimique,13.8,mg/L,50,0.6,3,2023
-SK,Slovaquie,Pesticides total,Chimique,0.08,µg/L,0.5,0.2,1,2023
-SK,Slovaquie,Plomb,Métaux lourds,3.2,µg/L,10,0.3,1,2023
-SK,Slovaquie,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.05,0,2023
-SK,Slovaquie,Trihalométhanes,Sous-produits,25.4,µg/L,100,0.1,0,2023
-SK,Slovaquie,Chlore résiduel,Désinfectant,0.13,mg/L,0.3,0.0,0,2023
-SK,Slovaquie,Bactéries coliformes,Microbiologique,1.3,UFC/100mL,0,0.5,2,2023
-SK,Slovaquie,Microplastiques,Chimique émergent,1.6,particules/L,,0.0,0,2023
-SI,Slovénie,Nitrates,Chimique,11.2,mg/L,50,0.4,1,2023
-SI,Slovénie,Pesticides total,Chimique,0.06,µg/L,0.5,0.15,1,2023
-SI,Slovénie,Plomb,Métaux lourds,2.2,µg/L,10,0.1,0,2023
-SI,Slovénie,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.05,0,2023
-SI,Slovénie,Trihalométhanes,Sous-produits,18.6,µg/L,100,0.0,0,2023
-SI,Slovénie,Chlore résiduel,Désinfectant,0.11,mg/L,0.3,0.0,0,2023
-SI,Slovénie,Microplastiques,Chimique émergent,1.1,particules/L,,0.0,0,2023
-ES,Espagne,Nitrates,Chimique,20.1,mg/L,50,1.8,99,2023
-ES,Espagne,Trihalométhanes,Sous-produits,55.2,µg/L,100,1.2,66,2023
-ES,Espagne,Pesticides total,Chimique,0.12,µg/L,0.5,0.5,28,2023
-ES,Espagne,Plomb,Métaux lourds,3.0,µg/L,10,0.2,11,2023
-ES,Espagne,PFAS (somme),Chimique émergent,0.06,µg/L,0.1,0.3,17,2023
-ES,Espagne,Chlore résiduel,Désinfectant,0.19,mg/L,0.3,0.2,11,2023
-ES,Espagne,Bactéries coliformes,Microbiologique,1.6,UFC/100mL,0,0.7,39,2023
-ES,Espagne,Arsenic,Métaux lourds,2.5,µg/L,10,0.2,11,2023
-ES,Espagne,Microplastiques,Chimique émergent,3.8,particules/L,,0.0,0,2023
-SE,Suède,Nitrates,Chimique,6.4,mg/L,50,0.1,2,2023
-SE,Suède,Fer,Chimique,0.06,mg/L,0.2,0.05,1,2023
-SE,Suède,Pesticides total,Chimique,0.02,µg/L,0.5,0.02,0,2023
-SE,Suède,Plomb,Métaux lourds,1.5,µg/L,10,0.0,0,2023
-SE,Suède,PFAS (somme),Chimique émergent,0.06,µg/L,0.1,0.25,5,2023
-SE,Suède,Trihalométhanes,Sous-produits,10.2,µg/L,100,0.0,0,2023
-SE,Suède,Chlore résiduel,Désinfectant,0.08,mg/L,0.3,0.0,0,2023
-SE,Suède,Microplastiques,Chimique émergent,0.9,particules/L,,0.0,0,2023
+AT,Autriche,Nitrates,Chimique,11.8,mg/L,50,0.4,5,2024
+AT,Autriche,Pesticides total,Chimique,0.07,µg/L,0.5,0.15,1,2024
+AT,Autriche,Plomb,Métaux lourds,1.9,µg/L,10,0.0,0,2024
+AT,Autriche,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.1,1,2024
+AT,Autriche,Trihalométhanes,Sous-produits,17.8,µg/L,100,0.0,0,2024
+AT,Autriche,Chlore résiduel,Désinfectant,0.11,mg/L,0.3,0.0,0,2024
+AT,Autriche,Microplastiques,Chimique émergent,1.1,particules/L,,0.0,0,2024
+BE,Belgique,Nitrates,Chimique,17.9,mg/L,50,1.0,8,2024
+BE,Belgique,Pesticides total,Chimique,0.13,µg/L,0.5,0.5,4,2024
+BE,Belgique,PFAS (somme),Chimique émergent,0.07,µg/L,0.1,0.35,3,2024
+BE,Belgique,Plomb,Métaux lourds,3.2,µg/L,10,0.25,2,2024
+BE,Belgique,Trihalométhanes,Sous-produits,30.5,µg/L,100,0.1,1,2024
+BE,Belgique,Chlore résiduel,Désinfectant,0.14,mg/L,0.3,0.0,0,2024
+BE,Belgique,Microplastiques,Chimique émergent,2.6,particules/L,,0.0,0,2024
+BE,Belgique,Bactéries coliformes,Microbiologique,1.0,UFC/100mL,0,0.4,2,2024
+BG,Bulgarie,Nitrates,Chimique,21.5,mg/L,50,3.2,16,2024
+BG,Bulgarie,Plomb,Métaux lourds,5.5,µg/L,10,1.3,7,2024
+BG,Bulgarie,Bactéries coliformes,Microbiologique,2.5,UFC/100mL,0,2.6,13,2024
+BG,Bulgarie,Pesticides total,Chimique,0.20,µg/L,0.5,1.0,5,2024
+BG,Bulgarie,PFAS (somme),Chimique émergent,0.04,µg/L,0.1,0.1,1,2024
+BG,Bulgarie,Trihalométhanes,Sous-produits,43.8,µg/L,100,0.7,3,2024
+BG,Bulgarie,Chlore résiduel,Désinfectant,0.17,mg/L,0.3,0.2,1,2024
+BG,Bulgarie,Microplastiques,Chimique émergent,3.3,particules/L,,0.0,0,2024
+BG,Bulgarie,Arsenic,Métaux lourds,3.0,µg/L,10,0.35,2,2024
+HR,Croatie,Nitrates,Chimique,13.8,mg/L,50,0.7,3,2024
+HR,Croatie,Pesticides total,Chimique,0.08,µg/L,0.5,0.25,2,2024
+HR,Croatie,Plomb,Métaux lourds,2.9,µg/L,10,0.2,1,2024
+HR,Croatie,PFAS (somme),Chimique émergent,0.02,µg/L,0.1,0.0,0,2024
+HR,Croatie,Trihalométhanes,Sous-produits,27.1,µg/L,100,0.1,1,2024
+HR,Croatie,Chlore résiduel,Désinfectant,0.13,mg/L,0.3,0.0,0,2024
+HR,Croatie,Bactéries coliformes,Microbiologique,1.6,UFC/100mL,0,0.9,4,2024
+HR,Croatie,Microplastiques,Chimique émergent,1.4,particules/L,,0.0,0,2024
+CY,Chypre,Nitrates,Chimique,16.2,mg/L,50,0.8,1,2024
+CY,Chypre,Pesticides total,Chimique,0.06,µg/L,0.5,0.15,1,2024
+CY,Chypre,Plomb,Métaux lourds,2.3,µg/L,10,0.1,0,2024
+CY,Chypre,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.0,0,2024
+CY,Chypre,Trihalométhanes,Sous-produits,50.1,µg/L,100,1.3,2,2024
+CY,Chypre,Chlore résiduel,Désinfectant,0.19,mg/L,0.3,0.1,0,2024
+CY,Chypre,Microplastiques,Chimique émergent,2.0,particules/L,,0.0,0,2024
+CZ,Tchéquie,Nitrates,Chimique,14.9,mg/L,50,0.6,5,2024
+CZ,Tchéquie,Pesticides total,Chimique,0.09,µg/L,0.5,0.25,2,2024
+CZ,Tchéquie,Plomb,Métaux lourds,2.6,µg/L,10,0.1,1,2024
+CZ,Tchéquie,PFAS (somme),Chimique émergent,0.05,µg/L,0.1,0.2,2,2024
+CZ,Tchéquie,Trihalométhanes,Sous-produits,21.5,µg/L,100,0.0,0,2024
+CZ,Tchéquie,Chlore résiduel,Désinfectant,0.12,mg/L,0.3,0.0,0,2024
+CZ,Tchéquie,Microplastiques,Chimique émergent,1.7,particules/L,,0.0,0,2024
+DK,Danemark,Nitrates,Chimique,7.8,mg/L,50,0.1,2,2024
+DK,Danemark,Pesticides total,Chimique,0.03,µg/L,0.5,0.03,1,2024
+DK,Danemark,Plomb,Métaux lourds,1.4,µg/L,10,0.0,0,2024
+DK,Danemark,PFAS (somme),Chimique émergent,0.04,µg/L,0.1,0.12,3,2024
+DK,Danemark,Trihalométhanes,Sous-produits,4.8,µg/L,100,0.0,0,2024
+DK,Danemark,Chlore résiduel,Désinfectant,0.02,mg/L,0.3,0.0,0,2024
+DK,Danemark,Microplastiques,Chimique émergent,0.7,particules/L,,0.0,0,2024
+EE,Estonie,Nitrates,Chimique,9.6,mg/L,50,0.3,1,2024
+EE,Estonie,Pesticides total,Chimique,0.04,µg/L,0.5,0.1,1,2024
+EE,Estonie,Plomb,Métaux lourds,2.1,µg/L,10,0.1,1,2024
+EE,Estonie,PFAS (somme),Chimique émergent,0.02,µg/L,0.1,0.0,0,2024
+EE,Estonie,Trihalométhanes,Sous-produits,14.9,µg/L,100,0.0,0,2024
+EE,Estonie,Chlore résiduel,Désinfectant,0.09,mg/L,0.3,0.0,0,2024
+EE,Estonie,Bactéries coliformes,Microbiologique,1.3,UFC/100mL,0,0.7,2,2024
+EE,Estonie,Microplastiques,Chimique émergent,1.2,particules/L,,0.0,0,2024
+FI,Finlande,Nitrates,Chimique,4.8,mg/L,50,0.0,0,2024
+FI,Finlande,Fer,Chimique,0.07,mg/L,0.2,0.1,1,2024
+FI,Finlande,Pesticides total,Chimique,0.02,µg/L,0.5,0.0,0,2024
+FI,Finlande,Plomb,Métaux lourds,1.1,µg/L,10,0.0,0,2024
+FI,Finlande,PFAS (somme),Chimique émergent,0.02,µg/L,0.1,0.04,1,2024
+FI,Finlande,Trihalométhanes,Sous-produits,8.0,µg/L,100,0.0,0,2024
+FI,Finlande,Chlore résiduel,Désinfectant,0.07,mg/L,0.3,0.0,0,2024
+FI,Finlande,Microplastiques,Chimique émergent,0.5,particules/L,,0.0,0,2024
+FR,France,Nitrates,Chimique,19.2,mg/L,50,1.3,350,2024
+FR,France,Pesticides total,Chimique,0.16,µg/L,0.5,0.7,185,2024
+FR,France,PFAS (somme),Chimique émergent,0.06,µg/L,0.1,0.45,115,2024
+FR,France,Plomb,Métaux lourds,3.0,µg/L,10,0.25,65,2024
+FR,France,Bactéries coliformes,Microbiologique,1.3,UFC/100mL,0,0.7,180,2024
+FR,France,Trihalométhanes,Sous-produits,36.8,µg/L,100,0.5,135,2024
+FR,France,Chlore résiduel,Désinfectant,0.14,mg/L,0.3,0.1,22,2024
+FR,France,Microplastiques,Chimique émergent,3.0,particules/L,,0.0,0,2024
+FR,France,Arsenic,Métaux lourds,1.9,µg/L,10,0.18,45,2024
+FR,France,Sélénium,Métaux lourds,3.5,µg/L,20,0.08,10,2024
+DE,Allemagne,Nitrates,Chimique,16.8,mg/L,50,0.7,115,2024
+DE,Allemagne,Pesticides total,Chimique,0.04,µg/L,0.5,0.15,28,2024
+DE,Allemagne,PFAS (somme),Chimique émergent,0.05,µg/L,0.1,0.25,42,2024
+DE,Allemagne,Plomb,Métaux lourds,1.8,µg/L,10,0.04,6,2024
+DE,Allemagne,Trihalométhanes,Sous-produits,11.5,µg/L,100,0.0,0,2024
+DE,Allemagne,Chlore résiduel,Désinfectant,0.04,mg/L,0.3,0.0,0,2024
+DE,Allemagne,Microplastiques,Chimique émergent,1.4,particules/L,,0.0,0,2024
+DE,Allemagne,Bactéries coliformes,Microbiologique,0.4,UFC/100mL,0,0.15,28,2024
+GR,Grèce,Nitrates,Chimique,19.8,mg/L,50,1.6,18,2024
+GR,Grèce,Pesticides total,Chimique,0.10,µg/L,0.5,0.35,3,2024
+GR,Grèce,Plomb,Métaux lourds,3.5,µg/L,10,0.4,5,2024
+GR,Grèce,PFAS (somme),Chimique émergent,0.04,µg/L,0.1,0.1,1,2024
+GR,Grèce,Trihalométhanes,Sous-produits,60.1,µg/L,100,1.9,21,2024
+GR,Grèce,Chlore résiduel,Désinfectant,0.21,mg/L,0.3,0.25,2,2024
+GR,Grèce,Bactéries coliformes,Microbiologique,2.0,UFC/100mL,0,1.3,15,2024
+GR,Grèce,Microplastiques,Chimique émergent,3.5,particules/L,,0.0,0,2024
+HU,Hongrie,Nitrates,Chimique,18.2,mg/L,50,1.1,8,2024
+HU,Hongrie,Pesticides total,Chimique,0.11,µg/L,0.5,0.4,3,2024
+HU,Hongrie,Plomb,Métaux lourds,3.9,µg/L,10,0.5,3,2024
+HU,Hongrie,Arsenic,Métaux lourds,6.5,µg/L,10,1.6,11,2024
+HU,Hongrie,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.1,1,2024
+HU,Hongrie,Trihalométhanes,Sous-produits,33.8,µg/L,100,0.25,2,2024
+HU,Hongrie,Chlore résiduel,Désinfectant,0.15,mg/L,0.3,0.1,1,2024
+HU,Hongrie,Bactéries coliformes,Microbiologique,1.6,UFC/100mL,0,0.8,5,2024
+HU,Hongrie,Microplastiques,Chimique émergent,2.0,particules/L,,0.0,0,2024
+IE,Irlande,Nitrates,Chimique,11.0,mg/L,50,0.4,4,2024
+IE,Irlande,Pesticides total,Chimique,0.05,µg/L,0.5,0.15,1,2024
+IE,Irlande,Plomb,Métaux lourds,3.2,µg/L,10,0.35,3,2024
+IE,Irlande,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.04,0,2024
+IE,Irlande,Trihalométhanes,Sous-produits,55.8,µg/L,100,1.6,14,2024
+IE,Irlande,Chlore résiduel,Désinfectant,0.17,mg/L,0.3,0.1,1,2024
+IE,Irlande,Bactéries coliformes,Microbiologique,2.2,UFC/100mL,0,1.6,14,2024
+IE,Irlande,Microplastiques,Chimique émergent,1.8,particules/L,,0.0,0,2024
+IT,Italie,Nitrates,Chimique,20.5,mg/L,50,1.9,155,2024
+IT,Italie,Arsenic,Métaux lourds,4.2,µg/L,10,0.7,58,2024
+IT,Italie,Pesticides total,Chimique,0.13,µg/L,0.5,0.6,50,2024
+IT,Italie,Plomb,Métaux lourds,3.2,µg/L,10,0.35,28,2024
+IT,Italie,PFAS (somme),Chimique émergent,0.08,µg/L,0.1,0.55,44,2024
+IT,Italie,Trihalométhanes,Sous-produits,40.5,µg/L,100,0.4,36,2024
+IT,Italie,Chlore résiduel,Désinfectant,0.13,mg/L,0.3,0.1,7,2024
+IT,Italie,Bactéries coliformes,Microbiologique,1.6,UFC/100mL,0,0.8,65,2024
+IT,Italie,Microplastiques,Chimique émergent,3.3,particules/L,,0.0,0,2024
+LV,Lettonie,Nitrates,Chimique,9.4,mg/L,50,0.3,1,2024
+LV,Lettonie,Pesticides total,Chimique,0.04,µg/L,0.5,0.1,0,2024
+LV,Lettonie,Plomb,Métaux lourds,2.8,µg/L,10,0.25,1,2024
+LV,Lettonie,PFAS (somme),Chimique émergent,0.02,µg/L,0.1,0.0,0,2024
+LV,Lettonie,Trihalométhanes,Sous-produits,19.5,µg/L,100,0.0,0,2024
+LV,Lettonie,Chlore résiduel,Désinfectant,0.11,mg/L,0.3,0.0,0,2024
+LV,Lettonie,Bactéries coliformes,Microbiologique,1.4,UFC/100mL,0,0.8,3,2024
+LV,Lettonie,Fer,Chimique,0.14,mg/L,0.2,0.4,2,2024
+LV,Lettonie,Microplastiques,Chimique émergent,1.3,particules/L,,0.0,0,2024
+LT,Lituanie,Nitrates,Chimique,11.9,mg/L,50,0.5,2,2024
+LT,Lituanie,Pesticides total,Chimique,0.05,µg/L,0.5,0.15,1,2024
+LT,Lituanie,Plomb,Métaux lourds,2.6,µg/L,10,0.15,1,2024
+LT,Lituanie,PFAS (somme),Chimique émergent,0.02,µg/L,0.1,0.0,0,2024
+LT,Lituanie,Trihalométhanes,Sous-produits,17.5,µg/L,100,0.0,0,2024
+LT,Lituanie,Chlore résiduel,Désinfectant,0.10,mg/L,0.3,0.0,0,2024
+LT,Lituanie,Bactéries coliformes,Microbiologique,1.2,UFC/100mL,0,0.6,2,2024
+LT,Lituanie,Fer,Chimique,0.11,mg/L,0.2,0.25,1,2024
+LT,Lituanie,Microplastiques,Chimique émergent,1.1,particules/L,,0.0,0,2024
+LU,Luxembourg,Nitrates,Chimique,12.6,mg/L,50,0.25,1,2024
+LU,Luxembourg,Pesticides total,Chimique,0.06,µg/L,0.5,0.1,1,2024
+LU,Luxembourg,Plomb,Métaux lourds,1.6,µg/L,10,0.0,0,2024
+LU,Luxembourg,PFAS (somme),Chimique émergent,0.04,µg/L,0.1,0.1,1,2024
+LU,Luxembourg,Trihalométhanes,Sous-produits,14.5,µg/L,100,0.0,0,2024
+LU,Luxembourg,Chlore résiduel,Désinfectant,0.09,mg/L,0.3,0.0,0,2024
+LU,Luxembourg,Microplastiques,Chimique émergent,0.9,particules/L,,0.0,0,2024
+MT,Malte,Nitrates,Chimique,24.5,mg/L,50,2.3,3,2024
+MT,Malte,Pesticides total,Chimique,0.07,µg/L,0.5,0.15,1,2024
+MT,Malte,Plomb,Métaux lourds,2.6,µg/L,10,0.15,1,2024
+MT,Malte,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.0,0,2024
+MT,Malte,Trihalométhanes,Sous-produits,65.2,µg/L,100,2.5,2,2024
+MT,Malte,Chlore résiduel,Désinfectant,0.24,mg/L,0.3,0.4,1,2024
+MT,Malte,Bactéries coliformes,Microbiologique,1.0,UFC/100mL,0,0.4,1,2024
+MT,Malte,Microplastiques,Chimique émergent,4.2,particules/L,,0.0,0,2024
+NL,Pays-Bas,Nitrates,Chimique,10.1,mg/L,50,0.15,18,2024
+NL,Pays-Bas,PFAS (somme),Chimique émergent,0.05,µg/L,0.1,0.1,9,2024
+NL,Pays-Bas,Pesticides total,Chimique,0.03,µg/L,0.5,0.08,8,2024
+NL,Pays-Bas,Plomb,Métaux lourds,1.6,µg/L,10,0.04,4,2024
+NL,Pays-Bas,Trihalométhanes,Sous-produits,7.8,µg/L,100,0.0,0,2024
+NL,Pays-Bas,Chlore résiduel,Désinfectant,0.01,mg/L,0.3,0.0,0,2024
+NL,Pays-Bas,Microplastiques,Chimique émergent,1.6,particules/L,,0.0,0,2024
+PL,Pologne,Nitrates,Chimique,16.1,mg/L,50,1.3,32,2024
+PL,Pologne,Plomb,Métaux lourds,4.5,µg/L,10,0.7,17,2024
+PL,Pologne,Bactéries coliformes,Microbiologique,1.9,UFC/100mL,0,1.1,26,2024
+PL,Pologne,Pesticides total,Chimique,0.12,µg/L,0.5,0.4,10,2024
+PL,Pologne,PFAS (somme),Chimique émergent,0.04,µg/L,0.1,0.1,2,2024
+PL,Pologne,Trihalométhanes,Sous-produits,34.2,µg/L,100,0.35,8,2024
+PL,Pologne,Chlore résiduel,Désinfectant,0.15,mg/L,0.3,0.1,2,2024
+PL,Pologne,Microplastiques,Chimique émergent,2.3,particules/L,,0.0,0,2024
+PT,Portugal,Nitrates,Chimique,14.3,mg/L,50,0.8,5,2024
+PT,Portugal,Trihalométhanes,Sous-produits,46.8,µg/L,100,0.7,5,2024
+PT,Portugal,Pesticides total,Chimique,0.09,µg/L,0.5,0.25,2,2024
+PT,Portugal,Plomb,Métaux lourds,3.0,µg/L,10,0.25,2,2024
+PT,Portugal,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.04,0,2024
+PT,Portugal,Chlore résiduel,Désinfectant,0.16,mg/L,0.3,0.08,1,2024
+PT,Portugal,Bactéries coliformes,Microbiologique,1.1,UFC/100mL,0,0.5,3,2024
+PT,Portugal,Microplastiques,Chimique émergent,2.6,particules/L,,0.0,0,2024
+RO,Roumanie,Nitrates,Chimique,23.5,mg/L,50,3.8,46,2024
+RO,Roumanie,Plomb,Métaux lourds,6.2,µg/L,10,2.2,27,2024
+RO,Roumanie,Bactéries coliformes,Microbiologique,3.2,UFC/100mL,0,3.5,42,2024
+RO,Roumanie,Pesticides total,Chimique,0.23,µg/L,0.5,1.3,16,2024
+RO,Roumanie,PFAS (somme),Chimique émergent,0.05,µg/L,0.1,0.18,2,2024
+RO,Roumanie,Trihalométhanes,Sous-produits,53.5,µg/L,100,1.1,12,2024
+RO,Roumanie,Chlore résiduel,Désinfectant,0.19,mg/L,0.3,0.25,3,2024
+RO,Roumanie,Arsenic,Métaux lourds,3.9,µg/L,10,0.5,6,2024
+RO,Roumanie,Microplastiques,Chimique émergent,4.0,particules/L,,0.0,0,2024
+SK,Slovaquie,Nitrates,Chimique,13.2,mg/L,50,0.5,2,2024
+SK,Slovaquie,Pesticides total,Chimique,0.07,µg/L,0.5,0.15,1,2024
+SK,Slovaquie,Plomb,Métaux lourds,3.0,µg/L,10,0.25,1,2024
+SK,Slovaquie,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.04,0,2024
+SK,Slovaquie,Trihalométhanes,Sous-produits,24.2,µg/L,100,0.1,0,2024
+SK,Slovaquie,Chlore résiduel,Désinfectant,0.12,mg/L,0.3,0.0,0,2024
+SK,Slovaquie,Bactéries coliformes,Microbiologique,1.1,UFC/100mL,0,0.4,2,2024
+SK,Slovaquie,Microplastiques,Chimique émergent,1.5,particules/L,,0.0,0,2024
+SI,Slovénie,Nitrates,Chimique,10.8,mg/L,50,0.35,1,2024
+SI,Slovénie,Pesticides total,Chimique,0.05,µg/L,0.5,0.1,1,2024
+SI,Slovénie,Plomb,Métaux lourds,2.0,µg/L,10,0.1,0,2024
+SI,Slovénie,PFAS (somme),Chimique émergent,0.03,µg/L,0.1,0.04,0,2024
+SI,Slovénie,Trihalométhanes,Sous-produits,17.8,µg/L,100,0.0,0,2024
+SI,Slovénie,Chlore résiduel,Désinfectant,0.10,mg/L,0.3,0.0,0,2024
+SI,Slovénie,Microplastiques,Chimique émergent,1.0,particules/L,,0.0,0,2024
+ES,Espagne,Nitrates,Chimique,19.5,mg/L,50,1.6,90,2024
+ES,Espagne,Trihalométhanes,Sous-produits,53.5,µg/L,100,1.1,60,2024
+ES,Espagne,Pesticides total,Chimique,0.11,µg/L,0.5,0.4,25,2024
+ES,Espagne,Plomb,Métaux lourds,2.8,µg/L,10,0.18,10,2024
+ES,Espagne,PFAS (somme),Chimique émergent,0.06,µg/L,0.1,0.28,15,2024
+ES,Espagne,Chlore résiduel,Désinfectant,0.18,mg/L,0.3,0.18,10,2024
+ES,Espagne,Bactéries coliformes,Microbiologique,1.4,UFC/100mL,0,0.6,35,2024
+ES,Espagne,Arsenic,Métaux lourds,2.3,µg/L,10,0.18,10,2024
+ES,Espagne,Microplastiques,Chimique émergent,3.5,particules/L,,0.0,0,2024
+SE,Suède,Nitrates,Chimique,6.1,mg/L,50,0.08,1,2024
+SE,Suède,Fer,Chimique,0.05,mg/L,0.2,0.04,1,2024
+SE,Suède,Pesticides total,Chimique,0.02,µg/L,0.5,0.02,0,2024
+SE,Suède,Plomb,Métaux lourds,1.3,µg/L,10,0.0,0,2024
+SE,Suède,PFAS (somme),Chimique émergent,0.05,µg/L,0.1,0.22,4,2024
+SE,Suède,Trihalométhanes,Sous-produits,9.5,µg/L,100,0.0,0,2024
+SE,Suède,Chlore résiduel,Désinfectant,0.07,mg/L,0.3,0.0,0,2024
+SE,Suède,Microplastiques,Chimique émergent,0.8,particules/L,,0.0,0,2024
