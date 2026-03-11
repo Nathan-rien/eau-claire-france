@@ -17,27 +17,27 @@ function getCached(key: string): unknown | null {
 }
 
 // SQL queries for each endpoint type
-const QUERIES: Record<string, string> = {
-  'national-summary': `
-    SELECT CountryCode, ReportingPeriod, 
-           ComplianceRateTotal, ComplianceRateChemical, ComplianceRateMicro,
-           NumberWSZ, PopulationServed
-    FROM [WISE_DWD].[latest].[DWD_NS]
-  `,
-  'quality-info': `
-    SELECT CountryCode, ParameterName, ParameterGroup,
-           SamplesNumber, SamplesExceedingPV, 
-           ParametricValue, Unit,
-           NumberWSZExceeding
-    FROM [WISE_DWD].[latest].[DWD_QI]
-  `,
-  'non-compliance': `
-    SELECT CountryCode, ParameterName,
-           NonComplianceBeginDate, NonComplianceEndDate,
-           NCICause, NCIRemedialAction,
-           PopulationAffected
-    FROM [WISE_DWD].[latest].[DWD_NCI]
-  `,
+// Try multiple schema formats - DISCODATA uses SQL Server style bracketed names
+const QUERIES: Record<string, string[]> = {
+  'national-summary': [
+    `SELECT TOP 1000 * FROM [WISE_DWD].[v1].[DWD_NS]`,
+    `SELECT TOP 1000 * FROM [WISE_DWD].[latest].[DWD_NS]`,
+    `SELECT TOP 1000 * FROM [DWD].[latest].[DWD_NS]`,
+  ],
+  'quality-info': [
+    `SELECT TOP 1000 * FROM [WISE_DWD].[v1].[DWD_QI]`,
+    `SELECT TOP 1000 * FROM [WISE_DWD].[latest].[DWD_QI]`,
+    `SELECT TOP 1000 * FROM [DWD].[latest].[DWD_QI]`,
+  ],
+  'non-compliance': [
+    `SELECT TOP 1000 * FROM [WISE_DWD].[v1].[DWD_NCI]`,
+    `SELECT TOP 1000 * FROM [WISE_DWD].[latest].[DWD_NCI]`,
+    `SELECT TOP 1000 * FROM [DWD].[latest].[DWD_NCI]`,
+  ],
+  // Describe query to discover available schemas
+  'describe': [
+    `SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'DWD%'`,
+  ],
 };
 
 async function fetchDiscodata(queryType: string): Promise<unknown> {
