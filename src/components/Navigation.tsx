@@ -47,6 +47,7 @@ const Navigation = () => {
         { href: '/classement', label: 'Classement' },
         { href: '/polluants', label: 'Polluants' },
         { href: '/alertes', label: 'Alertes' },
+        { href: '/parcours-eau', label: 'Parcours de l\'eau' },
       ];
 
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
