@@ -9,6 +9,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { analyticsService } from "@/services/analyticsService";
 import { AuthProvider } from "@/hooks/useAuth";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { RegionProvider } from "@/contexts/RegionContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import PageLoader from "@/components/PageLoader";
 import SecurityHeaders from "@/components/SecurityHeaders";
