@@ -79,30 +79,29 @@ const EuropeMapSection: React.FC<EuropeMapSectionProps> = ({ data, onSelectCount
         const coords = EU_COUNTRY_COORDS[country.countryCode];
         if (!coords) return;
 
-        const size = Math.max(16, Math.min(40, 10 + country.populationServedMillions * 0.35));
         const color = SCORE_COLORS[country.qualityScore] || '#888';
 
         const el = document.createElement('div');
         el.style.cssText = `
-          width:${size}px;height:${size}px;border-radius:50%;
+          width:32px;height:32px;border-radius:50%;
           background:${color};border:2px solid #fff;
           box-shadow:0 2px 6px rgba(0,0,0,0.3);cursor:pointer;
           display:flex;align-items:center;justify-content:center;
-          font-size:${size > 24 ? 11 : 9}px;font-weight:700;color:#fff;
-          transition:box-shadow 0.15s, outline 0.15s;
+          font-size:11px;font-weight:700;color:#fff;
+          transition:box-shadow 0.15s;
         `;
         el.textContent = country.countryCode;
         el.addEventListener('mouseenter', () => { el.style.boxShadow = `0 0 0 4px ${color}44, 0 4px 12px rgba(0,0,0,0.4)`; });
         el.addEventListener('mouseleave', () => { el.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)'; });
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          onSelectCountry(country.countryCode);
+          openPopup(country, map);
+        });
 
         const marker = new mapboxgl.Marker({ element: el })
           .setLngLat([coords[1], coords[0]])
           .addTo(map);
-
-        marker.getElement().addEventListener('click', () => {
-          onSelectCountry(country.countryCode);
-          openPopup(country, map);
-        });
 
         markersRef.current.push(marker);
       });
