@@ -83,6 +83,20 @@ export const seoData = {
     ogImage: "/images/og-polluants.jpg"
   },
 
+  parcoursEau: {
+    title: "Parcours de l'eau : du captage au robinet en France",
+    description: "Infographie interactive : découvrez comment l'eau potable est captée, traitée, stockée et distribuée en France. Sources, traitement, réseau de distribution.",
+    keywords: "parcours eau potable France, traitement eau, captage nappe phréatique, distribution eau robinet, infographie eau",
+    ogImage: "/images/og-default.jpg",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Le parcours de l'eau en France - Du captage au robinet",
+      "description": "Infographie interactive sur le cycle de l'eau potable en France",
+      "url": "https://infoeau.fr/parcours-eau"
+    }
+  },
+
   quelleEauBoire: {
     title: "Quelle eau boire ? Recommandations personnalisées",
     description: "Obtenez des recommandations d'eaux en bouteille adaptées à votre profil : femme enceinte, sportif, problèmes rénaux. Conseils personnalisés et scientifiques.",

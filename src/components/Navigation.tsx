@@ -39,6 +39,7 @@ const Navigation = () => {
         { href: '/classement-europe', label: 'Classement' },
         { href: '/polluants-europe', label: 'Polluants' },
         { href: '/alertes-europe', label: 'Alertes' },
+        { href: '/parcours-eau', label: 'Parcours de l\'eau' },
       ]
     : [
         { href: '/diagnostic', label: 'Diagnostic' },
