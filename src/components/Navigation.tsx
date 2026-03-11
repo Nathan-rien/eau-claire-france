@@ -19,41 +19,34 @@ const Navigation = () => {
   const [mapsMenuOpen, setMapsMenuOpen] = useState(false);
   const { isEurope } = useRegion();
 
-  const mapsItemsFr = [
-    { href: '/carte', label: 'Carte des sources du robinet' },
-    { href: '/sources-eau', label: 'Carte des sources des bouteilles' },
-    { href: '/carte-polluants', label: 'Carte des polluants' },
-  ];
+  const mapsItems = isEurope
+    ? [
+        { href: '/carte-europe', label: 'Carte qualité Europe' },
+        { href: '/sources-eau', label: 'Sources bouteilles' },
+      ]
+    : [
+        { href: '/carte', label: 'Carte des sources du robinet' },
+        { href: '/sources-eau', label: 'Carte des sources des bouteilles' },
+        { href: '/carte-polluants', label: 'Carte des polluants' },
+      ];
 
-  const mapsItemsEu = [
-    { href: '/carte-europe', label: '🇪🇺 Carte qualité Europe' },
-    { href: '/carte', label: '🇫🇷 Carte France (robinet)' },
-    { href: '/sources-eau', label: '🇫🇷 Sources bouteilles' },
-    { href: '/carte-polluants', label: '🇫🇷 Carte polluants' },
-  ];
-
-  const directItemsFr = [
-    { href: '/diagnostic', label: 'Diagnostic' },
-    { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
-    { href: '/prix-eaux', label: 'Prix des eaux' },
-    { href: '/classement', label: 'Classement' },
-    { href: '/polluants', label: 'Polluants' },
-    { href: '/alertes', label: 'Alertes' },
-  ];
-
-  const directItemsEu = [
-    { href: '/diagnostic', label: 'Diagnostic 🇫🇷' },
-    { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
-    { href: '/prix-eaux', label: 'Prix des eaux 🇫🇷' },
-    { href: '/classement-europe', label: '🇪🇺 Classement EU' },
-    { href: '/classement', label: 'Classement 🇫🇷' },
-    { href: '/polluants-europe', label: '🇪🇺 Polluants EU' },
-    { href: '/polluants', label: 'Polluants 🇫🇷' },
-    { href: '/alertes', label: 'Alertes' },
-  ];
-
-  const mapsItems = isEurope ? mapsItemsEu : mapsItemsFr;
-  const directNavigationItems = isEurope ? directItemsEu : directItemsFr;
+  const directNavigationItems = isEurope
+    ? [
+        { href: '/diagnostic-europe', label: 'Diagnostic' },
+        { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
+        { href: '/prix-eaux-europe', label: 'Prix des eaux' },
+        { href: '/classement-europe', label: 'Classement' },
+        { href: '/polluants-europe', label: 'Polluants' },
+        { href: '/alertes-europe', label: 'Alertes' },
+      ]
+    : [
+        { href: '/diagnostic', label: 'Diagnostic' },
+        { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
+        { href: '/prix-eaux', label: 'Prix des eaux' },
+        { href: '/classement', label: 'Classement' },
+        { href: '/polluants', label: 'Polluants' },
+        { href: '/alertes', label: 'Alertes' },
+      ];
 
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
 
@@ -61,7 +54,6 @@ const Navigation = () => {
     <div className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="w-full px-4">
         <div className="flex h-14 items-center justify-between">
-          {/* Logo */}
           <div className="flex items-center space-x-3">
             <Link to="/" className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center">
@@ -73,11 +65,9 @@ const Navigation = () => {
             </Link>
           </div>
 
-          {/* Navigation Menu */}
           <div className="flex items-center gap-3">
             <NavigationMenu>
               <NavigationMenuList className="flex-wrap gap-1">
-                {/* Sous-menu "Les cartes" */}
                 <NavigationMenuItem>
                   <NavigationMenuTrigger
                     className={cn(
@@ -116,9 +106,8 @@ const Navigation = () => {
                   </NavigationMenuContent>
                 </NavigationMenuItem>
 
-                {/* Liens directs */}
                 {directNavigationItems.map((item) => (
-                  <NavigationMenuItem key={item.href + item.label}>
+                  <NavigationMenuItem key={item.href}>
                     <NavigationMenuLink
                       asChild
                       className={cn(
@@ -135,7 +124,6 @@ const Navigation = () => {
               </NavigationMenuList>
             </NavigationMenu>
 
-            {/* Region Switcher */}
             <RegionSwitcher />
           </div>
         </div>
