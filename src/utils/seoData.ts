@@ -97,6 +97,20 @@ export const seoData = {
     }
   },
 
+  parcoursEauV2: {
+    title: "Parcours de l'eau V2 : voyage immersif du captage au robinet",
+    description: "Version visuelle et interactive : découvrez comment l'eau potable est captée, traitée, stockée et distribuée en France avec animations et infographies.",
+    keywords: "parcours eau potable France, infographie interactive eau, traitement eau immersif, scrollytelling eau",
+    ogImage: "/images/og-default.jpg",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Le parcours de l'eau en France - Version immersive",
+      "description": "Infographie immersive sur le cycle de l'eau potable en France",
+      "url": "https://infoeau.fr/parcours-eau-v2"
+    }
+  },
+
   quelleEauBoire: {
     title: "Quelle eau boire ? Recommandations personnalisées",
     description: "Obtenez des recommandations d'eaux en bouteille adaptées à votre profil : femme enceinte, sportif, problèmes rénaux. Conseils personnalisés et scientifiques.",
