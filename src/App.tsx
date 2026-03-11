@@ -48,6 +48,9 @@ const AdminSetup = React.lazy(() => import("./pages/AdminSetup"));
 const CarteEurope = React.lazy(() => import("./pages/CarteEurope"));
 const ClassementEurope = React.lazy(() => import("./pages/ClassementEurope"));
 const PolluantsEurope = React.lazy(() => import("./pages/PolluantsEurope"));
+const DiagnosticEurope = React.lazy(() => import("./pages/DiagnosticEurope"));
+const AlertesEurope = React.lazy(() => import("./pages/AlertesEurope"));
+const PrixEauxEurope = React.lazy(() => import("./pages/PrixEauxEurope"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -122,6 +125,9 @@ const App = () => {
                 <Route path="/carte-europe" element={<CarteEurope />} />
                 <Route path="/classement-europe" element={<ClassementEurope />} />
                 <Route path="/polluants-europe" element={<PolluantsEurope />} />
+                <Route path="/diagnostic-europe" element={<DiagnosticEurope />} />
+                <Route path="/alertes-europe" element={<AlertesEurope />} />
+                <Route path="/prix-eaux-europe" element={<PrixEauxEurope />} />
                 <Route 
                   path="/admin/security" 
                   element={

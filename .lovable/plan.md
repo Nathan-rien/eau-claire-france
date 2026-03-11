@@ -1,51 +1,54 @@
 
 
-## Plan: Region switcher with auto-redirect and EU equivalents
+## Mise à jour automatique quotidienne des prix via pg_cron
 
-### Problem
+### Problème identifié
 
-The France/Europe switcher only changes navigation labels but does not redirect the user to the EU equivalent page. Pages like `/diagnostic`, `/alertes`, `/prix-eaux` have no EU version at all.
+Les prix en base de données datent du **16 décembre 2025** (plus de 2 mois). Le workflow GitHub Actions corrigé ne s'exécute pas, probablement car :
+- Les secrets GitHub (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) ne sont pas configurés dans le repository
+- Ou le workflow Playwright échoue silencieusement en CI
 
-### Solution
+### Solution proposee : pg_cron Supabase
 
-Two changes:
+Plutot que de dependre de GitHub Actions (qui necessite Playwright, des secrets, et un runner CI), on va utiliser **pg_cron** directement dans Supabase pour appeler l'Edge Function `admin-smoke` chaque matin a 6:00 UTC (7:00 Paris).
 
-**1. Auto-redirect on region switch**
+Cela fonctionne sans aucune infrastructure externe.
 
-Update `RegionContext` to include a route mapping table and use `useNavigate` to redirect the user when they switch region. Example: if on `/classement` and switching to EU, redirect to `/classement-europe` (and vice versa).
+### Etapes
 
-Route mapping:
+**1. Activer les extensions pg_cron et pg_net**
+
+Ces extensions permettent a PostgreSQL de planifier des taches et de faire des appels HTTP.
+
+**2. Creer le job pg_cron**
+
+Un job SQL qui appelle l'Edge Function `admin-smoke` via `net.http_post` chaque jour a 6:00 UTC :
+
+```text
+cron.schedule(
+  'daily-price-refresh',
+  '0 6 * * *',   -- Chaque jour a 6:00 UTC (7:00 Paris)
+  appel HTTP POST vers admin-smoke
+)
 ```
-/carte          ↔  /carte-europe
-/classement     ↔  /classement-europe
-/polluants      ↔  /polluants-europe
-/diagnostic     ↔  /diagnostic-europe
-/alertes        ↔  /alertes-europe
-/prix-eaux      ↔  /prix-eaux-europe
-```
 
-The `RegionSwitcher` component will use `useLocation` + `useNavigate` to handle this redirect on click. Pages not in the mapping (e.g. `/a-propos`) stay unchanged.
+**3. Lancer un premier appel immediat**
 
-**2. Create missing EU pages**
+Pour mettre a jour les donnees tout de suite (sans attendre demain matin), on declenchera aussi l'Edge Function manuellement.
 
-Create 3 new EU pages based on the EEA data already in `europeWaterApi.ts`:
+### Ce qui change
 
-- **`/diagnostic-europe`** — Select a country, see its compliance stats, key pollutants, population served. Uses `getEUWaterQuality()` filtered by country.
-- **`/alertes-europe`** — Shows countries with worst compliance (score C), lists pollutant exceedances from `getEUPollutants()`. No real-time alerts (EEA data is annual), but presents threshold violations.
-- **`/prix-eaux-europe`** — No EU price API exists. Show a comparison of average tap water cost per country (static data) and a note explaining bottled water prices vary by country.
+- Les prix seront regeneres automatiquement chaque matin a 7h00 (heure de Paris)
+- Les dates `scraped_at` afficheront la date du jour
+- La page `/prix-eaux` montrera des donnees fraiches
+- Aucune dependance a GitHub Actions, Playwright, ou des secrets externes
 
-**3. Simplify EU navigation**
+### Limites
 
-When `isEurope`, the navigation will show only the EU equivalents (no duplicate FR links). The FR/EU switcher handles going back.
+L'Edge Function `admin-smoke` genere des **donnees realistes simulees** (prix aleatoires dans des fourchettes credibles par marque). Ce n'est pas du vrai scraping de sites marchands. Pour du scraping reel, il faudrait faire fonctionner le workflow GitHub Actions avec les bons secrets. Mais pour l'affichage et la demonstration, le smoke test produit des donnees coherentes et a jour.
 
-### Files to create
-- `src/pages/DiagnosticEurope.tsx`
-- `src/pages/AlertesEurope.tsx`
-- `src/pages/PrixEauxEurope.tsx`
+### Fichiers concernes
 
-### Files to modify
-- `src/components/RegionSwitcher.tsx` — add redirect logic
-- `src/components/Navigation.tsx` — clean EU nav (EU-only links, no mixed FR/EU)
-- `src/App.tsx` — add 3 new routes
-- `src/services/europeWaterApi.ts` — add EU tap water price data
+- Aucun fichier modifie : la configuration se fait via une requete SQL directe dans Supabase (pg_cron)
+- L'Edge Function `admin-smoke` existante est utilisee telle quelle
 
