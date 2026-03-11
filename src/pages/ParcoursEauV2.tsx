@@ -5,6 +5,14 @@ import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
+
+import heroImg from '@/assets/parcours/hero-water.jpg';
+import captageImg from '@/assets/parcours/captage.jpg';
+import pompageImg from '@/assets/parcours/pompage.jpg';
+import traitementImg from '@/assets/parcours/traitement.jpg';
+import stockageImg from '@/assets/parcours/stockage.jpg';
+import distributionImg from '@/assets/parcours/distribution.jpg';
+import robinetImg from '@/assets/parcours/robinet.jpg';
 import {
   Droplets, ArrowDown, FlaskConical, Cylinder, Network, Home,
   Mountain, Waves, Layers, CircleDot, Filter, Zap, Sun, Shield,
@@ -23,13 +31,13 @@ const SECTIONS = [
 ] as const;
 
 const IMAGES = {
-  hero: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&q=80',
-  captage: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=900&q=80',
-  pompage: 'https://images.unsplash.com/photo-1504297050568-910d24c426d3?w=900&q=80',
-  traitement: 'https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=900&q=80',
-  stockage: 'https://images.unsplash.com/photo-1597484661973-ee6cd0b6482c?w=900&q=80',
-  distribution: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=900&q=80',
-  robinet: 'https://images.unsplash.com/photo-1585704032915-c3400ca199e7?w=900&q=80',
+  hero: heroImg,
+  captage: captageImg,
+  pompage: pompageImg,
+  traitement: traitementImg,
+  stockage: stockageImg,
+  distribution: distributionImg,
+  robinet: robinetImg,
 };
 
 const sourceTypes = [
@@ -207,11 +215,11 @@ const ParcoursEauV2 = () => {
       <SEOHead title={seo.title} description={seo.description} keywords={seo.keywords} />
 
       {/* ━━━ HERO ━━━ */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-blue-950 via-blue-900 to-blue-950">
         {/* Background image */}
         <div className="absolute inset-0">
           <img src={IMAGES.hero} alt="" className="w-full h-full object-cover" loading="eager" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+          <div className="absolute inset-0 bg-gradient-to-b from-blue-950/60 via-blue-900/40 to-blue-950/70" />
         </div>
 
         {/* Floating particles */}
