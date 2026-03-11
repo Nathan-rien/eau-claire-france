@@ -7,12 +7,14 @@ import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 
 import heroImg from '@/assets/parcours/hero-water.jpg';
-import captageImg from '@/assets/parcours/captage.jpg';
-import pompageImg from '@/assets/parcours/pompage.jpg';
-import traitementImg from '@/assets/parcours/traitement.jpg';
-import stockageImg from '@/assets/parcours/stockage.jpg';
-import distributionImg from '@/assets/parcours/distribution.jpg';
-import robinetImg from '@/assets/parcours/robinet.jpg';
+import {
+  CaptageAnimation,
+  PompageAnimation,
+  TraitementAnimation,
+  StockageAnimation,
+  DistributionAnimation,
+  RobinetAnimation,
+} from '@/components/parcours/StageAnimations';
 import {
   Droplets, ArrowDown, FlaskConical, Cylinder, Network, Home,
   Mountain, Waves, Layers, CircleDot, Filter, Zap, Sun, Shield,
@@ -32,12 +34,6 @@ const SECTIONS = [
 
 const IMAGES = {
   hero: heroImg,
-  captage: captageImg,
-  pompage: pompageImg,
-  traitement: traitementImg,
-  stockage: stockageImg,
-  distribution: distributionImg,
-  robinet: robinetImg,
 };
 
 const sourceTypes = [
@@ -316,7 +312,9 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2 md:order-1",
                 visibleSections.has('captage') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
               )}>
-                <img src={IMAGES.captage} alt="Nappe phréatique et paysage aquifère" className="rounded-2xl shadow-2xl w-full aspect-[4/3] object-cover" loading="lazy" />
+                <div className="rounded-2xl shadow-2xl bg-blue-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                  <CaptageAnimation />
+                </div>
                 <div className="mt-6">
                   <GeologicalSVG isVisible={visibleSections.has('captage')} />
                 </div>
@@ -444,7 +442,9 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2",
                 visibleSections.has('pompage') ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
               )}>
-                <img src={IMAGES.pompage} alt="Station de pompage" className="rounded-2xl shadow-2xl w-full aspect-[4/3] object-cover" loading="lazy" />
+                <div className="rounded-2xl shadow-2xl bg-indigo-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                  <PompageAnimation />
+                </div>
               </div>
             </div>
           </div>
@@ -463,7 +463,9 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2 md:order-1",
                 visibleSections.has('traitement') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
               )}>
-                <img src={IMAGES.traitement} alt="Usine de traitement d'eau" className="rounded-2xl shadow-2xl w-full aspect-[4/3] object-cover" loading="lazy" />
+                <div className="rounded-2xl shadow-2xl bg-purple-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                  <TraitementAnimation />
+                </div>
               </div>
 
               <div className="order-1 md:order-2">
@@ -584,8 +586,9 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2",
                 visibleSections.has('stockage') ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
               )}>
-                <img src={IMAGES.stockage} alt="Château d'eau" className="rounded-2xl shadow-2xl w-full aspect-[4/3] object-cover mb-8" loading="lazy" />
-                <WaterTowerSVG isVisible={visibleSections.has('stockage')} />
+                <div className="rounded-2xl shadow-2xl bg-amber-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                  <StockageAnimation />
+                </div>
               </div>
             </div>
           </div>
@@ -604,7 +607,9 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2 md:order-1",
                 visibleSections.has('distribution') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
               )}>
-                <img src={IMAGES.distribution} alt="Réseau de canalisations" className="rounded-2xl shadow-2xl w-full aspect-[4/3] object-cover" loading="lazy" />
+                <div className="rounded-2xl shadow-2xl bg-teal-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                  <DistributionAnimation />
+                </div>
               </div>
 
               <div className="order-1 md:order-2">
@@ -725,7 +730,9 @@ const ParcoursEauV2 = () => {
                 "transition-all duration-1000 order-2",
                 visibleSections.has('robinet') ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
               )}>
-                <img src={IMAGES.robinet} alt="Eau du robinet" className="rounded-2xl shadow-2xl w-full aspect-[4/3] object-cover" loading="lazy" />
+                <div className="rounded-2xl shadow-2xl bg-green-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center">
+                  <RobinetAnimation />
+                </div>
               </div>
             </div>
           </div>
