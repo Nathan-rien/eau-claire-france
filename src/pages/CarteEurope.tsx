@@ -89,11 +89,11 @@ const EuropeMapSection: React.FC<EuropeMapSectionProps> = ({ data, onSelectCount
           box-shadow:0 2px 6px rgba(0,0,0,0.3);cursor:pointer;
           display:flex;align-items:center;justify-content:center;
           font-size:${size > 24 ? 11 : 9}px;font-weight:700;color:#fff;
-          transition:transform 0.15s;
+          transition:box-shadow 0.15s, outline 0.15s;
         `;
         el.textContent = country.countryCode;
-        el.addEventListener('mouseenter', () => { el.style.transform = 'scale(1.25)'; });
-        el.addEventListener('mouseleave', () => { el.style.transform = 'scale(1)'; });
+        el.addEventListener('mouseenter', () => { el.style.boxShadow = `0 0 0 4px ${color}44, 0 4px 12px rgba(0,0,0,0.4)`; });
+        el.addEventListener('mouseleave', () => { el.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)'; });
 
         const marker = new mapboxgl.Marker({ element: el })
           .setLngLat([coords[1], coords[0]])
