@@ -3,7 +3,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-// In-memory cache with 24h TTL
 const cache = new Map<string, { data: unknown; ts: number }>();
 const TTL = 24 * 60 * 60 * 1000;
 
@@ -14,7 +13,6 @@ function getCached(key: string): unknown | null {
   return null;
 }
 
-// EU country ISO3 codes mapped to ISO2
 const EU_ISO3_TO_ISO2: Record<string, string> = {
   AUT: 'AT', BEL: 'BE', BGR: 'BG', HRV: 'HR', CYP: 'CY',
   CZE: 'CZ', DNK: 'DK', EST: 'EE', FIN: 'FI', FRA: 'FR',
@@ -24,23 +22,49 @@ const EU_ISO3_TO_ISO2: Record<string, string> = {
   ESP: 'ES', SWE: 'SE',
 };
 
+// Numeric UN M49 codes for EU countries
+const EU_M49_TO_ISO2: Record<string, string> = {
+  '40': 'AT', '56': 'BE', '100': 'BG', '191': 'HR', '196': 'CY',
+  '203': 'CZ', '208': 'DK', '233': 'EE', '246': 'FI', '250': 'FR',
+  '276': 'DE', '300': 'GR', '348': 'HU', '372': 'IE', '380': 'IT',
+  '428': 'LV', '440': 'LT', '442': 'LU', '470': 'MT', '528': 'NL',
+  '616': 'PL', '620': 'PT', '642': 'RO', '703': 'SK', '705': 'SI',
+  '724': 'ES', '752': 'SE',
+};
+
 const EU_ISO3_LIST = Object.keys(EU_ISO3_TO_ISO2).join(',');
 
-// SDG 6.1.1 = Proportion of population using safely managed drinking water services
-// SDG 6.3.2 = Proportion of bodies of water with good ambient water quality
-const SDG_INDICATORS: Record<string, string> = {
-  'sdg-drinking-water': '6.1.1',
-  'sdg-water-quality': '6.3.2',
+interface SDG6Entry {
+  GeoAreaCode?: string | number;
+  GeoAreaName?: string;
+  TimePeriod?: string | number;
+  Value?: string | number;
+  Source?: string;
+  [key: string]: unknown;
+}
+
+// SDG 6.1.1 = Safely managed drinking water
+// SDG 6.3.2 = Ambient water quality
+const SDG_INDICATORS: Record<string, { code: string; desc: string }> = {
+  'sdg-drinking-water': {
+    code: '6.1.1',
+    desc: 'Proportion of population using safely managed drinking water services (%)',
+  },
+  'sdg-water-quality': {
+    code: '6.3.2',
+    desc: 'Proportion of bodies of water with good ambient water quality (%)',
+  },
 };
 
 async function fetchSDG6(type: string): Promise<unknown> {
   const cached = getCached(type);
   if (cached) return cached;
 
-  const indicator = SDG_INDICATORS[type];
-  if (!indicator) throw new Error(`Unknown type: ${type}`);
+  const info = SDG_INDICATORS[type];
+  if (!info) throw new Error(`Unknown type: ${type}`);
 
-  const url = `https://sdg6data.org/api/indicator/${indicator}?_format=json&country=${EU_ISO3_LIST}`;
+  // Fetch with high per_page to get all EU data in one call
+  const url = `https://sdg6data.org/api/indicator/${info.code}?_format=json&country=${EU_ISO3_LIST}&per_page=5000`;
 
   const res = await fetch(url, {
     headers: { 'Accept': 'application/json' },
@@ -48,56 +72,58 @@ async function fetchSDG6(type: string): Promise<unknown> {
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`SDG6 API returned ${res.status}: ${text.slice(0, 200)}`);
+    throw new Error(`SDG6 API returned ${res.status}: ${text.slice(0, 300)}`);
   }
 
   const rawData = await res.json();
 
-  // Debug: log first entry structure
-  if (Array.isArray(rawData) && rawData.length > 0) {
-    console.log('SDG6 first entry keys:', Object.keys(rawData[0]));
-    console.log('SDG6 first entry:', JSON.stringify(rawData[0]));
-    console.log('SDG6 total entries:', rawData.length);
+  // SDG6 API returns: [paginationMeta, [...actualData]]
+  let entries: SDG6Entry[] = [];
+  if (Array.isArray(rawData)) {
+    if (rawData.length === 2 && Array.isArray(rawData[1])) {
+      // Format: [meta, [data...]]
+      entries = rawData[1];
+      console.log(`SDG6 pagination meta:`, JSON.stringify(rawData[0]));
+    } else {
+      entries = rawData;
+    }
   }
 
-  // Transform: group by country, keep latest year
+  console.log(`SDG6 entries count: ${entries.length}`);
+  if (entries.length > 0) {
+    console.log(`SDG6 first data entry keys:`, Object.keys(entries[0]));
+    console.log(`SDG6 sample entry:`, JSON.stringify(entries[0]));
+  }
+
   const byCountry = new Map<string, Record<string, unknown>>();
 
-  // Also try matching by country name or different code fields
-  const ISO2_TO_ISO2 = Object.fromEntries(Object.values(EU_ISO3_TO_ISO2).map(v => [v, v]));
+  for (const entry of entries) {
+    const geoCode = String(entry.GeoAreaCode ?? '').trim();
 
-  if (Array.isArray(rawData)) {
-    for (const entry of rawData) {
-      // Try multiple field names for country identification
-      const geoCode = String(entry.GeoAreaCode || '').trim();
-      const geoName = String(entry.GeoAreaName || '').trim();
-      
-      let iso2 = EU_ISO3_TO_ISO2[geoCode] || EU_ISO3_TO_ISO2[geoName] || ISO2_TO_ISO2[geoCode] || null;
+    // Try ISO3 first, then M49 numeric code
+    const iso2 = EU_ISO3_TO_ISO2[geoCode] || EU_M49_TO_ISO2[geoCode] || null;
+    if (!iso2) continue;
 
-      if (!iso2) continue;
-
-      const year = Number(entry.TimePeriod) || 0;
-      const existing = byCountry.get(iso2);
-      if (!existing || year > (Number(existing.year) || 0)) {
-        byCountry.set(iso2, {
-          countryCode: iso2,
-          iso3,
-          year,
-          value: Number(entry.Value) || null,
-          source: entry.Source || 'WHO/UNICEF JMP',
-          indicator,
-        });
-      }
+    const year = Number(entry.TimePeriod) || 0;
+    const existing = byCountry.get(iso2);
+    if (!existing || year > (Number(existing.year) || 0)) {
+      byCountry.set(iso2, {
+        countryCode: iso2,
+        geoAreaCode: geoCode,
+        geoAreaName: String(entry.GeoAreaName || ''),
+        year,
+        value: entry.Value != null ? Number(entry.Value) : null,
+        source: entry.Source || 'WHO/UNICEF JMP',
+      });
     }
   }
 
   const result = {
-    indicator,
-    description: indicator === '6.1.1'
-      ? 'Proportion of population using safely managed drinking water services (%)'
-      : 'Proportion of bodies of water with good ambient water quality (%)',
+    indicator: info.code,
+    description: info.desc,
     source: 'UN SDG 6 / WHO-UNICEF JMP',
     countries: Array.from(byCountry.values()),
+    totalEntries: entries.length,
   };
 
   cache.set(type, { data: result, ts: Date.now() });
@@ -113,17 +139,13 @@ Deno.serve(async (req) => {
     const url = new URL(req.url);
     const type = url.searchParams.get('type');
 
-    const validTypes = [...Object.keys(SDG_INDICATORS)];
+    const validTypes = Object.keys(SDG_INDICATORS);
 
     if (!type || !validTypes.includes(type)) {
       return new Response(
         JSON.stringify({
           error: 'Missing or invalid "type" parameter.',
           available: validTypes,
-          description: {
-            'sdg-drinking-water': 'SDG 6.1.1 - Safely managed drinking water by country (%)',
-            'sdg-water-quality': 'SDG 6.3.2 - Ambient water quality by country (%)',
-          },
         }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
