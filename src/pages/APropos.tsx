@@ -75,10 +75,10 @@ const APropos = () => {
             </CardHeader>
             <CardContent>
               <p className="text-lg text-blue-700 text-center leading-relaxed">
-                InfoEau.fr a été créé avec une conviction simple : <strong>chaque citoyen français 
-                a le droit de connaître la qualité de son eau potable de manière claire, 
+              InfoEau.fr a été créé avec une conviction simple : <strong>chaque citoyen français 
+                et européen a le droit de connaître la qualité de son eau potable de manière claire, 
                 accessible et transparente</strong>. Nous transformons les données officielles 
-                complexes en informations compréhensibles pour tous.
+                complexes en informations compréhensibles pour tous, en France et dans les 27 pays de l'UE.
               </p>
             </CardContent>
           </Card>

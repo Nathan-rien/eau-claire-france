@@ -80,6 +80,18 @@ const OpenData = () => {
       method: "GET",
       description: "Récupère les alertes en cours par département ou région",
       example: "curl https://api.infoeau.fr/v1/alerts?department=33"
+    },
+    {
+      endpoint: "/api/v1/eu/water-quality/{country}",
+      method: "GET",
+      description: "Qualité de l'eau potable pour un pays européen (conformité, violations)",
+      example: "curl https://api.infoeau.fr/v1/eu/water-quality/DE"
+    },
+    {
+      endpoint: "/api/v1/eu/pollutants/{country}",
+      method: "GET",
+      description: "Polluants détectés dans un pays européen (PFAS, microplastiques, THM...)",
+      example: "curl https://api.infoeau.fr/v1/eu/pollutants/FR"
     }
   ];
 

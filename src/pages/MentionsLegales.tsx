@@ -94,9 +94,10 @@ const MentionsLegales = () => {
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">Données publiques</h4>
                   <p className="text-gray-700">
-                    Les données présentées sur le site proviennent d'organismes publics français et sont régies 
-                    par les principes de l'Open Data. Ces données restent la propriété de leurs organismes émetteurs respectifs 
-                    (ARS, EauFrance, BRGM, etc.).
+                    Les données présentées sur le site proviennent d'organismes publics français (ARS, EauFrance, BRGM) 
+                    et européens (Agence Européenne de l'Environnement – EEA, WISE DWD) et sont régies 
+                    par les principes de l'Open Data. Les données européennes sont soumises à la politique 
+                    de réutilisation standard de l'EEA. Ces données restent la propriété de leurs organismes émetteurs respectifs.
                   </p>
                 </div>
 

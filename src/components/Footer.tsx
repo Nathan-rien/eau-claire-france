@@ -49,7 +49,7 @@ const Footer = () => {
         
         <div className="border-t border-gray-800 pt-8 mt-8 text-center">
           <p className="text-gray-400 text-sm mb-2">
-            © 2024 InfoEau.fr - Données basées sur les sources officielles ARS, EauFrance, BRGM
+            © 2024 InfoEau.fr - Données basées sur les sources officielles ARS, EauFrance, BRGM, EEA
           </p>
           <p className="text-gray-400 text-sm">
             Créé par{' '}

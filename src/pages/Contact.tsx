@@ -257,9 +257,10 @@ Envoyé depuis InfoEau.fr`;
                 <CardContent className="pt-6">
                   <h4 className="font-semibold text-green-800 mb-2">Projet citoyen</h4>
                   <p className="text-sm text-green-700">
-                    InfoEau.fr est un projet indépendant et bénévole. 
+                    InfoEau.fr est un projet indépendant et bénévole couvrant 
+                    la France et les 27 pays de l'Union européenne. 
                     Votre soutien et vos retours nous aident à améliorer 
-                    la transparence sur la qualité de l'eau en France.
+                    la transparence sur la qualité de l'eau.
                   </p>
                 </CardContent>
               </Card>

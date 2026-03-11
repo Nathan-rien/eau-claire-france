@@ -90,13 +90,18 @@ const Sources = () => {
     },
     {
       organism: "Commission Européenne",
-      role: "Directive européenne sur l'eau potable",
-      reference: "Directive (UE) 2020/2184"
+      role: "Directive européenne sur l'eau potable révisée",
+      reference: "Directive (UE) 2020/2184 relative à la qualité des eaux destinées à la consommation humaine"
     },
     {
       organism: "Ministère de la Santé français",
       role: "Réglementation française sur l'eau potable",
       reference: "Code de la santé publique"
+    },
+    {
+      organism: "Agence Européenne de l'Environnement (EEA)",
+      role: "Reporting et conformité de la Directive Eau Potable pour les 27 États membres",
+      reference: "WISE Drinking Water Directive dataset (DWD_NS, DWD_QI, DWD_NCI)"
     }
   ];
 
