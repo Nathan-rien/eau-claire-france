@@ -3,8 +3,9 @@ import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { getEUWaterQuality, getEUPollutants, getScoreBadgeClass, type EUCountryWaterQuality, type EUPollutant } from '@/services/europeWaterApi';
-import { AlertTriangle, ShieldAlert, TrendingDown } from 'lucide-react';
+import { AlertTriangle, ShieldAlert, TrendingDown, ChevronDown, Bug, FlaskConical, Circle } from 'lucide-react';
 
 const AlertesEurope = () => {
   const [quality, setQuality] = useState<EUCountryWaterQuality[]>([]);
@@ -20,6 +21,9 @@ const AlertesEurope = () => {
   const worstCountries = quality.filter(c => c.qualityScore === 'C' || c.complianceRate < 96);
   const allExceedances = pollutants.filter(p => p.exceedanceRatePct > 5)
     .sort((a, b) => b.exceedanceRatePct - a.exceedanceRatePct);
+
+  const getCountryPollutants = (countryCode: string) =>
+    pollutants.filter(p => p.countryCode === countryCode);
 
   return (
     <Layout>
@@ -45,26 +49,80 @@ const AlertesEurope = () => {
             {worstCountries.length === 0 ? (
               <p className="text-muted-foreground">Aucun pays en situation critique identifié.</p>
             ) : (
-              <div className="space-y-3">
-                {worstCountries.map(c => (
-                  <div key={c.countryCode} className="flex items-center justify-between p-4 rounded-lg bg-destructive/5 border border-destructive/20">
-                    <div className="flex items-center gap-3">
-                      <AlertTriangle className="h-5 w-5 text-destructive" />
-                      <div>
-                        <span className="font-semibold">{c.countryName}</span>
-                        <Badge className={`ml-2 ${getScoreBadgeClass(c.qualityScore)}`}>
-                          Score {c.qualityScore}
-                        </Badge>
+              <div className="space-y-4">
+                {worstCountries.map(c => {
+                  const countryPollutants = getCountryPollutants(c.countryCode);
+                  return (
+                    <Collapsible key={c.countryCode}>
+                      <div className="rounded-lg bg-destructive/5 border border-destructive/20 overflow-hidden">
+                        <CollapsibleTrigger className="w-full text-left p-4 hover:bg-destructive/10 transition-colors">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
+                              <div>
+                                <span className="font-semibold">{c.countryName}</span>
+                                <Badge className={`ml-2 ${getScoreBadgeClass(c.qualityScore)}`}>
+                                  Score {c.qualityScore}
+                                </Badge>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <span className="text-sm font-bold">Conformité : {c.complianceRate}%</span>
+                              <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 [&[data-state=open]]:rotate-180" />
+                            </div>
+                          </div>
+
+                          {/* Violation breakdown */}
+                          <div className="flex flex-wrap gap-4 mt-3 text-sm">
+                            {c.pesticideViolations > 0 && (
+                              <span className="flex items-center gap-1.5 text-muted-foreground">
+                                <FlaskConical className="h-3.5 w-3.5" />
+                                Pesticides : <span className="font-semibold text-foreground">{c.pesticideViolations}</span>
+                              </span>
+                            )}
+                            {c.leadViolations > 0 && (
+                              <span className="flex items-center gap-1.5 text-muted-foreground">
+                                <Circle className="h-3.5 w-3.5" />
+                                Plomb : <span className="font-semibold text-foreground">{c.leadViolations}</span>
+                              </span>
+                            )}
+                            {c.bacteriaViolations > 0 && (
+                              <span className="flex items-center gap-1.5 text-muted-foreground">
+                                <Bug className="h-3.5 w-3.5" />
+                                Bactéries : <span className="font-semibold text-foreground">{c.bacteriaViolations}</span>
+                              </span>
+                            )}
+                          </div>
+                        </CollapsibleTrigger>
+
+                        <CollapsibleContent>
+                          {countryPollutants.length > 0 && (
+                            <div className="px-4 pb-4 pt-1 border-t border-destructive/10">
+                              <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Polluants détectés</p>
+                              <div className="space-y-1.5">
+                                {countryPollutants.map(p => (
+                                  <div key={`${p.countryCode}-${p.pollutant}`} className="flex items-center justify-between text-sm py-1.5 px-3 rounded bg-background/60">
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium">{p.pollutant}</span>
+                                      <span className="text-muted-foreground text-xs">({p.category})</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-xs">
+                                      <span>{p.avgValue} {p.unit}</span>
+                                      <span className="text-muted-foreground">limite {p.limitValue}</span>
+                                      <Badge variant={p.exceedanceRatePct > 2 ? 'destructive' : 'secondary'} className="text-xs">
+                                        {p.exceedanceRatePct}%
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </CollapsibleContent>
                       </div>
-                    </div>
-                    <div className="text-right text-sm">
-                      <div>Conformité : <span className="font-bold">{c.complianceRate}%</span></div>
-                      <div className="text-muted-foreground">
-                        {c.pesticideViolations + c.leadViolations + c.bacteriaViolations} violations totales
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                    </Collapsible>
+                  );
+                })}
               </div>
             )}
           </CardContent>
@@ -83,7 +141,7 @@ const AlertesEurope = () => {
               <p className="text-muted-foreground">Aucun dépassement significatif identifié.</p>
             ) : (
               <div className="space-y-2">
-                {allExceedances.slice(0, 15).map((p, i) => (
+                {allExceedances.slice(0, 15).map((p) => (
                   <div key={`${p.countryCode}-${p.pollutant}`} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div>
                       <span className="font-medium">{p.countryName}</span>
