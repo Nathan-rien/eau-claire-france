@@ -1,54 +1,25 @@
 
 
-## Mise à jour automatique quotidienne des prix via pg_cron
+## Plan: Carte Mapbox interactive sur /carte-europe
 
-### Problème identifié
+### Ce qui sera fait
 
-Les prix en base de données datent du **16 décembre 2025** (plus de 2 mois). Le workflow GitHub Actions corrigé ne s'exécute pas, probablement car :
-- Les secrets GitHub (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) ne sont pas configurés dans le repository
-- Ou le workflow Playwright échoue silencieusement en CI
+Ajouter une carte Mapbox interactive entre les stats et la grille de pays sur `/carte-europe`. La carte affichera les 27 pays EU sous forme de marqueurs circulaires colorés par score (A=vert, B=jaune, C=rouge), avec des popups détaillés au clic.
 
-### Solution proposee : pg_cron Supabase
+### Modifications
 
-Plutot que de dependre de GitHub Actions (qui necessite Playwright, des secrets, et un runner CI), on va utiliser **pg_cron** directement dans Supabase pour appeler l'Edge Function `admin-smoke` chaque matin a 6:00 UTC (7:00 Paris).
+**`src/pages/CarteEurope.tsx`** — Ajouter un composant `EuropeInteractiveMap` intégré directement dans la page :
 
-Cela fonctionne sans aucune infrastructure externe.
+- Importer `mapboxgl` et `MapboxSecurityService` (même pattern que `InteractiveMap.tsx`)
+- Centrer la carte sur l'Europe (`[10, 50]`, zoom 3.5)
+- Pour chaque pays dans `data`, placer un marqueur circulaire aux coordonnées `EU_COUNTRY_COORDS` depuis `europeWaterApi.ts`
+- Couleur du marqueur selon `qualityScore` : A → `#16a34a`, B → `#eab308`, C → `#dc2626`
+- Taille du marqueur proportionnelle à `populationServedMillions`
+- Au clic sur un marqueur : popup Mapbox avec nom du pays, score, conformité %, nitrates, violations pesticides/plomb/bactéries, population
+- Clic sur un marqueur met aussi à jour le `selected` state pour synchroniser avec la grille en-dessous
+- Entourer la carte d'un `MapLoader` pour le chargement lazy sur mobile (composant existant)
 
-### Etapes
+### Aucun nouveau fichier
 
-**1. Activer les extensions pg_cron et pg_net**
-
-Ces extensions permettent a PostgreSQL de planifier des taches et de faire des appels HTTP.
-
-**2. Creer le job pg_cron**
-
-Un job SQL qui appelle l'Edge Function `admin-smoke` via `net.http_post` chaque jour a 6:00 UTC :
-
-```text
-cron.schedule(
-  'daily-price-refresh',
-  '0 6 * * *',   -- Chaque jour a 6:00 UTC (7:00 Paris)
-  appel HTTP POST vers admin-smoke
-)
-```
-
-**3. Lancer un premier appel immediat**
-
-Pour mettre a jour les donnees tout de suite (sans attendre demain matin), on declenchera aussi l'Edge Function manuellement.
-
-### Ce qui change
-
-- Les prix seront regeneres automatiquement chaque matin a 7h00 (heure de Paris)
-- Les dates `scraped_at` afficheront la date du jour
-- La page `/prix-eaux` montrera des donnees fraiches
-- Aucune dependance a GitHub Actions, Playwright, ou des secrets externes
-
-### Limites
-
-L'Edge Function `admin-smoke` genere des **donnees realistes simulees** (prix aleatoires dans des fourchettes credibles par marque). Ce n'est pas du vrai scraping de sites marchands. Pour du scraping reel, il faudrait faire fonctionner le workflow GitHub Actions avec les bons secrets. Mais pour l'affichage et la demonstration, le smoke test produit des donnees coherentes et a jour.
-
-### Fichiers concernes
-
-- Aucun fichier modifie : la configuration se fait via une requete SQL directe dans Supabase (pg_cron)
-- L'Edge Function `admin-smoke` existante est utilisee telle quelle
+Tout sera dans `CarteEurope.tsx` (composant interne `EuropeMapSection`). Les coordonnées et le service API existent déjà dans `europeWaterApi.ts`.
 
