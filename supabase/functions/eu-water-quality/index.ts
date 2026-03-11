@@ -53,13 +53,27 @@ async function fetchSDG6(type: string): Promise<unknown> {
 
   const rawData = await res.json();
 
+  // Debug: log first entry structure
+  if (Array.isArray(rawData) && rawData.length > 0) {
+    console.log('SDG6 first entry keys:', Object.keys(rawData[0]));
+    console.log('SDG6 first entry:', JSON.stringify(rawData[0]));
+    console.log('SDG6 total entries:', rawData.length);
+  }
+
   // Transform: group by country, keep latest year
   const byCountry = new Map<string, Record<string, unknown>>();
 
+  // Also try matching by country name or different code fields
+  const ISO2_TO_ISO2 = Object.fromEntries(Object.values(EU_ISO3_TO_ISO2).map(v => [v, v]));
+
   if (Array.isArray(rawData)) {
     for (const entry of rawData) {
-      const iso3 = String(entry.GeoAreaCode || entry.GeoAreaName || '').trim();
-      const iso2 = EU_ISO3_TO_ISO2[iso3];
+      // Try multiple field names for country identification
+      const geoCode = String(entry.GeoAreaCode || '').trim();
+      const geoName = String(entry.GeoAreaName || '').trim();
+      
+      let iso2 = EU_ISO3_TO_ISO2[geoCode] || EU_ISO3_TO_ISO2[geoName] || ISO2_TO_ISO2[geoCode] || null;
+
       if (!iso2) continue;
 
       const year = Number(entry.TimePeriod) || 0;
