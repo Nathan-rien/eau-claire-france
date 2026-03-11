@@ -9,6 +9,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { analyticsService } from "@/services/analyticsService";
 import { AuthProvider } from "@/hooks/useAuth";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { RegionProvider } from "@/contexts/RegionContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import PageLoader from "@/components/PageLoader";
 import SecurityHeaders from "@/components/SecurityHeaders";
@@ -44,6 +45,9 @@ const ComparateurPrix = React.lazy(() => import("./pages/ComparateurPrix"));
 const MarquePrix = React.lazy(() => import("./pages/MarquePrix"));
 const Admin = React.lazy(() => import("./pages/Admin"));
 const AdminSetup = React.lazy(() => import("./pages/AdminSetup"));
+const CarteEurope = React.lazy(() => import("./pages/CarteEurope"));
+const ClassementEurope = React.lazy(() => import("./pages/ClassementEurope"));
+const PolluantsEurope = React.lazy(() => import("./pages/PolluantsEurope"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -73,6 +77,7 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <LanguageProvider>
+            <RegionProvider>
             <TooltipProvider>
               <SecurityHeaders />
             <Toaster />
@@ -114,6 +119,9 @@ const App = () => {
                 <Route path="/marque/:slug" element={<MarquePrix />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/admin-setup" element={<AdminSetup />} />
+                <Route path="/carte-europe" element={<CarteEurope />} />
+                <Route path="/classement-europe" element={<ClassementEurope />} />
+                <Route path="/polluants-europe" element={<PolluantsEurope />} />
                 <Route 
                   path="/admin/security" 
                   element={
@@ -127,6 +135,7 @@ const App = () => {
             </Suspense>
             </BrowserRouter>
             </TooltipProvider>
+            </RegionProvider>
           </LanguageProvider>
         </AuthProvider>
       </QueryClientProvider>

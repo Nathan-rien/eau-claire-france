@@ -1,0 +1,40 @@
+country_code,country_name,pollutant,category,avg_value,unit,limit_value,exceedance_rate_pct,affected_zones,report_year
+AT,Autriche,Nitrates,Chimique,12.3,mg/L,50,0.5,6,2023
+AT,Autriche,Pesticides total,Chimique,0.08,µg/L,0.5,0.2,2,2023
+AT,Autriche,Plomb,Métaux lourds,2.1,µg/L,10,0.0,0,2023
+BE,Belgique,Nitrates,Chimique,18.5,mg/L,50,1.2,10,2023
+BE,Belgique,Pesticides total,Chimique,0.15,µg/L,0.5,0.6,5,2023
+BE,Belgique,PFAS,Chimique émergent,0.08,µg/L,0.1,0.4,3,2023
+BG,Bulgarie,Nitrates,Chimique,22.1,mg/L,50,3.5,18,2023
+BG,Bulgarie,Plomb,Métaux lourds,5.8,µg/L,10,1.5,8,2023
+BG,Bulgarie,Bactéries coliformes,Microbiologique,2.8,UFC/100mL,0,2.9,15,2023
+DE,Allemagne,Nitrates,Chimique,17.2,mg/L,50,0.8,128,2023
+DE,Allemagne,Pesticides total,Chimique,0.05,µg/L,0.5,0.2,32,2023
+DE,Allemagne,PFAS,Chimique émergent,0.06,µg/L,0.1,0.3,48,2023
+DK,Danemark,Nitrates,Chimique,8.2,mg/L,50,0.1,3,2023
+DK,Danemark,Pesticides total,Chimique,0.03,µg/L,0.5,0.04,1,2023
+ES,Espagne,Nitrates,Chimique,20.1,mg/L,50,1.8,99,2023
+ES,Espagne,Trihalométhanes,Chimique,55.2,µg/L,100,1.2,66,2023
+ES,Espagne,Pesticides total,Chimique,0.12,µg/L,0.5,0.5,28,2023
+FI,Finlande,Nitrates,Chimique,5.1,mg/L,50,0.0,0,2023
+FI,Finlande,Fer,Chimique,0.08,mg/L,0.2,0.1,2,2023
+FR,France,Nitrates,Chimique,19.8,mg/L,50,1.5,375,2023
+FR,France,Pesticides total,Chimique,0.18,µg/L,0.5,0.8,200,2023
+FR,France,PFAS,Chimique émergent,0.07,µg/L,0.1,0.5,125,2023
+FR,France,Plomb,Métaux lourds,3.2,µg/L,10,0.3,75,2023
+FR,France,Bactéries coliformes,Microbiologique,1.5,UFC/100mL,0,0.8,200,2023
+IT,Italie,Nitrates,Chimique,21.3,mg/L,50,2.1,168,2023
+IT,Italie,Arsenic,Métaux lourds,4.5,µg/L,10,0.8,64,2023
+IT,Italie,Pesticides total,Chimique,0.14,µg/L,0.5,0.7,56,2023
+NL,Pays-Bas,Nitrates,Chimique,10.5,mg/L,50,0.2,20,2023
+NL,Pays-Bas,PFAS,Chimique émergent,0.05,µg/L,0.1,0.1,10,2023
+PL,Pologne,Nitrates,Chimique,16.7,mg/L,50,1.5,36,2023
+PL,Pologne,Plomb,Métaux lourds,4.8,µg/L,10,0.8,19,2023
+PL,Pologne,Bactéries coliformes,Microbiologique,2.1,UFC/100mL,0,1.2,29,2023
+PT,Portugal,Nitrates,Chimique,14.9,mg/L,50,0.9,6,2023
+PT,Portugal,Trihalométhanes,Chimique,48.5,µg/L,100,0.8,6,2023
+RO,Roumanie,Nitrates,Chimique,24.3,mg/L,50,4.2,50,2023
+RO,Roumanie,Plomb,Métaux lourds,6.5,µg/L,10,2.5,30,2023
+RO,Roumanie,Bactéries coliformes,Microbiologique,3.5,UFC/100mL,0,3.8,46,2023
+SE,Suède,Nitrates,Chimique,6.4,mg/L,50,0.1,2,2023
+SE,Suède,Fer,Chimique,0.06,mg/L,0.2,0.05,1,2023
