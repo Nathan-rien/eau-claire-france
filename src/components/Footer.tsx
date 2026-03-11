@@ -15,7 +15,7 @@ const Footer = () => {
               <h2 className="text-lg font-bold">InfoEau.fr</h2>
             </div>
             <p className="text-gray-400 text-sm">
-              Plateforme citoyenne de transparence sur la qualité de l'eau potable en France.
+              Plateforme citoyenne de transparence sur la qualité de l'eau potable en France et en Europe.
             </p>
           </div>
           
