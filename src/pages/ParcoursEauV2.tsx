@@ -5,6 +5,14 @@ import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
+
+import heroImg from '@/assets/parcours/hero-water.jpg';
+import captageImg from '@/assets/parcours/captage.jpg';
+import pompageImg from '@/assets/parcours/pompage.jpg';
+import traitementImg from '@/assets/parcours/traitement.jpg';
+import stockageImg from '@/assets/parcours/stockage.jpg';
+import distributionImg from '@/assets/parcours/distribution.jpg';
+import robinetImg from '@/assets/parcours/robinet.jpg';
 import {
   Droplets, ArrowDown, FlaskConical, Cylinder, Network, Home,
   Mountain, Waves, Layers, CircleDot, Filter, Zap, Sun, Shield,
