@@ -762,12 +762,12 @@ const ParcoursEauV2 = () => {
       </div>
 
       {/* ━━━ CTA FINAL ━━━ */}
-      <section className="py-20 bg-gradient-to-b from-green-950 to-background text-center px-4">
+      <section className="py-20 bg-gradient-to-b from-green-950 via-green-950/80 to-background text-center px-4">
         <div className={cn("max-w-2xl mx-auto")}>
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
             Découvrez la qualité de votre eau
           </h2>
-          <p className="text-muted-foreground mb-8">
+          <p className="text-green-100/70 mb-8">
             Utilisez notre diagnostic pour connaître la composition exacte de l'eau dans votre commune.
           </p>
           <a
