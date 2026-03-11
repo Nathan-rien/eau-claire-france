@@ -20,10 +20,6 @@ import {
   Mountain, Waves, Layers, CircleDot, Filter, Zap, Sun, Shield,
   ChevronDown, CheckCircle2, Gauge,
 } from 'lucide-react';
-  Droplets, ArrowDown, FlaskConical, Cylinder, Network, Home,
-  Mountain, Waves, Layers, CircleDot, Filter, Zap, Sun, Shield,
-  ChevronDown, CheckCircle2, Gauge,
-} from 'lucide-react';
 
 /* ───── Data (same as V1) ───── */
 
