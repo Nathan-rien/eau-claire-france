@@ -172,7 +172,7 @@ export default function Alertes() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Filtre date de début */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Date de début</label>
+                <label className="text-sm font-medium">{t('alerts.startDate')}</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
