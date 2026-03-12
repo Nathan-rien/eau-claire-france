@@ -148,7 +148,7 @@ export default function Alertes() {
             className="gap-2"
           >
             <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
-            Actualiser
+            {t('alerts.refresh')}
           </Button>
         </div>
 
