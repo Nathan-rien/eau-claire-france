@@ -169,7 +169,7 @@ const Classement = () => {
             {!loading && !error && ranked.length === 0 && (
               <div className="text-center py-12">
                 <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-lg text-gray-500">Aucune eau ne correspond aux critères sélectionnés.</p>
+                <p className="text-lg text-gray-500">{t('ranking.noResults')}</p>
               </div>
             )}
           </div>
