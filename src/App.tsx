@@ -53,7 +53,6 @@ const DiagnosticEurope = React.lazy(() => import("./pages/DiagnosticEurope"));
 const AlertesEurope = React.lazy(() => import("./pages/AlertesEurope"));
 const PrixEauxEurope = React.lazy(() => import("./pages/PrixEauxEurope"));
 const ParcoursEau = React.lazy(() => import("./pages/ParcoursEau"));
-const ParcoursEauV2 = React.lazy(() => import("./pages/ParcoursEauV2"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -133,7 +132,6 @@ const App = () => {
                 <Route path="/alertes-europe" element={<AlertesEurope />} />
                 <Route path="/prix-eaux-europe" element={<PrixEauxEurope />} />
                 <Route path="/parcours-eau" element={<ParcoursEau />} />
-                <Route path="/parcours-eau-v2" element={<ParcoursEauV2 />} />
                 <Route 
                   path="/admin/security" 
                   element={
