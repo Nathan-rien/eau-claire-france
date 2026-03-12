@@ -243,7 +243,7 @@ export default function Alertes() {
                     className="w-full"
                   >
                     <X className="mr-2 h-4 w-4" />
-                    Effacer
+                     {t('alerts.clear')}
                   </Button>
                 )}
               </div>
