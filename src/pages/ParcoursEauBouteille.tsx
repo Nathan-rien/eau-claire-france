@@ -146,7 +146,7 @@ const ParcoursEauBouteille = () => {
       <SEOHead
         title="Parcours de l'eau en bouteille — InfoEau.fr"
         description="Découvrez le parcours de l'eau en bouteille en 6 étapes : du captage à la source jusqu'à l'achat en magasin. Infographie interactive."
-        keywords={['eau en bouteille', 'parcours', 'embouteillage', 'eau minérale', 'transport eau', 'prix eau bouteille']}
+        keywords="eau en bouteille, parcours, embouteillage, eau minérale, transport eau, prix eau bouteille"
       />
 
       {/* ━━━ HERO ━━━ */}
