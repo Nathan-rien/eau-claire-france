@@ -379,7 +379,7 @@ export default function Alertes() {
                             <div className="flex items-center gap-2">
                               <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                               <div>
-                                <p className="text-muted-foreground">Prélevé le</p>
+                                <p className="text-muted-foreground">{t('alerts.sampledOn')}</p>
                                 <p className="font-medium">{new Date(alert.date).toLocaleDateString('fr-FR')}</p>
                               </div>
                             </div>
