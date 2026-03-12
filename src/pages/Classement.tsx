@@ -110,7 +110,7 @@ const Classement = () => {
               <div className="flex items-center gap-2">
                 <Switch id="sparkling" checked={showSparkling} onCheckedChange={setShowSparkling} />
                 <Label htmlFor="sparkling" className="text-sm cursor-pointer flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> Gazeuses
+                  <Sparkles className="w-3 h-3" /> {t('ranking.sparkling')}
                 </Label>
               </div>
               <div className="flex items-center gap-2">
