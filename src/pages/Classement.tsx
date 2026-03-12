@@ -73,7 +73,7 @@ const Classement = () => {
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-blue-800 text-base">
                   <Info className="w-5 h-5" />
-                  <span>Notation sur 80 points</span>
+                  <span>{t('ranking.scoreTitle')}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-blue-700 text-sm">
