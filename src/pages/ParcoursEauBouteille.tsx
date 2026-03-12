@@ -175,21 +175,21 @@ const ParcoursEauBouteille = () => {
 
         <div className="relative z-10 text-center px-6 max-w-3xl mx-auto">
           <div className="inline-block px-4 py-1.5 rounded-full border border-cyan-300/30 bg-cyan-500/10 backdrop-blur text-cyan-200 text-sm mb-6 animate-fade-in">
-            Infographie interactive
+            {t('journeyBottle.heroTag')}
           </div>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-            <span className="block animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>Le parcours de l'eau</span>
-            <span className="block bg-gradient-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'both' }}>en bouteille</span>
+            <span className="block animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>{t('journeyBottle.heroTitle1')}</span>
+            <span className="block bg-gradient-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'both' }}>{t('journeyBottle.heroTitle2')}</span>
           </h1>
           <p className="text-lg text-white/60 mb-10 animate-fade-in" style={{ animationDelay: '1s', animationFillMode: 'both' }}>
-            De la source minérale au rayon du supermarché : les 6 étapes du cycle de vie
+            {t('journeyBottle.heroSubtitle')}
           </p>
           <button
             onClick={scrollToFirst}
             className="group inline-flex items-center gap-2 px-8 py-4 rounded-full bg-cyan-500/20 backdrop-blur border border-cyan-300/30 text-white hover:bg-cyan-500/40 transition-all duration-300 animate-fade-in"
             style={{ animationDelay: '1.3s', animationFillMode: 'both' }}
           >
-            Commencer le voyage
+            {t('journeyBottle.startJourney')}
             <ChevronDown className="w-5 h-5 group-hover:translate-y-1 transition-transform" />
           </button>
         </div>
