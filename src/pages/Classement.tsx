@@ -61,10 +61,10 @@ const Classement = () => {
             <div className="text-center mb-6">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-2">
                 <Trophy className="w-6 h-6 md:w-8 md:h-8 text-yellow-600" />
-                <span>Classement des eaux minérales</span>
+                <span>{t('ranking.title')}</span>
               </h1>
               <p className="text-base text-gray-600 max-w-2xl mx-auto">
-                {waters.length} eaux analysées sur <b>{criteriaCount} critères</b> avec des fenêtres optimales par profil d'usage.
+                {t('ranking.description', { count: String(waters.length), criteria: String(criteriaCount) })}
               </p>
             </div>
 
