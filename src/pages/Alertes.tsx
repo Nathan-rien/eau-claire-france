@@ -280,7 +280,7 @@ export default function Alertes() {
             {(startDate || endDate || severityFilter !== "all") && (
               <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
                 <span className="font-medium">{filteredAlerts.length}</span>
-                alerte{filteredAlerts.length > 1 ? 's' : ''} trouvée{filteredAlerts.length > 1 ? 's' : ''} sur {alerts.length}
+                {t('alerts.alertsFound')} {alerts.length}
               </div>
             )}
           </CardContent>
