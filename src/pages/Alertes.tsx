@@ -250,16 +250,16 @@ export default function Alertes() {
 
               {/* Filtre sévérité */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Sévérité</label>
+                <label className="text-sm font-medium">{t('alerts.severity')}</label>
                 <Select value={severityFilter} onValueChange={setSeverityFilter}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Toutes" />
+                    <SelectValue placeholder={t('alerts.all')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Toutes</SelectItem>
-                    <SelectItem value="high">Critique</SelectItem>
-                    <SelectItem value="medium">Modérée</SelectItem>
-                    <SelectItem value="low">Faible</SelectItem>
+                    <SelectItem value="all">{t('alerts.all')}</SelectItem>
+                    <SelectItem value="high">{t('alerts.critical')}</SelectItem>
+                    <SelectItem value="medium">{t('alerts.moderate')}</SelectItem>
+                    <SelectItem value="low">{t('alerts.low')}</SelectItem>
                   </SelectContent>
                 </Select>
                 {severityFilter !== "all" && (
