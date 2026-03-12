@@ -85,58 +85,101 @@ export const WaterCycleAnimation = () => (
 
 /* ── 2. Pompage: Energy Meter with oscillating needle ── */
 export const EnergyMeterAnimation = () => (
-  <svg viewBox="0 0 200 180" className="w-48 mx-auto" aria-label="Compteur d'énergie animé">
+  <svg viewBox="0 0 280 220" className="w-full max-w-xs mx-auto" aria-label="Compteur d'énergie animé">
     {/* Meter body */}
-    <rect x="30" y="20" width="140" height="120" rx="12" fill="hsl(220, 15%, 25%)" stroke="hsl(220, 15%, 40%)" strokeWidth="2" />
-    <rect x="40" y="30" width="120" height="80" rx="8" fill="hsl(220, 15%, 15%)" />
+    <rect x="40" y="10" width="200" height="160" rx="14" fill="hsl(220, 15%, 22%)" stroke="hsl(220, 15%, 38%)" strokeWidth="2" />
+    <rect x="55" y="25" width="170" height="110" rx="10" fill="hsl(220, 15%, 12%)" />
 
-    {/* Gauge arc */}
-    <path d="M60,95 A40,40 0 0,1 140,95" fill="none" stroke="hsl(220, 10%, 30%)" strokeWidth="8" strokeLinecap="round" />
+    {/* Gauge arc background */}
+    <path d="M85,120 A55,55 0 0,1 195,120" fill="none" stroke="hsl(220, 10%, 25%)" strokeWidth="10" strokeLinecap="round" />
     {/* Green zone */}
-    <path d="M60,95 A40,40 0 0,1 85,62" fill="none" stroke="hsl(142, 60%, 45%)" strokeWidth="8" strokeLinecap="round" />
+    <path d="M85,120 A55,55 0 0,1 112,72" fill="none" stroke="hsl(142, 60%, 45%)" strokeWidth="10" strokeLinecap="round" />
     {/* Yellow zone */}
-    <path d="M85,62 A40,40 0 0,1 115,62" fill="none" stroke="hsl(45, 80%, 50%)" strokeWidth="8" strokeLinecap="round" />
+    <path d="M112,72 A55,55 0 0,1 168,72" fill="none" stroke="hsl(45, 80%, 50%)" strokeWidth="10" strokeLinecap="round" />
     {/* Red zone */}
-    <path d="M115,62 A40,40 0 0,1 140,95" fill="none" stroke="hsl(0, 70%, 50%)" strokeWidth="8" strokeLinecap="round" />
+    <path d="M168,72 A55,55 0 0,1 195,120" fill="none" stroke="hsl(0, 70%, 50%)" strokeWidth="10" strokeLinecap="round" />
+
+    {/* Scale tick marks */}
+    {[0, 1, 2, 3, 4, 5, 6].map(i => {
+      const angle = -150 + i * 42.8;
+      const rad = (angle * Math.PI) / 180;
+      const cx = 140, cy = 120;
+      const x1 = cx + Math.cos(rad) * 63;
+      const y1 = cy + Math.sin(rad) * 63;
+      const x2 = cx + Math.cos(rad) * 72;
+      const y2 = cy + Math.sin(rad) * 72;
+      const tx = cx + Math.cos(rad) * 52;
+      const ty = cy + Math.sin(rad) * 52;
+      return (
+        <g key={i}>
+          <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="hsl(0, 0%, 55%)" strokeWidth="2" />
+          <text x={tx} y={ty + 3} fill="hsl(0, 0%, 55%)" fontSize="9" textAnchor="middle" fontWeight="600">{i}</text>
+        </g>
+      );
+    })}
 
     {/* Needle */}
-    <g style={{ transformOrigin: '100px 95px', animation: 'v2-needle-swing 3s ease-in-out infinite' }}>
-      <line x1="100" y1="95" x2="72" y2="70" stroke="hsl(0, 80%, 55%)" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="100" cy="95" r="4" fill="hsl(0, 0%, 70%)" />
+    <g style={{ transformOrigin: '140px 120px', animation: 'v2-needle-swing 3.5s ease-in-out infinite' }}>
+      <line x1="140" y1="120" x2="95" y2="85" stroke="hsl(0, 80%, 55%)" strokeWidth="3" strokeLinecap="round" />
+      {/* Needle glow */}
+      <line x1="140" y1="120" x2="95" y2="85" stroke="hsl(0, 80%, 55%)" strokeWidth="5" strokeLinecap="round" opacity="0.3">
+        <animate attributeName="opacity" values="0.15;0.4;0.15" dur="1.5s" repeatCount="indefinite" />
+      </line>
+    </g>
+    <circle cx="140" cy="120" r="6" fill="hsl(220, 15%, 40%)" />
+    <circle cx="140" cy="120" r="3" fill="hsl(0, 0%, 80%)" />
+
+    {/* Zone labels */}
+    <text x="80" y="135" fill="hsl(142, 50%, 55%)" fontSize="8" fontWeight="bold">ECO</text>
+    <text x="183" y="135" fill="hsl(0, 60%, 55%)" fontSize="8" fontWeight="bold">MAX</text>
+
+    {/* Digital readout panel */}
+    <rect x="100" y="140" width="80" height="24" rx="5" fill="hsl(220, 20%, 8%)" stroke="hsl(220, 15%, 30%)" strokeWidth="1" />
+    <text x="140" y="157" fill="hsl(142, 70%, 55%)" fontSize="13" textAnchor="middle" fontWeight="bold" fontFamily="monospace">
+      2.7 kW
+    </text>
+    {/* Blinking dot */}
+    <circle cx="173" cy="148" r="2.5" fill="hsl(142, 70%, 50%)">
+      <animate attributeName="opacity" values="1;0.2;1" dur="1s" repeatCount="indefinite" />
+    </circle>
+
+    {/* Energy consumption bars */}
+    <g>
+      <text x="60" y="188" fill="hsl(0, 0%, 50%)" fontSize="7">Consommation</text>
+      {[0, 1, 2, 3, 4, 5, 6].map(i => (
+        <rect
+          key={i}
+          x={60 + i * 24}
+          y={195}
+          width="16"
+          height="0"
+          rx="2"
+          fill={i < 3 ? 'hsl(142, 60%, 45%)' : i < 5 ? 'hsl(45, 80%, 50%)' : 'hsl(0, 70%, 50%)'}
+        >
+          <animate
+            attributeName="height"
+            values={`0;${6 + i * 3};${3 + i * 2};${6 + i * 3}`}
+            dur="2.5s"
+            repeatCount="indefinite"
+            begin={`${i * 0.15}s`}
+          />
+          <animate
+            attributeName="y"
+            values={`195;${195 - (6 + i * 3)};${195 - (3 + i * 2)};${195 - (6 + i * 3)}`}
+            dur="2.5s"
+            repeatCount="indefinite"
+            begin={`${i * 0.15}s`}
+          />
+        </rect>
+      ))}
     </g>
 
-    {/* Energy bars at bottom */}
-    {[0, 1, 2, 3, 4].map(i => (
-      <rect
-        key={i}
-        x={55 + i * 20}
-        y={130}
-        width="12"
-        height="0"
-        rx="2"
-        fill={i < 2 ? 'hsl(142, 60%, 45%)' : i < 4 ? 'hsl(45, 80%, 50%)' : 'hsl(0, 70%, 50%)'}
-      >
-        <animate
-          attributeName="height"
-          values={`0;${10 + i * 5};${5 + i * 3};${10 + i * 5}`}
-          dur="2s"
-          repeatCount="indefinite"
-          begin={`${i * 0.2}s`}
-        />
-        <animate
-          attributeName="y"
-          values={`130;${130 - (10 + i * 5)};${130 - (5 + i * 3)};${130 - (10 + i * 5)}`}
-          dur="2s"
-          repeatCount="indefinite"
-          begin={`${i * 0.2}s`}
-        />
-      </rect>
-    ))}
-
-    {/* Labels */}
-    <text x="50" y="108" fill="hsl(142, 50%, 55%)" fontSize="7">ECO</text>
-    <text x="125" y="108" fill="hsl(0, 60%, 55%)" fontSize="7">MAX</text>
-    <text x="100" y="170" fill="hsl(200, 50%, 70%)" fontSize="9" textAnchor="middle" fontWeight="600">kWh</text>
+    {/* Efficiency indicator */}
+    <rect x="55" y="205" width="170" height="5" rx="2" fill="hsl(220, 10%, 20%)" />
+    <rect x="55" y="205" width="0" height="5" rx="2" fill="hsl(142, 60%, 45%)">
+      <animate attributeName="width" values="0;110;90;110" dur="3.5s" repeatCount="indefinite" />
+    </rect>
+    <text x="140" y="218" fill="hsl(0, 0%, 50%)" fontSize="7" textAnchor="middle">Rendement énergétique</text>
   </svg>
 );
 
