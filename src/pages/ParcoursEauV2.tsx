@@ -917,6 +917,44 @@ const ParcoursEauV2 = () => {
                     ✅ <strong className="text-white">Résultats ARS consultables</strong> en mairie et sur InfoEau.fr — votre eau est contrôlée en permanence.
                   </p>
                 </div>
+
+                {/* Comparatif prix */}
+                <div
+                  className={cn(
+                    "mt-6 p-5 rounded-xl bg-green-400/10 border border-green-300/20 transition-all duration-700",
+                    visibleSections.has('robinet') ? 'animate-v2-scale-bounce' : 'opacity-0 scale-90'
+                  )}
+                  style={{ animationDelay: '1.3s', animationFillMode: 'both' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Euro className="w-5 h-5 text-green-300 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-white mb-1">Le saviez-vous ?</p>
+                      <p className="text-sm text-green-100/80">
+                        L'eau du robinet coûte en moyenne <strong className="text-white">0,004 €/litre</strong> en France (~4 €/m³), contre
+                        <strong className="text-white"> 0,20 à 1,50 €/litre</strong> pour l'eau en bouteille —
+                        soit <strong className="text-white">100 à 300 fois plus cher</strong>.
+                        Une famille de 4 personnes économise environ <strong className="text-white">600 € par an</strong> en buvant l'eau du robinet.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={cn(
+                    "mt-4 p-4 rounded-xl bg-white/5 border border-white/10 transition-all duration-700",
+                    visibleSections.has('robinet') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+                  )}
+                  style={{ transitionDelay: '1.8s' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Leaf className="w-5 h-5 text-green-300 mt-0.5 shrink-0" />
+                    <p className="text-sm text-green-100/70">
+                      Chaque année en France, <strong className="text-white">9,3 milliards de litres d'eau</strong> sont vendus en bouteille, générant
+                      <strong className="text-white"> 150 000 tonnes de déchets plastiques</strong>. Boire l'eau du robinet divise par 300 l'empreinte carbone.
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <div className={cn(
