@@ -78,7 +78,7 @@ const Classement = () => {
               </CardHeader>
               <CardContent className="text-blue-700 text-sm">
                 <p className="mb-3">
-                  Chaque eau est évaluée sur <b>11 critères</b> pondérés selon votre profil :
+                  {t('ranking.scoreDescription')}
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
                   {Object.entries(CRITERION_LABELS).map(([key, { label }]) => (
