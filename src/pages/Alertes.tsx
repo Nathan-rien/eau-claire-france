@@ -386,7 +386,7 @@ export default function Alertes() {
                             <div className="flex items-center gap-2">
                               <Users className="h-4 w-4 text-muted-foreground" />
                               <div>
-                                <p className="text-muted-foreground">Population affectée</p>
+                                <p className="text-muted-foreground">{t('alerts.affectedPopulation')}</p>
                                 <p className="font-medium">{alert.affectedPopulation.toLocaleString('fr-FR')}</p>
                               </div>
                             </div>
