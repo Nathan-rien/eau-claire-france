@@ -144,7 +144,7 @@ const Classement = () => {
             {/* Results count */}
             {!loading && !error && (
               <p className="text-sm text-gray-500 mb-4">
-                {ranked.length} eau{ranked.length > 1 ? 'x' : ''} affichée{ranked.length > 1 ? 's' : ''}
+                {t('ranking.watersShown', { count: String(ranked.length) })}
               </p>
             )}
 
