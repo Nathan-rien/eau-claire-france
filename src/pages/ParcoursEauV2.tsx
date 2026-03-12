@@ -18,7 +18,8 @@ import {
 import {
   Droplets, ArrowDown, FlaskConical, Cylinder, Network, Home,
   Mountain, Waves, Layers, CircleDot, Filter, Zap, Sun, Shield,
-  ChevronDown, CheckCircle2, Gauge,
+  ChevronDown, CheckCircle2, Gauge, Lightbulb, AlertTriangle,
+  Euro, Leaf, Clock, ThermometerSun, Droplet,
 } from 'lucide-react';
 
 /* ───── Data (same as V1) ───── */
