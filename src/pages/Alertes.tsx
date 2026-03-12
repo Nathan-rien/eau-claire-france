@@ -73,7 +73,7 @@ export default function Alertes() {
   }, [alerts, startDate, endDate, severityFilter]);
 
   const handleRefresh = async () => {
-    toast.info("Actualisation des données en cours...");
+    toast.info(t('alerts.refreshing'));
     await queryClient.invalidateQueries({ queryKey: ['waterAlerts'] });
     refetch();
   };
