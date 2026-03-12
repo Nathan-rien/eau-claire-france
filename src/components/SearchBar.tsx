@@ -4,6 +4,7 @@ import { Search, MapPin, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { searchAddresses, AddressSuggestion } from '@/services/addressApi';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SearchBarProps {
   onCitySelect: (city: string) => void;
@@ -12,13 +13,16 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ 
   onCitySelect, 
-  placeholder = "Votre adresse" 
+  placeholder
 }) => {
+  const { t } = useLanguage();
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout>();
+
+  const resolvedPlaceholder = placeholder || t('search.yourAddress');
 
   useEffect(() => {
     if (debounceRef.current) {
@@ -38,7 +42,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         setSuggestions(results);
         setShowSuggestions(true);
       } catch (error) {
-        console.error('Erreur lors de la recherche:', error);
+        console.error('Search error:', error);
         setSuggestions([]);
       } finally {
         setIsLoading(false);
@@ -69,7 +73,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
     if (query.trim()) {
       let cityName = query.trim();
       
-      // Si aucune suggestion n'est trouvée, forcer une recherche
       if (suggestions.length === 0 && query.length >= 2) {
         try {
           const results = await searchAddresses(query);
@@ -77,7 +80,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             cityName = results[0].city;
           }
         } catch (error) {
-          console.error('Erreur lors de la recherche finale:', error);
+          console.error('Search error:', error);
         }
       } else if (suggestions.length > 0) {
         cityName = suggestions[0].city;
@@ -89,7 +92,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   const handleInputBlur = () => {
-    // Délai pour permettre le clic sur une suggestion
     setTimeout(() => setShowSuggestions(false), 200);
   };
 
@@ -105,12 +107,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
             onChange={(e) => handleInputChange(e.target.value)}
             onBlur={handleInputBlur}
             onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-            placeholder={placeholder}
+            placeholder={resolvedPlaceholder}
             className="pl-10 pr-16 sm:pr-24 h-12 sm:h-14 text-base sm:text-lg border-2 border-blue-200 focus:border-blue-500 rounded-xl w-full"
             autoComplete="off"
             maxLength={100}
             enterKeyHint="search"
-            aria-label="Rechercher une commune"
+            aria-label={t('search.searchMunicipality')}
           />
           {isLoading && (
             <Loader2 className="absolute right-20 sm:right-24 top-1/2 transform -translate-y-1/2 w-5 h-5 animate-spin text-blue-500" aria-hidden="true" />
@@ -119,10 +121,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
             type="submit"
             size="sm"
             className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-sm sm:text-base px-3 sm:px-4 h-10 sm:h-12 min-w-[44px]"
-            aria-label="Lancer la recherche"
+            aria-label={t('search.search')}
           >
-            <span className="hidden sm:inline">Rechercher</span>
-            <span className="sm:hidden">OK</span>
+            <span className="hidden sm:inline">{t('search.search')}</span>
+            <span className="sm:hidden">{t('search.ok')}</span>
           </Button>
         </div>
       </form>
@@ -135,7 +137,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
               type="button"
               onClick={() => handleSelect(suggestion)}
               className="w-full text-left px-4 py-3 min-h-[56px] hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center justify-between first:rounded-t-lg last:rounded-b-lg transition-colors"
-              aria-label={`Sélectionner ${suggestion.name}, ${suggestion.postcode}`}
+              aria-label={`${suggestion.name}, ${suggestion.postcode}`}
             >
               <div className="flex items-center space-x-2">
                 <MapPin className="w-3 h-3 md:w-4 md:h-4 text-gray-400 flex-shrink-0" />

@@ -1,8 +1,11 @@
 
 import React from 'react';
 import { Droplets } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Footer = () => {
+  const { t } = useLanguage();
+
   return (
     <footer className="bg-gray-900 text-white py-12 px-4" role="contentinfo">
       <div className="container mx-auto">
@@ -15,45 +18,45 @@ const Footer = () => {
               <h2 className="text-lg font-bold">InfoEau.fr</h2>
             </div>
             <p className="text-gray-400 text-sm">
-              Plateforme citoyenne de transparence sur la qualité de l'eau potable en France et en Europe.
+              {t('footer.description')}
             </p>
           </div>
           
           <nav>
-            <h3 className="font-semibold mb-3">Données</h3>
+            <h3 className="font-semibold mb-3">{t('footer.data')}</h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><a href="/sources" className="hover:text-white transition-colors" rel="nofollow">Sources</a></li>
-              <li><a href="/methodologie" className="hover:text-white transition-colors" rel="nofollow">Méthodologie</a></li>
-              <li><a href="/api-publique" className="hover:text-white transition-colors" rel="nofollow">API publique</a></li>
-              <li><a href="/parcours-eau" className="hover:text-white transition-colors">Parcours de l'eau</a></li>
+              <li><a href="/sources" className="hover:text-white transition-colors" rel="nofollow">{t('footer.sources')}</a></li>
+              <li><a href="/methodologie" className="hover:text-white transition-colors" rel="nofollow">{t('footer.methodology')}</a></li>
+              <li><a href="/api-publique" className="hover:text-white transition-colors" rel="nofollow">{t('footer.publicApi')}</a></li>
+              <li><a href="/parcours-eau" className="hover:text-white transition-colors">{t('footer.waterJourney')}</a></li>
             </ul>
           </nav>
           
           <nav>
-            <h3 className="font-semibold mb-3">Informations</h3>
+            <h3 className="font-semibold mb-3">{t('footer.information')}</h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><a href="/a-propos" className="hover:text-white transition-colors" rel="nofollow">À propos</a></li>
-              <li><a href="/contact" className="hover:text-white transition-colors" rel="nofollow">Contact</a></li>
-              <li><a href="/mentions-legales" className="hover:text-white transition-colors" rel="nofollow">Mentions légales</a></li>
+              <li><a href="/a-propos" className="hover:text-white transition-colors" rel="nofollow">{t('footer.about')}</a></li>
+              <li><a href="/contact" className="hover:text-white transition-colors" rel="nofollow">{t('footer.contact')}</a></li>
+              <li><a href="/mentions-legales" className="hover:text-white transition-colors" rel="nofollow">{t('footer.legal')}</a></li>
             </ul>
           </nav>
           
           <nav>
-            <h3 className="font-semibold mb-3">Conformité</h3>
+            <h3 className="font-semibold mb-3">{t('footer.compliance')}</h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><a href="/rgpd" className="hover:text-white transition-colors" rel="nofollow">RGPD</a></li>
-              <li><a href="/accessibilite" className="hover:text-white transition-colors" rel="nofollow">Accessibilité</a></li>
-              <li><a href="/open-data" className="hover:text-white transition-colors" rel="nofollow">Open Data</a></li>
+              <li><a href="/rgpd" className="hover:text-white transition-colors" rel="nofollow">{t('footer.gdpr')}</a></li>
+              <li><a href="/accessibilite" className="hover:text-white transition-colors" rel="nofollow">{t('footer.accessibility')}</a></li>
+              <li><a href="/open-data" className="hover:text-white transition-colors" rel="nofollow">{t('footer.openData')}</a></li>
             </ul>
           </nav>
         </div>
         
         <div className="border-t border-gray-800 pt-8 mt-8 text-center">
           <p className="text-gray-400 text-sm mb-2">
-            © 2024 InfoEau.fr - Données basées sur les sources officielles ARS, EauFrance, BRGM, EEA
+            {t('footer.copyright')}
           </p>
           <p className="text-gray-400 text-sm">
-            Créé par{' '}
+            {t('footer.createdBy')}{' '}
             <a 
               href="https://www.linkedin.com/in/nathan-orso-bdx/" 
               target="_blank" 

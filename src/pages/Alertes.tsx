@@ -17,6 +17,7 @@ import { fr } from "date-fns/locale";
 import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import Layout from "@/components/Layout";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const getSeverityColor = (severity: string) => {
   switch (severity) {
@@ -37,6 +38,7 @@ const getSeverityIcon = (severity: string) => {
 };
 
 export default function Alertes() {
+  const { t } = useLanguage();
   const { data, isLoading, error, refetch, isFetching } = useWaterAlerts();
   const queryClient = useQueryClient();
   
@@ -71,7 +73,7 @@ export default function Alertes() {
   }, [alerts, startDate, endDate, severityFilter]);
 
   const handleRefresh = async () => {
-    toast.info("Actualisation des données en cours...");
+    toast.info(t('alerts.refreshing'));
     await queryClient.invalidateQueries({ queryKey: ['waterAlerts'] });
     refetch();
   };
@@ -80,8 +82,8 @@ export default function Alertes() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
         <SEOHead 
-          title="Alertes qualité de l'eau - InfoEau"
-          description="Suivez les alertes sanitaires concernant la qualité de l'eau potable en France"
+          title={t('alerts.seoTitle')}
+          description={t('alerts.seoDescription')}
           canonical="https://infoeau.fr/alertes"
         />
         <div className="container mx-auto px-4 py-12 space-y-8">
@@ -96,14 +98,14 @@ export default function Alertes() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
         <SEOHead 
-          title="Alertes qualité de l'eau - InfoEau"
-          description="Suivez les alertes sanitaires concernant la qualité de l'eau potable en France"
+          title={t('alerts.seoTitle')}
+          description={t('alerts.seoDescription')}
           canonical="https://infoeau.fr/alertes"
         />
         <div className="container mx-auto px-4 py-12">
           <Card className="border-destructive">
             <CardContent className="pt-6">
-              <p className="text-destructive">Erreur lors du chargement des alertes</p>
+              <p className="text-destructive">{t('alerts.loadError')}</p>
             </CardContent>
           </Card>
         </div>
@@ -117,8 +119,8 @@ export default function Alertes() {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <SEOHead 
-        title="Alertes qualité de l'eau - InfoEau"
-        description="Suivez en temps réel les alertes sanitaires concernant la qualité de l'eau potable en France. Informations officielles de l'API Hub'Eau."
+        title={t('alerts.seoTitle')}
+        description={t('alerts.seoDescription')}
         canonical="https://infoeau.fr/alertes"
       />
 
@@ -126,13 +128,13 @@ export default function Alertes() {
         <div className="text-center space-y-4 mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
             <AlertTriangle className="h-5 w-5 text-primary" />
-            <span className="text-sm font-medium text-primary">Alertes en cours</span>
+            <span className="text-sm font-medium text-primary">{t('alerts.ongoing')}</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold">
-            Alertes Qualité de l'Eau
+            {t('alerts.title')}
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Suivez en temps réel les alertes sanitaires concernant la qualité de l'eau potable
+            {t('alerts.subtitle')}
           </p>
         </div>
 
@@ -146,7 +148,7 @@ export default function Alertes() {
             className="gap-2"
           >
             <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
-            Actualiser
+            {t('alerts.refresh')}
           </Button>
         </div>
 
@@ -154,8 +156,8 @@ export default function Alertes() {
         <div className="flex items-start gap-3 p-4 rounded-lg border border-primary/20 bg-primary/5 mb-4">
           <svg className="h-5 w-5 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20A10 10 0 0112 2z" /></svg>
           <p className="text-sm text-foreground">
-            <span className="font-semibold">Données actualisées en temps réel depuis l'API Hub'Eau.</span>{" "}
-            Les résultats d'analyses sont publiés par les laboratoires agréés avec un délai réglementaire de 4 à 8 semaines. Les dates affichées correspondent aux <span className="font-medium">dates de prélèvement sur le terrain</span> — il est normal que les échantillons les plus récents datent de fin décembre ou janvier.
+            <span className="font-semibold">{t('alerts.hubEauBanner')}</span>{" "}
+            {t('alerts.hubEauDetail')}
           </p>
         </div>
 
@@ -164,13 +166,13 @@ export default function Alertes() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-4">
               <Filter className="h-5 w-5 text-primary" />
-              <h2 className="text-lg font-semibold">Filtres</h2>
+              <h2 className="text-lg font-semibold">{t('alerts.filters')}</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Filtre date de début */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Date de début</label>
+                <label className="text-sm font-medium">{t('alerts.startDate')}</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -181,7 +183,7 @@ export default function Alertes() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "PPP", { locale: fr }) : "Sélectionner"}
+                      {startDate ? format(startDate, "PPP", { locale: fr }) : t('alerts.select')}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -202,14 +204,14 @@ export default function Alertes() {
                     className="w-full"
                   >
                     <X className="mr-2 h-4 w-4" />
-                    Effacer
+                     {t('alerts.clear')}
                   </Button>
                 )}
               </div>
 
               {/* Filtre date de fin */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Date de fin</label>
+                <label className="text-sm font-medium">{t('alerts.endDate')}</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -220,7 +222,7 @@ export default function Alertes() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? format(endDate, "PPP", { locale: fr }) : "Sélectionner"}
+                      {endDate ? format(endDate, "PPP", { locale: fr }) : t('alerts.select')}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -241,23 +243,23 @@ export default function Alertes() {
                     className="w-full"
                   >
                     <X className="mr-2 h-4 w-4" />
-                    Effacer
+                     {t('alerts.clear')}
                   </Button>
                 )}
               </div>
 
               {/* Filtre sévérité */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Sévérité</label>
+                <label className="text-sm font-medium">{t('alerts.severity')}</label>
                 <Select value={severityFilter} onValueChange={setSeverityFilter}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Toutes" />
+                    <SelectValue placeholder={t('alerts.all')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Toutes</SelectItem>
-                    <SelectItem value="high">Critique</SelectItem>
-                    <SelectItem value="medium">Modérée</SelectItem>
-                    <SelectItem value="low">Faible</SelectItem>
+                    <SelectItem value="all">{t('alerts.all')}</SelectItem>
+                    <SelectItem value="high">{t('alerts.critical')}</SelectItem>
+                    <SelectItem value="medium">{t('alerts.moderate')}</SelectItem>
+                    <SelectItem value="low">{t('alerts.low')}</SelectItem>
                   </SelectContent>
                 </Select>
                 {severityFilter !== "all" && (
@@ -268,7 +270,7 @@ export default function Alertes() {
                     className="w-full"
                   >
                     <X className="mr-2 h-4 w-4" />
-                    Effacer
+                    {t('alerts.clear')}
                   </Button>
                 )}
               </div>
@@ -278,7 +280,7 @@ export default function Alertes() {
             {(startDate || endDate || severityFilter !== "all") && (
               <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
                 <span className="font-medium">{filteredAlerts.length}</span>
-                alerte{filteredAlerts.length > 1 ? 's' : ''} trouvée{filteredAlerts.length > 1 ? 's' : ''} sur {alerts.length}
+                {t('alerts.alertsFound')} {alerts.length}
               </div>
             )}
           </CardContent>
@@ -293,7 +295,7 @@ export default function Alertes() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Alertes critiques</p>
+                  <p className="text-sm text-muted-foreground">{t('alerts.criticalAlerts')}</p>
                   <p className="text-3xl font-bold text-destructive">
                     {filteredAlerts.filter(a => a.severity === 'high').length}
                   </p>
@@ -307,7 +309,7 @@ export default function Alertes() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Alertes modérées</p>
+                  <p className="text-sm text-muted-foreground">{t('alerts.moderateAlerts')}</p>
                   <p className="text-3xl font-bold text-orange-500">
                     {filteredAlerts.filter(a => a.severity === 'medium').length}
                   </p>
@@ -321,7 +323,7 @@ export default function Alertes() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Population affectée</p>
+                  <p className="text-sm text-muted-foreground">{t('alerts.affectedPopulation')}</p>
                   <p className="text-3xl font-bold text-blue-600">
                     {(filteredAlerts.reduce((sum, a) => sum + a.affectedPopulation, 0) / 1000).toFixed(0)}k
                   </p>
@@ -337,7 +339,7 @@ export default function Alertes() {
           <Card>
             <CardContent className="pt-6 text-center text-muted-foreground">
               <Droplet className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Aucune alerte active en ce moment</p>
+              <p>{t('alerts.noAlerts')}</p>
             </CardContent>
           </Card>
         ) : (
@@ -349,7 +351,7 @@ export default function Alertes() {
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-foreground">{region}</h3>
                     <Badge variant="secondary" className="text-sm">
-                      {regionAlerts.length} alerte{regionAlerts.length > 1 ? 's' : ''}
+                      {regionAlerts.length} {regionAlerts.length > 1 ? t('alerts.alerts') : t('alerts.alert')}
                     </Badge>
                   </div>
                 </div>
@@ -369,7 +371,7 @@ export default function Alertes() {
                               </div>
                             </div>
                             <Badge className={getSeverityColor(alert.severity)}>
-                              {alert.severity === 'high' ? 'Critique' : alert.severity === 'medium' ? 'Modérée' : 'Faible'}
+                              {alert.severity === 'high' ? t('alerts.critical') : alert.severity === 'medium' ? t('alerts.moderate') : t('alerts.low')}
                             </Badge>
                           </div>
 
@@ -377,14 +379,14 @@ export default function Alertes() {
                             <div className="flex items-center gap-2">
                               <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                               <div>
-                                <p className="text-muted-foreground">Prélevé le</p>
+                                <p className="text-muted-foreground">{t('alerts.sampledOn')}</p>
                                 <p className="font-medium">{new Date(alert.date).toLocaleDateString('fr-FR')}</p>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
                               <Users className="h-4 w-4 text-muted-foreground" />
                               <div>
-                                <p className="text-muted-foreground">Population affectée</p>
+                                <p className="text-muted-foreground">{t('alerts.affectedPopulation')}</p>
                                 <p className="font-medium">{alert.affectedPopulation.toLocaleString('fr-FR')}</p>
                               </div>
                             </div>
@@ -394,7 +396,7 @@ export default function Alertes() {
                             <div className="flex items-start gap-2">
                               <Shield className="h-4 w-4 mt-0.5 text-muted-foreground" />
                               <div>
-                                <p className="text-sm font-medium mb-1">Mesures prises :</p>
+                                <p className="text-sm font-medium mb-1">{t('alerts.measures')}</p>
                                 <p className="text-sm text-muted-foreground">{alert.measures}</p>
                               </div>
                             </div>

@@ -10,8 +10,10 @@ import BottleRankingCard from '@/components/Ranking/BottleRankingCard';
 import { Profile, scoreBottle, Composition, CRITERION_LABELS } from '@/utils/rankingV2';
 import { useWaterCompositions } from '@/hooks/useWaterCompositions';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Classement = () => {
+  const { t } = useLanguage();
   const [profile, setProfile] = useState<Profile>("daily");
   const [showSparkling, setShowSparkling] = useState(true);
   const [showStill, setShowStill] = useState(true);
@@ -59,10 +61,10 @@ const Classement = () => {
             <div className="text-center mb-6">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-2">
                 <Trophy className="w-6 h-6 md:w-8 md:h-8 text-yellow-600" />
-                <span>Classement des eaux minérales</span>
+                <span>{t('ranking.title')}</span>
               </h1>
               <p className="text-base text-gray-600 max-w-2xl mx-auto">
-                {waters.length} eaux analysées sur <b>{criteriaCount} critères</b> avec des fenêtres optimales par profil d'usage.
+                {t('ranking.description', { count: String(waters.length), criteria: String(criteriaCount) })}
               </p>
             </div>
 
@@ -71,12 +73,12 @@ const Classement = () => {
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-blue-800 text-base">
                   <Info className="w-5 h-5" />
-                  <span>Notation sur 80 points</span>
+                  <span>{t('ranking.scoreTitle')}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-blue-700 text-sm">
                 <p className="mb-3">
-                  Chaque eau est évaluée sur <b>11 critères</b> pondérés selon votre profil :
+                  {t('ranking.scoreDescription')}
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
                   {Object.entries(CRITERION_LABELS).map(([key, { label }]) => (
@@ -87,7 +89,7 @@ const Classement = () => {
                   ))}
                 </div>
                 <div className="mt-3 p-2 bg-white/70 rounded-lg border border-blue-200 text-xs">
-                  💡 Les eaux exclues (contre-indiquées pour le profil) sont signalées en rouge.
+                  {t('ranking.excludedNote')}
                 </div>
               </CardContent>
             </Card>
@@ -99,21 +101,21 @@ const Classement = () => {
             <div className="flex flex-wrap gap-4 mb-6 p-3 bg-white rounded-lg border shadow-sm">
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-600 font-medium">Filtres :</span>
+                <span className="text-sm text-gray-600 font-medium">{t('ranking.filters')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Switch id="still" checked={showStill} onCheckedChange={setShowStill} />
-                <Label htmlFor="still" className="text-sm cursor-pointer">Plates</Label>
+                <Label htmlFor="still" className="text-sm cursor-pointer">{t('ranking.still')}</Label>
               </div>
               <div className="flex items-center gap-2">
                 <Switch id="sparkling" checked={showSparkling} onCheckedChange={setShowSparkling} />
                 <Label htmlFor="sparkling" className="text-sm cursor-pointer flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> Gazeuses
+                  <Sparkles className="w-3 h-3" /> {t('ranking.sparkling')}
                 </Label>
               </div>
               <div className="flex items-center gap-2">
                 <Switch id="excluded" checked={hideExcluded} onCheckedChange={setHideExcluded} />
-                <Label htmlFor="excluded" className="text-sm cursor-pointer">Masquer contre-indiquées</Label>
+                <Label htmlFor="excluded" className="text-sm cursor-pointer">{t('ranking.hideExcluded')}</Label>
               </div>
             </div>
 
@@ -142,7 +144,7 @@ const Classement = () => {
             {/* Results count */}
             {!loading && !error && (
               <p className="text-sm text-gray-500 mb-4">
-                {ranked.length} eau{ranked.length > 1 ? 'x' : ''} affichée{ranked.length > 1 ? 's' : ''}
+                {t('ranking.watersShown', { count: String(ranked.length) })}
               </p>
             )}
 
@@ -167,7 +169,7 @@ const Classement = () => {
             {!loading && !error && ranked.length === 0 && (
               <div className="text-center py-12">
                 <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-lg text-gray-500">Aucune eau ne correspond aux critères sélectionnés.</p>
+                <p className="text-lg text-gray-500">{t('ranking.noResults')}</p>
               </div>
             )}
           </div>

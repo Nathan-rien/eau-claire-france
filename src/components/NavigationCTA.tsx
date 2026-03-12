@@ -3,28 +3,31 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Stethoscope, Droplets } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const NavigationCTA = () => {
+  const { t } = useLanguage();
+
   const navigationItems = [
     {
-      title: "Carte des eaux",
-      description: "Explorez la qualité de l'eau dans votre région",
+      title: t('cta.mapTitle'),
+      description: t('cta.mapDesc'),
       icon: <MapPin className="w-8 h-8 text-blue-600" />,
       href: "/carte",
       bgColor: "bg-blue-50",
       borderColor: "border-blue-200"
     },
     {
-      title: "Diagnostic",
-      description: "Analysez la qualité de votre eau locale",
+      title: t('cta.diagnosticTitle'),
+      description: t('cta.diagnosticDesc'),
       icon: <Stethoscope className="w-8 h-8 text-green-600" />,
       href: "/diagnostic",
       bgColor: "bg-green-50",
       borderColor: "border-green-200"
     },
     {
-      title: "Quelle eau boire ?",
-      description: "Trouvez l'eau qui vous convient",
+      title: t('cta.whichWaterTitle'),
+      description: t('cta.whichWaterDesc'),
       icon: <Droplets className="w-8 h-8 text-purple-600" />,
       href: "/quelle-eau-boire",
       bgColor: "bg-purple-50",
@@ -35,7 +38,7 @@ const NavigationCTA = () => {
   return (
     <div className="w-full">
       <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
-        Explorez nos services
+        {t('cta.title')}
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {navigationItems.map((item, index) => (
