@@ -17,6 +17,7 @@ import { fr } from "date-fns/locale";
 import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import Layout from "@/components/Layout";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const getSeverityColor = (severity: string) => {
   switch (severity) {
