@@ -323,7 +323,7 @@ export default function Alertes() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Population affectée</p>
+                  <p className="text-sm text-muted-foreground">{t('alerts.affectedPopulation')}</p>
                   <p className="text-3xl font-bold text-blue-600">
                     {(filteredAlerts.reduce((sum, a) => sum + a.affectedPopulation, 0) / 1000).toFixed(0)}k
                   </p>
