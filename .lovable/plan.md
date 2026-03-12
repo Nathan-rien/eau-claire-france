@@ -1,54 +1,49 @@
 
 
-## Mise à jour automatique quotidienne des prix via pg_cron
+## Ajouter une étape introductive "Vue d'ensemble" avec animation complète du cheminement
 
-### Problème identifié
+### Objectif
+Insérer une nouvelle section entre le hero et les 6 étapes existantes. Cette section montrera une animation SVG panoramique du parcours complet de l'eau — du captage au robinet — avec les 6 étapes reliées visuellement par un flux d'eau animé.
 
-Les prix en base de données datent du **16 décembre 2025** (plus de 2 mois). Le workflow GitHub Actions corrigé ne s'exécute pas, probablement car :
-- Les secrets GitHub (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) ne sont pas configurés dans le repository
-- Ou le workflow Playwright échoue silencieusement en CI
+### Nouvelle animation : `FullJourneyAnimation`
 
-### Solution proposee : pg_cron Supabase
+Un SVG horizontal (~600×250) montrant :
+- **6 icônes/illustrations** alignées : montagne/source → pompe → usine de traitement → château d'eau → réseau de canalisations → robinet/maison
+- **Un flux d'eau animé** (cercles bleus qui se déplacent le long d'un chemin sinueux reliant les 6 étapes)
+- **Labels** sous chaque icône avec le nom de l'étape
+- **Effet de progression** : les étapes s'illuminent séquentiellement avec un léger délai entre chaque (staggered glow)
+- **Chiffres-clés animés** au-dessus : distance totale, temps moyen, nombre d'étapes
 
-Plutot que de dependre de GitHub Actions (qui necessite Playwright, des secrets, et un runner CI), on va utiliser **pg_cron** directement dans Supabase pour appeler l'Edge Function `admin-smoke` chaque matin a 6:00 UTC (7:00 Paris).
+### Fichiers modifiés
 
-Cela fonctionne sans aucune infrastructure externe.
+1. **`src/components/parcours/SecondaryAnimations.tsx`** — Ajouter le composant `FullJourneyAnimation`
+2. **`src/pages/ParcoursEauV2.tsx`** — Insérer une nouvelle section "Vue d'ensemble" entre le hero et la section Captage, avec :
+   - Titre "Le voyage complet de l'eau"
+   - L'animation `FullJourneyAnimation`
+   - 3 stats rapides animées (distance, durée, contrôles)
+   - Bouton "Explorer chaque étape" qui scroll vers Captage
+3. **`src/index.css`** — Ajouter un keyframe `v2-flow-particle` pour les particules d'eau qui se déplacent le long du chemin
 
-### Etapes
-
-**1. Activer les extensions pg_cron et pg_net**
-
-Ces extensions permettent a PostgreSQL de planifier des taches et de faire des appels HTTP.
-
-**2. Creer le job pg_cron**
-
-Un job SQL qui appelle l'Edge Function `admin-smoke` via `net.http_post` chaque jour a 6:00 UTC :
+### Structure de la section
 
 ```text
-cron.schedule(
-  'daily-price-refresh',
-  '0 6 * * *',   -- Chaque jour a 6:00 UTC (7:00 Paris)
-  appel HTTP POST vers admin-smoke
-)
+┌──────────────────────────────────────────────────┐
+│  "Le voyage complet de l'eau"                    │
+│                                                  │
+│  🏔️ ──→ ⚡ ──→ 🧪 ──→ 🏗️ ──→ 🔧 ──→ 🚰       │
+│  Captage  Pompage  Trait.  Stock.  Distrib. Rob. │
+│  ~~~~ particules d'eau animées ~~~~              │
+│                                                  │
+│  906 000 km    24-48h    63 paramètres           │
+│  de réseau     de voyage  contrôlés              │
+│                                                  │
+│        [ Explorer chaque étape ↓ ]               │
+└──────────────────────────────────────────────────┘
 ```
 
-**3. Lancer un premier appel immediat**
-
-Pour mettre a jour les donnees tout de suite (sans attendre demain matin), on declenchera aussi l'Edge Function manuellement.
-
-### Ce qui change
-
-- Les prix seront regeneres automatiquement chaque matin a 7h00 (heure de Paris)
-- Les dates `scraped_at` afficheront la date du jour
-- La page `/prix-eaux` montrera des donnees fraiches
-- Aucune dependance a GitHub Actions, Playwright, ou des secrets externes
-
-### Limites
-
-L'Edge Function `admin-smoke` genere des **donnees realistes simulees** (prix aleatoires dans des fourchettes credibles par marque). Ce n'est pas du vrai scraping de sites marchands. Pour du scraping reel, il faudrait faire fonctionner le workflow GitHub Actions avec les bons secrets. Mais pour l'affichage et la demonstration, le smoke test produit des donnees coherentes et a jour.
-
-### Fichiers concernes
-
-- Aucun fichier modifie : la configuration se fait via une requete SQL directe dans Supabase (pg_cron)
-- L'Edge Function `admin-smoke` existante est utilisee telle quelle
+### Détails techniques
+- L'animation SVG utilise `<animateMotion>` le long d'un `<path>` pour les particules d'eau
+- Les icônes d'étape pulsent séquentiellement via des `animate` avec des `begin` décalés
+- La section est observée par l'IntersectionObserver existant pour déclencher les animations au scroll
+- Responsive : sur mobile, le chemin sera vertical au lieu d'horizontal
 
