@@ -569,6 +569,42 @@ const ParcoursEauV2 = () => {
                     })}
                   </div>
                 </div>
+
+                {/* Le saviez-vous ? - Traitement */}
+                <div
+                  className={cn(
+                    "mt-6 p-5 rounded-xl bg-purple-400/10 border border-purple-300/20 transition-all duration-700",
+                    visibleSections.has('traitement') ? 'animate-v2-scale-bounce' : 'opacity-0 scale-90'
+                  )}
+                  style={{ animationDelay: '1.6s', animationFillMode: 'both' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Lightbulb className="w-5 h-5 text-purple-300 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-white mb-1">Le saviez-vous ?</p>
+                      <p className="text-sm text-purple-100/80">
+                        Les <strong className="text-white">63 paramètres réglementaires</strong> sont répartis en 3 catégories : microbiologiques (bactéries, virus),
+                        physico-chimiques (pH, métaux lourds, pesticides) et organoleptiques (goût, odeur, couleur).
+                        L'eau du robinet est l'aliment le plus contrôlé en France.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={cn(
+                    "mt-4 p-4 rounded-xl bg-white/5 border border-white/10 transition-all duration-700",
+                    visibleSections.has('traitement') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+                  )}
+                  style={{ transitionDelay: '2s' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <ThermometerSun className="w-5 h-5 text-purple-300 mt-0.5 shrink-0" />
+                    <p className="text-sm text-purple-100/70">
+                      L'ozonation détruit <strong className="text-white">99,99 % des micro-organismes</strong> en quelques secondes, tandis que le charbon actif absorbe les micropolluants et les résidus de pesticides.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
