@@ -23,6 +23,7 @@ import {
   LeakDetectorAnimation,
   CostComparisonAnimation,
 } from '@/components/parcours/SecondaryAnimations';
+import { FullJourneyAnimation } from '@/components/parcours/FullJourneyAnimation';
 import {
   Droplets, ArrowDown, FlaskConical, Cylinder, Network, Home,
   Mountain, Waves, Layers, CircleDot, Filter, Zap, Sun, Shield,
