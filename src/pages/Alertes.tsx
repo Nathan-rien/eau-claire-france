@@ -396,7 +396,7 @@ export default function Alertes() {
                             <div className="flex items-start gap-2">
                               <Shield className="h-4 w-4 mt-0.5 text-muted-foreground" />
                               <div>
-                                <p className="text-sm font-medium mb-1">Mesures prises :</p>
+                                <p className="text-sm font-medium mb-1">{t('alerts.measures')}</p>
                                 <p className="text-sm text-muted-foreground">{alert.measures}</p>
                               </div>
                             </div>
