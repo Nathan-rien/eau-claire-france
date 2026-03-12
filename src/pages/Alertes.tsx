@@ -309,7 +309,7 @@ export default function Alertes() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Alertes modérées</p>
+                  <p className="text-sm text-muted-foreground">{t('alerts.moderateAlerts')}</p>
                   <p className="text-3xl font-bold text-orange-500">
                     {filteredAlerts.filter(a => a.severity === 'medium').length}
                   </p>
