@@ -1,34 +1,54 @@
 
 
-## Enrichir chaque étape avec plus de texte et d'animations
+## Mise à jour automatique quotidienne des prix via pg_cron
 
-### Objectif
-Ajouter du contenu textuel éducatif et des micro-animations supplémentaires à chacune des 6 étapes pour rendre la page plus immersive et informative.
+### Problème identifié
 
-### Modifications par étape
+Les prix en base de données datent du **16 décembre 2025** (plus de 2 mois). Le workflow GitHub Actions corrigé ne s'exécute pas, probablement car :
+- Les secrets GitHub (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) ne sont pas configurés dans le repository
+- Ou le workflow Playwright échoue silencieusement en CI
 
-**1. Captage** — Ajouter un encart "Le saviez-vous ?" sur le cycle de l'eau (temps de filtration naturelle, âge des nappes profondes). Ajouter une animation de compteur pour les 33 000 points de captage.
+### Solution proposee : pg_cron Supabase
 
-**2. Pompage** — Ajouter un paragraphe sur les enjeux énergétiques du pompage (consommation électrique, pompes solaires). Ajouter des icônes animées de type "pulse" sur les stats.
+Plutot que de dependre de GitHub Actions (qui necessite Playwright, des secrets, et un runner CI), on va utiliser **pg_cron** directement dans Supabase pour appeler l'Edge Function `admin-smoke` chaque matin a 6:00 UTC (7:00 Paris).
 
-**3. Traitement** — Ajouter un paragraphe expliquant la différence entre eau souterraine (traitement léger) et eau de surface (traitement complet). Ajouter un encart sur les 63 paramètres réglementaires avec animation fade-in progressive.
+Cela fonctionne sans aucune infrastructure externe.
 
-**4. Stockage** — Ajouter du texte sur le rôle des châteaux d'eau dans la pression gravitaire, la gestion des pics de consommation et le renouvellement de l'eau. Ajouter une animation de pulsation sur l'indicateur de niveau.
+### Etapes
 
-**5. Distribution** — Ajouter un paragraphe sur les pertes réseau (20% en moyenne, jusqu'à 50% dans certaines communes). Ajouter un encart "Enjeu environnemental" avec animation. Ajouter des stats animées supplémentaires.
+**1. Activer les extensions pg_cron et pg_net**
 
-**6. Robinet** — Ajouter un paragraphe sur le coût de l'eau (prix moyen en France ~4€/m³), la comparaison eau du robinet vs eau en bouteille (×100 à ×300 plus cher). Ajouter un encart comparatif animé.
+Ces extensions permettent a PostgreSQL de planifier des taches et de faire des appels HTTP.
 
-### Animations ajoutées
+**2. Creer le job pg_cron**
 
-- **Pulse glow** sur les icônes d'étape au scroll (classe `animate-pulse` existante)
-- **Staggered fade-in** pour les nouveaux paragraphes (déjà en place, étendre les delays)
-- **Scale-in** sur les encarts "Le saviez-vous" avec un léger rebond
-- **Compteurs animés** réutilisant `useAnimatedCounter` existant pour les nouvelles stats
-- **Shimmer** sur les chiffres-clés avec un gradient animé
+Un job SQL qui appelle l'Edge Function `admin-smoke` via `net.http_post` chaque jour a 6:00 UTC :
 
-### Fichiers modifiés
+```text
+cron.schedule(
+  'daily-price-refresh',
+  '0 6 * * *',   -- Chaque jour a 6:00 UTC (7:00 Paris)
+  appel HTTP POST vers admin-smoke
+)
+```
 
-1. **`src/pages/ParcoursEauV2.tsx`** — Ajout de texte et d'animations dans chaque section
-2. **`src/index.css`** — Ajout d'un keyframe `v2-shimmer` pour l'effet de brillance sur les chiffres
+**3. Lancer un premier appel immediat**
+
+Pour mettre a jour les donnees tout de suite (sans attendre demain matin), on declenchera aussi l'Edge Function manuellement.
+
+### Ce qui change
+
+- Les prix seront regeneres automatiquement chaque matin a 7h00 (heure de Paris)
+- Les dates `scraped_at` afficheront la date du jour
+- La page `/prix-eaux` montrera des donnees fraiches
+- Aucune dependance a GitHub Actions, Playwright, ou des secrets externes
+
+### Limites
+
+L'Edge Function `admin-smoke` genere des **donnees realistes simulees** (prix aleatoires dans des fourchettes credibles par marque). Ce n'est pas du vrai scraping de sites marchands. Pour du scraping reel, il faudrait faire fonctionner le workflow GitHub Actions avec les bons secrets. Mais pour l'affichage et la demonstration, le smoke test produit des donnees coherentes et a jour.
+
+### Fichiers concernes
+
+- Aucun fichier modifie : la configuration se fait via une requete SQL directe dans Supabase (pg_cron)
+- L'Edge Function `admin-smoke` existante est utilisee telle quelle
 

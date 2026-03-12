@@ -18,7 +18,8 @@ import {
 import {
   Droplets, ArrowDown, FlaskConical, Cylinder, Network, Home,
   Mountain, Waves, Layers, CircleDot, Filter, Zap, Sun, Shield,
-  ChevronDown, CheckCircle2, Gauge,
+  ChevronDown, CheckCircle2, Gauge, Lightbulb, AlertTriangle,
+  Euro, Leaf, Clock, ThermometerSun, Droplet,
 } from 'lucide-react';
 
 /* ───── Data (same as V1) ───── */
@@ -385,6 +386,41 @@ const ParcoursEauV2 = () => {
                     );
                   })}
                 </div>
+
+                {/* Le saviez-vous ? - Captage */}
+                <div
+                  className={cn(
+                    "mt-6 p-5 rounded-xl bg-blue-400/10 border border-blue-300/20 transition-all duration-700",
+                    visibleSections.has('captage') ? 'animate-v2-scale-bounce' : 'opacity-0 scale-90'
+                  )}
+                  style={{ animationDelay: '1.2s', animationFillMode: 'both' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Lightbulb className="w-5 h-5 text-blue-300 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-white mb-1">Le saviez-vous ?</p>
+                      <p className="text-sm text-blue-100/80">
+                        L'eau d'une nappe profonde a été filtrée naturellement pendant <strong className="text-white">des dizaines d'années</strong> à travers les couches géologiques.
+                        Certaines eaux minérales ont un temps de filtration de <strong className="text-white">plus de 1 000 ans</strong> avant d'être captées.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={cn(
+                    "mt-4 p-4 rounded-xl bg-white/5 border border-white/10 transition-all duration-700",
+                    visibleSections.has('captage') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+                  )}
+                  style={{ transitionDelay: '1.5s' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Clock className="w-5 h-5 text-blue-300 mt-0.5 shrink-0" />
+                    <p className="text-sm text-blue-100/70">
+                      Les périmètres de protection autour des captages couvrent <strong className="text-white">3 zones concentriques</strong> : immédiate (clôturée), rapprochée et éloignée, pour prévenir toute contamination.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -410,8 +446,12 @@ const ParcoursEauV2 = () => {
                       <h2 className="text-3xl md:text-4xl font-bold text-white">Pompage & Prélèvement</h2>
                     </div>
                   </div>
-                  <p className="text-indigo-100/80 text-lg mb-8">
+                  <p className="text-indigo-100/80 text-lg mb-4">
                     Extraire l'eau de son milieu naturel pour la rendre disponible aux usines de traitement.
+                  </p>
+                  <p className="text-indigo-100/60 text-sm mb-8">
+                    Le pompage représente <strong className="text-white">environ 7 % de la consommation électrique</strong> des collectivités.
+                    Certaines communes pionnières utilisent des <strong className="text-white">pompes alimentées par l'énergie solaire</strong> pour réduire leur empreinte carbone.
                   </p>
                 </div>
 
@@ -458,6 +498,26 @@ const ParcoursEauV2 = () => {
                     </div>
                   ))}
                 </div>
+
+                {/* Le saviez-vous ? - Pompage */}
+                <div
+                  className={cn(
+                    "mt-6 p-5 rounded-xl bg-indigo-400/10 border border-indigo-300/20 transition-all duration-700",
+                    visibleSections.has('pompage') ? 'animate-v2-scale-bounce' : 'opacity-0 scale-90'
+                  )}
+                  style={{ animationDelay: '1.4s', animationFillMode: 'both' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Zap className="w-5 h-5 text-indigo-300 mt-0.5 shrink-0 animate-v2-pulse-glow" />
+                    <div>
+                      <p className="text-sm font-semibold text-white mb-1">Enjeu énergétique</p>
+                      <p className="text-sm text-indigo-100/80">
+                        Le pompage et la distribution de l'eau consomment <strong className="text-white">environ 45 TWh/an en Europe</strong>.
+                        Réduire les fuites de 1 % permettrait d'économiser l'équivalent de la consommation électrique d'une ville de 50 000 habitants.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className={cn(
@@ -501,8 +561,12 @@ const ParcoursEauV2 = () => {
                       <h2 className="text-3xl md:text-4xl font-bold text-white">Traitement</h2>
                     </div>
                   </div>
-                  <p className="text-purple-100/80 text-lg mb-4">
+                  <p className="text-purple-100/80 text-lg mb-2">
                     Rendre l'eau conforme aux <strong className="text-white">63 paramètres</strong> du Code de la santé publique.
+                  </p>
+                  <p className="text-purple-100/60 text-sm mb-4">
+                    L'eau souterraine ne nécessite souvent qu'une <strong className="text-white">simple désinfection</strong>, tandis que l'eau de surface exige un traitement complet en 8 étapes.
+                    En moyenne, un Français bénéficie d'une eau analysée <strong className="text-white">plus de 50 fois par an</strong>.
                   </p>
                 </div>
 
@@ -538,6 +602,42 @@ const ParcoursEauV2 = () => {
                         </div>
                       );
                     })}
+                  </div>
+                </div>
+
+                {/* Le saviez-vous ? - Traitement */}
+                <div
+                  className={cn(
+                    "mt-6 p-5 rounded-xl bg-purple-400/10 border border-purple-300/20 transition-all duration-700",
+                    visibleSections.has('traitement') ? 'animate-v2-scale-bounce' : 'opacity-0 scale-90'
+                  )}
+                  style={{ animationDelay: '1.6s', animationFillMode: 'both' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Lightbulb className="w-5 h-5 text-purple-300 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-white mb-1">Le saviez-vous ?</p>
+                      <p className="text-sm text-purple-100/80">
+                        Les <strong className="text-white">63 paramètres réglementaires</strong> sont répartis en 3 catégories : microbiologiques (bactéries, virus),
+                        physico-chimiques (pH, métaux lourds, pesticides) et organoleptiques (goût, odeur, couleur).
+                        L'eau du robinet est l'aliment le plus contrôlé en France.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={cn(
+                    "mt-4 p-4 rounded-xl bg-white/5 border border-white/10 transition-all duration-700",
+                    visibleSections.has('traitement') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+                  )}
+                  style={{ transitionDelay: '2s' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <ThermometerSun className="w-5 h-5 text-purple-300 mt-0.5 shrink-0" />
+                    <p className="text-sm text-purple-100/70">
+                      L'ozonation détruit <strong className="text-white">99,99 % des micro-organismes</strong> en quelques secondes, tandis que le charbon actif absorbe les micropolluants et les résidus de pesticides.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -599,6 +699,41 @@ const ParcoursEauV2 = () => {
                     <Gauge className="w-5 h-5 text-amber-300 mt-0.5 shrink-0" />
                     <p className="text-sm text-amber-100/80">
                       Le temps de séjour ne doit pas dépasser <strong className="text-white">48 heures</strong> pour maintenir le taux de chlore.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Le saviez-vous ? - Stockage */}
+                <div
+                  className={cn(
+                    "mt-6 p-5 rounded-xl bg-amber-400/10 border border-amber-300/20 transition-all duration-700",
+                    visibleSections.has('stockage') ? 'animate-v2-scale-bounce' : 'opacity-0 scale-90'
+                  )}
+                  style={{ animationDelay: '1.3s', animationFillMode: 'both' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Lightbulb className="w-5 h-5 text-amber-300 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-white mb-1">Le saviez-vous ?</p>
+                      <p className="text-sm text-amber-100/80">
+                        Un château d'eau situé en hauteur crée une <strong className="text-white">pression gravitaire naturelle</strong> de 1 bar pour chaque 10 m de dénivelé.
+                        Il absorbe les <strong className="text-white">pics de consommation</strong> (matin et soir) sans que les usagers ne remarquent de baisse de débit.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={cn(
+                    "mt-4 p-4 rounded-xl bg-white/5 border border-white/10 transition-all duration-700",
+                    visibleSections.has('stockage') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+                  )}
+                  style={{ transitionDelay: '1.7s' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Droplet className="w-5 h-5 text-amber-300 mt-0.5 shrink-0" />
+                    <p className="text-sm text-amber-100/70">
+                      L'eau doit être <strong className="text-white">renouvelée en permanence</strong> : un séjour trop long dans le réservoir fait chuter le taux de chlore résiduel et compromet la désinfection.
                     </p>
                   </div>
                 </div>
@@ -686,6 +821,42 @@ const ParcoursEauV2 = () => {
                     </div>
                   ))}
                 </div>
+
+                {/* Le saviez-vous ? - Distribution */}
+                <div
+                  className={cn(
+                    "mt-6 p-5 rounded-xl bg-teal-400/10 border border-teal-300/20 transition-all duration-700",
+                    visibleSections.has('distribution') ? 'animate-v2-scale-bounce' : 'opacity-0 scale-90'
+                  )}
+                  style={{ animationDelay: '1.4s', animationFillMode: 'both' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-teal-300 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-white mb-1">Enjeu environnemental</p>
+                      <p className="text-sm text-teal-100/80">
+                        En moyenne, <strong className="text-white">20 % de l'eau traitée</strong> est perdue dans les fuites du réseau.
+                        Dans certaines communes rurales, ce taux peut atteindre <strong className="text-white">jusqu'à 50 %</strong>.
+                        Le renouvellement des canalisations vétustes est un défi majeur estimé à <strong className="text-white">2 milliards €/an</strong>.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={cn(
+                    "mt-4 p-4 rounded-xl bg-white/5 border border-white/10 transition-all duration-700",
+                    visibleSections.has('distribution') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+                  )}
+                  style={{ transitionDelay: '1.8s' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Leaf className="w-5 h-5 text-teal-300 mt-0.5 shrink-0" />
+                    <p className="text-sm text-teal-100/70">
+                      Les réseaux les plus modernes intègrent des <strong className="text-white">capteurs connectés</strong> qui détectent les fuites en temps réel, réduisant les pertes de 30 à 40 %.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -745,6 +916,44 @@ const ParcoursEauV2 = () => {
                   <p className="text-green-100 text-sm">
                     ✅ <strong className="text-white">Résultats ARS consultables</strong> en mairie et sur InfoEau.fr — votre eau est contrôlée en permanence.
                   </p>
+                </div>
+
+                {/* Comparatif prix */}
+                <div
+                  className={cn(
+                    "mt-6 p-5 rounded-xl bg-green-400/10 border border-green-300/20 transition-all duration-700",
+                    visibleSections.has('robinet') ? 'animate-v2-scale-bounce' : 'opacity-0 scale-90'
+                  )}
+                  style={{ animationDelay: '1.3s', animationFillMode: 'both' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Euro className="w-5 h-5 text-green-300 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-white mb-1">Le saviez-vous ?</p>
+                      <p className="text-sm text-green-100/80">
+                        L'eau du robinet coûte en moyenne <strong className="text-white">0,004 €/litre</strong> en France (~4 €/m³), contre
+                        <strong className="text-white"> 0,20 à 1,50 €/litre</strong> pour l'eau en bouteille —
+                        soit <strong className="text-white">100 à 300 fois plus cher</strong>.
+                        Une famille de 4 personnes économise environ <strong className="text-white">600 € par an</strong> en buvant l'eau du robinet.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={cn(
+                    "mt-4 p-4 rounded-xl bg-white/5 border border-white/10 transition-all duration-700",
+                    visibleSections.has('robinet') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+                  )}
+                  style={{ transitionDelay: '1.8s' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Leaf className="w-5 h-5 text-green-300 mt-0.5 shrink-0" />
+                    <p className="text-sm text-green-100/70">
+                      Chaque année en France, <strong className="text-white">9,3 milliards de litres d'eau</strong> sont vendus en bouteille, générant
+                      <strong className="text-white"> 150 000 tonnes de déchets plastiques</strong>. Boire l'eau du robinet divise par 300 l'empreinte carbone.
+                    </p>
+                  </div>
                 </div>
               </div>
 
