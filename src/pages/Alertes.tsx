@@ -38,6 +38,7 @@ const getSeverityIcon = (severity: string) => {
 };
 
 export default function Alertes() {
+  const { t } = useLanguage();
   const { data, isLoading, error, refetch, isFetching } = useWaterAlerts();
   const queryClient = useQueryClient();
   
