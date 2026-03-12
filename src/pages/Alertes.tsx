@@ -105,7 +105,7 @@ export default function Alertes() {
         <div className="container mx-auto px-4 py-12">
           <Card className="border-destructive">
             <CardContent className="pt-6">
-              <p className="text-destructive">Erreur lors du chargement des alertes</p>
+              <p className="text-destructive">{t('alerts.loadError')}</p>
             </CardContent>
           </Card>
         </div>
