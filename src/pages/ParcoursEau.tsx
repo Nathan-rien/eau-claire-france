@@ -1098,4 +1098,4 @@ const ParcoursEau = () => {
   );
 };
 
-export default ParcoursEauV2;
+export default ParcoursEau;
