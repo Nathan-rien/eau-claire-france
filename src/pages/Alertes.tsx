@@ -351,7 +351,7 @@ export default function Alertes() {
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-foreground">{region}</h3>
                     <Badge variant="secondary" className="text-sm">
-                      {regionAlerts.length} alerte{regionAlerts.length > 1 ? 's' : ''}
+                      {regionAlerts.length} {regionAlerts.length > 1 ? t('alerts.alerts') : t('alerts.alert')}
                     </Badge>
                   </div>
                 </div>
