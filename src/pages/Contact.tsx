@@ -206,7 +206,7 @@ Envoyé depuis InfoEau.fr`;
                 <CardContent className="space-y-4">
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-2">Email principal</h4>
-                    <p className="text-gray-600">contact@infoeau.fr</p>
+                    <p className="text-gray-600">nth.orso@gmail.com</p>
                   </div>
                   
                   <div>
