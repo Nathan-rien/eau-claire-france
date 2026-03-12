@@ -38,6 +38,7 @@ const Header = () => {
         { href: '/polluants-europe', label: 'Polluants' },
         { href: '/alertes-europe', label: 'Alertes' },
         { href: '/parcours-eau', label: 'Parcours de l\'eau' },
+        { href: '/parcours-eau-bouteille', label: 'Parcours bouteille' },
       ]
     : [
         { href: '/diagnostic', label: 'Diagnostic' },
