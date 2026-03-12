@@ -1,54 +1,38 @@
 
 
-## Mise à jour automatique quotidienne des prix via pg_cron
+## Ajouter des animations supplémentaires par étape
 
-### Problème identifié
+### Approche
+Enrichir `StageAnimations.tsx` avec de nouvelles animations SVG secondaires pour chaque étape, et les intégrer dans `ParcoursEauV2.tsx`. Ajouter aussi de nouveaux keyframes CSS dans `index.css`.
 
-Les prix en base de données datent du **16 décembre 2025** (plus de 2 mois). Le workflow GitHub Actions corrigé ne s'exécute pas, probablement car :
-- Les secrets GitHub (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) ne sont pas configurés dans le repository
-- Ou le workflow Playwright échoue silencieusement en CI
+### Nouvelles animations par étape
 
-### Solution proposee : pg_cron Supabase
+**1. Captage** — `WaterCycleAnimation`: Mini-cycle de l'eau (évaporation → nuage → pluie → infiltration) avec des flèches animées en boucle.
 
-Plutot que de dependre de GitHub Actions (qui necessite Playwright, des secrets, et un runner CI), on va utiliser **pg_cron** directement dans Supabase pour appeler l'Edge Function `admin-smoke` chaque matin a 6:00 UTC (7:00 Paris).
+**2. Pompage** — `EnergyMeterAnimation`: Compteur d'énergie avec aiguille oscillante et barres de consommation qui montent/descendent.
 
-Cela fonctionne sans aucune infrastructure externe.
+**3. Traitement** — `LabTestAnimation`: Éprouvettes avec liquides qui changent de couleur (brun → bleu), pipette animée qui goutte un réactif.
 
-### Etapes
+**4. Stockage** — `PressureGaugeAnimation`: Manomètre avec aiguille qui oscille entre 3 et 5 bars, indicateur de pression dynamique.
 
-**1. Activer les extensions pg_cron et pg_net**
+**5. Distribution** — `LeakDetectorAnimation`: Canalisation avec fuite visible (gouttes qui s'échappent), capteur qui clignote en rouge puis vert quand la fuite est détectée.
 
-Ces extensions permettent a PostgreSQL de planifier des taches et de faire des appels HTTP.
+**6. Robinet** — `CostComparisonAnimation`: Deux barres animées côte à côte (robinet vs bouteille) qui se remplissent avec un ratio visuel ×100, avec icônes €.
 
-**2. Creer le job pg_cron**
+### Nouveaux keyframes CSS (`index.css`)
 
-Un job SQL qui appelle l'Edge Function `admin-smoke` via `net.http_post` chaque jour a 6:00 UTC :
+- `v2-needle-swing`: oscillation d'aiguille de manomètre
+- `v2-color-shift`: transition de couleur pour les éprouvettes
+- `v2-leak-drip`: goutte qui tombe d'une fuite de canalisation
+- `v2-blink-alert`: clignotement rouge/vert pour capteur
 
-```text
-cron.schedule(
-  'daily-price-refresh',
-  '0 6 * * *',   -- Chaque jour a 6:00 UTC (7:00 Paris)
-  appel HTTP POST vers admin-smoke
-)
-```
+### Intégration dans `ParcoursEauV2.tsx`
 
-**3. Lancer un premier appel immediat**
+Chaque nouvelle animation sera placée sous l'animation principale existante dans un second container avec un léger `delay` de fade-in, créant un effet de révélation progressive au scroll.
 
-Pour mettre a jour les donnees tout de suite (sans attendre demain matin), on declenchera aussi l'Edge Function manuellement.
+### Fichiers modifiés
 
-### Ce qui change
-
-- Les prix seront regeneres automatiquement chaque matin a 7h00 (heure de Paris)
-- Les dates `scraped_at` afficheront la date du jour
-- La page `/prix-eaux` montrera des donnees fraiches
-- Aucune dependance a GitHub Actions, Playwright, ou des secrets externes
-
-### Limites
-
-L'Edge Function `admin-smoke` genere des **donnees realistes simulees** (prix aleatoires dans des fourchettes credibles par marque). Ce n'est pas du vrai scraping de sites marchands. Pour du scraping reel, il faudrait faire fonctionner le workflow GitHub Actions avec les bons secrets. Mais pour l'affichage et la demonstration, le smoke test produit des donnees coherentes et a jour.
-
-### Fichiers concernes
-
-- Aucun fichier modifie : la configuration se fait via une requete SQL directe dans Supabase (pg_cron)
-- L'Edge Function `admin-smoke` existante est utilisee telle quelle
+1. **`src/components/parcours/StageAnimations.tsx`** — 6 nouveaux composants SVG animés
+2. **`src/index.css`** — 4 nouveaux keyframes
+3. **`src/pages/ParcoursEauV2.tsx`** — Import et placement des 6 nouvelles animations
 
