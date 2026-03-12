@@ -822,21 +822,22 @@ const ParcoursEauV2 = () => {
                   ))}
                 </div>
 
-                {/* Le saviez-vous ? - Captage */}
+                {/* Le saviez-vous ? - Distribution */}
                 <div
                   className={cn(
-                    "mt-6 p-5 rounded-xl bg-blue-400/10 border border-blue-300/20 transition-all duration-700",
-                    visibleSections.has('captage') ? 'animate-v2-scale-bounce' : 'opacity-0 scale-90'
+                    "mt-6 p-5 rounded-xl bg-teal-400/10 border border-teal-300/20 transition-all duration-700",
+                    visibleSections.has('distribution') ? 'animate-v2-scale-bounce' : 'opacity-0 scale-90'
                   )}
-                  style={{ animationDelay: '1.2s', animationFillMode: 'both' }}
+                  style={{ animationDelay: '1.4s', animationFillMode: 'both' }}
                 >
                   <div className="flex items-start gap-3">
-                    <Lightbulb className="w-5 h-5 text-blue-300 mt-0.5 shrink-0" />
+                    <AlertTriangle className="w-5 h-5 text-teal-300 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm font-semibold text-white mb-1">Le saviez-vous ?</p>
-                      <p className="text-sm text-blue-100/80">
-                        L'eau d'une nappe profonde a été filtrée naturellement pendant <strong className="text-white">des dizaines d'années</strong> à travers les couches géologiques.
-                        Certaines eaux minérales ont un temps de filtration de <strong className="text-white">plus de 1 000 ans</strong> avant d'être captées.
+                      <p className="text-sm font-semibold text-white mb-1">Enjeu environnemental</p>
+                      <p className="text-sm text-teal-100/80">
+                        En moyenne, <strong className="text-white">20 % de l'eau traitée</strong> est perdue dans les fuites du réseau.
+                        Dans certaines communes rurales, ce taux peut atteindre <strong className="text-white">jusqu'à 50 %</strong>.
+                        Le renouvellement des canalisations vétustes est un défi majeur estimé à <strong className="text-white">2 milliards €/an</strong>.
                       </p>
                     </div>
                   </div>
@@ -845,14 +846,14 @@ const ParcoursEauV2 = () => {
                 <div
                   className={cn(
                     "mt-4 p-4 rounded-xl bg-white/5 border border-white/10 transition-all duration-700",
-                    visibleSections.has('captage') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+                    visibleSections.has('distribution') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
                   )}
-                  style={{ transitionDelay: '1.5s' }}
+                  style={{ transitionDelay: '1.8s' }}
                 >
                   <div className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-blue-300 mt-0.5 shrink-0" />
-                    <p className="text-sm text-blue-100/70">
-                      Les périmètres de protection autour des captages couvrent <strong className="text-white">3 zones concentriques</strong> : immédiate (clôturée), rapprochée et éloignée, pour prévenir toute contamination.
+                    <Leaf className="w-5 h-5 text-teal-300 mt-0.5 shrink-0" />
+                    <p className="text-sm text-teal-100/70">
+                      Les réseaux les plus modernes intègrent des <strong className="text-white">capteurs connectés</strong> qui détectent les fuites en temps réel, réduisant les pertes de 30 à 40 %.
                     </p>
                   </div>
                 </div>
