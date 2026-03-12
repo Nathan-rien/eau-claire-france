@@ -781,6 +781,15 @@ const ParcoursEauV2 = () => {
                 <div className="rounded-2xl shadow-2xl bg-amber-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center" style={getParallaxStyle(3)}>
                   <StockageAnimation />
                 </div>
+                <div className={cn(
+                  "mt-6 transition-all duration-1000",
+                  visibleSections.has('stockage') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                )} style={{ transitionDelay: '700ms' }}>
+                  <div className="rounded-xl bg-amber-950/30 backdrop-blur p-4">
+                    <PressureGaugeAnimation />
+                    <p className="text-center text-xs text-amber-300/60 mt-2">Pression réseau : 3-5 bars</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
