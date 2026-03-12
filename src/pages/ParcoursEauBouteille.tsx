@@ -243,9 +243,9 @@ const ParcoursEauBouteille = () => {
 
           <div className="grid grid-cols-3 gap-4 md:gap-8 mb-10">
             {[
-              { value: '158', label: 'sources exploitées', icon: '🏔️' },
-              { value: '9,3 Mds L', label: 'vendus par an', icon: '🧴' },
-              { value: '150 000 t', label: 'de plastique/an', icon: '♻️' },
+              { value: '158', label: t('journeyBottle.exploredSources'), icon: '🏔️' },
+              { value: '9,3 Mds L', label: t('journeyBottle.soldPerYear'), icon: '🧴' },
+              { value: '150 000 t', label: t('journeyBottle.plasticPerYear'), icon: '♻️' },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-xl md:text-2xl mb-1">{stat.icon}</div>
