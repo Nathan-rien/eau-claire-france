@@ -90,6 +90,7 @@ const AnimatedBar = ({ percentage, isVisible, delay = 0 }: { percentage: number;
 /* ───── Main Page ───── */
 
 const ParcoursEauBouteille = () => {
+  const { t } = useLanguage();
   const [activeSection, setActiveSection] = useState(0);
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
