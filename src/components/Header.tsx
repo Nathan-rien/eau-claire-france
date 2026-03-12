@@ -48,6 +48,7 @@ const Header = () => {
         { href: '/polluants', label: 'Polluants' },
         { href: '/alertes', label: 'Alertes' },
         { href: '/parcours-eau', label: 'Parcours de l\'eau' },
+        { href: '/parcours-eau-bouteille', label: 'Parcours bouteille' },
       ];
 
   const isActive = (path: string) => location.pathname === path;
