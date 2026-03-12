@@ -526,8 +526,12 @@ const ParcoursEauV2 = () => {
                       <h2 className="text-3xl md:text-4xl font-bold text-white">Traitement</h2>
                     </div>
                   </div>
-                  <p className="text-purple-100/80 text-lg mb-4">
+                  <p className="text-purple-100/80 text-lg mb-2">
                     Rendre l'eau conforme aux <strong className="text-white">63 paramètres</strong> du Code de la santé publique.
+                  </p>
+                  <p className="text-purple-100/60 text-sm mb-4">
+                    L'eau souterraine ne nécessite souvent qu'une <strong className="text-white">simple désinfection</strong>, tandis que l'eau de surface exige un traitement complet en 8 étapes.
+                    En moyenne, un Français bénéficie d'une eau analysée <strong className="text-white">plus de 50 fois par an</strong>.
                   </p>
                 </div>
 
