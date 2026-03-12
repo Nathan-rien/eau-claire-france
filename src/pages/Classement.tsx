@@ -89,7 +89,7 @@ const Classement = () => {
                   ))}
                 </div>
                 <div className="mt-3 p-2 bg-white/70 rounded-lg border border-blue-200 text-xs">
-                  💡 Les eaux exclues (contre-indiquées pour le profil) sont signalées en rouge.
+                  {t('ranking.excludedNote')}
                 </div>
               </CardContent>
             </Card>
