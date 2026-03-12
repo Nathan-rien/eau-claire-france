@@ -119,8 +119,8 @@ export default function Alertes() {
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <SEOHead 
-        title="Alertes qualité de l'eau - InfoEau"
-        description="Suivez en temps réel les alertes sanitaires concernant la qualité de l'eau potable en France. Informations officielles de l'API Hub'Eau."
+        title={t('alerts.seoTitle')}
+        description={t('alerts.seoDescription')}
         canonical="https://infoeau.fr/alertes"
       />
 
@@ -128,13 +128,13 @@ export default function Alertes() {
         <div className="text-center space-y-4 mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
             <AlertTriangle className="h-5 w-5 text-primary" />
-            <span className="text-sm font-medium text-primary">Alertes en cours</span>
+            <span className="text-sm font-medium text-primary">{t('alerts.ongoing')}</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold">
-            Alertes Qualité de l'Eau
+            {t('alerts.title')}
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Suivez en temps réel les alertes sanitaires concernant la qualité de l'eau potable
+            {t('alerts.subtitle')}
           </p>
         </div>
 
