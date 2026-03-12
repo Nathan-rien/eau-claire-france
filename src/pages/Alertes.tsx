@@ -371,7 +371,7 @@ export default function Alertes() {
                               </div>
                             </div>
                             <Badge className={getSeverityColor(alert.severity)}>
-                              {alert.severity === 'high' ? 'Critique' : alert.severity === 'medium' ? 'Modérée' : 'Faible'}
+                              {alert.severity === 'high' ? t('alerts.critical') : alert.severity === 'medium' ? t('alerts.moderate') : t('alerts.low')}
                             </Badge>
                           </div>
 
