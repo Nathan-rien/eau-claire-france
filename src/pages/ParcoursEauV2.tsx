@@ -411,8 +411,12 @@ const ParcoursEauV2 = () => {
                       <h2 className="text-3xl md:text-4xl font-bold text-white">Pompage & Prélèvement</h2>
                     </div>
                   </div>
-                  <p className="text-indigo-100/80 text-lg mb-8">
+                  <p className="text-indigo-100/80 text-lg mb-4">
                     Extraire l'eau de son milieu naturel pour la rendre disponible aux usines de traitement.
+                  </p>
+                  <p className="text-indigo-100/60 text-sm mb-8">
+                    Le pompage représente <strong className="text-white">environ 7 % de la consommation électrique</strong> des collectivités.
+                    Certaines communes pionnières utilisent des <strong className="text-white">pompes alimentées par l'énergie solaire</strong> pour réduire leur empreinte carbone.
                   </p>
                 </div>
 
