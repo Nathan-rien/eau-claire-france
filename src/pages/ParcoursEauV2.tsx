@@ -811,6 +811,15 @@ const ParcoursEauV2 = () => {
                 <div className="rounded-2xl shadow-2xl bg-teal-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center" style={getParallaxStyle(4)}>
                   <DistributionAnimation />
                 </div>
+                <div className={cn(
+                  "mt-6 transition-all duration-1000",
+                  visibleSections.has('distribution') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                )} style={{ transitionDelay: '700ms' }}>
+                  <div className="rounded-xl bg-teal-950/30 backdrop-blur p-4">
+                    <LeakDetectorAnimation />
+                    <p className="text-center text-xs text-teal-300/60 mt-2">Détection des fuites par capteurs IoT</p>
+                  </div>
+                </div>
               </div>
 
               <div className="order-1 md:order-2">
