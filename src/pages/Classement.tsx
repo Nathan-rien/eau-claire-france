@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Classement = () => {
+  const { t } = useLanguage();
   const [profile, setProfile] = useState<Profile>("daily");
   const [showSparkling, setShowSparkling] = useState(true);
   const [showStill, setShowStill] = useState(true);
