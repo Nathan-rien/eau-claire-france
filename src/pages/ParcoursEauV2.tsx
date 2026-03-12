@@ -327,6 +327,49 @@ const ParcoursEauV2 = () => {
         </div>
       </div>
 
+      {/* ━━━ VUE D'ENSEMBLE ━━━ */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-blue-950 via-blue-900/90 to-blue-950 py-16 md:py-24">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">Le voyage complet de l'eau</h2>
+            <p className="text-blue-200/60 text-sm md:text-base max-w-xl mx-auto">
+              De la source naturelle à votre robinet, suivez les 6 étapes du parcours de l'eau potable en France
+            </p>
+          </div>
+
+          {/* Full journey animation */}
+          <div className="rounded-2xl bg-blue-950/50 backdrop-blur border border-blue-400/10 p-4 md:p-8 mb-10">
+            <FullJourneyAnimation />
+          </div>
+
+          {/* Quick stats */}
+          <div className="grid grid-cols-3 gap-4 md:gap-8 mb-10">
+            {[
+              { value: '906 000 km', label: 'de réseau', icon: '🔧' },
+              { value: '24–48h', label: 'de voyage', icon: '⏱️' },
+              { value: '63', label: 'paramètres contrôlés', icon: '🔬' },
+            ].map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="text-xl md:text-2xl mb-1">{stat.icon}</div>
+                <div className="text-lg md:text-2xl font-bold text-white">{stat.value}</div>
+                <div className="text-xs md:text-sm text-blue-200/50">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <div className="text-center">
+            <button
+              onClick={scrollToFirst}
+              className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-500/20 backdrop-blur border border-blue-300/30 text-white hover:bg-blue-500/40 transition-all duration-300"
+            >
+              Explorer chaque étape
+              <ChevronDown className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* ━━━ SECTIONS ━━━ */}
       <div className="space-y-0">
 
