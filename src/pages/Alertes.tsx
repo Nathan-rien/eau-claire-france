@@ -211,7 +211,7 @@ export default function Alertes() {
 
               {/* Filtre date de fin */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Date de fin</label>
+                <label className="text-sm font-medium">{t('alerts.endDate')}</label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
