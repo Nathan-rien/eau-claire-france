@@ -23,7 +23,6 @@ const Navigation = () => {
     ? [
         { href: '/carte-europe', label: 'Carte qualité Europe' },
         { href: '/carte-polluants-europe', label: 'Carte des polluants Europe' },
-        { href: '/sources-eau', label: 'Sources bouteilles' },
       ]
     : [
         { href: '/carte', label: 'Carte des sources du robinet' },
