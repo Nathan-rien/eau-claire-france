@@ -156,8 +156,8 @@ export default function Alertes() {
         <div className="flex items-start gap-3 p-4 rounded-lg border border-primary/20 bg-primary/5 mb-4">
           <svg className="h-5 w-5 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20A10 10 0 0112 2z" /></svg>
           <p className="text-sm text-foreground">
-            <span className="font-semibold">Données actualisées en temps réel depuis l'API Hub'Eau.</span>{" "}
-            Les résultats d'analyses sont publiés par les laboratoires agréés avec un délai réglementaire de 4 à 8 semaines. Les dates affichées correspondent aux <span className="font-medium">dates de prélèvement sur le terrain</span> — il est normal que les échantillons les plus récents datent de fin décembre ou janvier.
+            <span className="font-semibold">{t('alerts.hubEauBanner')}</span>{" "}
+            {t('alerts.hubEauDetail')}
           </p>
         </div>
 
