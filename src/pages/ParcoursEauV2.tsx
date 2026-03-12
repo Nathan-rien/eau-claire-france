@@ -16,6 +16,14 @@ import {
   RobinetAnimation,
 } from '@/components/parcours/StageAnimations';
 import {
+  WaterCycleAnimation,
+  EnergyMeterAnimation,
+  LabTestAnimation,
+  PressureGaugeAnimation,
+  LeakDetectorAnimation,
+  CostComparisonAnimation,
+} from '@/components/parcours/SecondaryAnimations';
+import {
   Droplets, ArrowDown, FlaskConical, Cylinder, Network, Home,
   Mountain, Waves, Layers, CircleDot, Filter, Zap, Sun, Shield,
   ChevronDown, CheckCircle2, Gauge, Lightbulb, AlertTriangle,
@@ -341,6 +349,15 @@ const ParcoursEauV2 = () => {
                 <div className="mt-6">
                   <GeologicalSVG isVisible={visibleSections.has('captage')} />
                 </div>
+                <div className={cn(
+                  "mt-6 transition-all duration-1000",
+                  visibleSections.has('captage') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                )} style={{ transitionDelay: '800ms' }}>
+                  <div className="rounded-xl bg-blue-950/30 backdrop-blur p-4">
+                    <WaterCycleAnimation />
+                    <p className="text-center text-xs text-blue-300/60 mt-2">Le cycle de l'eau en continu</p>
+                  </div>
+                </div>
               </div>
               {/* Content */}
               <div className="order-1 md:order-2">
@@ -527,6 +544,15 @@ const ParcoursEauV2 = () => {
                 <div className="rounded-2xl shadow-2xl bg-indigo-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center" style={getParallaxStyle(1)}>
                   <PompageAnimation />
                 </div>
+                <div className={cn(
+                  "mt-6 transition-all duration-1000",
+                  visibleSections.has('pompage') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                )} style={{ transitionDelay: '600ms' }}>
+                  <div className="rounded-xl bg-indigo-950/30 backdrop-blur p-4">
+                    <EnergyMeterAnimation />
+                    <p className="text-center text-xs text-indigo-300/60 mt-2">Consommation énergétique du pompage</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -547,6 +573,15 @@ const ParcoursEauV2 = () => {
               )}>
                 <div className="rounded-2xl shadow-2xl bg-purple-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center" style={getParallaxStyle(2)}>
                   <TraitementAnimation />
+                </div>
+                <div className={cn(
+                  "mt-6 transition-all duration-1000",
+                  visibleSections.has('traitement') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                )} style={{ transitionDelay: '700ms' }}>
+                  <div className="rounded-xl bg-purple-950/30 backdrop-blur p-4">
+                    <LabTestAnimation />
+                    <p className="text-center text-xs text-purple-300/60 mt-2">Analyses en laboratoire</p>
+                  </div>
                 </div>
               </div>
 
@@ -746,6 +781,15 @@ const ParcoursEauV2 = () => {
                 <div className="rounded-2xl shadow-2xl bg-amber-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center" style={getParallaxStyle(3)}>
                   <StockageAnimation />
                 </div>
+                <div className={cn(
+                  "mt-6 transition-all duration-1000",
+                  visibleSections.has('stockage') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                )} style={{ transitionDelay: '700ms' }}>
+                  <div className="rounded-xl bg-amber-950/30 backdrop-blur p-4">
+                    <PressureGaugeAnimation />
+                    <p className="text-center text-xs text-amber-300/60 mt-2">Pression réseau : 3-5 bars</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -766,6 +810,15 @@ const ParcoursEauV2 = () => {
               )}>
                 <div className="rounded-2xl shadow-2xl bg-teal-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center" style={getParallaxStyle(4)}>
                   <DistributionAnimation />
+                </div>
+                <div className={cn(
+                  "mt-6 transition-all duration-1000",
+                  visibleSections.has('distribution') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                )} style={{ transitionDelay: '700ms' }}>
+                  <div className="rounded-xl bg-teal-950/30 backdrop-blur p-4">
+                    <LeakDetectorAnimation />
+                    <p className="text-center text-xs text-teal-300/60 mt-2">Détection des fuites par capteurs IoT</p>
+                  </div>
                 </div>
               </div>
 
@@ -963,6 +1016,15 @@ const ParcoursEauV2 = () => {
               )}>
                 <div className="rounded-2xl shadow-2xl bg-green-950/50 backdrop-blur p-6 aspect-[4/3] flex items-center justify-center" style={getParallaxStyle(5)}>
                   <RobinetAnimation />
+                </div>
+                <div className={cn(
+                  "mt-6 transition-all duration-1000",
+                  visibleSections.has('robinet') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                )} style={{ transitionDelay: '700ms' }}>
+                  <div className="rounded-xl bg-green-950/30 backdrop-blur p-4">
+                    <CostComparisonAnimation />
+                    <p className="text-center text-xs text-green-300/60 mt-2">Robinet : ×100 moins cher</p>
+                  </div>
                 </div>
               </div>
             </div>

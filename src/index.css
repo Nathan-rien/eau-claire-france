@@ -354,6 +354,27 @@ p, li {
   animation: v2-pulse-glow 2.5s ease-in-out infinite;
 }
 
+@keyframes v2-needle-swing {
+  0%, 100% { transform: rotate(-30deg); }
+  50% { transform: rotate(40deg); }
+}
+
+@keyframes v2-color-shift {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-5px); }
+  60% { transform: translateY(2px); }
+}
+
+@keyframes v2-leak-drip {
+  0% { transform: translateY(0); opacity: 0.8; }
+  100% { transform: translateY(55px); opacity: 0; }
+}
+
+@keyframes v2-blink-alert {
+  0%, 45% { opacity: 1; filter: drop-shadow(0 0 4px hsl(0, 80%, 55%)); }
+  50%, 100% { opacity: 1; filter: drop-shadow(0 0 4px hsl(142, 70%, 50%)); }
+}
+
 @keyframes v2-scale-bounce {
   0% { transform: scale(0.85); opacity: 0; }
   60% { transform: scale(1.03); opacity: 1; }
