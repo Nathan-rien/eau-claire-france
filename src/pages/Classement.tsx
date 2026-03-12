@@ -10,6 +10,7 @@ import BottleRankingCard from '@/components/Ranking/BottleRankingCard';
 import { Profile, scoreBottle, Composition, CRITERION_LABELS } from '@/utils/rankingV2';
 import { useWaterCompositions } from '@/hooks/useWaterCompositions';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Classement = () => {
   const [profile, setProfile] = useState<Profile>("daily");
