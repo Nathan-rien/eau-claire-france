@@ -463,6 +463,26 @@ const ParcoursEauV2 = () => {
                     </div>
                   ))}
                 </div>
+
+                {/* Le saviez-vous ? - Pompage */}
+                <div
+                  className={cn(
+                    "mt-6 p-5 rounded-xl bg-indigo-400/10 border border-indigo-300/20 transition-all duration-700",
+                    visibleSections.has('pompage') ? 'animate-v2-scale-bounce' : 'opacity-0 scale-90'
+                  )}
+                  style={{ animationDelay: '1.4s', animationFillMode: 'both' }}
+                >
+                  <div className="flex items-start gap-3">
+                    <Zap className="w-5 h-5 text-indigo-300 mt-0.5 shrink-0 animate-v2-pulse-glow" />
+                    <div>
+                      <p className="text-sm font-semibold text-white mb-1">Enjeu énergétique</p>
+                      <p className="text-sm text-indigo-100/80">
+                        Le pompage et la distribution de l'eau consomment <strong className="text-white">environ 45 TWh/an en Europe</strong>.
+                        Réduire les fuites de 1 % permettrait d'économiser l'équivalent de la consommation électrique d'une ville de 50 000 habitants.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className={cn(
