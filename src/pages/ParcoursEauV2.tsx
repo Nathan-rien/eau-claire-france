@@ -16,6 +16,14 @@ import {
   RobinetAnimation,
 } from '@/components/parcours/StageAnimations';
 import {
+  WaterCycleAnimation,
+  EnergyMeterAnimation,
+  LabTestAnimation,
+  PressureGaugeAnimation,
+  LeakDetectorAnimation,
+  CostComparisonAnimation,
+} from '@/components/parcours/SecondaryAnimations';
+import {
   Droplets, ArrowDown, FlaskConical, Cylinder, Network, Home,
   Mountain, Waves, Layers, CircleDot, Filter, Zap, Sun, Shield,
   ChevronDown, CheckCircle2, Gauge, Lightbulb, AlertTriangle,
