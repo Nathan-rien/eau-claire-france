@@ -82,8 +82,8 @@ export default function Alertes() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
         <SEOHead 
-          title="Alertes qualité de l'eau - InfoEau"
-          description="Suivez les alertes sanitaires concernant la qualité de l'eau potable en France"
+          title={t('alerts.seoTitle')}
+          description={t('alerts.seoDescription')}
           canonical="https://infoeau.fr/alertes"
         />
         <div className="container mx-auto px-4 py-12 space-y-8">
