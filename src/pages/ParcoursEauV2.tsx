@@ -349,6 +349,15 @@ const ParcoursEauV2 = () => {
                 <div className="mt-6">
                   <GeologicalSVG isVisible={visibleSections.has('captage')} />
                 </div>
+                <div className={cn(
+                  "mt-6 transition-all duration-1000",
+                  visibleSections.has('captage') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                )} style={{ transitionDelay: '800ms' }}>
+                  <div className="rounded-xl bg-blue-950/30 backdrop-blur p-4">
+                    <WaterCycleAnimation />
+                    <p className="text-center text-xs text-blue-300/60 mt-2">Le cycle de l'eau en continu</p>
+                  </div>
+                </div>
               </div>
               {/* Content */}
               <div className="order-1 md:order-2">
