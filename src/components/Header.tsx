@@ -20,35 +20,35 @@ const Header = () => {
 
   const mapsItems = isEurope
     ? [
-        { href: '/carte-europe', label: 'Carte qualité Europe' },
-        { href: '/carte-polluants-europe', label: 'Carte des polluants Europe' },
+        { href: '/carte-europe', label: t('nav.maps.europeQuality') },
+        { href: '/carte-polluants-europe', label: t('nav.maps.europePollutants') },
       ]
     : [
-        { href: '/carte', label: 'Carte des sources du robinet' },
-        { href: '/sources-eau', label: 'Carte des sources des bouteilles' },
-        { href: '/carte-polluants', label: 'Carte des polluants' },
+        { href: '/carte', label: t('nav.maps.tap') },
+        { href: '/sources-eau', label: t('nav.maps.bottles') },
+        { href: '/carte-polluants', label: t('nav.maps.pollutants') },
       ];
 
   const navigationItems = isEurope
     ? [
-        { href: '/diagnostic-europe', label: 'Diagnostic' },
-        { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
-        { href: '/prix-eaux-europe', label: 'Prix des eaux' },
-        { href: '/classement-europe', label: 'Classement' },
-        { href: '/polluants-europe', label: 'Polluants' },
-        { href: '/alertes-europe', label: 'Alertes' },
-        { href: '/parcours-eau', label: 'Parcours de l\'eau' },
-        { href: '/parcours-eau-bouteille', label: 'Parcours bouteille' },
+        { href: '/diagnostic-europe', label: t('nav.diagnostic') },
+        { href: '/quelle-eau-boire', label: t('nav.which-water') },
+        { href: '/prix-eaux-europe', label: t('nav.prices') },
+        { href: '/classement-europe', label: t('nav.ranking') },
+        { href: '/polluants-europe', label: t('nav.pollutants') },
+        { href: '/alertes-europe', label: t('nav.alerts') },
+        { href: '/parcours-eau', label: t('nav.journey') },
+        { href: '/parcours-eau-bouteille', label: t('nav.journeyBottle') },
       ]
     : [
-        { href: '/diagnostic', label: 'Diagnostic' },
-        { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
-        { href: '/prix-eaux', label: 'Prix des eaux' },
-        { href: '/classement', label: 'Classement' },
-        { href: '/polluants', label: 'Polluants' },
-        { href: '/alertes', label: 'Alertes' },
-        { href: '/parcours-eau', label: 'Parcours de l\'eau' },
-        { href: '/parcours-eau-bouteille', label: 'Parcours bouteille' },
+        { href: '/diagnostic', label: t('nav.diagnostic') },
+        { href: '/quelle-eau-boire', label: t('nav.which-water') },
+        { href: '/prix-eaux', label: t('nav.prices') },
+        { href: '/classement', label: t('nav.ranking') },
+        { href: '/polluants', label: t('nav.pollutants') },
+        { href: '/alertes', label: t('nav.alerts') },
+        { href: '/parcours-eau', label: t('nav.journey') },
+        { href: '/parcours-eau-bouteille', label: t('nav.journeyBottle') },
       ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -74,7 +74,7 @@ const Header = () => {
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex h-14 sm:h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity flex-shrink-0 min-h-[44px]" aria-label="InfoEau.fr - Retour à l'accueil">
+          <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity flex-shrink-0 min-h-[44px]" aria-label={t('nav.backHome')}>
             <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center" aria-hidden="true">
               <Droplets className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
@@ -84,7 +84,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden xl:flex items-center space-x-1 flex-1 justify-center max-w-4xl" role="navigation" aria-label="Navigation principale">
+          <nav className="hidden xl:flex items-center space-x-1 flex-1 justify-center max-w-4xl" role="navigation" aria-label={t('nav.navigation')}>
             <div
               className="relative group"
               onMouseEnter={handleMouseEnter}
@@ -95,7 +95,7 @@ const Header = () => {
                   isActiveMapsSection ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                Les cartes
+                {t('nav.maps')}
                 <ChevronDown className="h-3 w-3" />
               </button>
               {mapsMenuOpen && (
@@ -170,9 +170,9 @@ const Header = () => {
             <div className="xl:hidden">
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="xl:hidden min-h-[44px] min-w-[44px] p-2 flex items-center space-x-2" aria-label="Ouvrir le menu">
+                  <Button variant="ghost" size="sm" className="xl:hidden min-h-[44px] min-w-[44px] p-2 flex items-center space-x-2" aria-label={t('nav.openMenu')}>
                     <Menu className="h-5 w-5" />
-                    <span className="hidden md:inline text-sm font-medium">Menu</span>
+                    <span className="hidden md:inline text-sm font-medium">{t('nav.menu')}</span>
                     <span className="sr-only">Toggle menu</span>
                   </Button>
                 </SheetTrigger>
@@ -195,7 +195,7 @@ const Header = () => {
                     {/* Section cartes */}
                     <div className="mb-4">
                       <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
-                        Les cartes
+                        {t('nav.maps')}
                       </div>
                       {mapsItems.map((item) => (
                         <Link
@@ -212,7 +212,7 @@ const Header = () => {
                     </div>
 
                     <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
-                      Navigation
+                      {t('nav.navigation')}
                     </div>
                     {navigationItems.map((item) => (
                       <Link
