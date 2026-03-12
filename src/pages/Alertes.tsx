@@ -183,7 +183,7 @@ export default function Alertes() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "PPP", { locale: fr }) : "Sélectionner"}
+                      {startDate ? format(startDate, "PPP", { locale: fr }) : t('alerts.select')}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
