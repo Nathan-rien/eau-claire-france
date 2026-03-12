@@ -101,7 +101,7 @@ const Classement = () => {
             <div className="flex flex-wrap gap-4 mb-6 p-3 bg-white rounded-lg border shadow-sm">
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-600 font-medium">Filtres :</span>
+                <span className="text-sm text-gray-600 font-medium">{t('ranking.filters')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Switch id="still" checked={showStill} onCheckedChange={setShowStill} />
