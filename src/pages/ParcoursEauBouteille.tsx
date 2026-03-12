@@ -231,9 +231,9 @@ const ParcoursEauBouteille = () => {
       <section className="relative overflow-hidden bg-gradient-to-b from-cyan-950 via-teal-900/90 to-cyan-950 py-16 md:py-24">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">Le voyage complet de l'eau en bouteille</h2>
+            <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">{t('journeyBottle.overviewTitle')}</h2>
             <p className="text-cyan-200/60 text-sm md:text-base max-w-xl mx-auto">
-              De la source souterraine au rayon du supermarché, suivez les 6 étapes du parcours
+              {t('journeyBottle.overviewSubtitle')}
             </p>
           </div>
 
