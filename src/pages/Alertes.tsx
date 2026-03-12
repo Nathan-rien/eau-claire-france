@@ -339,7 +339,7 @@ export default function Alertes() {
           <Card>
             <CardContent className="pt-6 text-center text-muted-foreground">
               <Droplet className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Aucune alerte active en ce moment</p>
+              <p>{t('alerts.noAlerts')}</p>
             </CardContent>
           </Card>
         ) : (
