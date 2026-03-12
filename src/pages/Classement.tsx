@@ -115,7 +115,7 @@ const Classement = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Switch id="excluded" checked={hideExcluded} onCheckedChange={setHideExcluded} />
-                <Label htmlFor="excluded" className="text-sm cursor-pointer">Masquer contre-indiquées</Label>
+                <Label htmlFor="excluded" className="text-sm cursor-pointer">{t('ranking.hideExcluded')}</Label>
               </div>
             </div>
 
