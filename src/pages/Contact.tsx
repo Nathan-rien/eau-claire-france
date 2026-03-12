@@ -42,7 +42,7 @@ ${formData.message}
 ---
 Envoyé depuis InfoEau.fr`;
 
-    const mailtoLink = `mailto:contact@infoeau.fr?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+    const mailtoLink = `mailto:nth.orso@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
     
     window.location.href = mailtoLink;
     
