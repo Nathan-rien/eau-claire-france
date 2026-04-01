@@ -526,6 +526,7 @@ export default function PrixEaux() {
               </p>
             </div>
           ) : (
+            <>
             <p className="md:hidden text-xs text-muted-foreground flex items-center gap-1 mb-2 animate-pulse">
               <MoveHorizontal className="h-3.5 w-3.5" />
               Glissez pour voir toutes les colonnes
