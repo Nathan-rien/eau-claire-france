@@ -3,6 +3,7 @@ import { AlertTriangle } from 'lucide-react';
 import PollutantMapEurope from '@/components/PollutantMapEurope';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
+import { seoData } from '@/utils/seoData';
 
 const CartePolluantsEurope = () => {
   return (
