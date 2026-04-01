@@ -132,8 +132,8 @@ const APropos = () => {
           </div>
 
           {/* Timeline */}
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Chronologie</h2>
+          <div className="mb-6 md:mb-12">
+            <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">Chronologie</h2>
             <div className="space-y-6">
               {timeline.map((event, index) => (
                 <div key={index} className="flex items-start space-x-6">

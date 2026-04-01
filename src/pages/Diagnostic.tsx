@@ -77,7 +77,7 @@ const Diagnostic = () => {
         <section className="py-8 px-4" role="main">
           <div className="container mx-auto max-w-4xl">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
+              <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
                 <Search className="w-8 h-8 text-blue-600" />
                 <span>{t('diagnostic.title')}</span>
               </h1>

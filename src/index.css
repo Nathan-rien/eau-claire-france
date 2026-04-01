@@ -140,8 +140,8 @@
     height: auto;
   }
 
-  /* Touch-friendly links and buttons */
-  a, button, [role="button"] {
+  /* Touch-friendly buttons */
+  button, [role="button"] {
     min-height: var(--touch-target-min);
     min-width: var(--touch-target-min);
   }

@@ -198,7 +198,7 @@ const MentionsLegales = () => {
             </Card>
           </div>
 
-          <div className="mt-12">
+          <div className="mt-6 md:mt-12">
             <NavigationCTA />
           </div>
         </div>

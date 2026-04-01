@@ -7,9 +7,9 @@ const Footer = () => {
   const { t } = useLanguage();
 
   return (
-    <footer className="bg-gray-900 text-white py-12 px-4" role="contentinfo">
+    <footer className="bg-gray-900 text-white py-8 md:py-12 px-4" role="contentinfo">
       <div className="container mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
           <div>
             <div className="flex items-center space-x-3 mb-4">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center" aria-hidden="true">

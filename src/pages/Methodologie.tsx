@@ -194,7 +194,7 @@ const Methodologie = () => {
           </div>
 
           {/* Données européennes */}
-          <Card className="mb-12 border-blue-200 bg-blue-50">
+          <Card className="mb-6 md:mb-12 border-blue-200 bg-blue-50">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2 text-blue-800">
                 <BarChart3 className="w-6 h-6" />
