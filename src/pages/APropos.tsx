@@ -112,8 +112,8 @@ const APropos = () => {
           </div>
 
           {/* Valeurs */}
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Nos valeurs</h2>
+          <div className="mb-6 md:mb-12">
+            <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">Nos valeurs</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {values.map((value, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow">
