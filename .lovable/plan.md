@@ -1,56 +1,36 @@
 
 
-## Optimiser le SEO de toutes les pages non optimisees
+## Ajouter un indicateur de scroll horizontal sur le tableau /prix-eaux en mobile
 
-### Constat
+### Probleme
 
-**Pages sans aucun SEOHead (11 pages) :**
-- `APropos.tsx`, `Contact.tsx`, `MentionsLegales.tsx`, `RGPD.tsx`, `Accessibilite.tsx`
-- `OpenData.tsx`, `Sources.tsx`, `Methodologie.tsx`, `ApiPublique.tsx`
-- `CartePolluants.tsx`
-- `NotFound.tsx` (besoin d'un meta robots noindex)
+Le tableau des prix utilise `overflow-x-auto` mais rien n'indique visuellement a l'utilisateur qu'il peut scroller horizontalement. Sur mobile, le tableau depasse l'ecran sans aucun affordance.
 
-**Pages avec SEOHead mais sans donnees structurees ni canonical :**
-- Les 7 pages Europe (CarteEurope, CartePolluantsEurope, ClassementEurope, PolluantsEurope, DiagnosticEurope, AlertesEurope, PrixEauxEurope) ont title/description inline mais pas de canonical, keywords optimises, ni schema.org
-- `ComparateurPrix.tsx`, `MarquePrix.tsx`, `PrixEaux.tsx` : pas de schema.org
+### Solution
 
-**Sitemap incomplet :**
-- Manquent : `/parcours-eau`, `/parcours-eau-bouteille`, `/prix-eaux`, `/comparateur-prix`, `/sources-eau`, `/comparatif-bouteilles` (deja present?), et toutes les pages Europe
+1. **Ajouter un indicateur visuel "Glissez pour voir plus →"** au-dessus du tableau, visible uniquement sur mobile (`md:hidden`), avec une petite icone de fleche horizontale et une animation subtile.
 
-### Plan
+2. **Ajouter un fondu/gradient sur le bord droit** du conteneur `overflow-x-auto` pour signaler visuellement qu'il y a du contenu cache a droite. Le gradient disparait quand l'utilisateur a scrolle jusqu'au bout.
 
-**1. Enrichir `seoData.ts` (~20 nouvelles entrees)**
+3. **Rendre la premiere colonne sticky** sur mobile pour garder le contexte (source/enseigne) visible pendant le scroll horizontal.
 
-Ajouter des blocs SEO complets (title, description, keywords, canonical, schemaData) pour :
-- Pages institutionnelles : aPropos, contact, mentionsLegales, rgpd, accessibilite
-- Pages data : openData, sources, methodologie, apiPublique
-- Page carte polluants France
-- 7 pages Europe : carteEurope, cartePolluantsEurope, classementEurope, polluantsEurope, diagnosticEurope, alertesEurope, prixEauxEurope
-- Pages prix : comparateurPrix, prixEaux
-- Page 404 (noindex)
+### Fichier modifie
 
-Chaque entree contiendra un schema.org adapte (WebPage, FAQPage pour methodologie, DataCatalog pour openData, ContactPage pour contact, etc.)
+**`src/pages/PrixEaux.tsx`** (lignes 528-636)
 
-**2. Ajouter SEOHead aux 11 pages manquantes**
+- Wrapper le `div.overflow-x-auto` dans un conteneur `relative` avec un pseudo-element gradient droit via une classe CSS
+- Ajouter un texte hint `<p class="md:hidden text-xs text-muted-foreground flex items-center gap-1 mb-2"><MoveHorizontal /> Glissez pour voir toutes les colonnes</p>` juste avant le tableau
+- Ajouter `sticky left-0 bg-white dark:bg-gray-950 z-10` sur la premiere colonne (`<th>` et `<td>` de "Source")
 
-Import SEOHead + seoData dans chaque fichier, ajouter le composant juste apres `<Layout>`.
-
-**3. Ameliorer les 7 pages Europe**
-
-Remplacer les title/description inline par des references a seoData, ajouter canonical et schema.org.
-
-**4. Mettre a jour le sitemap**
-
-Ajouter les ~15 URLs manquantes dans `public/sitemap.xml` :
-- `/parcours-eau`, `/parcours-eau-bouteille`, `/prix-eaux`, `/comparateur-prix`, `/sources-eau`
-- `/carte-europe`, `/carte-polluants-europe`, `/classement-europe`, `/polluants-europe`, `/diagnostic-europe`, `/alertes-europe`, `/prix-eaux-europe`
-
-**5. Ajouter `robots.txt` avec reference au sitemap** (deja present mais verifier le lien sitemap)
-
-### Fichiers modifies (~22 fichiers)
-- `src/utils/seoData.ts` (ajout ~20 entrees)
-- `src/pages/APropos.tsx`, `Contact.tsx`, `MentionsLegales.tsx`, `RGPD.tsx`, `Accessibilite.tsx`, `OpenData.tsx`, `Sources.tsx`, `Methodologie.tsx`, `ApiPublique.tsx`, `CartePolluants.tsx`, `NotFound.tsx` (ajout SEOHead)
-- `src/pages/CarteEurope.tsx`, `CartePolluantsEurope.tsx`, `ClassementEurope.tsx`, `PolluantsEurope.tsx`, `DiagnosticEurope.tsx`, `AlertesEurope.tsx`, `PrixEauxEurope.tsx` (amelioration SEO)
-- `public/sitemap.xml` (ajout URLs manquantes)
-- `public/robots.txt` (verification lien sitemap)
+**`src/index.css`** -- Ajouter une classe utilitaire pour le gradient de fade-out droit :
+```css
+.table-scroll-hint::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 2rem;
+  background: linear-gradient(to right, transparent, var(--background));
+  pointer-events: none;
+}
+```
 
