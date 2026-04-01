@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Search, Filter, TrendingUp, Clock, Store, Truck, Package, ShoppingCart, Info } from 'lucide-react';
+import { Search, Filter, TrendingUp, Clock, Store, Truck, Package, ShoppingCart, Info, MoveHorizontal } from 'lucide-react';
 import { Price, Retailer, PriceFilters, PaginatedResponse } from '@/types/pricing';
 import { getPrices } from '@/services/pricesApi';
 import { useToast } from '@/components/ui/use-toast';
@@ -526,25 +526,31 @@ export default function PrixEaux() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-200 dark:border-gray-700">
+            <>
+            <p className="md:hidden text-xs text-muted-foreground flex items-center gap-1 mb-2 animate-pulse">
+              <MoveHorizontal className="h-3.5 w-3.5" />
+              Glissez pour voir toutes les colonnes
+            </p>
+            <div className="relative table-scroll-hint">
+              <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-border">
                 <thead>
                   <tr className="bg-muted">
-                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">
+                    <th className="border border-border p-3 text-left sticky left-0 bg-muted z-10">
                       Source
                     </th>
-                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">
+                    <th className="border border p-3 text-left">
                       Marque
                     </th>
-                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Produit</th>
-                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Format</th>
-                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-right">
+                    <th className="border border p-3 text-left">Produit</th>
+                    <th className="border border p-3 text-left">Format</th>
+                    <th className="border border p-3 text-right">
                       Prix pack
                     </th>
-                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-right">
+                    <th className="border border p-3 text-right">
                       Prix €/L
                     </th>
-                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-center">
+                    <th className="border border p-3 text-center">
                       <Button 
                         variant="ghost" 
                         size="sm" 
@@ -570,7 +576,7 @@ export default function PrixEaux() {
 
                     return (
                     <tr key={price.id} className="hover:bg-muted/50">
-                       <td className="border border-gray-200 dark:border-gray-700 p-3">
+                       <td className="border border-border p-3 sticky left-0 bg-background z-10">
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -596,28 +602,28 @@ export default function PrixEaux() {
                             </Tooltip>
                           </TooltipProvider>
                         </td>
-                      <td className="border border-gray-200 dark:border-gray-700 p-3">
+                      <td className="border border p-3">
                         <span className="font-medium">{price.brand}</span>
                         {price.is_promo && (
                           <Badge variant="destructive" className="ml-2 text-xs">PROMO</Badge>
                         )}
                       </td>
-                      <td className="border border-gray-200 dark:border-gray-700 p-3">
+                      <td className="border border p-3">
                         <div className="max-w-xs truncate">{price.product_name}</div>
                         {price.promo_label && (
                           <div className="text-xs text-muted-foreground">{price.promo_label}</div>
                         )}
                       </td>
-                      <td className="border border-gray-200 dark:border-gray-700 p-3">
+                      <td className="border border p-3">
                         {formatVolume(price.pack_count, price.unit_volume_l)}
                       </td>
-                      <td className="border border-gray-200 dark:border-gray-700 p-3 text-right font-medium">
+                      <td className="border border p-3 text-right font-medium">
                         {formatPrice(price.price_total_eur)}
                       </td>
-                      <td className="border border-gray-200 dark:border-gray-700 p-3 text-right font-bold text-primary">
+                      <td className="border border p-3 text-right font-bold text-primary">
                         {formatPrice(price.price_per_l_eur)}
                       </td>
-                      <td className="border border-gray-200 dark:border-gray-700 p-3 text-center text-sm text-muted-foreground">
+                      <td className="border border p-3 text-center text-sm text-muted-foreground">
                           <div className="flex items-center justify-center gap-1">
                             <Clock className="h-3 w-3" />
                             {new Date(price.scraped_at).toLocaleDateString('fr-FR', {
@@ -633,7 +639,9 @@ export default function PrixEaux() {
                   })}
                 </tbody>
               </table>
+              </div>
             </div>
+            </>
           )}
         </div>
       </main>
