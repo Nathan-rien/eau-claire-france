@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 const RGPD = () => {
   return (
     <Layout>
+      <SEOHead {...seoData.rgpd} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <div className="container mx-auto px-4 py-8 md:py-12">
           {/* Header */}

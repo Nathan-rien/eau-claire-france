@@ -99,6 +99,7 @@ const OpenData = () => {
 
   return (
     <Layout>
+      <SEOHead {...seoData.openData} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <div className="container mx-auto px-4 py-8 md:py-12">
           {/* Header */}

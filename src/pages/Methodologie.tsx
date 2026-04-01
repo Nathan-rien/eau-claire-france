@@ -79,6 +79,7 @@ const Methodologie = () => {
 
   return (
     <Layout>
+      <SEOHead {...seoData.methodologie} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <div className="container mx-auto px-4 py-6 md:py-12">
           {/* Header */}
