@@ -41,6 +41,9 @@ export default function PrixEaux() {
   const [brands, setBrands] = useState<string[]>([]);
   const [brandRetailerMapping, setBrandRetailerMapping] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [initialDataLoaded, setInitialDataLoaded] = useState(false);
+  const retailersRef = useRef<Retailer[]>([]);
+  const brandRetailerMappingRef = useRef<any[]>([]);
   const [showDataBanner, setShowDataBanner] = useState(false);
   const [noActiveRetailers, setNoActiveRetailers] = useState(false);
   const [dataSource, setDataSource] = useState<string>('prices');
