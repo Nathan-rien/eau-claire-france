@@ -69,7 +69,7 @@ const APropos = () => {
           </div>
 
           {/* Mission */}
-          <Card className="mb-12 border-blue-200 bg-blue-50">
+          <Card className="mb-6 md:mb-12 border-blue-200 bg-blue-50">
             <CardHeader>
               <CardTitle className="text-center text-2xl text-blue-800">Notre mission</CardTitle>
             </CardHeader>
