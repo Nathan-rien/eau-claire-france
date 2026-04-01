@@ -526,11 +526,16 @@ export default function PrixEaux() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-200 dark:border-gray-700">
+            <p className="md:hidden text-xs text-muted-foreground flex items-center gap-1 mb-2 animate-pulse">
+              <MoveHorizontal className="h-3.5 w-3.5" />
+              Glissez pour voir toutes les colonnes
+            </p>
+            <div className="relative table-scroll-hint">
+              <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-border">
                 <thead>
                   <tr className="bg-muted">
-                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">
+                    <th className="border border-border p-3 text-left sticky left-0 bg-muted z-10">
                       Source
                     </th>
                     <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">
