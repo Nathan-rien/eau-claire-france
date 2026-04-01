@@ -167,7 +167,7 @@ export default function PrixEaux() {
 
         let pricesWithRetailer = result.items.map(price => {
           const retailerObj = resolveRetailer(price);
-          const brandMapping = brandRetailerMapping.find(m => 
+          const brandMapping = currentMapping.find(m => 
             m.brand_name.toLowerCase() === price.brand?.toLowerCase() && 
             m.retailer_id === retailerObj?.id
           );
