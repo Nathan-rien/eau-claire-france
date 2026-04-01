@@ -62,14 +62,14 @@ Envoyé depuis InfoEau.fr`;
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-6 md:py-12">
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-3">
-              <Mail className="w-10 h-10 text-blue-600" />
+          <div className="text-center mb-6 md:mb-12">
+            <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-3">
+              <Mail className="w-8 h-8 md:w-10 md:h-10 text-blue-600" />
               <span>Nous contacter</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-base md:text-xl text-gray-600 max-w-3xl mx-auto">
               Une question, une suggestion ou un projet de partenariat ? 
               Nous sommes à votre écoute pour améliorer InfoEau.fr.
             </p>
