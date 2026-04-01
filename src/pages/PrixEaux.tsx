@@ -159,9 +159,9 @@ export default function PrixEaux() {
           let urlHost = '';
           try { urlHost = price.url ? new URL(price.url).hostname.replace('www.', '') : ''; } catch {}
           return (
-            retailers.find(r => r.slug?.toLowerCase() === skuSlug) ||
-            retailers.find(r => r.slug?.toLowerCase() === hashSlug) ||
-            retailers.find(r => urlHost && r.domain && urlHost.includes(r.domain.replace('www.', '')))
+            currentRetailers.find(r => r.slug?.toLowerCase() === skuSlug) ||
+            currentRetailers.find(r => r.slug?.toLowerCase() === hashSlug) ||
+            currentRetailers.find(r => urlHost && r.domain && urlHost.includes(r.domain.replace('www.', '')))
           );
         };
 
