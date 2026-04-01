@@ -43,8 +43,7 @@ const ClassementEurope: React.FC = () => {
   return (
     <Layout>
       <SEOHead
-        title="Classement qualité de l'eau en Europe – 27 pays EU"
-        description="Classement des 27 pays de l'Union européenne par qualité de l'eau potable. Conformité, nitrates, polluants."
+        {...seoData.classementEurope}
       />
 
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">

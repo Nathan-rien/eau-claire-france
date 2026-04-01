@@ -50,8 +50,7 @@ const PrixEauxEurope = () => {
   return (
     <Layout>
       <SEOHead
-        title="Prix de l'eau du robinet en Europe | InfoEau"
-        description="Comparaison des prix de l'eau potable dans les 27 pays de l'Union européenne (€/m³). Données EurEau et OCDE."
+        {...seoData.prixEauxEurope}
       />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-2">Prix de l'eau du robinet — Europe</h1>

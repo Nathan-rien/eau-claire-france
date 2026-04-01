@@ -168,8 +168,7 @@ const CarteEurope: React.FC = () => {
   return (
     <Layout>
       <SEOHead
-        title="Carte de la qualité de l'eau en Europe – 27 pays EU"
-        description="Explorez la qualité de l'eau potable dans les 27 pays de l'Union européenne. Données basées sur la Directive Eau Potable (DWD) de l'EEA."
+        {...seoData.carteEurope}
       />
 
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">

@@ -29,8 +29,7 @@ const AlertesEurope = () => {
   return (
     <Layout>
       <SEOHead
-        title="Alertes qualité de l'eau en Europe | InfoEau"
-        description="Pays et polluants les plus préoccupants en Europe : violations réglementaires, faible conformité, dépassements de seuils."
+        {...seoData.alertesEurope}
       />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-2">Alertes qualité — Europe</h1>
