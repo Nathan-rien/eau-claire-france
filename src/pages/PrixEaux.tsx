@@ -194,7 +194,7 @@ export default function PrixEaux() {
 
         // Filtre par enseigne côté client si demandé
         if (filters.retailer) {
-          const selected = retailers.find(r => r.id === filters.retailer);
+          const selected = currentRetailers.find(r => r.id === filters.retailer);
           if (selected) {
             pricesWithRetailer = pricesWithRetailer.filter(p => (
               p.retailer_resolved_id === selected.id ||
