@@ -3,10 +3,13 @@ import React from 'react';
 import { MapPin, AlertTriangle } from 'lucide-react';
 import PollutantMap from '@/components/PollutantMap';
 import Layout from '@/components/Layout';
+import SEOHead from '@/components/SEOHead';
+import { seoData } from '@/utils/seoData';
 
 const CartePolluants = () => {
   return (
     <Layout>
+      <SEOHead {...seoData.cartePolluants} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <section className="py-12 px-4">
           <div className="container mx-auto">

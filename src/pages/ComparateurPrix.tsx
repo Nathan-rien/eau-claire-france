@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
+import { seoData } from '@/utils/seoData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -239,11 +240,7 @@ export default function ComparateurPrix() {
 
   return (
     <Layout>
-      <SEOHead 
-        title="Comparateur de prix - Eaux en bouteille"
-        description="Comparez les prix des eaux en bouteille entre marques ou enseignes. Trouvez les meilleures offres et économisez sur vos achats."
-        canonical="/comparateur-prix"
-      />
+      <SEOHead {...seoData.comparateurPrix} />
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">

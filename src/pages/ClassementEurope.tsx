@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
+import { seoData } from '@/utils/seoData';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -42,8 +43,7 @@ const ClassementEurope: React.FC = () => {
   return (
     <Layout>
       <SEOHead
-        title="Classement qualité de l'eau en Europe – 27 pays EU"
-        description="Classement des 27 pays de l'Union européenne par qualité de l'eau potable. Conformité, nitrates, polluants."
+        {...seoData.classementEurope}
       />
 
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">

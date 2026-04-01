@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
+import { seoData } from '@/utils/seoData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -40,8 +41,7 @@ const PolluantsEurope: React.FC = () => {
   return (
     <Layout>
       <SEOHead
-        title="Polluants de l'eau en Europe – Données par pays"
-        description="Analyse des polluants présents dans l'eau potable des 27 pays de l'UE : nitrates, pesticides, PFAS, métaux lourds."
+        {...seoData.polluantsEurope}
       />
 
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">

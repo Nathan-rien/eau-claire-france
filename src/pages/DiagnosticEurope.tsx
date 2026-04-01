@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
+import { seoData } from '@/utils/seoData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -26,8 +27,7 @@ const DiagnosticEurope = () => {
   return (
     <Layout>
       <SEOHead
-        title="Diagnostic qualité de l'eau en Europe | InfoEau"
-        description="Sélectionnez un pays européen pour consulter ses indicateurs de qualité de l'eau potable : conformité, nitrates, polluants."
+        {...seoData.diagnosticEurope}
       />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-2">Diagnostic qualité de l'eau — Europe</h1>

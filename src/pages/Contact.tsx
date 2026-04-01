@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { Mail, MessageSquare, Users, Send } from 'lucide-react';
 import Layout from '@/components/Layout';
+import SEOHead from '@/components/SEOHead';
+import { seoData } from '@/utils/seoData';
 import NavigationCTA from '@/components/NavigationCTA';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -61,6 +63,7 @@ Envoyé depuis InfoEau.fr`;
 
   return (
     <Layout>
+      <SEOHead {...seoData.contact} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <div className="container mx-auto px-4 py-6 md:py-12">
           {/* Header */}

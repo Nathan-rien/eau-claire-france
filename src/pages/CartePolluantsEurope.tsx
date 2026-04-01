@@ -3,13 +3,13 @@ import { AlertTriangle } from 'lucide-react';
 import PollutantMapEurope from '@/components/PollutantMapEurope';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
+import { seoData } from '@/utils/seoData';
 
 const CartePolluantsEurope = () => {
   return (
     <Layout>
       <SEOHead
-        title="Carte des polluants en Europe – Eau potable UE"
-        description="Visualisez la répartition des polluants dans l'eau potable des 27 pays de l'UE : nitrates, pesticides, PFAS, métaux lourds."
+        {...seoData.cartePolluantsEurope}
       />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50 dark:from-background dark:to-background">
         <section className="py-12 px-4">
