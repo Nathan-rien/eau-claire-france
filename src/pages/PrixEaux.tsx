@@ -102,6 +102,7 @@ export default function PrixEaux() {
         // Charger les enseignes actives
         const retailersData = await listActiveRetailers();
         setRetailers(retailersData as Retailer[]);
+        retailersRef.current = retailersData as Retailer[];
 
         // Charger les marques distinctes
         const brandsData = await listDistinctBrands();
@@ -110,6 +111,9 @@ export default function PrixEaux() {
         // Charger le mapping marques-enseignes
         const mappingData = await getBrandRetailerMapping();
         setBrandRetailerMapping(mappingData);
+        brandRetailerMappingRef.current = mappingData;
+
+        setInitialDataLoaded(true);
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error);
         toast({
