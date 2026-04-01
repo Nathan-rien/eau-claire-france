@@ -1,36 +1,33 @@
 
 
-## Ajouter un indicateur de scroll horizontal sur le tableau /prix-eaux en mobile
+## Fix: la page /prix-eaux se recharge plusieurs fois
 
-### Probleme
+### Cause
 
-Le tableau des prix utilise `overflow-x-auto` mais rien n'indique visuellement a l'utilisateur qu'il peut scroller horizontalement. Sur mobile, le tableau depasse l'ecran sans aucun affordance.
+Le useEffect qui charge les prix (ligne 135-264) a comme dependances `[filters, toast, retailers, brandRetailerMapping]`. Or ces deux derniers sont mis a jour de facon asynchrone et independante dans le premier useEffect (lignes 91-122). Chaque `setState` declenche un re-render et relance `loadPrices` :
+
+1. Render initial : `retailers=[]`, `brandRetailerMapping=[]` → loadPrices #1
+2. `setRetailers(data)` → loadPrices #2
+3. `setBrands(data)` → re-render (pas de reload car pas dans les deps)
+4. `setBrandRetailerMapping(data)` → loadPrices #3
+
+Resultat : 3 appels Supabase consecutifs avec "Chargement..." qui clignote.
 
 ### Solution
 
-1. **Ajouter un indicateur visuel "Glissez pour voir plus →"** au-dessus du tableau, visible uniquement sur mobile (`md:hidden`), avec une petite icone de fleche horizontale et une animation subtile.
+**Attendre que les donnees initiales soient chargees avant de lancer loadPrices.**
 
-2. **Ajouter un fondu/gradient sur le bord droit** du conteneur `overflow-x-auto` pour signaler visuellement qu'il y a du contenu cache a droite. Le gradient disparait quand l'utilisateur a scrolle jusqu'au bout.
+Ajouter un flag `initialDataLoaded` qui passe a `true` seulement quand les 3 appels initiaux (retailers, brands, mapping) sont termines. Le useEffect des prix ne se declenche que si ce flag est `true`.
 
-3. **Rendre la premiere colonne sticky** sur mobile pour garder le contexte (source/enseigne) visible pendant le scroll horizontal.
+### Modifications dans `src/pages/PrixEaux.tsx`
 
-### Fichier modifie
+1. Ajouter un state `const [initialDataLoaded, setInitialDataLoaded] = useState(false);`
 
-**`src/pages/PrixEaux.tsx`** (lignes 528-636)
+2. Dans le premier useEffect, deplacer le `setInitialDataLoaded(true)` apres les 3 setState (retailers, brands, mapping), juste avant le `catch`.
 
-- Wrapper le `div.overflow-x-auto` dans un conteneur `relative` avec un pseudo-element gradient droit via une classe CSS
-- Ajouter un texte hint `<p class="md:hidden text-xs text-muted-foreground flex items-center gap-1 mb-2"><MoveHorizontal /> Glissez pour voir toutes les colonnes</p>` juste avant le tableau
-- Ajouter `sticky left-0 bg-white dark:bg-gray-950 z-10` sur la premiere colonne (`<th>` et `<td>` de "Source")
+3. Dans le second useEffect (loadPrices), ajouter un early return `if (!initialDataLoaded) return;` au debut, et ajouter `initialDataLoaded` aux dependances a la place de `retailers` et `brandRetailerMapping`.
 
-**`src/index.css`** -- Ajouter une classe utilitaire pour le gradient de fade-out droit :
-```css
-.table-scroll-hint::after {
-  content: '';
-  position: absolute;
-  right: 0; top: 0; bottom: 0;
-  width: 2rem;
-  background: linear-gradient(to right, transparent, var(--background));
-  pointer-events: none;
-}
-```
+4. Puisque `loadPrices` accede a `retailers` et `brandRetailerMapping`, utiliser des refs (`useRef`) pour eviter qu'ils ne soient dans les deps du useEffect. Mettre a jour les refs dans le premier useEffect apres chaque setState.
+
+Cela garantit un seul appel `getPrices` une fois toutes les donnees de reference chargees.
 
