@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
@@ -41,6 +41,9 @@ export default function PrixEaux() {
   const [brands, setBrands] = useState<string[]>([]);
   const [brandRetailerMapping, setBrandRetailerMapping] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [initialDataLoaded, setInitialDataLoaded] = useState(false);
+  const retailersRef = useRef<Retailer[]>([]);
+  const brandRetailerMappingRef = useRef<any[]>([]);
   const [showDataBanner, setShowDataBanner] = useState(false);
   const [noActiveRetailers, setNoActiveRetailers] = useState(false);
   const [dataSource, setDataSource] = useState<string>('prices');
@@ -99,6 +102,7 @@ export default function PrixEaux() {
         // Charger les enseignes actives
         const retailersData = await listActiveRetailers();
         setRetailers(retailersData as Retailer[]);
+        retailersRef.current = retailersData as Retailer[];
 
         // Charger les marques distinctes
         const brandsData = await listDistinctBrands();
@@ -107,6 +111,9 @@ export default function PrixEaux() {
         // Charger le mapping marques-enseignes
         const mappingData = await getBrandRetailerMapping();
         setBrandRetailerMapping(mappingData);
+        brandRetailerMappingRef.current = mappingData;
+
+        setInitialDataLoaded(true);
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error);
         toast({
@@ -133,29 +140,34 @@ export default function PrixEaux() {
 
   // Charger les prix avec filtres
   useEffect(() => {
+    if (!initialDataLoaded) return;
+
     const loadPrices = async () => {
       setLoading(true);
       try {
         const result = await getPrices(filters);
         
+        const currentRetailers = retailersRef.current;
+        const currentMapping = brandRetailerMappingRef.current;
+
         // Résoudre l'enseigne même si l'ID ne correspond pas (slug/URL/unique_hash)
         const resolveRetailer = (price: any) => {
-          const byId = retailers.find(r => r.id === price.retailer_id);
+          const byId = currentRetailers.find(r => r.id === price.retailer_id);
           if (byId) return byId;
           const skuSlug = price.sku?.split('_')?.[0]?.toLowerCase();
           const hashSlug = price.unique_hash?.split('-')?.[0]?.toLowerCase();
           let urlHost = '';
           try { urlHost = price.url ? new URL(price.url).hostname.replace('www.', '') : ''; } catch {}
           return (
-            retailers.find(r => r.slug?.toLowerCase() === skuSlug) ||
-            retailers.find(r => r.slug?.toLowerCase() === hashSlug) ||
-            retailers.find(r => urlHost && r.domain && urlHost.includes(r.domain.replace('www.', '')))
+            currentRetailers.find(r => r.slug?.toLowerCase() === skuSlug) ||
+            currentRetailers.find(r => r.slug?.toLowerCase() === hashSlug) ||
+            currentRetailers.find(r => urlHost && r.domain && urlHost.includes(r.domain.replace('www.', '')))
           );
         };
 
         let pricesWithRetailer = result.items.map(price => {
           const retailerObj = resolveRetailer(price);
-          const brandMapping = brandRetailerMapping.find(m => 
+          const brandMapping = currentMapping.find(m => 
             m.brand_name.toLowerCase() === price.brand?.toLowerCase() && 
             m.retailer_id === retailerObj?.id
           );
@@ -182,7 +194,7 @@ export default function PrixEaux() {
 
         // Filtre par enseigne côté client si demandé
         if (filters.retailer) {
-          const selected = retailers.find(r => r.id === filters.retailer);
+          const selected = currentRetailers.find(r => r.id === filters.retailer);
           if (selected) {
             pricesWithRetailer = pricesWithRetailer.filter(p => (
               p.retailer_resolved_id === selected.id ||
@@ -261,7 +273,7 @@ export default function PrixEaux() {
     };
 
     loadPrices();
-  }, [filters, toast, retailers, brandRetailerMapping]);
+  }, [filters, toast, initialDataLoaded]);
 
   const updateFilter = (key: string, value: string | null) => {
     const newParams = new URLSearchParams(searchParams);
