@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Search, Filter, TrendingUp, Clock, Store, Truck, Package, ShoppingCart, Info } from 'lucide-react';
+import { Search, Filter, TrendingUp, Clock, Store, Truck, Package, ShoppingCart, Info, MoveHorizontal } from 'lucide-react';
 import { Price, Retailer, PriceFilters, PaginatedResponse } from '@/types/pricing';
 import { getPrices } from '@/services/pricesApi';
 import { useToast } from '@/components/ui/use-toast';
