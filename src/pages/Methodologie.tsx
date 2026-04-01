@@ -130,8 +130,8 @@ const Methodologie = () => {
           </Card>
 
           {/* Processus détaillé */}
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Processus de traitement des données</h2>
+          <div className="mb-6 md:mb-12">
+            <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">Processus de traitement des données</h2>
             <div className="space-y-6">
               {methodology.map((step, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow">
