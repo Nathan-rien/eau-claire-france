@@ -3,6 +3,8 @@ import React from 'react';
 import { MapPin, AlertTriangle } from 'lucide-react';
 import PollutantMap from '@/components/PollutantMap';
 import Layout from '@/components/Layout';
+import SEOHead from '@/components/SEOHead';
+import { seoData } from '@/utils/seoData';
 
 const CartePolluants = () => {
   return (
