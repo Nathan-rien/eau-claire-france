@@ -240,11 +240,7 @@ export default function ComparateurPrix() {
 
   return (
     <Layout>
-      <SEOHead 
-        title="Comparateur de prix - Eaux en bouteille"
-        description="Comparez les prix des eaux en bouteille entre marques ou enseignes. Trouvez les meilleures offres et économisez sur vos achats."
-        canonical="/comparateur-prix"
-      />
+      <SEOHead {...seoData.comparateurPrix} />
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">

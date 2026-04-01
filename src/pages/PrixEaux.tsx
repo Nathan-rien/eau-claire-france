@@ -302,11 +302,7 @@ export default function PrixEaux() {
 
   return (
     <Layout>
-      <SEOHead 
-        title="Prix des eaux en bouteille - Comparateur par enseigne"
-        description="Comparez les prix des eaux en bouteille dans toutes les enseignes. Trouvez les meilleures offres pour Evian, Cristaline, Volvic et plus."
-        canonical="/prix-eaux"
-      />
+      <SEOHead {...seoData.prixEaux} />
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
