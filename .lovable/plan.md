@@ -1,33 +1,37 @@
 
 
-## Fix: la page /prix-eaux se recharge plusieurs fois
+## Remplacer le tableau mobile par une liste compacte e-commerce sur /prix-eaux
 
-### Cause
+### Approche
 
-Le useEffect qui charge les prix (ligne 135-264) a comme dependances `[filters, toast, retailers, brandRetailerMapping]`. Or ces deux derniers sont mis a jour de facon asynchrone et independante dans le premier useEffect (lignes 91-122). Chaque `setState` declenche un re-render et relance `loadPrices` :
+Sur mobile (`< md`), masquer le tableau et afficher une liste compacte inspirée des apps de courses : chaque produit sur une ligne avec le retailer à gauche, le prix à droite, et les détails secondaires en dessous. Le tableau classique reste visible sur desktop (`md:` et au-dessus).
 
-1. Render initial : `retailers=[]`, `brandRetailerMapping=[]` → loadPrices #1
-2. `setRetailers(data)` → loadPrices #2
-3. `setBrands(data)` → re-render (pas de reload car pas dans les deps)
-4. `setBrandRetailerMapping(data)` → loadPrices #3
+### Structure d'un item de la liste
 
-Resultat : 3 appels Supabase consecutifs avec "Chargement..." qui clignote.
+```text
+┌─────────────────────────────────────┐
+│ 🏪 Carrefour              0.42 €/L │
+│ Evian · 6×1.5L             3.79 €  │
+│ ⏱ il y a 2j          PROMO        │
+└─────────────────────────────────────┘
+```
 
-### Solution
-
-**Attendre que les donnees initiales soient chargees avant de lancer loadPrices.**
-
-Ajouter un flag `initialDataLoaded` qui passe a `true` seulement quand les 3 appels initiaux (retailers, brands, mapping) sont termines. Le useEffect des prix ne se declenche que si ce flag est `true`.
+- **Ligne 1** : icône canal + nom retailer (gauche), prix/L en gras (droite)
+- **Ligne 2** : marque + format (gauche), prix pack (droite)
+- **Ligne 3** : date relative (gauche), badge promo si applicable (droite)
 
 ### Modifications dans `src/pages/PrixEaux.tsx`
 
-1. Ajouter un state `const [initialDataLoaded, setInitialDataLoaded] = useState(false);`
+1. **Retirer la colonne sticky et le hint de scroll** : supprimer `sticky left-0`, la classe `table-scroll-hint`, et le texte "Glissez pour voir toutes les colonnes".
 
-2. Dans le premier useEffect, deplacer le `setInitialDataLoaded(true)` apres les 3 setState (retailers, brands, mapping), juste avant le `catch`.
+2. **Masquer le tableau sur mobile** : ajouter `hidden md:block` sur le wrapper du tableau existant.
 
-3. Dans le second useEffect (loadPrices), ajouter un early return `if (!initialDataLoaded) return;` au debut, et ajouter `initialDataLoaded` aux dependances a la place de `retailers` et `brandRetailerMapping`.
+3. **Ajouter la liste mobile** : juste avant le wrapper tableau, ajouter un bloc `md:hidden` qui itère sur `prices` et affiche chaque item en `div` avec :
+   - `flex justify-between` pour aligner retailer/prix
+   - Texte secondaire en `text-xs text-muted-foreground`
+   - Bordure inférieure `border-b border-border` entre les items
+   - Badge promo conditionnel
+   - Même logique `getChannelIcon()` et `formatPrice()`
 
-4. Puisque `loadPrices` accede a `retailers` et `brandRetailerMapping`, utiliser des refs (`useRef`) pour eviter qu'ils ne soient dans les deps du useEffect. Mettre a jour les refs dans le premier useEffect apres chaque setState.
-
-Cela garantit un seul appel `getPrices` une fois toutes les donnees de reference chargees.
+4. **Pagination** : la pagination existante reste inchangée et s'applique aux deux vues.
 
