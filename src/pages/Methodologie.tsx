@@ -92,7 +92,7 @@ const Methodologie = () => {
           </div>
 
           {/* Principes directeurs */}
-          <Card className="mb-12 border-green-200 bg-green-50">
+          <Card className="mb-6 md:mb-12 border-green-200 bg-green-50">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2 text-green-800">
                 <Target className="w-6 h-6" />
