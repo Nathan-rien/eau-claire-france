@@ -575,7 +575,7 @@ export default function PrixEaux() {
 
                     return (
                     <tr key={price.id} className="hover:bg-muted/50">
-                       <td className="border border-gray-200 dark:border-gray-700 p-3">
+                       <td className="border border-border p-3 sticky left-0 bg-background z-10">
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
