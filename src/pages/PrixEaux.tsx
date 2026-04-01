@@ -699,11 +699,7 @@ export default function PrixEaux() {
               </table>
             </div>
             </>
-                <thead>
-                  <tr className="bg-muted">
-                    <th className="border border-border p-3 text-left sticky left-0 bg-muted z-10">
-                      Source
-                    </th>
+
                     <th className="border border p-3 text-left">
                       Marque
                     </th>
