@@ -55,21 +55,21 @@ const APropos = () => {
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-6 md:py-12">
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-3">
-              <Heart className="w-10 h-10 text-red-600" />
+          <div className="text-center mb-6 md:mb-12">
+            <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-3">
+              <Heart className="w-8 h-8 md:w-10 md:h-10 text-red-600" />
               <span>À propos d'InfoEau.fr</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-base md:text-xl text-gray-600 max-w-3xl mx-auto">
               Une initiative citoyenne pour démocratiser l'accès à l'information 
               sur la qualité de l'eau potable en France.
             </p>
           </div>
 
           {/* Mission */}
-          <Card className="mb-12 border-blue-200 bg-blue-50">
+          <Card className="mb-6 md:mb-12 border-blue-200 bg-blue-50">
             <CardHeader>
               <CardTitle className="text-center text-2xl text-blue-800">Notre mission</CardTitle>
             </CardHeader>
@@ -84,8 +84,8 @@ const APropos = () => {
           </Card>
 
           {/* Histoire */}
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Notre histoire</h2>
+          <div className="mb-6 md:mb-12">
+            <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">Notre histoire</h2>
             <Card>
               <CardContent className="p-8">
                 <p className="text-gray-700 leading-relaxed mb-6">
@@ -112,8 +112,8 @@ const APropos = () => {
           </div>
 
           {/* Valeurs */}
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Nos valeurs</h2>
+          <div className="mb-6 md:mb-12">
+            <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">Nos valeurs</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {values.map((value, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow">
@@ -132,8 +132,8 @@ const APropos = () => {
           </div>
 
           {/* Timeline */}
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Chronologie</h2>
+          <div className="mb-6 md:mb-12">
+            <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">Chronologie</h2>
             <div className="space-y-6">
               {timeline.map((event, index) => (
                 <div key={index} className="flex items-start space-x-6">

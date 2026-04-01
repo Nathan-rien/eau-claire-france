@@ -108,14 +108,14 @@ const Sources = () => {
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-6 md:py-12">
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-3">
-              <Database className="w-10 h-10 text-blue-600" />
+          <div className="text-center mb-6 md:mb-12">
+            <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-3">
+              <Database className="w-8 h-8 md:w-10 md:h-10 text-blue-600" />
               <span>Sources de données</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-base md:text-xl text-gray-600 max-w-3xl mx-auto">
               InfoEau.fr s'appuie exclusivement sur des sources officielles et scientifiques 
               pour garantir la fiabilité et la transparence des informations sur la qualité de l'eau potable.
             </p>
@@ -140,8 +140,8 @@ const Sources = () => {
           </Card>
 
           {/* Sources principales */}
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Sources principales</h2>
+          <div className="mb-6 md:mb-12">
+            <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">Sources principales</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {dataSources.map((source, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow">
@@ -181,8 +181,8 @@ const Sources = () => {
           </div>
 
           {/* Standards de qualité */}
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Standards de qualité</h2>
+          <div className="mb-6 md:mb-12">
+            <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">Standards de qualité</h2>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {qualityStandards.map((standard, index) => (
                 <Card key={index}>
