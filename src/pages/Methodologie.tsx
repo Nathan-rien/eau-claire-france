@@ -162,8 +162,8 @@ const Methodologie = () => {
           </div>
 
           {/* Indicateurs de qualité */}
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Indicateurs de qualité</h2>
+          <div className="mb-6 md:mb-12">
+            <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">Indicateurs de qualité</h2>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {qualityIndicators.map((indicator, index) => (
                 <Card key={index}>
