@@ -700,8 +700,6 @@ export default function PrixEaux() {
             </div>
             </>
 
-                    <th className="border border p-3 text-left">
-                      Marque
                     </th>
                     <th className="border border p-3 text-left">Produit</th>
                     <th className="border border p-3 text-left">Format</th>
