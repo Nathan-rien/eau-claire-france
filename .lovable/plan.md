@@ -1,53 +1,56 @@
 
 
-## Optimiser le responsive mobile sur l'ensemble du site
+## Optimiser le SEO de toutes les pages non optimisees
 
-### Problemes identifies (captures mobile 375px)
+### Constat
 
-1. **Titres trop grands** sur les pages secondaires : `text-4xl` fixe sur Contact, APropos, MentionsLegales, etc. sans variantes mobiles
-2. **Icones mal alignees dans les titres** : `flex items-center` + grandes icones (w-10) creent un decalage vertical sur mobile (visible sur APropos, Contact, Polluants)
-3. **Padding/marges excessifs** : `py-12 mb-12` sur mobile = trop d'espace blanc
-4. **CSS global `min-height: 44px` sur TOUS les liens** (`a, button, [role="button"]`) : force les liens inline du footer et des textes a etre trop grands, casse le rendu naturel
-5. **Carte (Carte.tsx)** : `py-12` sans variante mobile, titre `text-3xl` fixe
-6. **Polluants** : titre `text-3xl` fixe, pas de responsive
-7. **Footer** : liens avec `min-height: 44px` applique globalement = espacement excessif
+**Pages sans aucun SEOHead (11 pages) :**
+- `APropos.tsx`, `Contact.tsx`, `MentionsLegales.tsx`, `RGPD.tsx`, `Accessibilite.tsx`
+- `OpenData.tsx`, `Sources.tsx`, `Methodologie.tsx`, `ApiPublique.tsx`
+- `CartePolluants.tsx`
+- `NotFound.tsx` (besoin d'un meta robots noindex)
 
-### Plan de corrections
+**Pages avec SEOHead mais sans donnees structurees ni canonical :**
+- Les 7 pages Europe (CarteEurope, CartePolluantsEurope, ClassementEurope, PolluantsEurope, DiagnosticEurope, AlertesEurope, PrixEauxEurope) ont title/description inline mais pas de canonical, keywords optimises, ni schema.org
+- `ComparateurPrix.tsx`, `MarquePrix.tsx`, `PrixEaux.tsx` : pas de schema.org
 
-**1. CSS global (`src/index.css`)** -- Corriger la regle touch-target
-- Limiter `min-height: 44px` aux `button` et `[role="button"]` uniquement, pas aux `<a>` generiques
-- Les liens du footer et inline n'ont pas besoin de 44px de hauteur
+**Sitemap incomplet :**
+- Manquent : `/parcours-eau`, `/parcours-eau-bouteille`, `/prix-eaux`, `/comparateur-prix`, `/sources-eau`, `/comparatif-bouteilles` (deja present?), et toutes les pages Europe
 
-**2. Pages secondaires (APropos, Contact, MentionsLegales, RGPD, Accessibilite, Methodologie, Sources, OpenData, ApiPublique)**
-- Remplacer `text-4xl` par `text-2xl md:text-4xl` pour les h1
-- Remplacer `text-3xl` par `text-xl md:text-3xl` pour les h2
-- Remplacer `text-xl` par `text-base md:text-xl` pour les sous-titres
-- Remplacer `py-12 mb-12` par `py-6 md:py-12 mb-6 md:mb-12`
-- Reduire les icones titres : `w-8 h-8 md:w-10 md:h-10`
+### Plan
 
-**3. Polluants.tsx et Carte.tsx**
-- `text-3xl` -> `text-xl md:text-3xl`
-- `py-12` -> `py-6 md:py-12`
-- Icones `w-8 h-8` -> `w-6 h-6 md:w-8 md:h-8`
+**1. Enrichir `seoData.ts` (~20 nouvelles entrees)**
 
-**4. Diagnostic.tsx**
-- Deja partiellement responsive, ajuster `text-3xl` -> `text-xl md:text-3xl`
+Ajouter des blocs SEO complets (title, description, keywords, canonical, schemaData) pour :
+- Pages institutionnelles : aPropos, contact, mentionsLegales, rgpd, accessibilite
+- Pages data : openData, sources, methodologie, apiPublique
+- Page carte polluants France
+- 7 pages Europe : carteEurope, cartePolluantsEurope, classementEurope, polluantsEurope, diagnosticEurope, alertesEurope, prixEauxEurope
+- Pages prix : comparateurPrix, prixEaux
+- Page 404 (noindex)
 
-**5. Footer.tsx**
-- Ajouter `gap-6 md:gap-8` sur la grille
-- Reduire le padding `py-8 md:py-12`
+Chaque entree contiendra un schema.org adapte (WebPage, FAQPage pour methodologie, DataCatalog pour openData, ContactPage pour contact, etc.)
 
-### Fichiers modifies (~12 fichiers)
-- `src/index.css` (1 regle CSS)
-- `src/components/Footer.tsx`
-- `src/pages/APropos.tsx`
-- `src/pages/Contact.tsx`
-- `src/pages/MentionsLegales.tsx`
-- `src/pages/Polluants.tsx`
-- `src/pages/Carte.tsx`
-- `src/pages/Diagnostic.tsx`
-- `src/pages/RGPD.tsx`
-- `src/pages/Accessibilite.tsx`
-- `src/pages/Methodologie.tsx`
-- `src/pages/Sources.tsx`
+**2. Ajouter SEOHead aux 11 pages manquantes**
+
+Import SEOHead + seoData dans chaque fichier, ajouter le composant juste apres `<Layout>`.
+
+**3. Ameliorer les 7 pages Europe**
+
+Remplacer les title/description inline par des references a seoData, ajouter canonical et schema.org.
+
+**4. Mettre a jour le sitemap**
+
+Ajouter les ~15 URLs manquantes dans `public/sitemap.xml` :
+- `/parcours-eau`, `/parcours-eau-bouteille`, `/prix-eaux`, `/comparateur-prix`, `/sources-eau`
+- `/carte-europe`, `/carte-polluants-europe`, `/classement-europe`, `/polluants-europe`, `/diagnostic-europe`, `/alertes-europe`, `/prix-eaux-europe`
+
+**5. Ajouter `robots.txt` avec reference au sitemap** (deja present mais verifier le lien sitemap)
+
+### Fichiers modifies (~22 fichiers)
+- `src/utils/seoData.ts` (ajout ~20 entrees)
+- `src/pages/APropos.tsx`, `Contact.tsx`, `MentionsLegales.tsx`, `RGPD.tsx`, `Accessibilite.tsx`, `OpenData.tsx`, `Sources.tsx`, `Methodologie.tsx`, `ApiPublique.tsx`, `CartePolluants.tsx`, `NotFound.tsx` (ajout SEOHead)
+- `src/pages/CarteEurope.tsx`, `CartePolluantsEurope.tsx`, `ClassementEurope.tsx`, `PolluantsEurope.tsx`, `DiagnosticEurope.tsx`, `AlertesEurope.tsx`, `PrixEauxEurope.tsx` (amelioration SEO)
+- `public/sitemap.xml` (ajout URLs manquantes)
+- `public/robots.txt` (verification lien sitemap)
 
