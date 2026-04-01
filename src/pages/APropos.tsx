@@ -2,6 +2,8 @@
 import React from 'react';
 import { Heart, Users, Target, Award } from 'lucide-react';
 import Layout from '@/components/Layout';
+import SEOHead from '@/components/SEOHead';
+import { seoData } from '@/utils/seoData';
 import NavigationCTA from '@/components/NavigationCTA';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
