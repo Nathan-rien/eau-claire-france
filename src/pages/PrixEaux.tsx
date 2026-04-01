@@ -140,14 +140,19 @@ export default function PrixEaux() {
 
   // Charger les prix avec filtres
   useEffect(() => {
+    if (!initialDataLoaded) return;
+
     const loadPrices = async () => {
       setLoading(true);
       try {
         const result = await getPrices(filters);
         
+        const currentRetailers = retailersRef.current;
+        const currentMapping = brandRetailerMappingRef.current;
+
         // Résoudre l'enseigne même si l'ID ne correspond pas (slug/URL/unique_hash)
         const resolveRetailer = (price: any) => {
-          const byId = retailers.find(r => r.id === price.retailer_id);
+          const byId = currentRetailers.find(r => r.id === price.retailer_id);
           if (byId) return byId;
           const skuSlug = price.sku?.split('_')?.[0]?.toLowerCase();
           const hashSlug = price.unique_hash?.split('-')?.[0]?.toLowerCase();
