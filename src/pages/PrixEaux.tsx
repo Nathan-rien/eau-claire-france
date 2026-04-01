@@ -273,7 +273,7 @@ export default function PrixEaux() {
     };
 
     loadPrices();
-  }, [filters, toast, retailers, brandRetailerMapping]);
+  }, [filters, toast, initialDataLoaded]);
 
   const updateFilter = (key: string, value: string | null) => {
     const newParams = new URLSearchParams(searchParams);
