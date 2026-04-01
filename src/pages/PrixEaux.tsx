@@ -638,6 +638,7 @@ export default function PrixEaux() {
                   })}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </div>

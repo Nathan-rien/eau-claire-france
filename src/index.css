@@ -384,3 +384,22 @@ p, li {
 .animate-v2-scale-bounce {
   animation: v2-scale-bounce 0.6s ease-out both;
 }
+
+/* Horizontal scroll hint gradient */
+.table-scroll-hint::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 2rem;
+  background: linear-gradient(to right, transparent, hsl(var(--background)));
+  pointer-events: none;
+  z-index: 20;
+}
+
+@media (min-width: 768px) {
+  .table-scroll-hint::after {
+    display: none;
+  }
+}
