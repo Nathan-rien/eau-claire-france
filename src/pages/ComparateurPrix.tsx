@@ -551,7 +551,7 @@ export default function ComparateurPrix() {
 
                   {/* Nombre de produits */}
                   <div className="text-center">
-                    <h3 className="font-medium mb-2">Choix disponible</h3>
+                    <h3 className="font-medium mb-2">{t('priceComparator.availableChoice')}</h3>
                     {(() => {
                       const winner = comparison1.prices.length > comparison2.prices.length ? 1 : 2;
                       return (
