@@ -448,7 +448,7 @@ export default function ComparateurPrix() {
                     </div>
                     
                     <div className="text-sm text-muted-foreground text-center">
-                      {comparison1.prices.length} produits analysés
+                      {t('priceComparator.productsAnalyzed', { count: String(comparison1.prices.length) })}
                     </div>
                   </div>
                 </CardContent>
