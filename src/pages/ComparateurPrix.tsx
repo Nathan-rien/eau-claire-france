@@ -268,8 +268,8 @@ export default function ComparateurPrix() {
           {/* Sélection du mode */}
           <Tabs value={mode} onValueChange={(value) => setMode(value as 'brands' | 'retailers')}>
             <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="brands">Comparer des marques</TabsTrigger>
-              <TabsTrigger value="retailers">Comparer des enseignes</TabsTrigger>
+              <TabsTrigger value="brands">{t('priceComparator.compareBrands')}</TabsTrigger>
+              <TabsTrigger value="retailers">{t('priceComparator.compareRetailers')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="brands">
