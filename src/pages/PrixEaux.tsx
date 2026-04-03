@@ -461,13 +461,13 @@ export default function PrixEaux() {
 
               <Select value={searchParams.get('channel_type') || ''} onValueChange={(value) => updateFilter('channel_type', value || null)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Type de source" />
+                  <SelectValue placeholder={t('prices.sourceType')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Toutes les sources</SelectItem>
-                  <SelectItem value="retail">🏪 Site principal</SelectItem>
+                  <SelectItem value="all">{t('prices.allSources')}</SelectItem>
+                  <SelectItem value="retail">🏪 {t('prices.mainSite').replace(' :', '')}</SelectItem>
                   <SelectItem value="drive">🚗 Drive</SelectItem>
-                  <SelectItem value="wholesale">📦 Grossiste/Pro</SelectItem>
+                  <SelectItem value="wholesale">📦 {t('prices.wholesale').replace(' :', '')}</SelectItem>
                   <SelectItem value="marketplace">🛒 Marketplace</SelectItem>
                 </SelectContent>
               </Select>
