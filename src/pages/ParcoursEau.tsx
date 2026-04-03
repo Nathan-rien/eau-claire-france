@@ -347,9 +347,9 @@ const ParcoursEau = () => {
           {/* Quick stats */}
           <div className="grid grid-cols-3 gap-4 md:gap-8 mb-10">
             {[
-              { value: '906 000 km', label: 'de réseau', icon: '🔧' },
-              { value: '24–48h', label: 'de voyage', icon: '⏱️' },
-              { value: '63', label: 'paramètres contrôlés', icon: '🔬' },
+              { value: '906 000 km', label: t('journey.network'), icon: '🔧' },
+              { value: '24–48h', label: t('journey.travelTime'), icon: '⏱️' },
+              { value: '63', label: t('journey.controlledParams'), icon: '🔬' },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-xl md:text-2xl mb-1">{stat.icon}</div>
