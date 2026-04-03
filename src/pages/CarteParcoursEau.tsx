@@ -14,7 +14,7 @@ const CarteParcoursEau = () => {
       <SEOHead
         title="Parcours de l'eau : source → robinet | InfoEau.fr"
         description="Visualisez le trajet animé de l'eau depuis sa source de captage jusqu'au robinet de votre commune. Filtrez par distributeur."
-        keywords={['parcours eau', 'source', 'commune', 'distributeur', 'carte', 'animation']}
+        keywords="parcours eau, source, commune, distributeur, carte, animation"
         canonical="/carte-parcours-eau"
       />
 

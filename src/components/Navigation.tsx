@@ -30,6 +30,7 @@ const Navigation = () => {
         { href: '/carte', label: t('nav.maps.tap') },
         { href: '/sources-eau', label: t('nav.maps.bottles') },
         { href: '/carte-polluants', label: t('nav.maps.pollutants') },
+        { href: '/carte-parcours-eau', label: t('nav.maps.journey') },
       ];
 
   const directNavigationItems = isEurope

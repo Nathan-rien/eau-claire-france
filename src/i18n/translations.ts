@@ -8,6 +8,7 @@ export const translations = {
     'nav.maps.pollutants': 'Carte des polluants',
     'nav.maps.europeQuality': 'Carte qualité Europe',
     'nav.maps.europePollutants': 'Carte des polluants Europe',
+    'nav.maps.journey': 'Parcours source → robinet',
     'nav.diagnostic': 'Diagnostic',
     'nav.which-water': 'Quelle eau boire ?',
     'nav.bottles': 'Robinet vs Bouteilles',
