@@ -138,6 +138,7 @@ const App = () => {
                 <Route path="/parcours-eau" element={<ParcoursEau />} />
                 <Route path="/parcours-eau-bouteille" element={<ParcoursEauBouteille />} />
                 <Route path="/carte-parcours-eau" element={<CarteParcoursEau />} />
+                <Route path="/carte-parcours-robinet" element={<CarteParcoursRobinet />} />
                 <Route 
                   path="/admin/security" 
                   element={
