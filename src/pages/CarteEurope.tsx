@@ -258,7 +258,7 @@ const CarteEurope: React.FC = () => {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Conformité</span>
+                      <span className="text-muted-foreground">{t('europeMap.compliance')}</span>
                       <span className="font-semibold text-foreground">{country.complianceRate}%</span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-2">
