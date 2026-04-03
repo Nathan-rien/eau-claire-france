@@ -500,22 +500,12 @@ export default function PrixEaux() {
               </p>
             </div>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={pagination.page <= 1}
+              <Button variant="outline" size="sm" disabled={pagination.page <= 1}
                 onClick={() => updateFilter('page', (pagination.page - 1).toString())}
-              >
-                Précédent
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={pagination.page >= pagination.totalPages}
+              >{t('prices.previous')}</Button>
+              <Button variant="outline" size="sm" disabled={pagination.page >= pagination.totalPages}
                 onClick={() => updateFilter('page', (pagination.page + 1).toString())}
-              >
-                Suivant
-              </Button>
+              >{t('prices.next')}</Button>
             </div>
           </div>
 
