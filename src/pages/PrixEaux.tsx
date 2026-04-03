@@ -332,19 +332,19 @@ export default function PrixEaux() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 text-sm">
                 <div className="flex items-center gap-2">
                   <Store className="h-4 w-4" />
-                  <span><strong>Site principal :</strong> Prix grand public</span>
+                  <span><strong>{t('prices.mainSite')}</strong> {t('prices.mainSiteDesc')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Truck className="h-4 w-4" />
-                  <span><strong>Drive :</strong> Click & Collect</span>
+                  <span><strong>{t('prices.drive')}</strong> {t('prices.driveDesc')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Package className="h-4 w-4" />
-                  <span><strong>Grossiste/Pro :</strong> Peut nécessiter conditions</span>
+                  <span><strong>{t('prices.wholesale')}</strong> {t('prices.wholesaleDesc')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <ShoppingCart className="h-4 w-4" />
-                  <span><strong>Marketplace :</strong> Vendeur tiers</span>
+                  <span><strong>{t('prices.marketplace')}</strong> {t('prices.marketplaceDesc')}</span>
                 </div>
               </div>
             </AlertDescription>
