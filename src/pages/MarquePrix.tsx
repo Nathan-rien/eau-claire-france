@@ -180,7 +180,7 @@ export default function MarquePrix() {
           {stats && (
             <Card className="mb-6">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Prix médian par enseigne</CardTitle>
+                <CardTitle>{t('brandPrice.medianByRetailer')}</CardTitle>
                 <Select value={selectedPeriod.toString()} onValueChange={(value) => setSelectedPeriod(parseInt(value) as 7 | 30)}>
                   <SelectTrigger className="w-32">
                     <SelectValue />
