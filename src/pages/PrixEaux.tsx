@@ -475,22 +475,18 @@ export default function PrixEaux() {
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    setSearchParams(new URLSearchParams());
-                  }}
+                  onClick={() => { setSearchParams(new URLSearchParams()); }}
                   className="flex items-center gap-2"
                 >
                   <Filter className="h-4 w-4" />
-                  Réinitialiser
+                  {t('prices.reset')}
                 </Button>
                 <Button
                   variant="default"
-                  onClick={() => {
-                    setSearchParams(new URLSearchParams({ pageSize: '500' }));
-                  }}
+                  onClick={() => { setSearchParams(new URLSearchParams({ pageSize: '500' })); }}
                   className="flex items-center gap-2"
                 >
-                  Afficher tous
+                  {t('prices.showAll')}
                 </Button>
               </div>
             </div>
