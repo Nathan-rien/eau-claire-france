@@ -92,7 +92,7 @@ export default function SourcesEau() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Info className="h-5 w-5" />
-                    À propos des sources d'eau
+                    {t('waterSources.aboutTitle')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
