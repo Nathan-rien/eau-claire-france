@@ -51,7 +51,7 @@ const SecurityHeaders = React.memo(() => {
       )}
     </Helmet>
   );
-};
+});
 
 SecurityHeaders.displayName = 'SecurityHeaders';
 
