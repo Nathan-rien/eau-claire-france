@@ -1054,6 +1054,7 @@ export const translations = {
     'nav.maps.pollutants': 'Pollutants map',
     'nav.maps.europeQuality': 'Europe quality map',
     'nav.maps.europePollutants': 'Europe pollutants map',
+    'nav.maps.journey': 'Source → tap journey',
     'nav.diagnostic': 'Diagnostic',
     'nav.which-water': 'Which water to drink?',
     'nav.bottles': 'Tap vs Bottles',
