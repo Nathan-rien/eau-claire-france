@@ -123,7 +123,7 @@ export default function DiagnosticPrix() {
                       </div>
                     </div>
                     <Badge variant={check.ok ? "default" : "destructive"}>
-                      {check.ok ? "✓ Valide" : `✗ ${check.reason}`}
+                      {check.ok ? `✓ ${t('priceDiag.valid')}` : `✗ ${check.reason}`}
                     </Badge>
                   </div>
                 );
