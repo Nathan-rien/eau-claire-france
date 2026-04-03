@@ -57,9 +57,9 @@ const DiagnosticEurope = () => {
     <Layout>
       <SEOHead {...seoData.diagnosticEurope} />
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">Diagnostic qualité de l'eau — Europe</h1>
+        <h1 className="text-3xl font-bold mb-2">{t('europeDiag.title')}</h1>
         <p className="text-muted-foreground mb-6">
-          Sélectionnez un pays pour visualiser ses indicateurs de qualité de l'eau potable (données EEA 2023).
+          {t('europeDiag.subtitle')}
         </p>
 
         {loading ? (
