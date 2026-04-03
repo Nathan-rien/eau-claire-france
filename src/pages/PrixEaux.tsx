@@ -36,7 +36,7 @@ interface PriceWithRetailer extends Price {
 export default function PrixEaux() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
-  
+  const { t } = useLanguage();
   const [prices, setPrices] = useState<PriceWithRetailer[]>([]);
   const [retailers, setRetailers] = useState<Retailer[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
