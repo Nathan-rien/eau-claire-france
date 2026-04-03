@@ -4,11 +4,13 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapboxSecurityService } from '@/services/mapboxSecurityService';
 import { getTapRoutesBySourceType, getUniqueSourceTypes, SOURCE_TYPE_LABELS, TAP_WATER_ROUTES, TapWaterRoute } from '@/data/tapWaterSources';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Filter, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 
-function createArc(start: [number, number], end: [number, number], steps = 50): [number, number][] {
+function createArc(start: [number, number], end: [number, number], steps = 25): [number, number][] {
   const coords: [number, number][] = [];
   const midLng = (start[0] + end[0]) / 2;
   const midLat = (start[1] + end[1]) / 2;
@@ -62,13 +64,22 @@ const TapWaterJourneyMap: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
-  const animIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const satelliteMarkersRef = useRef<mapboxgl.Marker[]>([]);
+  const rafRef = useRef<number | null>(null);
+  const lastFrameRef = useRef<number>(0);
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
+  const [showCommunes, setShowCommunes] = useState(true);
   const [mapLoaded, setMapLoaded] = useState(false);
   const { t, language } = useLanguage();
+  const showCommunesRef = useRef(showCommunes);
 
   const sourceTypes = getUniqueSourceTypes();
+
+  // Keep ref in sync
+  useEffect(() => {
+    showCommunesRef.current = showCommunes;
+  }, [showCommunes]);
 
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return;
@@ -90,8 +101,9 @@ const TapWaterJourneyMap: React.FC = () => {
     mapRef.current = map;
 
     return () => {
-      if (animIntervalRef.current) clearInterval(animIntervalRef.current);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
       markersRef.current.forEach(m => m.remove());
+      satelliteMarkersRef.current.forEach(m => m.remove());
       map.remove();
       mapRef.current = null;
     };
@@ -103,9 +115,11 @@ const TapWaterJourneyMap: React.FC = () => {
 
     markersRef.current.forEach(m => m.remove());
     markersRef.current = [];
-    if (animIntervalRef.current) {
-      clearInterval(animIntervalRef.current);
-      animIntervalRef.current = null;
+    satelliteMarkersRef.current.forEach(m => m.remove());
+    satelliteMarkersRef.current = [];
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
     }
 
     try {
@@ -179,10 +193,10 @@ const TapWaterJourneyMap: React.FC = () => {
 
     const { steps, communes } = route;
 
-    // Fit bounds to route + communes
+    // Fit bounds to route steps only (communes controlled by toggle)
     const bounds = new mapboxgl.LngLatBounds();
     steps.forEach(s => bounds.extend([s.lng, s.lat]));
-    if (communes) communes.forEach(c => bounds.extend([c.lng, c.lat]));
+    if (showCommunes && communes) communes.forEach(c => bounds.extend([c.lng, c.lat]));
     map.fitBounds(bounds, { padding: 80, maxZoom: 11, duration: 1200 });
 
     // Add step markers
@@ -212,11 +226,11 @@ const TapWaterJourneyMap: React.FC = () => {
         .addTo(map);
       markersRef.current.push(marker);
 
-      // Draw arc to next step
+      // Draw arc to next step (reduced to 25 points)
       if (stepIdx < steps.length - 1) {
         const next = steps[stepIdx + 1];
         const arcId = `tap-arc-${stepIdx}`;
-        const arcCoords = createArc([step.lng, step.lat], [next.lng, next.lat]);
+        const arcCoords = createArc([step.lng, step.lat], [next.lng, next.lat], 25);
 
         map.addSource(arcId, {
           type: 'geojson',
@@ -253,9 +267,8 @@ const TapWaterJourneyMap: React.FC = () => {
 
     // ── Satellite communes (ramifications) ──
     const communeStep = steps.find(s => s.type === 'commune') || steps[steps.length - 1];
-    if (communes && communes.length > 0) {
+    if (showCommunes && communes && communes.length > 0) {
       communes.forEach((sat, idx) => {
-        // Smaller marker for satellite
         const el = document.createElement('div');
         el.className = 'flex flex-col items-center';
 
@@ -282,14 +295,14 @@ const TapWaterJourneyMap: React.FC = () => {
           .setLngLat([sat.lng, sat.lat])
           .setPopup(popup)
           .addTo(map);
-        markersRef.current.push(marker);
+        satelliteMarkersRef.current.push(marker);
 
-        // Arc from commune center to satellite
+        // Arc from commune center to satellite (reduced to 15 points)
         const arcId = `tap-sat-${idx}`;
         const arcCoords = createArc(
           [communeStep.lng, communeStep.lat],
           [sat.lng, sat.lat],
-          30
+          15
         );
 
         map.addSource(arcId, {
@@ -325,35 +338,46 @@ const TapWaterJourneyMap: React.FC = () => {
       });
     }
 
-    // Throttled animation at ~15fps for all arcs (main + satellite)
+    // Optimized animation loop using requestAnimationFrame throttled to ~10fps
     let dashOffset = 0;
-    animIntervalRef.current = setInterval(() => {
+    const mainArcCount = steps.length - 1;
+    const satArcCount = communes?.length || 0;
+
+    const animate = (timestamp: number) => {
+      if (timestamp - lastFrameRef.current < 100) {
+        rafRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrameRef.current = timestamp;
       dashOffset = (dashOffset + 0.15) % 7;
 
-      // Main arcs
-      steps.forEach((_, stepIdx) => {
-        if (stepIdx >= steps.length - 1) return;
-        const layerId = `tap-arc-${stepIdx}-anim`;
-        if (map.getLayer(layerId)) {
-          map.setPaintProperty(layerId, 'line-dasharray', [
-            dashOffset, 4 - dashOffset * 0.3, 3 + dashOffset * 0.3,
-          ]);
-        }
-      });
+      const da: [number, number, number] = [
+        dashOffset, 4 - dashOffset * 0.3, 3 + dashOffset * 0.3,
+      ];
 
-      // Satellite arcs
-      if (communes) {
-        communes.forEach((_, idx) => {
-          const layerId = `tap-sat-${idx}-anim`;
-          if (map.getLayer(layerId)) {
-            map.setPaintProperty(layerId, 'line-dasharray', [
-              dashOffset, 4 - dashOffset * 0.3, 3 + dashOffset * 0.3,
-            ]);
-          }
-        });
+      // Main arcs
+      for (let i = 0; i < mainArcCount; i++) {
+        const layerId = `tap-arc-${i}-anim`;
+        if (map.getLayer(layerId)) {
+          map.setPaintProperty(layerId, 'line-dasharray', da);
+        }
       }
-    }, 66);
-  }, [mapLoaded, clearMap, language]);
+
+      // Satellite arcs only if visible
+      if (showCommunesRef.current) {
+        for (let i = 0; i < satArcCount; i++) {
+          const layerId = `tap-sat-${i}-anim`;
+          if (map.getLayer(layerId)) {
+            map.setPaintProperty(layerId, 'line-dasharray', da);
+          }
+        }
+      }
+
+      rafRef.current = requestAnimationFrame(animate);
+    };
+
+    rafRef.current = requestAnimationFrame(animate);
+  }, [mapLoaded, clearMap, language, showCommunes]);
 
   useEffect(() => {
     if (!mapLoaded) return;
@@ -380,10 +404,22 @@ const TapWaterJourneyMap: React.FC = () => {
       {/* Controls */}
       <div className="flex items-center gap-3 flex-wrap">
         {selectedRoute ? (
-          <Button variant="outline" size="sm" onClick={handleBack} className="gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            {t('tapJourney.backToOverview')}
-          </Button>
+          <>
+            <Button variant="outline" size="sm" onClick={handleBack} className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              {t('tapJourney.backToOverview')}
+            </Button>
+            <div className="flex items-center gap-2 ml-auto">
+              <Switch
+                id="show-communes"
+                checked={showCommunes}
+                onCheckedChange={setShowCommunes}
+              />
+              <Label htmlFor="show-communes" className="text-sm cursor-pointer">
+                {language === 'en' ? 'Served communes' : 'Communes desservies'}
+              </Label>
+            </div>
+          </>
         ) : (
           <>
             <div className="flex items-center gap-2">
@@ -423,10 +459,12 @@ const TapWaterJourneyMap: React.FC = () => {
                 {labels[language === 'en' ? 'en' : 'fr']}
               </span>
             ))}
-            <span className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: SATELLITE_COLOR }} />
-              {language === 'en' ? 'Served communes' : 'Communes desservies'}
-            </span>
+            {showCommunes && (
+              <span className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: SATELLITE_COLOR }} />
+                {language === 'en' ? 'Served communes' : 'Communes desservies'}
+              </span>
+            )}
           </>
         ) : (
           Object.entries(SOURCE_TYPE_LABELS)
