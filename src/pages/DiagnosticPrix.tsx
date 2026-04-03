@@ -140,7 +140,7 @@ export default function DiagnosticPrix() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 className="font-semibold text-green-700 mb-2">Eau du Robinet</h3>
+                <h3 className="font-semibold text-green-700 mb-2">{t('priceDiag.tapMethod')}</h3>
                 <ul className="text-sm space-y-1 text-muted-foreground">
                   <li>• Source: Prix au m³ (€/m³)</li>
                   <li>• Conversion: prix / 1000 → €/L</li>
