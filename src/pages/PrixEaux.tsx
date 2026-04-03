@@ -319,10 +319,9 @@ export default function PrixEaux() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">Prix des eaux en bouteille</h1>
+          <h1 className="text-3xl font-bold mb-4">{t('prices.title')}</h1>
           <p className="text-muted-foreground mb-6">
-            Comparez les prix des eaux en bouteille dans toutes les enseignes. 
-            Données mises à jour quotidiennement.
+            {t('prices.subtitle')}
           </p>
 
           {/* Légende des types de sources */}
