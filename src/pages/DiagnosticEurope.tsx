@@ -72,7 +72,7 @@ const DiagnosticEurope = () => {
             <div className="flex items-center gap-3 mb-8">
               <Select value={selectedCountry} onValueChange={setSelectedCountry}>
                 <SelectTrigger className="w-full max-w-sm">
-                  <SelectValue placeholder="Choisir un pays…" />
+                  <SelectValue placeholder={t('europeDiag.selectCountry')} />
                 </SelectTrigger>
                 <SelectContent>
                   {quality.map(c => (

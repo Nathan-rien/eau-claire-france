@@ -80,9 +80,9 @@ const PolluantsEurope: React.FC = () => {
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2">
             <FlaskConical className="w-7 h-7 text-primary" />
-            <h1 className="text-3xl font-bold text-foreground">Polluants en Europe</h1>
+            <h1 className="text-3xl font-bold text-foreground">{t('europePollutants.title')}</h1>
           </div>
-          <p className="text-muted-foreground">Dépassements de seuils dans l'eau potable des 27 pays de l'UE</p>
+          <p className="text-muted-foreground">{t('europePollutants.subtitle')}</p>
           <Link to="/polluants" className="text-sm text-primary hover:underline">
             ← Retour aux polluants France
           </Link>

@@ -86,11 +86,11 @@ const ClassementEurope: React.FC = () => {
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2">
             <Trophy className="w-7 h-7 text-primary" />
-            <h1 className="text-3xl font-bold text-foreground">Classement européen</h1>
+            <h1 className="text-3xl font-bold text-foreground">{t('europeRanking.title')}</h1>
           </div>
-          <p className="text-muted-foreground">Qualité de l'eau potable dans les 27 pays de l'UE</p>
+          <p className="text-muted-foreground">{t('europeRanking.subtitle')}</p>
           <Link to="/classement" className="text-sm text-primary hover:underline">
-            ← Retour au classement France
+            {t('europeRanking.backFrance')}
           </Link>
           {enriching && (
             <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">

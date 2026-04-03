@@ -49,7 +49,7 @@ const AlertesEurope = () => {
           </CardHeader>
           <CardContent>
             {worstCountries.length === 0 ? (
-              <p className="text-muted-foreground">Aucun pays en situation critique identifié.</p>
+              <p className="text-muted-foreground">{t('europeAlerts.noAlert')}</p>
             ) : (
               <div className="space-y-4">
                 {worstCountries.map(c => {

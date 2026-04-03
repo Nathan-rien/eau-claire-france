@@ -98,7 +98,7 @@ const PrixEauxEurope = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Droplets className="h-5 w-5 text-primary" />
-              Tarifs par pays
+              {t('europePrices.byCountry')}
             </CardTitle>
           </CardHeader>
           <CardContent>
