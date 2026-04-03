@@ -222,3 +222,75 @@ export function getScoreBadgeClass(score: string): string {
     default: return 'bg-muted text-muted-foreground';
   }
 }
+
+// ── EU Water Composition (physico-chemical parameters) ──
+
+export interface EUWaterComposition {
+  countryCode: string;
+  countryName: string;
+  parameter: string;
+  avgValue: number;
+  minValue: number;
+  maxValue: number;
+  unit: string;
+  samples: number;
+  dataYear: number;
+  dataSource?: 'api' | 'csv';
+}
+
+let cachedComposition: EUWaterComposition[] | null = null;
+
+export async function getEUWaterComposition(countryCode?: string): Promise<EUWaterComposition[]> {
+  if (cachedComposition) {
+    return countryCode
+      ? cachedComposition.filter(c => c.countryCode === countryCode)
+      : cachedComposition;
+  }
+
+  // Try edge function first
+  try {
+    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+    if (projectId) {
+      const country = countryCode || 'all';
+      const url = `https://${projectId}.supabase.co/functions/v1/eu-water-quality?type=composition&country=${country}`;
+      const res = await fetch(url, {
+        headers: { 'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '' },
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        if (result.source === 'discodata' && result.data) {
+          cachedComposition = (result.data as any[]).map(d => ({
+            ...d,
+            dataSource: 'api' as const,
+          }));
+          return countryCode
+            ? cachedComposition.filter(c => c.countryCode === countryCode)
+            : cachedComposition;
+        }
+      }
+    }
+  } catch { /* fallback to CSV */ }
+
+  // Fallback: load CSV baseline
+  const res = await fetch('/data/eu/eu_water_composition.csv');
+  const text = await res.text();
+  const { rows } = parseCSV(text);
+
+  cachedComposition = rows.map(r => ({
+    countryCode: r.country_code,
+    countryName: r.country_name,
+    parameter: r.parameter,
+    avgValue: toNumber(r.avg_value) ?? 0,
+    minValue: toNumber(r.min_value) ?? 0,
+    maxValue: toNumber(r.max_value) ?? 0,
+    unit: r.unit || 'mg/L',
+    samples: toNumber(r.samples) ?? 0,
+    dataYear: toNumber(r.data_year) ?? 2024,
+    dataSource: 'csv' as const,
+  }));
+
+  return countryCode
+    ? cachedComposition.filter(c => c.countryCode === countryCode)
+    : cachedComposition;
+}
