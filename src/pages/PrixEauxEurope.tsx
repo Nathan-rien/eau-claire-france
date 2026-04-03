@@ -63,8 +63,8 @@ const PrixEauxEurope = () => {
         <Alert className="mb-6">
           <Info className="h-4 w-4" />
           <AlertDescription>
-            Les prix incluent eau potable et assainissement. Les prix de l'eau en bouteille varient fortement selon les pays et ne sont pas couverts ici. 
-            Consultez le <a href="/prix-eaux" className="underline font-medium">comparateur prix France</a> pour les bouteilles.
+            {t('europePrices.note')}{' '}
+            <a href="/prix-eaux" className="underline font-medium">{t('europePrices.seeFrance')}</a>
           </AlertDescription>
         </Alert>
 
