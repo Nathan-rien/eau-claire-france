@@ -159,9 +159,9 @@ export default function MarquePrix() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">Prix {brand}</h1>
+          <h1 className="text-3xl font-bold mb-4">{t('brandPrice.price', { brand })}</h1>
           <p className="text-muted-foreground mb-6">
-            Comparaison des prix de l'eau {brand} par enseigne
+            {t('brandPrice.comparison', { brand })}
           </p>
 
           {/* Composition placeholder */}
