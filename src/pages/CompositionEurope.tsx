@@ -248,8 +248,8 @@ const CompositionEurope: React.FC = () => {
                           </tr>
                           {isExpanded && (
                             <tr className="bg-muted/20">
-                              <td colSpan={PARAM_ORDER.length + 1} className="px-4 py-3">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                              <td colSpan={PARAM_ORDER.length + 1} className="px-2 py-2 sm:px-4 sm:py-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 min-w-0">
                                   {PARAM_ORDER.map(param => {
                                     const val = row.params[param];
                                     if (!val) return null;
