@@ -497,7 +497,7 @@ export default function ComparateurPrix() {
           {comparison1 && comparison2 && (
             <Card className="mt-6">
               <CardHeader>
-                <CardTitle>Analyse comparative</CardTitle>
+                <CardTitle>{t('priceComparator.analysis')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
