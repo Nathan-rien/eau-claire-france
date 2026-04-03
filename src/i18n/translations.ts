@@ -1030,6 +1030,16 @@ export const translations = {
     'contact.emailBodyMessage': 'Message:',
     'contact.emailBodySentFrom': 'Envoyé depuis InfoEau.fr',
 
+    // Water Journey Map
+    'waterJourney.title': 'Parcours de l\'eau : source → robinet',
+    'waterJourney.subtitle': 'Visualisez le trajet animé de l\'eau depuis sa source de captage jusqu\'au robinet de votre commune. Filtrez par distributeur.',
+    'waterJourney.breadcrumb': 'Parcours source → robinet',
+    'waterJourney.filterLabel': 'Distributeur',
+    'waterJourney.allDistributors': 'Tous les distributeurs',
+    'waterJourney.legendSource': 'Source de captage',
+    'waterJourney.legendCommune': 'Commune desservie',
+    'waterJourney.legendRoute': 'Trajet de l\'eau',
+
     // Common
     'common.error': 'Erreur',
     'common.loading': 'Chargement...',
