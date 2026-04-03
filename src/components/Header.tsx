@@ -136,7 +136,41 @@ const Header = () => {
               )}
             </div>
 
-            {/* Navigation items */}
+            {/* Parcours dropdown */}
+            <div
+              className="relative group"
+              onMouseEnter={handleJourneyMouseEnter}
+              onMouseLeave={handleJourneyMouseLeave}
+            >
+              <button
+                className={`h-9 px-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap inline-flex items-center gap-1 ${
+                  isActiveJourneySection ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {t('nav.journey')}
+                <ChevronDown className="h-3 w-3" />
+              </button>
+              {journeyMenuOpen && (
+                <div
+                  className="absolute left-0 top-full w-64 bg-background border border-border shadow-lg rounded-md z-50 mt-0"
+                  onMouseEnter={handleJourneyMouseEnter}
+                  onMouseLeave={handleJourneyMouseLeave}
+                >
+                  {journeyItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      className={`block px-4 py-3 text-sm hover:bg-accent hover:text-accent-foreground transition-colors ${
+                        isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {navigationItems.map((item) => (
               <Link
                 key={item.href}
