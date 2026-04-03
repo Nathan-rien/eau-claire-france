@@ -4,11 +4,12 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapboxSecurityService } from '@/services/mapboxSecurityService';
 import { getRoutesByRetailer, getRetailerList, DistributorRoute } from '@/data/waterDistributors';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Droplets, Building2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Droplets, Building2, MapPin } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-// Create a curved arc between two points
-function createArc(start: [number, number], end: [number, number], steps = 50): [number, number][] {
+// Optimised arc — 25 points instead of 50
+function createArc(start: [number, number], end: [number, number], steps = 25): [number, number][] {
   const coords: [number, number][] = [];
   const midLng = (start[0] + end[0]) / 2;
   const midLat = (start[1] + end[1]) / 2;
@@ -31,13 +32,33 @@ function createArc(start: [number, number], end: [number, number], steps = 50): 
 const WaterJourneyMap: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const sourceMarkersRef = useRef<mapboxgl.Marker[]>([]);
+  const communeMarkersRef = useRef<mapboxgl.Marker[]>([]);
   const animFrameRef = useRef<number>(0);
+  const lastFrameRef = useRef<number>(0);
   const [selectedRetailer, setSelectedRetailer] = useState<string>('all');
+  const [showCommunes, setShowCommunes] = useState(true);
   const [mapLoaded, setMapLoaded] = useState(false);
   const { t } = useLanguage();
 
   const retailers = getRetailerList();
+
+  // Toggle commune markers visibility instantly
+  useEffect(() => {
+    communeMarkersRef.current.forEach(m => {
+      m.getElement().style.display = showCommunes ? '' : 'none';
+    });
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    // Toggle arc layers visibility
+    const layers = map.getStyle().layers || [];
+    layers.forEach(layer => {
+      if (layer.id.startsWith('journey-arc-') && (layer.id.endsWith('-bg') || layer.id.endsWith('-anim'))) {
+        // Only toggle commune arc layers (they contain commune index)
+        map.setLayoutProperty(layer.id, 'visibility', showCommunes ? 'visible' : 'none');
+      }
+    });
+  }, [showCommunes, mapLoaded]);
 
   // Initialize map
   useEffect(() => {
@@ -65,7 +86,8 @@ const WaterJourneyMap: React.FC = () => {
 
     return () => {
       cancelAnimationFrame(animFrameRef.current);
-      markersRef.current.forEach(m => m.remove());
+      sourceMarkersRef.current.forEach(m => m.remove());
+      communeMarkersRef.current.forEach(m => m.remove());
       map.remove();
       mapRef.current = null;
     };
@@ -77,8 +99,10 @@ const WaterJourneyMap: React.FC = () => {
     if (!map || !mapLoaded) return;
 
     // Clear previous markers
-    markersRef.current.forEach(m => m.remove());
-    markersRef.current = [];
+    sourceMarkersRef.current.forEach(m => m.remove());
+    sourceMarkersRef.current = [];
+    communeMarkersRef.current.forEach(m => m.remove());
+    communeMarkersRef.current = [];
     cancelAnimationFrame(animFrameRef.current);
 
     // Remove previous layers/sources
@@ -95,15 +119,12 @@ const WaterJourneyMap: React.FC = () => {
       }
     });
 
-    // Remove animated drop layers/sources
-    if (map.getLayer('journey-drops')) map.removeLayer('journey-drops');
-    if (map.getSource('journey-drops')) map.removeSource('journey-drops');
-
     const routes = getRoutesByRetailer(selectedRetailer);
 
     // Collect unique sources to avoid duplicate markers
     const addedSources = new Set<string>();
-    const allArcs: [number, number][][] = [];
+    // Track arc layer IDs for animation
+    const arcAnimLayerIds: string[] = [];
 
     routes.forEach((route, routeIdx) => {
       const srcKey = `${route.source.name}-${route.source.lat}`;
@@ -116,12 +137,17 @@ const WaterJourneyMap: React.FC = () => {
         el.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>';
         el.title = route.source.name;
 
+        // Collect all brands for this source
+        const brandsAtSource = routes
+          .filter(r => `${r.source.name}-${r.source.lat}` === srcKey)
+          .map(r => `<p class="text-xs"><span class="text-blue-600 font-medium">${r.retailer}</span> — ${r.mddBrand}</p>`)
+          .join('');
+
         const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
           `<div class="p-2">
             <h3 class="font-bold text-sm">${route.source.name}</h3>
-            <p class="text-xs text-gray-500">${route.source.category}</p>
-            <p class="text-xs mt-1">${route.mddBrand}</p>
-            <p class="text-xs text-blue-600 font-medium">${route.retailer}</p>
+            <p class="text-xs text-gray-500 mb-1">${route.source.category}</p>
+            ${brandsAtSource}
           </div>`
         );
 
@@ -129,17 +155,16 @@ const WaterJourneyMap: React.FC = () => {
           .setLngLat([route.source.lng, route.source.lat])
           .setPopup(popup)
           .addTo(map);
-        markersRef.current.push(marker);
+        sourceMarkersRef.current.push(marker);
       }
 
       // Commune markers + arcs
       route.communes.forEach((commune, commIdx) => {
-        const communeKey = `commune-${commune.name}-${routeIdx}`;
-        
         const el = document.createElement('div');
         el.className = 'flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 border-2 border-white shadow-md cursor-pointer';
         el.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>';
         el.title = commune.name;
+        if (!showCommunes) el.style.display = 'none';
 
         const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
           `<div class="p-2">
@@ -154,7 +179,7 @@ const WaterJourneyMap: React.FC = () => {
           .setLngLat(commune.coordinates)
           .setPopup(popup)
           .addTo(map);
-        markersRef.current.push(marker);
+        communeMarkersRef.current.push(marker);
 
         // Arc line
         const arcId = `journey-arc-${routeIdx}-${commIdx}`;
@@ -162,7 +187,6 @@ const WaterJourneyMap: React.FC = () => {
           [route.source.lng, route.source.lat],
           commune.coordinates,
         );
-        allArcs.push(arcCoords);
 
         map.addSource(arcId, {
           type: 'geojson',
@@ -173,11 +197,13 @@ const WaterJourneyMap: React.FC = () => {
           },
         });
 
-        // Background line
+        const vis = showCommunes ? 'visible' : 'none';
+
         map.addLayer({
           id: `${arcId}-bg`,
           type: 'line',
           source: arcId,
+          layout: { visibility: vis },
           paint: {
             'line-color': '#93c5fd',
             'line-width': 2,
@@ -185,42 +211,51 @@ const WaterJourneyMap: React.FC = () => {
           },
         });
 
-        // Animated dash line
+        const animLayerId = `${arcId}-anim`;
         map.addLayer({
-          id: `${arcId}-anim`,
+          id: animLayerId,
           type: 'line',
           source: arcId,
+          layout: { visibility: vis },
           paint: {
             'line-color': '#2563eb',
             'line-width': 3,
             'line-dasharray': [0, 4, 3],
           },
         });
+        arcAnimLayerIds.push(animLayerId);
       });
     });
 
-    // Animate dashes
+    // Throttled RAF animation — ~10fps
     let dashOffset = 0;
-    function animateDash() {
-      dashOffset = (dashOffset + 0.15) % 7;
-      const phase = dashOffset;
+    function animateDash(timestamp: number) {
+      if (timestamp - lastFrameRef.current < 100) {
+        animFrameRef.current = requestAnimationFrame(animateDash);
+        return;
+      }
+      lastFrameRef.current = timestamp;
 
-      routes.forEach((route, routeIdx) => {
-        route.communes.forEach((_, commIdx) => {
-          const layerId = `journey-arc-${routeIdx}-${commIdx}-anim`;
+      dashOffset = (dashOffset + 0.15) % 7;
+      const da: [number, number, number] = [
+        dashOffset,
+        4 - dashOffset * 0.3,
+        3 + dashOffset * 0.3,
+      ];
+
+      if (showCommunes) {
+        for (const layerId of arcAnimLayerIds) {
           if (map.getLayer(layerId)) {
-            map.setPaintProperty(layerId, 'line-dasharray', [
-              phase, 4 - phase * 0.3, 3 + phase * 0.3,
-            ]);
+            map.setPaintProperty(layerId, 'line-dasharray', da);
           }
-        });
-      });
+        }
+      }
 
       animFrameRef.current = requestAnimationFrame(animateDash);
     }
 
-    animateDash();
-  }, [selectedRetailer, mapLoaded]);
+    animFrameRef.current = requestAnimationFrame(animateDash);
+  }, [selectedRetailer, mapLoaded, showCommunes]);
 
   useEffect(() => {
     renderRoutes();
@@ -228,8 +263,8 @@ const WaterJourneyMap: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      {/* Filter */}
-      <div className="flex items-center gap-3 flex-wrap">
+      {/* Controls */}
+      <div className="flex items-center gap-4 flex-wrap">
         <div className="flex items-center gap-2">
           <Building2 className="w-4 h-4 text-muted-foreground" />
           <span className="text-sm font-medium">{t('bottleJourney.filterLabel')}</span>
@@ -245,6 +280,18 @@ const WaterJourneyMap: React.FC = () => {
             ))}
           </SelectContent>
         </Select>
+
+        <div className="flex items-center gap-2 ml-auto">
+          <MapPin className="w-4 h-4 text-muted-foreground" />
+          <label htmlFor="toggle-communes" className="text-sm font-medium cursor-pointer">
+            Communes desservies
+          </label>
+          <Switch
+            id="toggle-communes"
+            checked={showCommunes}
+            onCheckedChange={setShowCommunes}
+          />
+        </div>
       </div>
 
       {/* Legend */}
