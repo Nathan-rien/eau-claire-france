@@ -62,7 +62,7 @@ export default function DiagnosticPrix() {
                 <PriceDisplay priceData={tapPrice} kind="tap" showMetadata={true} />
               </div>
               <div>
-                <h3 className="font-semibold mb-2">Données Brutes</h3>
+                <h3 className="font-semibold mb-2">{t('priceDiag.rawData')}</h3>
                 <pre className="text-xs bg-muted p-3 rounded overflow-auto">
                   {JSON.stringify(PRICE_INPUTS.tap, null, 2)}
                 </pre>
