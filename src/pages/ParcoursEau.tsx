@@ -177,6 +177,7 @@ const WaterTowerSVG = ({ isVisible }: { isVisible: boolean }) => (
 /* ───── Main Page ───── */
 
 const ParcoursEau = () => {
+  const { t } = useLanguage();
   const [activeSection, setActiveSection] = useState(0);
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
