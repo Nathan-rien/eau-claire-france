@@ -12,6 +12,7 @@ import { AlertTriangle, ShieldAlert, TrendingDown, ChevronDown, Bug, FlaskConica
 const AlertesEurope = () => {
   const [quality, setQuality] = useState<EUCountryWaterQuality[]>([]);
   const [pollutants, setPollutants] = useState<EUPollutant[]>([]);
+  const { t } = useLanguage();
 
   useEffect(() => {
     Promise.all([getEUWaterQuality(), getEUPollutants()]).then(([q, p]) => {
