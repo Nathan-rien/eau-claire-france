@@ -186,8 +186,8 @@ export default function MarquePrix() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="7">7 jours</SelectItem>
-                    <SelectItem value="30">30 jours</SelectItem>
+                    <SelectItem value="7">7 {t('brandPrice.days')}</SelectItem>
+                    <SelectItem value="30">30 {t('brandPrice.days')}</SelectItem>
                   </SelectContent>
                 </Select>
               </CardHeader>
