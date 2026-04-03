@@ -510,18 +510,14 @@ export default function PrixEaux() {
           </div>
 
           {loading ? (
-            <div className="text-center py-12">Chargement...</div>
+            <div className="text-center py-12">{t('common.loading')}</div>
           ) : showDataBanner ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">
-                Aucune donnée disponible. Les données de prix sont mises à jour périodiquement.
-              </p>
+              <p className="text-muted-foreground">{t('prices.noData')}</p>
             </div>
           ) : prices.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">
-                Aucun prix trouvé pour ces critères. Modifiez vos filtres ou essayez une recherche différente.
-              </p>
+              <p className="text-muted-foreground">{t('prices.noResults')}</p>
             </div>
           ) : (
             <>
