@@ -43,6 +43,8 @@ const Header = () => {
     : [
         { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
+        { href: '/parcours-eau', label: t('nav.journey') },
+        { href: '/parcours-eau-bouteille', label: t('nav.journeyBottle') },
         { href: '/prix-eaux', label: t('nav.prices') },
         { href: '/classement', label: t('nav.ranking') },
         { href: '/polluants', label: t('nav.pollutants') },
