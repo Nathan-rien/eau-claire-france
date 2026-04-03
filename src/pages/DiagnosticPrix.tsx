@@ -149,7 +149,7 @@ export default function DiagnosticPrix() {
                 </ul>
               </div>
               <div>
-                <h3 className="font-semibold text-blue-700 mb-2">Eau en Bouteille</h3>
+                <h3 className="font-semibold text-blue-700 mb-2">{t('priceDiag.bottleMethod')}</h3>
                 <ul className="text-sm space-y-1 text-muted-foreground">
                   <li>• Source: Prix pack/bouteille + volume</li>
                   <li>• Conversion: prix / volume → €/L</li>
