@@ -121,7 +121,7 @@ export default function SourcesEau() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <MapPin className="h-5 w-5" />
-                    Comprendre les sources d'eau
+                    {t('waterSources.understand')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
