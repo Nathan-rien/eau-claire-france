@@ -13,6 +13,7 @@ import { bottleWaterDatabase } from '@/data/bottleComparisonData';
  * Affiche les sources, calculs et garde-fous pour transparence
  */
 export default function DiagnosticPrix() {
+  const { t } = useLanguage();
   // Calcul des prix avec logging
   const tapPrice = makeTapPrice(PRICE_INPUTS.tap!);
   
