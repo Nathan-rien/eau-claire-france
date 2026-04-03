@@ -386,7 +386,7 @@ export default function ComparateurPrix() {
             
             {lastUpdate && (
               <p className="text-sm text-muted-foreground mt-2">
-                Dernière mise à jour : {new Date(lastUpdate).toLocaleDateString('fr-FR', {
+                {t('priceComparator.lastUpdate')} {new Date(lastUpdate).toLocaleDateString('fr-FR', {
                   day: '2-digit',
                   month: '2-digit',
                   year: 'numeric',
