@@ -88,7 +88,7 @@ const PrixEauxEurope = () => {
             <CardContent className="pt-6 text-center">
               <div className="text-2xl font-bold text-primary">{EU_TAP_WATER_PRICES[EU_TAP_WATER_PRICES.length - 1].name}</div>
               <div className="text-lg">{EU_TAP_WATER_PRICES[EU_TAP_WATER_PRICES.length - 1].pricePerM3} €/m³</div>
-              <div className="text-sm text-muted-foreground">Le moins cher</div>
+              <div className="text-sm text-muted-foreground">{t('europePrices.leastExpensive')}</div>
             </CardContent>
           </Card>
         </div>
