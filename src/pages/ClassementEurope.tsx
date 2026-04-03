@@ -5,23 +5,41 @@ import { seoData } from '@/utils/seoData';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { getEUWaterQuality, getEUPollutants, getScoreBadgeClass, type EUCountryWaterQuality, type EUPollutant } from '@/services/europeWaterApi';
-import { Trophy, ArrowUpDown, ChevronDown, FlaskConical, Shield, Users, Droplets, MapPin } from 'lucide-react';
+import { getEUWaterQuality, getEUPollutants, getEUWaterComposition, getScoreBadgeClass, type EUCountryWaterQuality, type EUPollutant, type EUWaterComposition } from '@/services/europeWaterApi';
+import { Trophy, ArrowUpDown, ChevronDown, FlaskConical, Shield, Users, Droplets, MapPin, Beaker } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+
+const PARAM_LABELS: Record<string, string> = {
+  'Total hardness': 'Dureté totale',
+  'Carbonate hardness': 'Dureté carbonatée',
+  'Electrical conductivity': 'Conductivité',
+  'Nitrate': 'Nitrate',
+  'pH': 'pH',
+  'Calcium': 'Calcium',
+  'Magnesium': 'Magnésium',
+  'Sodium': 'Sodium',
+  'Ammonium': 'Ammonium',
+  'Chloride': 'Chlorure',
+  'Sulphate': 'Sulfate',
+};
 
 type SortKey = 'complianceRate' | 'nitrateAvg' | 'qualityScore' | 'countryName';
 
 const ClassementEurope: React.FC = () => {
   const [data, setData] = useState<EUCountryWaterQuality[]>([]);
   const [pollutants, setPollutants] = useState<EUPollutant[]>([]);
+  const [composition, setComposition] = useState<EUWaterComposition[]>([]);
   const [sortKey, setSortKey] = useState<SortKey>('complianceRate');
   const [sortAsc, setSortAsc] = useState(false);
   const [expandedCountry, setExpandedCountry] = useState<string | null>(null);
 
   useEffect(() => {
-    getEUWaterQuality().then(setData);
-    getEUPollutants().then(setPollutants);
+    Promise.all([getEUWaterQuality(), getEUPollutants(), getEUWaterComposition()]).then(([q, p, c]) => {
+      setData(q);
+      setPollutants(p);
+      setComposition(c);
+    });
   }, []);
 
   const toggleSort = (key: SortKey) => {
@@ -39,6 +57,9 @@ const ClassementEurope: React.FC = () => {
 
   const getCountryPollutants = (countryCode: string) =>
     pollutants.filter(p => p.countryCode === countryCode);
+
+  const getCountryComposition = (countryCode: string) =>
+    composition.filter(c => c.countryCode === countryCode);
 
   return (
     <Layout>
@@ -92,6 +113,7 @@ const ClassementEurope: React.FC = () => {
                 {sorted.map((c, i) => {
                   const isExpanded = expandedCountry === c.countryCode;
                   const countryPollutants = getCountryPollutants(c.countryCode);
+                  const countryComp = getCountryComposition(c.countryCode);
 
                   return (
                     <React.Fragment key={c.countryCode}>
@@ -185,6 +207,40 @@ const ClassementEurope: React.FC = () => {
                                               </Badge>
                                             </TableCell>
                                             <TableCell className="text-xs text-muted-foreground">{p.affectedZones}</TableCell>
+                                          </TableRow>
+                                        ))}
+                                      </TableBody>
+                                    </Table>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Composition physico-chimique */}
+                              {countryComp.length > 0 && (
+                                <div>
+                                  <h4 className="text-sm font-semibold mb-2 flex items-center gap-1.5">
+                                    <Beaker className="w-4 h-4 text-primary" />
+                                    Composition physico-chimique
+                                  </h4>
+                                  <div className="rounded-md border overflow-hidden">
+                                    <Table>
+                                      <TableHeader>
+                                        <TableRow>
+                                          <TableHead className="text-xs">Paramètre</TableHead>
+                                          <TableHead className="text-xs">Moyenne</TableHead>
+                                          <TableHead className="text-xs">Min</TableHead>
+                                          <TableHead className="text-xs">Max</TableHead>
+                                          <TableHead className="text-xs">Unité</TableHead>
+                                        </TableRow>
+                                      </TableHeader>
+                                      <TableBody>
+                                        {countryComp.map((comp, j) => (
+                                          <TableRow key={j}>
+                                            <TableCell className="text-xs font-medium">{PARAM_LABELS[comp.parameter] || comp.parameter}</TableCell>
+                                            <TableCell className="text-xs font-semibold">{comp.avgValue}</TableCell>
+                                            <TableCell className="text-xs text-muted-foreground">{comp.minValue}</TableCell>
+                                            <TableCell className="text-xs text-muted-foreground">{comp.maxValue}</TableCell>
+                                            <TableCell className="text-xs text-muted-foreground">{comp.unit}</TableCell>
                                           </TableRow>
                                         ))}
                                       </TableBody>

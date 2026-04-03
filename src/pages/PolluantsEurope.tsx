@@ -5,17 +5,28 @@ import { seoData } from '@/utils/seoData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getEUPollutants, type EUPollutant } from '@/services/europeWaterApi';
-import { AlertTriangle, FlaskConical } from 'lucide-react';
+import { getEUPollutants, getEUWaterComposition, type EUPollutant, type EUWaterComposition } from '@/services/europeWaterApi';
+import { FlaskConical, Beaker } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
+const KEY_PARAMS = ['pH', 'Total hardness', 'Electrical conductivity'];
+const PARAM_LABELS: Record<string, string> = {
+  'Total hardness': 'Dureté totale',
+  'Electrical conductivity': 'Conductivité',
+  'pH': 'pH',
+};
 
 const PolluantsEurope: React.FC = () => {
   const [data, setData] = useState<EUPollutant[]>([]);
+  const [composition, setComposition] = useState<EUWaterComposition[]>([]);
   const [selectedPollutant, setSelectedPollutant] = useState<string>('all');
   const [selectedCountry, setSelectedCountry] = useState<string>('all');
 
   useEffect(() => {
-    getEUPollutants().then(setData);
+    Promise.all([getEUPollutants(), getEUWaterComposition()]).then(([p, c]) => {
+      setData(p);
+      setComposition(c);
+    });
   }, []);
 
   const pollutants = useMemo(() => [...new Set(data.map(d => d.pollutant))], [data]);
@@ -27,6 +38,19 @@ const PolluantsEurope: React.FC = () => {
     if (selectedCountry !== 'all') result = result.filter(d => d.countryName === selectedCountry);
     return result.sort((a, b) => b.exceedanceRatePct - a.exceedanceRatePct);
   }, [data, selectedPollutant, selectedCountry]);
+
+  // Get composition context for selected country
+  const countryCode = useMemo(() => {
+    if (selectedCountry === 'all') return null;
+    const match = data.find(d => d.countryName === selectedCountry);
+    return match?.countryCode ?? null;
+  }, [data, selectedCountry]);
+
+  const contextParams = useMemo(() => {
+    if (!countryCode) return [];
+    return composition
+      .filter(c => c.countryCode === countryCode && KEY_PARAMS.includes(c.parameter));
+  }, [composition, countryCode]);
 
   const categoryColor = (cat: string) => {
     switch (cat) {
@@ -77,6 +101,19 @@ const PolluantsEurope: React.FC = () => {
             </SelectContent>
           </Select>
         </div>
+
+        {/* Composition context banner */}
+        {contextParams.length > 0 && (
+          <div className="flex items-center justify-center gap-6 rounded-lg border bg-muted/30 px-4 py-3">
+            <Beaker className="h-4 w-4 text-primary shrink-0" />
+            {contextParams.map(c => (
+              <span key={c.parameter} className="text-sm">
+                <span className="text-muted-foreground">{PARAM_LABELS[c.parameter] || c.parameter} :</span>{' '}
+                <strong className="text-foreground">{c.avgValue} {c.unit}</strong>
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Results */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

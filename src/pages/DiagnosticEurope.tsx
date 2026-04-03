@@ -5,24 +5,41 @@ import { seoData } from '@/utils/seoData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getEUWaterQuality, getEUPollutants, getScoreBadgeClass, type EUCountryWaterQuality, type EUPollutant } from '@/services/europeWaterApi';
-import { Droplets, Users, AlertTriangle, Shield, Activity } from 'lucide-react';
+import { getEUWaterQuality, getEUPollutants, getEUWaterComposition, getScoreBadgeClass, type EUCountryWaterQuality, type EUPollutant, type EUWaterComposition } from '@/services/europeWaterApi';
+import { Droplets, Users, AlertTriangle, Shield, Activity, Beaker } from 'lucide-react';
+
+const PARAM_LABELS: Record<string, string> = {
+  'Total hardness': 'Dureté totale',
+  'Carbonate hardness': 'Dureté carbonatée',
+  'Electrical conductivity': 'Conductivité',
+  'Nitrate': 'Nitrate',
+  'pH': 'pH',
+  'Calcium': 'Calcium',
+  'Magnesium': 'Magnésium',
+  'Sodium': 'Sodium',
+  'Ammonium': 'Ammonium',
+  'Chloride': 'Chlorure',
+  'Sulphate': 'Sulfate',
+};
 
 const DiagnosticEurope = () => {
   const [quality, setQuality] = useState<EUCountryWaterQuality[]>([]);
   const [pollutants, setPollutants] = useState<EUPollutant[]>([]);
+  const [composition, setComposition] = useState<EUWaterComposition[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>('');
 
   useEffect(() => {
-    Promise.all([getEUWaterQuality(), getEUPollutants()]).then(([q, p]) => {
+    Promise.all([getEUWaterQuality(), getEUPollutants(), getEUWaterComposition()]).then(([q, p, c]) => {
       setQuality(q);
       setPollutants(p);
+      setComposition(c);
     });
   }, []);
 
   const country = quality.find(c => c.countryCode === selectedCountry);
   const countryPollutants = pollutants.filter(p => p.countryCode === selectedCountry);
   const exceedances = countryPollutants.filter(p => p.exceedanceRatePct > 0);
+  const countryComposition = composition.filter(c => c.countryCode === selectedCountry);
 
   return (
     <Layout>
@@ -106,6 +123,35 @@ const DiagnosticEurope = () => {
                           <div>Moy. {p.avgValue} {p.unit} <span className="text-muted-foreground">/ limite {p.limitValue}</span></div>
                           <div className="text-destructive font-medium">{p.exceedanceRatePct}% de dépassement</div>
                         </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Composition physico-chimique */}
+            {countryComposition.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Beaker className="h-5 w-5 text-primary" />
+                    Composition de l'eau
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {countryComposition.map(c => (
+                      <div key={c.parameter} className="text-center p-3 rounded-lg bg-muted/50">
+                        <div className="text-lg font-bold text-foreground">
+                          {c.avgValue} <span className="text-xs font-normal text-muted-foreground">{c.unit}</span>
+                        </div>
+                        <div className="text-xs text-muted-foreground">{PARAM_LABELS[c.parameter] || c.parameter}</div>
+                        {(c.minValue > 0 || c.maxValue > 0) && (
+                          <div className="text-[10px] text-muted-foreground mt-0.5">
+                            {c.minValue} – {c.maxValue}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
