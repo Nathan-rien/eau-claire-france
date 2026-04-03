@@ -496,7 +496,7 @@ export default function PrixEaux() {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <p className="text-sm text-muted-foreground">
-                {pagination.total} produits trouvés
+                {t('prices.productsFound', { count: String(pagination.total) })}
               </p>
             </div>
             <div className="flex gap-2">
