@@ -58,7 +58,7 @@ export default function DiagnosticPrix() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 className="font-semibold mb-2">Affichage Public</h3>
+                <h3 className="font-semibold mb-2">{t('priceDiag.publicDisplay')}</h3>
                 <PriceDisplay priceData={tapPrice} kind="tap" showMetadata={true} />
               </div>
               <div>
