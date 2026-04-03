@@ -450,12 +450,12 @@ export default function PrixEaux() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t">
               <Select value={searchParams.get('is_promo') || ''} onValueChange={(value) => updateFilter('is_promo', value || null)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Promotions" />
+                  <SelectValue placeholder={t('prices.promotions')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous</SelectItem>
-                  <SelectItem value="true">En promo</SelectItem>
-                  <SelectItem value="false">Prix normal</SelectItem>
+                  <SelectItem value="all">{t('prices.allItems')}</SelectItem>
+                  <SelectItem value="true">{t('prices.onPromo')}</SelectItem>
+                  <SelectItem value="false">{t('prices.normalPrice')}</SelectItem>
                 </SelectContent>
               </Select>
 
