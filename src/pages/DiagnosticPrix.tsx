@@ -75,8 +75,8 @@ export default function DiagnosticPrix() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              🍶 Prix Eaux en Bouteille
-              <Badge variant="outline">Échantillon</Badge>
+              🍶 {t('priceDiag.bottleWater')}
+              <Badge variant="outline">{t('priceDiag.sample')}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
