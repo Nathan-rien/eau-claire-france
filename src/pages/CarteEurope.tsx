@@ -287,7 +287,7 @@ const CarteEurope: React.FC = () => {
         </div>
 
         <p className="text-xs text-muted-foreground text-center">
-          Source : EEA Waterbase – WISE Drinking Water Directive (DWD), rapport 2023. Données agrégées au niveau national.
+          {t('europeMap.source')}
         </p>
       </div>
     </Layout>
