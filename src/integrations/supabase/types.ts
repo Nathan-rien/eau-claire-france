@@ -124,6 +124,54 @@ export type Database = {
           },
         ]
       }
+      eu_water_composition: {
+        Row: {
+          avg_value: number | null
+          country_code: string
+          country_name: string
+          created_at: string
+          data_year: number | null
+          id: string
+          max_value: number | null
+          min_value: number | null
+          parameter: string
+          samples_count: number | null
+          source: string
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          avg_value?: number | null
+          country_code: string
+          country_name?: string
+          created_at?: string
+          data_year?: number | null
+          id?: string
+          max_value?: number | null
+          min_value?: number | null
+          parameter: string
+          samples_count?: number | null
+          source?: string
+          unit?: string
+          updated_at?: string
+        }
+        Update: {
+          avg_value?: number | null
+          country_code?: string
+          country_name?: string
+          created_at?: string
+          data_year?: number | null
+          id?: string
+          max_value?: number | null
+          min_value?: number | null
+          parameter?: string
+          samples_count?: number | null
+          source?: string
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       prices: {
         Row: {
           availability: string | null
