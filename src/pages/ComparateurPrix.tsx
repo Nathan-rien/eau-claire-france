@@ -437,7 +437,7 @@ export default function ComparateurPrix() {
                         <div className="text-2xl font-bold">
                           {formatPrice(comparison1.medianPrice)}
                         </div>
-                        <div className="text-sm text-muted-foreground">Prix médian/L</div>
+                        <div className="text-sm text-muted-foreground">{t('priceComparator.medianPrice')}</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-red-600">
