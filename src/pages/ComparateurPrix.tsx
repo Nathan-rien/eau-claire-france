@@ -443,7 +443,7 @@ export default function ComparateurPrix() {
                         <div className="text-2xl font-bold text-red-600">
                           {formatPrice(comparison1.maxPrice)}
                         </div>
-                        <div className="text-sm text-muted-foreground">Prix max/L</div>
+                        <div className="text-sm text-muted-foreground">{t('priceComparator.maxPrice')}</div>
                       </div>
                     </div>
                     
