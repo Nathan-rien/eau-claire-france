@@ -152,8 +152,8 @@ export default function MarquePrix() {
   return (
     <Layout>
       <SEOHead 
-        title={`Prix ${brand} - Comparaison par enseigne`}
-        description={`Comparez les prix de l'eau ${brand} dans toutes les enseignes. Trouvez les meilleures offres et économisez sur vos achats.`}
+        title={t('brandPrice.price', { brand })}
+        description={t('brandPrice.comparison', { brand })}
         canonical={`/marque/${slug}`}
       />
 
