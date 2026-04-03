@@ -37,7 +37,7 @@ const ClassementEurope: React.FC = () => {
   const [expandedCountry, setExpandedCountry] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [enriching, setEnriching] = useState(false);
-
+  const { t } = useLanguage();
   useEffect(() => {
     // Phase 1: Load CSVs in parallel (fast)
     Promise.all([getEUWaterQuality(), getEUPollutantsBaseline(), getEUWaterComposition()])
