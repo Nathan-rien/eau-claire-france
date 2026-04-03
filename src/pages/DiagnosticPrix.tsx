@@ -106,8 +106,8 @@ export default function DiagnosticPrix() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              🛡️ Tests de Validation
-              <Badge variant="outline">Garde-fous</Badge>
+              🛡️ {t('priceDiag.validation')}
+              <Badge variant="outline">{t('priceDiag.guardrails')}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
