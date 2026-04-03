@@ -127,35 +127,19 @@ export default function SourcesEau() {
                 <CardContent>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <h3 className="font-semibold mb-3">Formation des sources</h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Les sources d'eau minérale se forment lorsque l'eau de pluie s'infiltre dans le sol 
-                        et traverse différentes couches géologiques. Ce voyage peut durer plusieurs années 
-                        à plusieurs décennies, permettant à l'eau de se charger en minéraux.
-                      </p>
+                      <h3 className="font-semibold mb-3">{t('waterSources.formation')}</h3>
+                      <p className="text-sm text-gray-600 mb-4">{t('waterSources.formationDesc')}</p>
                       
-                      <h3 className="font-semibold mb-3">Protection naturelle</h3>
-                      <p className="text-sm text-gray-600">
-                        Les sources sont naturellement protégées par des couches imperméables qui empêchent 
-                        les contaminants de surface d'atteindre l'eau. Cette protection géologique garantit 
-                        la pureté de l'eau extraite.
-                      </p>
+                      <h3 className="font-semibold mb-3">{t('waterSources.protection')}</h3>
+                      <p className="text-sm text-gray-600">{t('waterSources.protectionDesc')}</p>
                     </div>
                     
                     <div>
-                      <h3 className="font-semibold mb-3">Contrôles qualité</h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Chaque source fait l'objet de contrôles rigoureux et réguliers. Les eaux minérales 
-                        naturelles bénéficient d'une reconnaissance officielle après étude hydrogéologique 
-                        et validation de leurs propriétés.
-                      </p>
+                      <h3 className="font-semibold mb-3">{t('waterSources.qualityControls')}</h3>
+                      <p className="text-sm text-gray-600 mb-4">{t('waterSources.qualityControlsDesc')}</p>
                       
-                      <h3 className="font-semibold mb-3">Préservation environnementale</h3>
-                      <p className="text-sm text-gray-600">
-                        Les zones de captage sont protégées par des périmètres de sécurité. Les exploitants 
-                        mettent en place des programmes de préservation de l'environnement pour maintenir 
-                        la qualité des sources à long terme.
-                      </p>
+                      <h3 className="font-semibold mb-3">{t('waterSources.preservation')}</h3>
+                      <p className="text-sm text-gray-600">{t('waterSources.preservationDesc')}</p>
                     </div>
                   </div>
                 </CardContent>
