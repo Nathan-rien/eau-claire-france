@@ -177,7 +177,7 @@ const ClassementEurope: React.FC = () => {
                               {countryPollutants.length > 0 && (
                                 <div>
                                   <h4 className="text-sm font-semibold mb-2">Polluants détectés</h4>
-                                  <div className="rounded-md border overflow-hidden">
+                                  <div className="rounded-md border overflow-x-auto">
                                     <Table>
                                       <TableHeader>
                                         <TableRow>
