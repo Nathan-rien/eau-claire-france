@@ -1,4 +1,5 @@
 // Security headers component for CSP and other security measures
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 const SecurityHeaders = React.memo(() => {
