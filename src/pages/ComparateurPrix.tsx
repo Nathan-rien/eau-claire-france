@@ -245,9 +245,9 @@ export default function ComparateurPrix() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">Comparateur de prix</h1>
+          <h1 className="text-3xl font-bold mb-4">{t('priceComparator.title')}</h1>
           <p className="text-muted-foreground mb-6">
-            Comparez les prix entre marques ou entre enseignes pour trouver les meilleures offres.
+            {t('priceComparator.subtitle')}
           </p>
 
           <DataBanner onDataUpdate={refreshData} />
