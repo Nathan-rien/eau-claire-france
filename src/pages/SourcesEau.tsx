@@ -36,9 +36,9 @@ export default function SourcesEau() {
     return () => { cancelled = true; };
   }, []);
 
-  if (error) return <div>Erreur: {error}</div>;
-  if (!sources) return <div>Chargement des sources…</div>;
-  if (sources.length === 0) return <div>Aucune source à afficher.</div>;
+  if (error) return <div>{t('waterSources.error')} {error}</div>;
+  if (!sources) return <div>{t('waterSources.loading')}</div>;
+  if (sources.length === 0) return <div>{t('waterSources.noSources')}</div>;
 
   return (
     <Layout>
