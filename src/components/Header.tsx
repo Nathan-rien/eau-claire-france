@@ -43,19 +43,25 @@ const Header = () => {
     : [
         { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
-        { href: '/parcours-eau', label: t('nav.journey') },
-        { href: '/parcours-eau-bouteille', label: t('nav.journeyBottle') },
         { href: '/prix-eaux', label: t('nav.prices') },
         { href: '/classement', label: t('nav.ranking') },
         { href: '/polluants', label: t('nav.pollutants') },
         { href: '/alertes', label: t('nav.alerts') },
       ];
 
+  const journeyItems = [
+    { href: '/parcours-eau', label: t('nav.journey') },
+    { href: '/parcours-eau-bouteille', label: t('nav.journeyBottle') },
+  ];
+
   const isActive = (path: string) => location.pathname === path;
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
+  const isActiveJourneySection = journeyItems.some(item => location.pathname === item.href);
 
   const [mapsMenuOpen, setMapsMenuOpen] = useState(false);
+  const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const journeyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -64,10 +70,18 @@ const Header = () => {
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => setMapsMenuOpen(false), 150);
   };
+  const handleJourneyMouseEnter = () => {
+    if (journeyTimeoutRef.current) clearTimeout(journeyTimeoutRef.current);
+    setJourneyMenuOpen(true);
+  };
+  const handleJourneyMouseLeave = () => {
+    journeyTimeoutRef.current = setTimeout(() => setJourneyMenuOpen(false), 150);
+  };
 
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (journeyTimeoutRef.current) clearTimeout(journeyTimeoutRef.current);
     };
   }, []);
 
@@ -122,7 +136,41 @@ const Header = () => {
               )}
             </div>
 
-            {/* Navigation items */}
+            {/* Parcours dropdown */}
+            <div
+              className="relative group"
+              onMouseEnter={handleJourneyMouseEnter}
+              onMouseLeave={handleJourneyMouseLeave}
+            >
+              <button
+                className={`h-9 px-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap inline-flex items-center gap-1 ${
+                  isActiveJourneySection ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {t('nav.journey')}
+                <ChevronDown className="h-3 w-3" />
+              </button>
+              {journeyMenuOpen && (
+                <div
+                  className="absolute left-0 top-full w-64 bg-background border border-border shadow-lg rounded-md z-50 mt-0"
+                  onMouseEnter={handleJourneyMouseEnter}
+                  onMouseLeave={handleJourneyMouseLeave}
+                >
+                  {journeyItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      className={`block px-4 py-3 text-sm hover:bg-accent hover:text-accent-foreground transition-colors ${
+                        isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {navigationItems.map((item) => (
               <Link
                 key={item.href}
@@ -199,6 +247,25 @@ const Header = () => {
                         {t('nav.maps')}
                       </div>
                       {mapsItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          to={item.href}
+                          onClick={() => setIsOpen(false)}
+                          className={`block px-3 py-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground ml-3 ${
+                            isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+
+                    {/* Section parcours */}
+                    <div className="mb-4">
+                      <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
+                        {t('nav.journey')}
+                      </div>
+                      {journeyItems.map((item) => (
                         <Link
                           key={item.href}
                           to={item.href}
