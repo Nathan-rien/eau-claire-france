@@ -43,19 +43,25 @@ const Header = () => {
     : [
         { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
-        { href: '/parcours-eau', label: t('nav.journey') },
-        { href: '/parcours-eau-bouteille', label: t('nav.journeyBottle') },
         { href: '/prix-eaux', label: t('nav.prices') },
         { href: '/classement', label: t('nav.ranking') },
         { href: '/polluants', label: t('nav.pollutants') },
         { href: '/alertes', label: t('nav.alerts') },
       ];
 
+  const journeyItems = [
+    { href: '/parcours-eau', label: t('nav.journey') },
+    { href: '/parcours-eau-bouteille', label: t('nav.journeyBottle') },
+  ];
+
   const isActive = (path: string) => location.pathname === path;
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
+  const isActiveJourneySection = journeyItems.some(item => location.pathname === item.href);
 
   const [mapsMenuOpen, setMapsMenuOpen] = useState(false);
+  const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const journeyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -64,10 +70,18 @@ const Header = () => {
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => setMapsMenuOpen(false), 150);
   };
+  const handleJourneyMouseEnter = () => {
+    if (journeyTimeoutRef.current) clearTimeout(journeyTimeoutRef.current);
+    setJourneyMenuOpen(true);
+  };
+  const handleJourneyMouseLeave = () => {
+    journeyTimeoutRef.current = setTimeout(() => setJourneyMenuOpen(false), 150);
+  };
 
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (journeyTimeoutRef.current) clearTimeout(journeyTimeoutRef.current);
     };
   }, []);
 
