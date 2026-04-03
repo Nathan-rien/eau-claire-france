@@ -2109,6 +2109,7 @@ export const translations = {
     'tapJourney.filterLabel': 'Source type',
     'tapJourney.allTypes': 'All sources',
     'tapJourney.legendRoute': 'Water route',
+    'tapJourney.backToOverview': 'Back to overview',
   }
 } as const;
 
