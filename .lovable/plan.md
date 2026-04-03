@@ -1,41 +1,46 @@
 
 
-## Enrichissement massif des communes satellites — analyse des limites
+## Ajouter les villes manquantes à la carte parcours eau du robinet
 
-### État actuel
-- **35 routes**, **244 communes satellites** (moy. 7/route)
-- Fichier : **42 Ko / 833 lignes** — relativement léger
+### Constat
 
-### Limites techniques
+35 routes actuelles couvrent les grandes métropoles mais il manque ~15-20 agglomérations françaises significatives (préfectures/sous-préfectures de 50 000+ habitants ou villes côtières majeures).
 
-Le fichier TypeScript est compilé côté client. La contrainte principale est la **taille du bundle** et la **performance de rendu Mapbox** (nombre d'arcs animés en mode détail).
+### Nouvelles routes à ajouter (~18)
 
-- **Taille fichier** : on peut aller jusqu'à ~150-200 Ko sans impact notable sur le chargement (~3-5x la taille actuelle)
-- **Rendu Mapbox** : en mode détail, on affiche les arcs d'une seule route → même avec 30 communes par métropole, ça reste ~30 arcs animés, très gérable
-- **Limite pratique réaliste** : **~600-800 communes satellites** (moy. 15-20 par route)
+| Ville | Population | Captage type |
+|-------|-----------|-------------|
+| Pau | 77k | Gave de Pau |
+| Bayonne | 52k | Nive/Adour |
+| La Rochelle | 79k | Nappe du Cénomanien |
+| Poitiers | 89k | Nappe du Clain |
+| Nîmes | 151k | Source du Lez / BRL |
+| Avignon | 92k | Canal de Provence / Durance |
+| Valence | 65k | Rhône |
+| Chambéry | 60k | Lac du Bourget |
+| Dunkerque | 87k | Nappe d'Artois |
+| Troyes | 62k | Seine amont |
+| Saint-Nazaire | 72k | Loire |
+| Lorient | 57k | Scorff |
+| Vannes | 55k | Nappe de Noyalo |
+| Quimper | 63k | Odet |
+| Colmar | 70k | Nappe phréatique du Rhin |
+| Ajaccio | 72k | Gravona |
+| Bastia | 48k | Golo |
+| Calais | 73k | Nappe de la Craie |
 
-### Plan d'enrichissement : passer de 244 à ~600 communes
+Chaque route suit la structure existante : 4 étapes (captage → traitement → réservoir → commune) + 3-5 communes satellites.
 
-**`src/data/tapWaterSources.ts`** — seul fichier modifié
-
-Cibles par catégorie :
-
-| Catégorie | Routes | Cible/route | Total ajouté |
-|-----------|--------|-------------|-------------|
-| Grandes métropoles (Paris, Lyon, Marseille, Lille, Toulouse, Bordeaux) | 7 | 20-25 | ~140 |
-| Métropoles régionales (Nantes, Strasbourg, Nice, Rennes, Montpellier, Grenoble, Rouen, Toulon) | 8 | 12-15 | ~100 |
-| Villes moyennes (les 20 restantes) | 20 | 8-10 | ~120 |
-
-Soit un passage de **244 → ~600 communes**, couvrant la quasi-totalité des intercommunalités françaises majeures.
-
-Exemples d'ajouts :
-- **Paris** : Suresnes, Puteaux, Levallois, Gennevilliers, Malakoff, Issy, Clamart, Meudon, Châtillon, Le Kremlin-Bicêtre, Gentilly, Cachan, Arcueil...
-- **Lyon** : Champagne-au-Mont-d'Or, Pierre-Bénite, Francheville, La Mulatière, Saint-Fons, Corbas, Mions, Feyzin, Givors, Grigny...
-- **Marseille** : Aubagne, La Ciotat, Gardanne, Septèmes, Les Pennes-Mirabeau, Gémenos, Roquevaire, Carnoux...
-
-### Fichiers modifiés
+### Fichier modifié
 
 | Fichier | Action |
 |---------|--------|
-| `src/data/tapWaterSources.ts` | Enrichir communes[] de 244 → ~600 entrées |
+| `src/data/tapWaterSources.ts` | Ajouter ~18 nouvelles routes avec communes satellites (~90 communes supplémentaires) |
+
+### Impact
+
+- Passage de 35 à ~53 routes
+- Communes satellites : ~600 → ~690
+- Taille fichier estimée : ~85 Ko (reste dans les limites de performance)
+- Couverture : quasi-totalité des préfectures françaises métropolitaines + Corse
 
