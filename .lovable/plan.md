@@ -1,48 +1,36 @@
 
 
-## Optimiser le chargement de la carte parcours eau en bouteille
+## Ajouter les pages parcours aux cartes + corriger le scroll mobile
 
-### Diagnostic
+### 1. Ajouter les parcours dans le dropdown "Les cartes" (`src/components/Header.tsx`)
 
-Le problème principal : avec 24 routes × ~10 communes = **~240 arcs**, le composant crée **~240 sources GeoJSON individuelles + ~480 couches Mapbox** (bg + anim). Chaque frame d'animation appelle `setPaintProperty` sur chacune des ~240 couches animées. C'est ce qui sature le GPU et le thread principal.
+Les traductions `nav.maps.bottleJourney` et `nav.maps.tapJourney` existent deja. Il suffit d'ajouter 2 entrees dans `mapsItems` (branche France) :
 
-### Optimisations (fichier unique : `src/components/WaterJourneyMap.tsx`)
+```
+{ href: '/carte-parcours-eau', label: t('nav.maps.bottleJourney') },
+{ href: '/carte-parcours-robinet', label: t('nav.maps.tapJourney') },
+```
 
-**1. Fusionner tous les arcs en 2 sources GeoJSON max**
+Ajouter egalement ces 2 liens dans la section "Cartes" du menu mobile (le bloc `mapsItems.map` dans le `SheetContent`).
 
-Au lieu de créer une source + 2 layers par arc (~480 layers), regrouper tous les arcs dans une seule `FeatureCollection` :
-- 1 source `journey-arcs` → 1 layer `journey-arcs-bg` + 1 layer `journey-arcs-anim`
-- Résultat : **2 appels `setPaintProperty` par frame au lieu de ~240**
+Mettre a jour `isActiveMapsSection` pour inclure ces nouvelles routes, et retirer la section "Parcours" separee (dropdown desktop + section mobile) puisque ces items sont desormais sous "Les cartes".
 
-**2. Réduire les arcs communes à 15 points**
+### 2. Corriger le scroll du menu mobile (`src/components/Header.tsx`)
 
-Passer `createArc` de 25 à 15 points pour les arcs source→commune (qualité visuelle identique à cette échelle).
+Le `SheetContent` ne permet pas le scroll car son contenu depasse la hauteur ecran sans `overflow-y-auto`. Deux corrections :
 
-**3. Démarrer avec `showCommunes = false`**
+- Ajouter `overflow-y-auto` au `SheetContent` : changer la classe en `"w-72 sm:w-80 overflow-y-auto"`
+- Wraper le contenu interne dans un conteneur avec `flex flex-col h-full overflow-y-auto` pour que le scroll fonctionne meme avec le header fixe du Sheet
 
-Afficher d'abord uniquement les sources (24 marqueurs), les communes ne s'affichent qu'au clic du toggle. Réduit le rendu initial de ~240 marqueurs DOM à ~15.
+### 3. Nettoyage
 
-**4. Création différée des marqueurs communes**
+- Supprimer le dropdown "Parcours" du desktop (le `div` avec `parcoursMenuOpen`) et les states/refs associes (`parcoursMenuOpen`, `parcoursTimeoutRef`, handlers `handleParcoursMouseEnter/Leave`)
+- Supprimer la section "Parcours" du menu mobile
+- Garder `parcoursItems` fusionne dans `mapsItems`
 
-Ne créer les éléments DOM des marqueurs communes qu'au premier toggle `showCommunes = true` (lazy init). Évite ~200 `document.createElement` + `addTo(map)` au chargement.
-
-**5. Throttle animation à 150ms (~7fps)**
-
-Passer de 100ms à 150ms entre frames — avec seulement 2 layers à animer, la fluidité reste identique visuellement mais réduit encore la charge.
-
-### Résumé de l'impact
-
-| Métrique | Avant | Après |
-|----------|-------|-------|
-| Sources Mapbox | ~240 | 2 |
-| Layers Mapbox | ~480 | 4 |
-| setPaintProperty/frame | ~240 | 2 |
-| Marqueurs DOM au load | ~215 | ~15 |
-| Points par arc commune | 25 | 15 |
-
-### Fichier modifié
+### Fichier modifie
 
 | Fichier | Changement |
 |---------|-----------|
-| `src/components/WaterJourneyMap.tsx` | FeatureCollection unique, lazy markers, showCommunes=false par défaut, throttle 150ms |
+| `src/components/Header.tsx` | Fusion parcours dans mapsItems, suppression dropdown Parcours, ajout overflow-y-auto sur SheetContent mobile |
 
