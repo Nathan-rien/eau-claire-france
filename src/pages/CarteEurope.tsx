@@ -194,7 +194,7 @@ const CarteEurope: React.FC = () => {
             <CardContent className="pt-4 text-center">
               <Droplets className="w-6 h-6 mx-auto mb-1 text-primary" />
               <div className="text-2xl font-bold text-foreground">{avgCompliance}%</div>
-              <div className="text-xs text-muted-foreground">Conformité moyenne</div>
+              <div className="text-xs text-muted-foreground">{t('europeMap.avgCompliance')}</div>
             </CardContent>
           </Card>
           <Card>
