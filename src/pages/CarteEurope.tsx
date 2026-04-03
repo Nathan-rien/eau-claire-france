@@ -148,7 +148,7 @@ const CarteEurope: React.FC = () => {
   const [data, setData] = useState<EUCountryWaterQuality[]>([]);
   const [selected, setSelected] = useState<EUCountryWaterQuality | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const { t } = useLanguage();
   useEffect(() => {
     getEUWaterQuality().then(d => {
       setData(d);
