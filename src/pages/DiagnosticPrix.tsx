@@ -135,7 +135,7 @@ export default function DiagnosticPrix() {
         {/* Méthode de calcul */}
         <Card>
           <CardHeader>
-            <CardTitle>📊 Méthodes de Calcul</CardTitle>
+            <CardTitle>📊 {t('priceDiag.methods')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
