@@ -22,7 +22,7 @@ const CarteParcoursEau = () => {
         <div className="container mx-auto">
           <Breadcrumb items={[
             { name: t('nav.maps'), href: '/carte' },
-            { name: t('waterJourney.breadcrumb'), href: '/carte-parcours-eau', current: true },
+            { name: t('bottleJourney.breadcrumb'), href: '/carte-parcours-eau', current: true },
           ]} />
         </div>
 
