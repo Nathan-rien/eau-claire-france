@@ -1,53 +1,50 @@
 
 
-## Internationaliser les 25 pages publiques restantes
+## Corriger les textes francais restants dans toutes les pages i18n
 
-### Etat des lieux
+### Probleme
 
-**9 pages** utilisent deja `useLanguage` : Index, Carte, Diagnostic, Classement, Polluants, Alertes, QuelleEauBoire, ComparatifBouteilles, ParcoursEauBouteille.
+Les pages utilisent bien `useLanguage` et `t()` pour les titres et sections, mais de nombreux **contenus inline** (tableaux de donnees, listes, badges, libelles de formulaire) restent en francais en dur. Resultat : en mode anglais, on voit un melange anglais/francais.
 
-**25 pages publiques** ont du texte francais en dur :
+### Pages et zones concernees
 
-| Groupe | Pages | Lignes totales |
-|--------|-------|----------------|
-| Info/Legal | APropos (217), Contact (280), MentionsLegales (213), RGPD (259), Accessibilite (265), Methodologie (269) | ~1 503 |
-| Data/API | Sources (244), OpenData (356), ApiPublique (284) | ~884 |
-| France | ParcoursEau (1 101), PrixEaux (707), CartePolluants (61), SourcesEau (175), ComparateurPrix (578), DiagnosticPrix (181), MarquePrix (287) | ~3 090 |
-| Europe | CarteEurope (296), CartePolluantsEurope (67), ClassementEurope (309), DiagnosticEurope (204), CompositionEurope (341), PolluantsEurope (193), AlertesEurope (169), PrixEauxEurope (133) | ~1 712 |
-| Autre | NotFound (33) | 33 |
+| Page | Textes en dur restants |
+|------|----------------------|
+| **Sources.tsx** | 9 dataSources (name, description, type, frequency, coverage), 4 qualityStandards (organism, role, reference), 6 items dans les listes "temps reel" et "periodique" |
+| **OpenData.tsx** | 6 datasets (name, description), 5 apiEndpoints (description), "Chargement...", "Erreur:", 4 principes Open Data, section communaute (8 items), 3 boutons docs, contact labels |
+| **ApiPublique.tsx** | 7 endpoints (description, parameter descriptions), 3 badges ("Gratuit", "Aucun cout", etc.), section limites techniques (7 items), conditions d'utilisation (4 items) |
+| **Methodologie.tsx** | 4 etapes methodology (title, description, 16 details), 3 qualityIndicators (name, description, calculation, threshold), 4 principes (titres+desc), section EU (8 items), 4 limitations |
+| **RGPD.tsx** | Labels "Nom:", "Contact:", "Adresse:", retention periods (2 items), 8 security measures, labels "Email:", "Objet:" |
+| **Accessibilite.tsx** | 16 items dans 4 cartes accessibilite (visual, keyboard, cognitive, auditory), 6 raccourcis clavier, "Janvier 2024", labels "Email:", "Objet:" |
+| **MentionsLegales.tsx** | Labels "Email:", "LinkedIn:" |
+| **Contact.tsx** | Email body labels "Nom:", "Sujet:", "Envoye depuis" |
 
-**Certaines cles existent deja** dans `translations.ts` (about.\*, contact.\*, journey.\*, prices.\*) mais ne sont pas utilisees dans les pages correspondantes.
+### Plan d'implementation
 
-### Approche
+**Etape 1 — Ajouter ~200 nouvelles cles dans `translations.ts`**
 
-Travail en **5 lots** pour garder chaque modification lisible :
+Organiser par namespace existant :
+- `sources.src.*` (9 sources x 5 champs + 4 standards x 3 champs + 6 items listes)
+- `opendata.ds.*` (6 datasets x 2 champs + 5 api desc + principes + communaute + docs)
+- `api.ep.*` (7 endpoints + params + limites + conditions)
+- `methodology.step.*`, `methodology.ind.*`, `methodology.principle.*`, `methodology.limit.*`, `methodology.eu.*`
+- `rgpd.label.*`, `rgpd.retention.*`, `rgpd.security.*`
+- `a11y.item.*`, `a11y.shortcut.*`
 
-**Lot 1 — Pages avec cles existantes** (APropos, Contact, ParcoursEau, PrixEaux)
-- Importer `useLanguage`, remplacer les chaines en dur par `t('about.*')`, `t('contact.*')`, `t('journey.*')`, `t('prices.*')`
-- Ajouter les cles manquantes dans `translations.ts` (fr + en)
+**Etape 2 — Mettre a jour les 8 pages**
 
-**Lot 2 — Pages legales/info** (MentionsLegales, RGPD, Accessibilite, Methodologie, Sources, OpenData, ApiPublique, NotFound)
-- Creer les cles : `legal.*`, `rgpd.*`, `accessibility.*`, `methodology.*`, `sources.*`, `opendata.*`, `api.*`, `notfound.*`
-- Wirer chaque page avec `useLanguage`
-
-**Lot 3 — Pages France restantes** (CartePolluants, SourcesEau, ComparateurPrix, DiagnosticPrix, MarquePrix)
-- Creer les cles : `pollutantMap.*`, `waterSources.*`, `priceComparator.*`, `priceDiag.*`, `brandPrice.*`
-- Wirer chaque page
-
-**Lot 4 — Pages Europe** (CarteEurope, CartePolluantsEurope, ClassementEurope, DiagnosticEurope, CompositionEurope, PolluantsEurope, AlertesEurope, PrixEauxEurope)
-- Creer les cles : `europeMap.*`, `europePollutantMap.*`, `europeRanking.*`, `europeDiag.*`, `europeComposition.*`, `europePollutants.*`, `europeAlerts.*`, `europePrices.*`
-- Wirer chaque page
-
-**Lot 5 — Composants partages utilises par ces pages**
-- Verifier que les composants imbriques (PollutantMap, WaterSourcesMap, etc.) utilisent aussi `t()` si ils contiennent du texte en dur
+Remplacer chaque chaine en dur par `t('key')` dans les tableaux et listes inline des fichiers :
+- `Sources.tsx` — dataSources et qualityStandards comme tableaux dynamiques via `t()`
+- `OpenData.tsx` — datasets, apiEndpoints, principes, communaute, docs
+- `ApiPublique.tsx` — endpoints, badges, limites
+- `Methodologie.tsx` — methodology, qualityIndicators, principes, EU, limitations
+- `RGPD.tsx` — labels, retention, security measures
+- `Accessibilite.tsx` — items listes, raccourcis, date
+- `MentionsLegales.tsx` — labels contact
+- `Contact.tsx` — email body template
 
 ### Fichiers modifies
 
-1. **`src/i18n/translations.ts`** — Ajouter ~300-400 nouvelles cles (fr + en) pour toutes les pages
-2. **25 fichiers `src/pages/*.tsx`** — Importer `useLanguage`, remplacer chaque chaine francaise par `t('key')`
-3. **Composants concernes** — Verifier et adapter si texte en dur
-
-### Pages admin exclues
-
-Les pages Admin, AdminQuality, AdminSetup, Auth, Dashboard, Login, SecurityDashboard et \_\_price-probe ne sont pas internationalisees (usage interne uniquement).
+1. **`src/i18n/translations.ts`** — ~200 nouvelles cles fr + en
+2. **8 fichiers pages** — Sources, OpenData, ApiPublique, Methodologie, RGPD, Accessibilite, MentionsLegales, Contact
 
