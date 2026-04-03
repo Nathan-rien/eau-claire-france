@@ -201,7 +201,7 @@ const CarteEurope: React.FC = () => {
             <CardContent className="pt-4 text-center">
               <MapPin className="w-6 h-6 mx-auto mb-1 text-primary" />
               <div className="text-2xl font-bold text-foreground">27</div>
-              <div className="text-xs text-muted-foreground">Pays analysés</div>
+              <div className="text-xs text-muted-foreground">{t('europeMap.countriesAnalyzed')}</div>
             </CardContent>
           </Card>
           <Card>
