@@ -31,6 +31,7 @@ const DiagnosticEurope = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [enriching, setEnriching] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     Promise.all([getEUWaterQuality(), getEUPollutantsBaseline(), getEUWaterComposition()])
