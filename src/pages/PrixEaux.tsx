@@ -423,14 +423,14 @@ export default function PrixEaux() {
               <div className="flex gap-2">
                 <Select value={filters.pack || ''} onValueChange={(value) => updateFilter('pack', value || null)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Pack" />
+                    <SelectValue placeholder={t('prices.pack')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Tous les packs</SelectItem>
+                    <SelectItem value="all">{t('prices.allPacks')}</SelectItem>
                     <SelectItem value="6">Pack de 6</SelectItem>
                     <SelectItem value="8">Pack de 8</SelectItem>
                     <SelectItem value="12">Pack de 12</SelectItem>
-                    <SelectItem value="autre">Autre</SelectItem>
+                    <SelectItem value="autre">{t('prices.pack')}</SelectItem>
                   </SelectContent>
                 </Select>
 
