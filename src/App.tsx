@@ -55,6 +55,7 @@ const PrixEauxEurope = React.lazy(() => import("./pages/PrixEauxEurope"));
 const CompositionEurope = React.lazy(() => import("./pages/CompositionEurope"));
 const ParcoursEau = React.lazy(() => import("./pages/ParcoursEau"));
 const ParcoursEauBouteille = React.lazy(() => import("./pages/ParcoursEauBouteille"));
+const CarteParcoursEau = React.lazy(() => import("./pages/CarteParcoursEau"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -135,6 +136,7 @@ const App = () => {
                 <Route path="/composition-europe" element={<CompositionEurope />} />
                 <Route path="/parcours-eau" element={<ParcoursEau />} />
                 <Route path="/parcours-eau-bouteille" element={<ParcoursEauBouteille />} />
+                <Route path="/carte-parcours-eau" element={<CarteParcoursEau />} />
                 <Route 
                   path="/admin/security" 
                   element={
