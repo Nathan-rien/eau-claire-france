@@ -527,7 +527,7 @@ export default function ComparateurPrix() {
 
                   {/* Prix médian */}
                   <div className="text-center">
-                    <h3 className="font-medium mb-2">Prix médian</h3>
+                    <h3 className="font-medium mb-2">{t('priceComparator.medianPriceLabel')}</h3>
                     {(() => {
                       const comp = getPriceComparison(comparison1.medianPrice, comparison2.medianPrice);
                       const winner = (comparison1.medianPrice || 0) < (comparison2.medianPrice || 0) ? 1 : 2;
