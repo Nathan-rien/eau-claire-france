@@ -434,14 +434,14 @@ export default function PrixEaux() {
                   </SelectContent>
                 </Select>
 
-                <Select value={searchParams.get('availability') || ''} onValueChange={(value) => updateFilter('availability', value || null)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Disponibilité" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Tous produits</SelectItem>
-                    <SelectItem value="in_stock">En stock</SelectItem>
-                  </SelectContent>
+              <Select value={searchParams.get('availability') || ''} onValueChange={(value) => updateFilter('availability', value || null)}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('prices.availability')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('prices.allProducts')}</SelectItem>
+                  <SelectItem value="in_stock">{t('prices.inStock')}</SelectItem>
+                </SelectContent>
                 </Select>
               </div>
             </div>
