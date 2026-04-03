@@ -2080,6 +2080,16 @@ export const translations = {
     'common.error': 'Error',
     'common.loading': 'Loading...',
     'common.free': 'Free',
+
+    // Water Journey Map
+    'waterJourney.title': 'Water Journey: source → tap',
+    'waterJourney.subtitle': 'Visualize the animated route of water from its collection source to your city tap. Filter by distributor.',
+    'waterJourney.breadcrumb': 'Source → tap journey',
+    'waterJourney.filterLabel': 'Distributor',
+    'waterJourney.allDistributors': 'All distributors',
+    'waterJourney.legendSource': 'Collection source',
+    'waterJourney.legendCommune': 'Served city',
+    'waterJourney.legendRoute': 'Water route',
   }
 } as const;
 
