@@ -381,7 +381,7 @@ export default function ComparateurPrix() {
               size="lg"
               className="px-8"
             >
-              {loading ? 'Comparaison en cours...' : 'Comparer'}
+              {loading ? t('priceComparator.comparing') : t('priceComparator.compare')}
             </Button>
             
             {lastUpdate && (
