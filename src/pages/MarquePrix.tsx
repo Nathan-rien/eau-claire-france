@@ -143,7 +143,7 @@ export default function MarquePrix() {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center">Chargement...</div>
+          <div className="text-center">{t('common.loading')}</div>
         </div>
       </Layout>
     );
