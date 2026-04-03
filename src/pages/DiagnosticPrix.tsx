@@ -164,7 +164,7 @@ export default function DiagnosticPrix() {
         {/* Informations système */}
         <Card>
           <CardHeader>
-            <CardTitle>🔍 Informations système</CardTitle>
+            <CardTitle>🔍 {t('priceDiag.systemInfo')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-sm text-muted-foreground">
