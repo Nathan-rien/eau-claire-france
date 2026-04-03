@@ -56,6 +56,7 @@ const CompositionEurope = React.lazy(() => import("./pages/CompositionEurope"));
 const ParcoursEau = React.lazy(() => import("./pages/ParcoursEau"));
 const ParcoursEauBouteille = React.lazy(() => import("./pages/ParcoursEauBouteille"));
 const CarteParcoursEau = React.lazy(() => import("./pages/CarteParcoursEau"));
+const CarteParcoursRobinet = React.lazy(() => import("./pages/CarteParcoursRobinet"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
