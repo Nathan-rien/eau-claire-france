@@ -209,7 +209,7 @@ export default function MarquePrix() {
                         </div>
                         {index === 0 && (
                           <Badge variant="default" className="text-xs">
-                            Meilleur prix
+                            {t('brandPrice.bestPrice')}
                           </Badge>
                         )}
                       </div>
