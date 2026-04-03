@@ -47,9 +47,16 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.svg" />
 
-    <!-- Amplitude Analytics -->
-    <script src="https://cdn.eu.amplitude.com/script/72c4c3199e84554e813d8264960c10e2.js"></script>
-    <script>window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));window.amplitude.init('72c4c3199e84554e813d8264960c10e2', {"fetchRemoteConfig":true,"serverZone":"EU","autocapture":{"attribution":true,"fileDownloads":true,"formInteractions":true,"pageViews":true,"sessions":true,"elementInteractions":true,"networkTracking":true,"webVitals":true,"frustrationInteractions":{"thrashedCursor":true,"errorClicks":true,"deadClicks":true,"rageClicks":true}}});</script>
+    <!-- Amplitude Analytics (async to avoid blocking render) -->
+    <script async src="https://cdn.eu.amplitude.com/script/72c4c3199e84554e813d8264960c10e2.js"></script>
+    <script>
+      window.addEventListener('load', function() {
+        if (window.amplitude) {
+          window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));
+          window.amplitude.init('72c4c3199e84554e813d8264960c10e2', {"fetchRemoteConfig":true,"serverZone":"EU","autocapture":{"attribution":true,"fileDownloads":true,"formInteractions":true,"pageViews":true,"sessions":true,"elementInteractions":true,"networkTracking":true,"webVitals":true,"frustrationInteractions":{"thrashedCursor":true,"errorClicks":true,"deadClicks":true,"rageClicks":true}}});
+        }
+      });
+    </script>
   </head>
 
   <body>

@@ -53,4 +53,6 @@ const SecurityHeaders = React.memo(() => {
   );
 };
 
+SecurityHeaders.displayName = 'SecurityHeaders';
+
 export default SecurityHeaders;
