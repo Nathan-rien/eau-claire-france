@@ -354,7 +354,7 @@ export default function ComparateurPrix() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Seconde enseigne</label>
+                    <label className="block text-sm font-medium mb-2">{t('priceComparator.secondRetailer')}</label>
                     <Select value={selectedRetailer2} onValueChange={setSelectedRetailer2}>
                       <SelectTrigger>
                         <SelectValue placeholder="Sélectionner une enseigne" />
