@@ -371,7 +371,7 @@ export default function PrixEaux() {
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Rechercher un produit..."
+                  placeholder={t('prices.searchProduct')}
                   value={filters.search || ''}
                   onChange={(e) => updateFilter('search', e.target.value || null)}
                   className="pl-10"
