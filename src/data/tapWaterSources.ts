@@ -147,6 +147,13 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
       { name: 'Mérignac', lat: 44.8386, lng: -0.6438, population: 73000 },
       { name: 'Pessac', lat: 44.8067, lng: -0.6311, population: 65000 },
       { name: 'Talence', lat: 44.8126, lng: -0.5875, population: 43000 },
+      { name: 'Bègles', lat: 44.8085, lng: -0.5485, population: 29000 },
+      { name: 'Villenave-d\'Ornon', lat: 44.7804, lng: -0.5579, population: 37000 },
+      { name: 'Cenon', lat: 44.8570, lng: -0.5322, population: 25000 },
+      { name: 'Lormont', lat: 44.8754, lng: -0.5231, population: 23000 },
+      { name: 'Le Bouscat', lat: 44.8627, lng: -0.5983, population: 24000 },
+      { name: 'Bruges', lat: 44.8789, lng: -0.6130, population: 18000 },
+      { name: 'Gradignan', lat: 44.7723, lng: -0.6155, population: 26000 },
     ],
   },
 
@@ -166,6 +173,13 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
       { name: 'Roubaix', lat: 50.6942, lng: 3.1746, population: 98000 },
       { name: 'Tourcoing', lat: 50.7240, lng: 3.1613, population: 98000 },
       { name: 'Villeneuve-d\'Ascq', lat: 50.6232, lng: 3.1413, population: 62000 },
+      { name: 'Wattrelos', lat: 50.7016, lng: 3.2179, population: 41000 },
+      { name: 'Marcq-en-Barœul', lat: 50.6713, lng: 3.0936, population: 40000 },
+      { name: 'Lambersart', lat: 50.6521, lng: 3.0254, population: 28000 },
+      { name: 'Croix', lat: 50.6788, lng: 3.1490, population: 21000 },
+      { name: 'Hem', lat: 50.6551, lng: 3.1895, population: 19000 },
+      { name: 'Wasquehal', lat: 50.6693, lng: 3.1282, population: 20000 },
+      { name: 'Mons-en-Barœul', lat: 50.6390, lng: 3.1110, population: 21000 },
     ],
   },
 
@@ -185,6 +199,13 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
       { name: 'Colomiers', lat: 43.6117, lng: 1.3334, population: 40000 },
       { name: 'Tournefeuille', lat: 43.5847, lng: 1.3452, population: 27000 },
       { name: 'Blagnac', lat: 43.6380, lng: 1.3939, population: 25000 },
+      { name: 'Balma', lat: 43.6111, lng: 1.4989, population: 17000 },
+      { name: 'L\'Union', lat: 43.6556, lng: 1.4831, population: 12000 },
+      { name: 'Ramonville-Saint-Agne', lat: 43.5497, lng: 1.4741, population: 14000 },
+      { name: 'Cugnaux', lat: 43.5370, lng: 1.3425, population: 18000 },
+      { name: 'Muret', lat: 43.4614, lng: 1.3265, population: 27000 },
+      { name: 'Castanet-Tolosan', lat: 43.5163, lng: 1.4987, population: 14000 },
+      { name: 'Saint-Orens-de-Gameville', lat: 43.5527, lng: 1.5328, population: 13000 },
     ],
   },
 
@@ -204,6 +225,11 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
       { name: 'Saint-Herblain', lat: 47.2126, lng: -1.6497, population: 46000 },
       { name: 'Rezé', lat: 47.1828, lng: -1.5659, population: 42000 },
       { name: 'Saint-Nazaire', lat: 47.2733, lng: -2.2130, population: 72000 },
+      { name: 'Orvault', lat: 47.2711, lng: -1.6223, population: 27000 },
+      { name: 'Vertou', lat: 47.1690, lng: -1.4700, population: 25000 },
+      { name: 'Carquefou', lat: 47.2968, lng: -1.4927, population: 20000 },
+      { name: 'Couëron', lat: 47.2149, lng: -1.7233, population: 21000 },
+      { name: 'Bouguenais', lat: 47.1764, lng: -1.6271, population: 20000 },
     ],
   },
 
@@ -222,6 +248,11 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
       { name: 'Schiltigheim', lat: 48.6073, lng: 7.7472, population: 34000 },
       { name: 'Illkirch-Graffenstaden', lat: 48.5286, lng: 7.7153, population: 27000 },
       { name: 'Hoenheim', lat: 48.6213, lng: 7.7551, population: 11000 },
+      { name: 'Lingolsheim', lat: 48.5569, lng: 7.6858, population: 18000 },
+      { name: 'Bischheim', lat: 48.6161, lng: 7.7523, population: 18000 },
+      { name: 'Ostwald', lat: 48.5419, lng: 7.7110, population: 13000 },
+      { name: 'Eckbolsheim', lat: 48.5804, lng: 7.6900, population: 7000 },
+      { name: 'Geispolsheim', lat: 48.5155, lng: 7.6446, population: 9000 },
     ],
   },
 
@@ -241,6 +272,11 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
       { name: 'Antibes', lat: 43.5808, lng: 7.1239, population: 74000 },
       { name: 'Cannes', lat: 43.5528, lng: 7.0174, population: 75000 },
       { name: 'Cagnes-sur-Mer', lat: 43.6645, lng: 7.1482, population: 52000 },
+      { name: 'Saint-Laurent-du-Var', lat: 43.6672, lng: 7.1893, population: 30000 },
+      { name: 'Vence', lat: 43.7230, lng: 7.1108, population: 19000 },
+      { name: 'Villeneuve-Loubet', lat: 43.6586, lng: 7.1258, population: 15000 },
+      { name: 'La Trinité', lat: 43.7408, lng: 7.3139, population: 10000 },
+      { name: 'Grasse', lat: 43.6585, lng: 6.9231, population: 51000 },
     ],
   },
 
@@ -258,6 +294,10 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Cesson-Sévigné', lat: 48.1211, lng: -1.6047, population: 18000 },
       { name: 'Bruz', lat: 48.0246, lng: -1.7445, population: 18000 },
+      { name: 'Saint-Jacques-de-la-Lande', lat: 48.0768, lng: -1.7222, population: 13000 },
+      { name: 'Chantepie', lat: 48.0882, lng: -1.6187, population: 11000 },
+      { name: 'Betton', lat: 48.1830, lng: -1.6390, population: 12000 },
+      { name: 'Pacé', lat: 48.1466, lng: -1.7714, population: 12000 },
     ],
   },
 
@@ -275,6 +315,11 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Castelnau-le-Lez', lat: 43.6348, lng: 3.8977, population: 22000 },
       { name: 'Lattes', lat: 43.5672, lng: 3.9019, population: 18000 },
+      { name: 'Mauguio', lat: 43.6169, lng: 4.0111, population: 17000 },
+      { name: 'Juvignac', lat: 43.6137, lng: 3.8105, population: 12000 },
+      { name: 'Saint-Jean-de-Védas', lat: 43.5766, lng: 3.8282, population: 10000 },
+      { name: 'Pérols', lat: 43.5649, lng: 3.9490, population: 9000 },
+      { name: 'Grabels', lat: 43.6475, lng: 3.8013, population: 8000 },
     ],
   },
 
@@ -292,6 +337,12 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Saint-Martin-d\'Hères', lat: 45.1672, lng: 5.7652, population: 38000 },
       { name: 'Échirolles', lat: 45.1485, lng: 5.7204, population: 37000 },
+      { name: 'Fontaine', lat: 45.1936, lng: 5.6839, population: 23000 },
+      { name: 'Meylan', lat: 45.2087, lng: 5.7817, population: 19000 },
+      { name: 'Seyssinet-Pariset', lat: 45.1741, lng: 5.6808, population: 13000 },
+      { name: 'Sassenage', lat: 45.2115, lng: 5.6643, population: 12000 },
+      { name: 'Pont-de-Claix', lat: 45.1271, lng: 5.7001, population: 12000 },
+      { name: 'Gières', lat: 45.1830, lng: 5.7874, population: 7000 },
     ],
   },
 
@@ -310,6 +361,10 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Chenôve', lat: 47.2911, lng: 5.0018, population: 15000 },
       { name: 'Talant', lat: 47.3389, lng: 5.0004, population: 12000 },
+      { name: 'Quetigny', lat: 47.3132, lng: 5.1024, population: 10000 },
+      { name: 'Fontaine-lès-Dijon', lat: 47.3469, lng: 5.0186, population: 9000 },
+      { name: 'Longvic', lat: 47.2887, lng: 5.0625, population: 9000 },
+      { name: 'Saint-Apollinaire', lat: 47.3367, lng: 5.0900, population: 7000 },
     ],
   },
 
@@ -327,6 +382,10 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Chamalières', lat: 45.7710, lng: 3.0630, population: 18000 },
       { name: 'Cournon-d\'Auvergne', lat: 45.7418, lng: 3.1942, population: 20000 },
+      { name: 'Beaumont', lat: 45.7504, lng: 3.0828, population: 11000 },
+      { name: 'Aubière', lat: 45.7479, lng: 3.1117, population: 11000 },
+      { name: 'Gerzat', lat: 45.8215, lng: 3.1437, population: 11000 },
+      { name: 'Lempdes', lat: 45.7714, lng: 3.1935, population: 9000 },
     ],
   },
 
@@ -350,6 +409,9 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
       { name: 'Sotteville-lès-Rouen', lat: 49.4094, lng: 1.0912, population: 30000 },
       { name: 'Le Petit-Quevilly', lat: 49.4283, lng: 1.0637, population: 22000 },
       { name: 'Mont-Saint-Aignan', lat: 49.4618, lng: 1.0840, population: 20000 },
+      { name: 'Le Grand-Quevilly', lat: 49.4072, lng: 1.0411, population: 27000 },
+      { name: 'Déville-lès-Rouen', lat: 49.4670, lng: 1.0450, population: 11000 },
+      { name: 'Bois-Guillaume', lat: 49.4733, lng: 1.1176, population: 14000 },
     ],
   },
 
@@ -367,6 +429,9 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Hérouville-Saint-Clair', lat: 49.2049, lng: -0.3256, population: 23000 },
       { name: 'Mondeville', lat: 49.1724, lng: -0.3190, population: 10000 },
+      { name: 'Ifs', lat: 49.1385, lng: -0.3540, population: 12000 },
+      { name: 'Colombelles', lat: 49.2063, lng: -0.2907, population: 7000 },
+      { name: 'Blainville-sur-Orne', lat: 49.2305, lng: -0.3026, population: 6000 },
     ],
   },
 
@@ -384,6 +449,9 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Montivilliers', lat: 49.5439, lng: 0.1903, population: 17000 },
       { name: 'Harfleur', lat: 49.5065, lng: 0.1952, population: 8000 },
+      { name: 'Sainte-Adresse', lat: 49.5069, lng: 0.0781, population: 8000 },
+      { name: 'Gonfreville-l\'Orcher', lat: 49.5085, lng: 0.2358, population: 9000 },
+      { name: 'Fontaine-la-Mallet', lat: 49.5372, lng: 0.1302, population: 3000 },
     ],
   },
 
@@ -402,6 +470,9 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
       { name: 'Joué-lès-Tours', lat: 47.3514, lng: 0.6619, population: 38000 },
       { name: 'Saint-Cyr-sur-Loire', lat: 47.4073, lng: 0.6577, population: 16000 },
       { name: 'Saint-Pierre-des-Corps', lat: 47.3920, lng: 0.7310, population: 16000 },
+      { name: 'La Riche', lat: 47.3868, lng: 0.6502, population: 10000 },
+      { name: 'Chambray-lès-Tours', lat: 47.3355, lng: 0.7047, population: 12000 },
+      { name: 'Saint-Avertin', lat: 47.3648, lng: 0.7321, population: 15000 },
     ],
   },
 
@@ -419,6 +490,9 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Olivet', lat: 47.8644, lng: 1.8982, population: 22000 },
       { name: 'Saint-Jean-de-Braye', lat: 47.9116, lng: 1.9656, population: 21000 },
+      { name: 'Fleury-les-Aubrais', lat: 47.9320, lng: 1.9254, population: 22000 },
+      { name: 'Saint-Jean-de-la-Ruelle', lat: 47.9146, lng: 1.8680, population: 18000 },
+      { name: 'Saran', lat: 47.9543, lng: 1.8787, population: 16000 },
     ],
   },
 
@@ -436,6 +510,9 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Isle', lat: 45.8180, lng: 1.2100, population: 8000 },
       { name: 'Le Palais-sur-Vienne', lat: 45.8696, lng: 1.2816, population: 6000 },
+      { name: 'Panazol', lat: 45.8399, lng: 1.3135, population: 11000 },
+      { name: 'Couzeix', lat: 45.8693, lng: 1.2230, population: 10000 },
+      { name: 'Feytiat', lat: 45.8098, lng: 1.3264, population: 7000 },
     ],
   },
 
@@ -453,6 +530,10 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Avrillé', lat: 47.5052, lng: -0.5987, population: 14000 },
       { name: 'Trélazé', lat: 47.4484, lng: -0.4616, population: 14000 },
+      { name: 'Beaucouzé', lat: 47.4856, lng: -0.6333, population: 5000 },
+      { name: 'Les Ponts-de-Cé', lat: 47.4263, lng: -0.5253, population: 13000 },
+      { name: 'Saint-Barthélemy-d\'Anjou', lat: 47.4671, lng: -0.4898, population: 9000 },
+      { name: 'Écouflant', lat: 47.5160, lng: -0.5233, population: 4000 },
     ],
   },
 
@@ -470,6 +551,9 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Guipavas', lat: 48.4340, lng: -4.3984, population: 14000 },
       { name: 'Plouzané', lat: 48.3791, lng: -4.6180, population: 13000 },
+      { name: 'Gouesnou', lat: 48.4478, lng: -4.4670, population: 8000 },
+      { name: 'Le Relecq-Kerhuon', lat: 48.4077, lng: -4.3975, population: 12000 },
+      { name: 'Bohars', lat: 48.4305, lng: -4.5190, population: 4000 },
     ],
   },
 
@@ -487,6 +571,9 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Longueau', lat: 49.8677, lng: 2.3622, population: 6000 },
       { name: 'Rivery', lat: 49.9073, lng: 2.3207, population: 3000 },
+      { name: 'Camon', lat: 49.8858, lng: 2.3481, population: 6000 },
+      { name: 'Salouël', lat: 49.8746, lng: 2.2536, population: 3000 },
+      { name: 'Pont-de-Metz', lat: 49.8662, lng: 2.2430, population: 2000 },
     ],
   },
 
@@ -504,6 +591,10 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Montigny-lès-Metz', lat: 49.0973, lng: 6.1558, population: 23000 },
       { name: 'Woippy', lat: 49.1527, lng: 6.1510, population: 14000 },
+      { name: 'Moulins-lès-Metz', lat: 49.1014, lng: 6.1129, population: 5000 },
+      { name: 'Le Ban-Saint-Martin', lat: 49.1277, lng: 6.1413, population: 5000 },
+      { name: 'Longeville-lès-Metz', lat: 49.1113, lng: 6.1135, population: 4000 },
+      { name: 'Ars-sur-Moselle', lat: 49.0758, lng: 6.0798, population: 5000 },
     ],
   },
 
@@ -521,6 +612,10 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Vandœuvre-lès-Nancy', lat: 48.6560, lng: 6.1713, population: 31000 },
       { name: 'Laxou', lat: 48.6850, lng: 6.1435, population: 15000 },
+      { name: 'Maxéville', lat: 48.7116, lng: 6.1612, population: 10000 },
+      { name: 'Villers-lès-Nancy', lat: 48.6724, lng: 6.1412, population: 15000 },
+      { name: 'Tomblaine', lat: 48.6784, lng: 6.2122, population: 8000 },
+      { name: 'Jarville-la-Malgrange', lat: 48.6681, lng: 6.2072, population: 10000 },
     ],
   },
 
@@ -538,6 +633,9 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Thise', lat: 47.2750, lng: 6.0617, population: 3500 },
       { name: 'Ecole-Valentin', lat: 47.2700, lng: 5.9750, population: 3000 },
+      { name: 'Planoise', lat: 47.2200, lng: 5.9600, population: 20000 },
+      { name: 'Saône', lat: 47.2476, lng: 5.9550, population: 3500 },
+      { name: 'Miserey-Salines', lat: 47.2783, lng: 5.9422, population: 3000 },
     ],
   },
 
@@ -555,6 +653,9 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Canet-en-Roussillon', lat: 42.7072, lng: 3.0146, population: 14000 },
       { name: 'Saint-Estève', lat: 42.7145, lng: 2.8459, population: 12000 },
+      { name: 'Rivesaltes', lat: 42.7704, lng: 2.8728, population: 9000 },
+      { name: 'Pia', lat: 42.7449, lng: 2.9192, population: 9000 },
+      { name: 'Bompas', lat: 42.7271, lng: 2.9354, population: 8000 },
     ],
   },
 
@@ -573,6 +674,11 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
       { name: 'La Seyne-sur-Mer', lat: 43.1019, lng: 5.8787, population: 66000 },
       { name: 'Hyères', lat: 43.1204, lng: 6.1286, population: 57000 },
       { name: 'La Garde', lat: 43.1248, lng: 6.0107, population: 26000 },
+      { name: 'Six-Fours-les-Plages', lat: 43.0934, lng: 5.8313, population: 36000 },
+      { name: 'Ollioules', lat: 43.1340, lng: 5.8482, population: 14000 },
+      { name: 'La Valette-du-Var', lat: 43.1378, lng: 5.9844, population: 24000 },
+      { name: 'Le Pradet', lat: 43.1018, lng: 6.0218, population: 12000 },
+      { name: 'Sanary-sur-Mer', lat: 43.1192, lng: 5.8013, population: 18000 },
     ],
   },
 
@@ -590,6 +696,10 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Gardanne', lat: 43.4544, lng: 5.4691, population: 21000 },
       { name: 'Vitrolles', lat: 43.4601, lng: 5.2489, population: 35000 },
+      { name: 'Bouc-Bel-Air', lat: 43.4522, lng: 5.4129, population: 15000 },
+      { name: 'Les Pennes-Mirabeau', lat: 43.4098, lng: 5.3087, population: 21000 },
+      { name: 'Venelles', lat: 43.5965, lng: 5.4774, population: 9000 },
+      { name: 'Pertuis', lat: 43.6939, lng: 5.5033, population: 20000 },
     ],
   },
 
@@ -607,6 +717,10 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Saint-Chamond', lat: 45.4728, lng: 4.5126, population: 35000 },
       { name: 'Firminy', lat: 45.3894, lng: 4.2864, population: 17000 },
+      { name: 'Rive-de-Gier', lat: 45.5291, lng: 4.6164, population: 16000 },
+      { name: 'Roche-la-Molière', lat: 45.4302, lng: 4.3225, population: 10000 },
+      { name: 'Le Chambon-Feugerolles', lat: 45.3955, lng: 4.3244, population: 12000 },
+      { name: 'Andrézieux-Bouthéon', lat: 45.5265, lng: 4.2581, population: 10000 },
     ],
   },
 
@@ -624,6 +738,10 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Seynod', lat: 45.8749, lng: 6.0917, population: 20000 },
       { name: 'Cran-Gevrier', lat: 45.9016, lng: 6.1036, population: 18000 },
+      { name: 'Meythet', lat: 45.9172, lng: 6.0912, population: 9000 },
+      { name: 'Pringy', lat: 45.9371, lng: 6.1262, population: 4000 },
+      { name: 'Argonay', lat: 45.9453, lng: 6.1365, population: 3000 },
+      { name: 'Épagny Metz-Tessy', lat: 45.9399, lng: 6.0712, population: 6000 },
     ],
   },
 
@@ -641,6 +759,9 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Allonnes', lat: 47.9684, lng: 0.1600, population: 12000 },
       { name: 'Coulaines', lat: 48.0267, lng: 0.1815, population: 8000 },
+      { name: 'La Chapelle-Saint-Aubin', lat: 48.0302, lng: 0.1479, population: 3000 },
+      { name: 'Arnage', lat: 47.9399, lng: 0.1947, population: 6000 },
+      { name: 'Mulsanne', lat: 47.9146, lng: 0.2286, population: 5000 },
     ],
   },
 
@@ -658,6 +779,9 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Tinqueux', lat: 49.2540, lng: 3.7872, population: 10000 },
       { name: 'Cormontreuil', lat: 49.2250, lng: 3.7850, population: 7000 },
+      { name: 'Bétheny', lat: 49.2875, lng: 3.8115, population: 7000 },
+      { name: 'Saint-Brice-Courcelles', lat: 49.2638, lng: 3.7122, population: 4000 },
+      { name: 'Bezannes', lat: 49.2227, lng: 3.7441, population: 3000 },
     ],
   },
 
@@ -675,6 +799,10 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
     communes: [
       { name: 'Illzach', lat: 47.7793, lng: 7.3494, population: 15000 },
       { name: 'Wittenheim', lat: 47.8110, lng: 7.3354, population: 15000 },
+      { name: 'Kingersheim', lat: 47.7939, lng: 7.3427, population: 13000 },
+      { name: 'Rixheim', lat: 47.7496, lng: 7.3981, population: 14000 },
+      { name: 'Pfastatt', lat: 47.7677, lng: 7.2982, population: 9000 },
+      { name: 'Riedisheim', lat: 47.7407, lng: 7.3640, population: 12000 },
     ],
   },
 ];
