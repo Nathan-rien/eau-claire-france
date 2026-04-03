@@ -29,6 +29,11 @@ const Header = () => {
         { href: '/carte-polluants', label: t('nav.maps.pollutants') },
       ];
 
+  const parcoursItems = [
+    { href: '/parcours-eau', label: t('nav.journey') },
+    { href: '/parcours-eau-bouteille', label: t('nav.journeyBottle') },
+  ];
+
   const navigationItems = isEurope
     ? [
         { href: '/diagnostic-europe', label: t('nav.diagnostic') },
@@ -37,8 +42,6 @@ const Header = () => {
         { href: '/classement-europe', label: t('nav.ranking') },
         { href: '/polluants-europe', label: t('nav.pollutants') },
         { href: '/alertes-europe', label: t('nav.alerts') },
-        { href: '/parcours-eau', label: t('nav.journey') },
-        { href: '/parcours-eau-bouteille', label: t('nav.journeyBottle') },
       ]
     : [
         { href: '/diagnostic', label: t('nav.diagnostic') },
@@ -47,26 +50,38 @@ const Header = () => {
         { href: '/classement', label: t('nav.ranking') },
         { href: '/polluants', label: t('nav.pollutants') },
         { href: '/alertes', label: t('nav.alerts') },
-        { href: '/parcours-eau', label: t('nav.journey') },
-        { href: '/parcours-eau-bouteille', label: t('nav.journeyBottle') },
       ];
 
   const isActive = (path: string) => location.pathname === path;
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
+  const isActiveParcoursSection = parcoursItems.some(item => location.pathname === item.href);
+
   const [mapsMenuOpen, setMapsMenuOpen] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [parcoursMenuOpen, setParcoursMenuOpen] = useState(false);
+  const parcoursTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setMapsMenuOpen(true);
   };
-
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => setMapsMenuOpen(false), 150);
   };
 
+  const handleParcoursMouseEnter = () => {
+    if (parcoursTimeoutRef.current) clearTimeout(parcoursTimeoutRef.current);
+    setParcoursMenuOpen(true);
+  };
+  const handleParcoursMouseLeave = () => {
+    parcoursTimeoutRef.current = setTimeout(() => setParcoursMenuOpen(false), 150);
+  };
+
   useEffect(() => {
-    return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (parcoursTimeoutRef.current) clearTimeout(parcoursTimeoutRef.current);
+    };
   }, []);
 
   return (
@@ -85,6 +100,7 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden xl:flex items-center space-x-1 flex-1 justify-center max-w-4xl" role="navigation" aria-label={t('nav.navigation')}>
+            {/* Cartes dropdown */}
             <div
               className="relative group"
               onMouseEnter={handleMouseEnter}
@@ -119,6 +135,7 @@ const Header = () => {
               )}
             </div>
 
+            {/* Navigation items */}
             {navigationItems.map((item) => (
               <Link
                 key={item.href}
@@ -130,16 +147,49 @@ const Header = () => {
                 {item.label}
               </Link>
             ))}
+
+            {/* Parcours dropdown */}
+            <div
+              className="relative group"
+              onMouseEnter={handleParcoursMouseEnter}
+              onMouseLeave={handleParcoursMouseLeave}
+            >
+              <button
+                className={`h-9 px-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap inline-flex items-center gap-1 ${
+                  isActiveParcoursSection ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {t('nav.journey')}
+                <ChevronDown className="h-3 w-3" />
+              </button>
+              {parcoursMenuOpen && (
+                <div
+                  className="absolute left-0 top-full w-64 bg-background border border-border shadow-lg rounded-md z-50 mt-0"
+                  onMouseEnter={handleParcoursMouseEnter}
+                  onMouseLeave={handleParcoursMouseLeave}
+                >
+                  {parcoursItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      className={`block px-4 py-3 text-sm hover:bg-accent hover:text-accent-foreground transition-colors ${
+                        isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
 
           {/* Right Side - Region, Language & Mobile Menu */}
           <div className="flex items-center space-x-2">
-            {/* Region Switcher - Desktop */}
             <div className="hidden sm:block">
               <RegionSwitcher />
             </div>
 
-            {/* Language Selector */}
             <Select value={language} onValueChange={handleLanguageChange}>
               <SelectTrigger className="w-auto border-none bg-transparent px-2 py-1 h-auto">
                 <SelectValue>
@@ -187,7 +237,6 @@ const Header = () => {
                       </span>
                     </div>
 
-                    {/* Region Switcher - Mobile */}
                     <div className="px-3 pb-4">
                       <RegionSwitcher />
                     </div>
@@ -226,6 +275,25 @@ const Header = () => {
                         {item.label}
                       </Link>
                     ))}
+
+                    {/* Section parcours */}
+                    <div className="mt-4">
+                      <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
+                        {t('nav.journey')}
+                      </div>
+                      {parcoursItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          to={item.href}
+                          onClick={() => setIsOpen(false)}
+                          className={`block px-3 py-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground ml-3 ${
+                            isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 </SheetContent>
               </Sheet>
