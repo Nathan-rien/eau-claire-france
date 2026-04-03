@@ -93,7 +93,7 @@ export default function DiagnosticPrix() {
                       showMetadata={true} 
                     />
                     <div className="mt-2 text-xs text-muted-foreground">
-                      Prix brut: {bottle.prix_moyen_litre}€/L
+                      {t('priceDiag.rawPrice')} {bottle.prix_moyen_litre}€/L
                     </div>
                   </CardContent>
                 </Card>
