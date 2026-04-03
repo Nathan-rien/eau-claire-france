@@ -326,7 +326,7 @@ export default function ComparateurPrix() {
               <Card className="p-6 mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Première enseigne</label>
+                    <label className="block text-sm font-medium mb-2">{t('priceComparator.firstRetailer')}</label>
                     <Select value={selectedRetailer1} onValueChange={setSelectedRetailer1}>
                       <SelectTrigger>
                         <SelectValue placeholder="Sélectionner une enseigne" />
