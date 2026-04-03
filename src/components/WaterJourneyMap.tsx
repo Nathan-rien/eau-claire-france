@@ -232,7 +232,7 @@ const WaterJourneyMap: React.FC = () => {
       <div className="flex items-center gap-3 flex-wrap">
         <div className="flex items-center gap-2">
           <Building2 className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-medium">{t('waterJourney.filterLabel')}</span>
+          <span className="text-sm font-medium">{t('bottleJourney.filterLabel')}</span>
         </div>
         <Select value={selectedRetailer} onValueChange={setSelectedRetailer}>
           <SelectTrigger className="w-[220px]">
