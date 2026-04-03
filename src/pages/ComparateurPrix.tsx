@@ -468,7 +468,7 @@ export default function ComparateurPrix() {
                         <div className="text-2xl font-bold text-green-600">
                           {formatPrice(comparison2.minPrice)}
                         </div>
-                        <div className="text-sm text-muted-foreground">Prix min/L</div>
+                        <div className="text-sm text-muted-foreground">{t('priceComparator.minPrice')}</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold">
