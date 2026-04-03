@@ -98,25 +98,16 @@ export default function SourcesEau() {
                 <CardContent>
                   <div className="grid md:grid-cols-3 gap-6">
                     <div>
-                      <h3 className="font-semibold text-green-800 mb-2">Eau de source</h3>
-                      <p className="text-sm text-gray-600">
-                        Eau d'origine souterraine, microbiologiquement saine et protégée contre la pollution. 
-                        Sa composition peut varier selon la source.
-                      </p>
+                      <h3 className="font-semibold text-green-800 mb-2">{t('waterSources.springWater')}</h3>
+                      <p className="text-sm text-gray-600">{t('waterSources.springWaterDesc')}</p>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-blue-800 mb-2">Eau minérale naturelle</h3>
-                      <p className="text-sm text-gray-600">
-                        Eau souterraine avec une composition minérale constante et des propriétés favorables à la santé. 
-                        Chaque source a sa propre signature minérale.
-                      </p>
+                      <h3 className="font-semibold text-blue-800 mb-2">{t('waterSources.mineralWater')}</h3>
+                      <p className="text-sm text-gray-600">{t('waterSources.mineralWaterDesc')}</p>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-amber-800 mb-2">Eau minérale gazeuse</h3>
-                      <p className="text-sm text-gray-600">
-                        Eau minérale naturellement gazéifiée ou enrichie en gaz carbonique. 
-                        Le CO₂ peut être d'origine naturelle ou ajouté.
-                      </p>
+                      <h3 className="font-semibold text-amber-800 mb-2">{t('waterSources.sparklingWater')}</h3>
+                      <p className="text-sm text-gray-600">{t('waterSources.sparklingWaterDesc')}</p>
                     </div>
                   </div>
                 </CardContent>
