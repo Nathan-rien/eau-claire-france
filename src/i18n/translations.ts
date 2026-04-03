@@ -1048,6 +1048,7 @@ export const translations = {
     'tapJourney.filterLabel': 'Type de source',
     'tapJourney.allTypes': 'Toutes les sources',
     'tapJourney.legendRoute': 'Trajet de l\'eau',
+    'tapJourney.backToOverview': 'Retour à la vue d\'ensemble',
 
     // Common
     'common.error': 'Erreur',
@@ -2108,6 +2109,7 @@ export const translations = {
     'tapJourney.filterLabel': 'Source type',
     'tapJourney.allTypes': 'All sources',
     'tapJourney.legendRoute': 'Water route',
+    'tapJourney.backToOverview': 'Back to overview',
   }
 } as const;
 
