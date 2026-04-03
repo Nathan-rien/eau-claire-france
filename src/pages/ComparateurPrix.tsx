@@ -329,7 +329,7 @@ export default function ComparateurPrix() {
                     <label className="block text-sm font-medium mb-2">{t('priceComparator.firstRetailer')}</label>
                     <Select value={selectedRetailer1} onValueChange={setSelectedRetailer1}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner une enseigne" />
+                        <SelectValue placeholder={t('priceComparator.selectRetailer')} />
                       </SelectTrigger>
                       <SelectContent>
                         {retailers
