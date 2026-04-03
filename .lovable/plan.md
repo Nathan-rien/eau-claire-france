@@ -1,36 +1,50 @@
 
 
-## Fix tap water journey map: readability and performance
+## Enrichir la carte eau du robinet : villes manquantes + ramifications communes
 
-### Problems identified
+### Constat
 
-1. **Overlapping markers**: 15 routes × 3-4 steps = ~55 markers all shown at once. Steps within a route are geographically close (e.g., Paris captage, treatment, reservoir, commune are all within a few km), causing visual clutter.
-2. **Slow animation**: `setPaintProperty` called on every `requestAnimationFrame` tick for ~40 line layers simultaneously — this is very expensive for Mapbox GL.
-3. **No interaction hierarchy**: All routes rendered at once with no way to focus on one city's journey.
+Actuellement 15 routes (Paris x2, Lyon, Marseille, Bordeaux, Lille, Toulouse, Nantes, Strasbourg, Nice, Rennes, Montpellier, Grenoble, Dijon, Clermont-Ferrand). Il manque ~20 agglomerations importantes et le modele actuel ne montre qu'une seule commune par route — pas de ramification vers les communes voisines desservies par la meme source.
 
-### Solution: click-to-reveal pattern + throttled animation
+### Modifications
 
-**Interaction model change**: At default zoom, show only **commune markers** (one per city, 15 total). When a user clicks a commune marker, zoom in and reveal that city's full route (captage → traitement → reservoir → commune) with animated arcs. A "back to overview" button resets the view.
+**1. Enrichir le modele de donnees** (`src/data/tapWaterSources.ts`)
 
-**Performance fixes**:
-- Reduce arc animation to ~15fps using `setTimeout` instead of `requestAnimationFrame`
-- Only animate arcs for the currently selected route (max 3-4 segments vs 40+)
-- Remove all intermediate markers/arcs when in overview mode
+Ajouter un champ optionnel `communes` sur `TapWaterRoute` pour lister les communes peripheriques desservies par le meme reseau :
 
-### Technical changes
+```ts
+export interface ServedCommune {
+  name: string;
+  lat: number;
+  lng: number;
+  population?: number;
+}
 
-**`src/components/TapWaterJourneyMap.tsx`** — Major refactor:
-- Add `selectedRoute` state (`string | null`)
-- **Overview mode** (`selectedRoute === null`): render only commune markers with city name labels. On click → set selectedRoute, fly to route bounds.
-- **Detail mode** (`selectedRoute !== null`): render all steps for that route + animated arcs. Show a "← Back" button to return to overview.
-- Throttle `setPaintProperty` to every 66ms (~15fps) instead of every frame
-- Smaller marker sizes (w-5 h-5 for steps, w-6 h-6 for commune)
+export interface TapWaterRoute {
+  // ... existant
+  communes?: ServedCommune[]; // communes peripheriques desservies
+}
+```
 
-**`src/data/tapWaterSources.ts`** — No changes needed.
+**2. Ajouter ~20 nouvelles agglomerations**
 
-### Files modified
+Rouen, Caen, Le Havre, Tours, Orléans, Limoges, Angers, Brest, Amiens, Metz, Nancy, Besançon, Perpignan, Toulon, Aix-en-Provence, Saint-Étienne, Annecy, Le Mans, Reims, Mulhouse — avec captage, traitement, reservoir et commune principale.
 
-| File | Change |
-|------|--------|
-| `src/components/TapWaterJourneyMap.tsx` | Refactor to click-to-reveal + throttled animation |
+**3. Ajouter les ramifications** pour les routes existantes et nouvelles
+
+Exemple pour Paris : ajouter Boulogne-Billancourt, Montreuil, Saint-Denis, Nanterre, Créteil. Pour Lyon : Villeurbanne, Vénissieux, Vaulx-en-Velin. Etc. Environ 3-5 communes satellites par agglomeration.
+
+**4. Adapter le composant carte** (`src/components/TapWaterJourneyMap.tsx`)
+
+En mode detail (route selectionnee) :
+- Apres l'animation principale (captage → commune centre), ajouter des arcs secondaires depuis la commune ou le reservoir vers chaque commune peripherique
+- Marqueurs plus petits pour les communes satellites, avec popup indiquant le nom et la population
+- Animation en cascade : d'abord le trajet principal, puis les ramifications avec un leger delai
+
+### Fichiers modifies
+
+| Fichier | Action |
+|---------|--------|
+| `src/data/tapWaterSources.ts` | Ajouter interface `ServedCommune`, champ `communes?`, ~20 nouvelles routes, communes satellites pour chaque route |
+| `src/components/TapWaterJourneyMap.tsx` | Afficher les communes satellites en mode detail avec arcs secondaires depuis la commune/reservoir |
 
