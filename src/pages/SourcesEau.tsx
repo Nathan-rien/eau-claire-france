@@ -43,8 +43,8 @@ export default function SourcesEau() {
   return (
     <Layout>
       <SEOHead 
-        title="Sources d'Eau Minérale en France - Carte Interactive | InfoEau"
-        description="Explorez les principales sources des bouteilles d'eau vendues en France. Découvrez leur localisation, leur composition et les marques associées."
+        title={t('waterSources.seoTitle')}
+        description={t('waterSources.seoDesc')}
         keywords="sources eau bouteilles, carte sources eau, bouteilles eau France, géolocalisation sources, composition, Evian, Volvic, Vittel, Contrex"
         canonical="/sources-eau"
         schemaData={{
