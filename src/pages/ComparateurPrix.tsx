@@ -503,7 +503,7 @@ export default function ComparateurPrix() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Prix minimum */}
                   <div className="text-center">
-                    <h3 className="font-medium mb-2">Prix minimum</h3>
+                    <h3 className="font-medium mb-2">{t('priceComparator.minPriceLabel')}</h3>
                     {(() => {
                       const comp = getPriceComparison(comparison1.minPrice, comparison2.minPrice);
                       const winner = (comparison1.minPrice || 0) < (comparison2.minPrice || 0) ? 1 : 2;
