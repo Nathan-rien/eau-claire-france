@@ -74,10 +74,10 @@ export default function SourcesEau() {
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
                 <Droplets className="w-8 h-8 text-blue-600" />
-                <span>Sources d'eau en France</span>
+                <span>{t('waterSources.title')}</span>
               </h1>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                {sources.length} captages trouvés — cliquez sur une source pour voir ses détails.
+                {t('waterSources.subtitle', { count: String(sources.length) })}
               </p>
             </div>
 
