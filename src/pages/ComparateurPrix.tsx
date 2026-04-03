@@ -29,7 +29,7 @@ interface ComparisonData {
 
 export default function ComparateurPrix() {
   const { toast } = useToast();
-  
+  const { t } = useLanguage();
   const [mode, setMode] = useState<'brands' | 'retailers'>('brands');
   const [brands, setBrands] = useState<string[]>([]);
   const [retailers, setRetailers] = useState<Retailer[]>([]);
