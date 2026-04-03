@@ -70,7 +70,7 @@ const CompositionEurope: React.FC = () => {
   const [sortAsc, setSortAsc] = useState(true);
   const [filter, setFilter] = useState('');
   const [expandedCountry, setExpandedCountry] = useState<string | null>(null);
-
+  const { t } = useLanguage();
   useEffect(() => {
     getEUWaterComposition().then(d => { setRaw(d); setLoading(false); });
   }, []);
