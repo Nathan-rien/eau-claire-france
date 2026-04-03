@@ -48,6 +48,7 @@ const getTrendIcon = (trend: string) => {
 };
 
 const PrixEauxEurope = () => {
+  const { t } = useLanguage();
   return (
     <Layout>
       <SEOHead
