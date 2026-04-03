@@ -1,6 +1,5 @@
 // Enhanced security service with comprehensive protection
 import { SecurityService } from './securityService';
-import { AuditService } from './auditService';
 
 export class EnhancedSecurityService extends SecurityService {
   // Enhanced input sanitization with XSS protection
@@ -9,13 +8,11 @@ export class EnhancedSecurityService extends SecurityService {
     
     return input
       .trim()
-      // Enhanced XSS protection
       .replace(/[<>]/g, '')
       .replace(/javascript:/gi, '')
       .replace(/on\w+=/gi, '')
       .replace(/data:/gi, '')
       .replace(/vbscript:/gi, '')
-      // Limit length
       .slice(0, 1000);
   }
 
@@ -82,12 +79,10 @@ export class EnhancedSecurityService extends SecurityService {
   } {
     const issues: string[] = [];
     
-    // Check for secure storage
     if (!window.isSecureContext) {
       issues.push('Non-secure context detected');
     }
 
-    // Check session timeout
     const lastActivity = localStorage.getItem('last_activity');
     if (lastActivity && this.isSessionExpired(parseInt(lastActivity))) {
       issues.push('Session expired');
@@ -116,12 +111,10 @@ export class EnhancedSecurityService extends SecurityService {
       const data = localStorage.getItem(storageKey);
       const history = data ? JSON.parse(data) : [];
       
-      // Clean old entries
       const validHistory = history.filter((time: number) => 
         now - time < config.window
       );
       
-      // Check burst limit if configured
       if (config.burst && config.burstWindow) {
         const burstHistory = validHistory.filter((time: number) => 
           now - time < config.burstWindow
@@ -135,7 +128,6 @@ export class EnhancedSecurityService extends SecurityService {
         }
       }
       
-      // Check regular limit
       if (validHistory.length >= config.requests) {
         return { 
           allowed: false, 
@@ -143,59 +135,20 @@ export class EnhancedSecurityService extends SecurityService {
         };
       }
       
-      // Allow request and update history
       validHistory.push(now);
       localStorage.setItem(storageKey, JSON.stringify(validHistory));
       
       return { allowed: true };
     } catch (error) {
-      // Fail open for availability
       return { allowed: true };
     }
   }
 
-  // Security monitoring (simplified)
+  // Security monitoring (simplified — no monkey-patching)
   static startSecurityMonitoring(): void {
-    // Only basic monitoring to avoid interfering with API calls
-    this.monitorLocalStorageChanges();
-    this.monitorConsoleAccess();
-    // Network monitoring completely removed to fix API fetch issues
+    // No-op: monkey-patching console.log and localStorage removed
+    // to eliminate main-thread overhead and potential recursion
   }
-
-  // Monitor localStorage changes
-  private static monitorLocalStorageChanges(): void {
-    const originalSetItem = localStorage.setItem;
-    localStorage.setItem = function(key: string, value: string) {
-      // Log sensitive operations
-      if (key.includes('auth') || key.includes('session')) {
-        AuditService.logEvent({
-          type: 'security',
-          action: 'localStorage_sensitive_write',
-          details: { key },
-          severity: 'medium'
-        });
-      }
-      return originalSetItem.call(this, key, value);
-    };
-  }
-
-  // Monitor console access (development detection)
-  private static monitorConsoleAccess(): void {
-    if (process.env.NODE_ENV === 'production') {
-      const originalLog = console.log;
-      console.log = function(...args) {
-        AuditService.logEvent({
-          type: 'security',
-          action: 'console_access_production',
-          details: { argsCount: args.length },
-          severity: 'medium'
-        });
-        return originalLog.apply(this, args);
-      };
-    }
-  }
-
-  // Network monitoring completely removed to prevent API interference
 
   // Generate security report
   static generateSecurityReport(): {
@@ -203,11 +156,9 @@ export class EnhancedSecurityService extends SecurityService {
     csp: boolean;
     session: { isValid: boolean; issues: string[] };
     storageHealth: { valid: number; corrupted: number };
-    auditSummary: any;
     recommendations: string[];
   } {
     const session = this.validateSession();
-    const auditSummary = AuditService.getSecuritySummary();
     
     const recommendations: string[] = [];
     
@@ -218,17 +169,12 @@ export class EnhancedSecurityService extends SecurityService {
     if (!session.isValid) {
       recommendations.push('Review session security configuration');
     }
-    
-    if (auditSummary.suspiciousActivity) {
-      recommendations.push('Review suspicious security activities');
-    }
 
     return {
       timestamp: Date.now(),
       csp: this.validateCSP(),
       session,
-      storageHealth: { valid: 0, corrupted: 0 }, // Simplified - no longer tracking
-      auditSummary,
+      storageHealth: { valid: 0, corrupted: 0 },
       recommendations
     };
   }

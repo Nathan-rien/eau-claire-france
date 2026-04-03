@@ -1,5 +1,4 @@
 import { parseCSV, toNumber } from '@/utils/csv';
-import { supabase } from '@/integrations/supabase/client';
 
 export interface EUCountryWaterQuality {
   countryCode: string;
@@ -51,7 +50,8 @@ export const EU_COUNTRY_COORDS: Record<string, [number, number]> = {
 };
 
 let cachedQuality: EUCountryWaterQuality[] | null = null;
-let cachedPollutants: EUPollutant[] | null = null;
+let cachedPollutantsBaseline: EUPollutant[] | null = null;
+let cachedPollutantsEnriched: EUPollutant[] | null = null;
 let lastApiCheck: string | null = null;
 
 export async function getEUWaterQuality(): Promise<EUCountryWaterQuality[]> {
@@ -79,25 +79,26 @@ export async function getEUWaterQuality(): Promise<EUCountryWaterQuality[]> {
 }
 
 /**
- * Fetch DISCODATA pollutants for a specific country via edge function
+ * Fetch DISCODATA pollutants for a specific country via edge function.
+ * Uses AbortController with 3s timeout to avoid blocking the UI.
  */
 async function fetchDiscodataPollutants(countryCode: string): Promise<DiscodataPollutant[] | null> {
   try {
-    const { data, error } = await supabase.functions.invoke('eu-water-quality', {
-      body: null,
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    // Use URL params approach since invoke doesn't support query params directly
     const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
     if (!projectId) return null;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
 
     const url = `https://${projectId}.supabase.co/functions/v1/eu-water-quality?type=pollutants&country=${countryCode}`;
     const res = await fetch(url, {
       headers: {
         'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '',
       },
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!res.ok) return null;
     const result = await res.json();
@@ -112,15 +113,18 @@ async function fetchDiscodataPollutants(countryCode: string): Promise<DiscodataP
   }
 }
 
-export async function getEUPollutants(): Promise<EUPollutant[]> {
-  if (cachedPollutants) return cachedPollutants;
+/**
+ * Phase 1: Load CSV baseline immediately (fast, ~50ms).
+ * Returns cached data on subsequent calls.
+ */
+export async function getEUPollutantsBaseline(): Promise<EUPollutant[]> {
+  if (cachedPollutantsBaseline) return cachedPollutantsBaseline;
 
-  // Load CSV baseline
   const res = await fetch('/data/eu/eu_pollutants_by_country.csv');
   const text = await res.text();
   const { rows } = parseCSV(text);
 
-  const csvPollutants: EUPollutant[] = rows.map(r => ({
+  cachedPollutantsBaseline = rows.map(r => ({
     countryCode: r.country_code,
     countryName: r.country_name,
     pollutant: r.pollutant,
@@ -134,18 +138,25 @@ export async function getEUPollutants(): Promise<EUPollutant[]> {
     dataSource: 'csv' as const,
   }));
 
-  // Try enriching with DISCODATA for key countries
+  return cachedPollutantsBaseline;
+}
+
+/**
+ * Phase 2: Enrich baseline with DISCODATA in background.
+ * Returns enriched data or falls back to baseline.
+ */
+export async function enrichPollutantsWithApi(baseline: EUPollutant[]): Promise<EUPollutant[]> {
+  if (cachedPollutantsEnriched) return cachedPollutantsEnriched;
+
   const discodataCountries = ['AT', 'BE', 'CZ', 'DE', 'DK', 'ES', 'MT', 'RO'];
-  
+
   try {
-    // Attempt DISCODATA enrichment in parallel for available countries
     const enrichmentPromises = discodataCountries.map(async (cc) => {
       const apiData = await fetchDiscodataPollutants(cc);
       if (!apiData) return [];
-      
-      const countryName = csvPollutants.find(p => p.countryCode === cc)?.countryName || cc;
-      
-      // Map known DISCODATA determinands to our pollutant names
+
+      const countryName = baseline.find(p => p.countryCode === cc)?.countryName || cc;
+
       const determinandMap: Record<string, { name: string; category: string; limit: number }> = {
         'Nitrate': { name: 'Nitrates', category: 'Chimique', limit: 50 },
         'Lead and its compounds': { name: 'Plomb', category: 'Métaux lourds', limit: 10 },
@@ -156,8 +167,7 @@ export async function getEUPollutants(): Promise<EUPollutant[]> {
         .filter(d => determinandMap[d.pollutant])
         .map(d => {
           const mapping = determinandMap[d.pollutant];
-          // Find existing CSV entry to preserve exceedance/zone data
-          const csvEntry = csvPollutants.find(
+          const csvEntry = baseline.find(
             p => p.countryCode === cc && p.pollutant === mapping.name
           );
           return {
@@ -181,24 +191,31 @@ export async function getEUPollutants(): Promise<EUPollutant[]> {
       .filter((r): r is PromiseFulfilledResult<EUPollutant[]> => r.status === 'fulfilled')
       .flatMap(r => r.value);
 
-    // Merge: API entries override CSV entries for matching country+pollutant
     if (apiEntries.length > 0) {
-      const merged = csvPollutants.map(csvEntry => {
+      cachedPollutantsEnriched = baseline.map(csvEntry => {
         const apiEntry = apiEntries.find(
           a => a.countryCode === csvEntry.countryCode && a.pollutant === csvEntry.pollutant
         );
         return apiEntry || csvEntry;
       });
-      cachedPollutants = merged;
     } else {
-      cachedPollutants = csvPollutants;
+      cachedPollutantsEnriched = baseline;
     }
   } catch {
-    // Fallback to CSV on any error
-    cachedPollutants = csvPollutants;
+    cachedPollutantsEnriched = baseline;
   }
 
-  return cachedPollutants;
+  return cachedPollutantsEnriched;
+}
+
+/**
+ * Legacy API: loads baseline + enrichment sequentially.
+ * Prefer getEUPollutantsBaseline() + enrichPollutantsWithApi() for 2-phase loading.
+ */
+export async function getEUPollutants(): Promise<EUPollutant[]> {
+  if (cachedPollutantsEnriched) return cachedPollutantsEnriched;
+  const baseline = await getEUPollutantsBaseline();
+  return enrichPollutantsWithApi(baseline);
 }
 
 export function getLastApiCheck(): string | null {
@@ -247,15 +264,21 @@ export async function getEUWaterComposition(countryCode?: string): Promise<EUWat
       : cachedComposition;
   }
 
-  // Try edge function first
+  // Try edge function first with timeout
   try {
     const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
     if (projectId) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
       const country = countryCode || 'all';
       const url = `https://${projectId}.supabase.co/functions/v1/eu-water-quality?type=composition&country=${country}`;
       const res = await fetch(url, {
         headers: { 'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '' },
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (res.ok) {
         const result = await res.json();

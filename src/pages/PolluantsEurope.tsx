@@ -5,8 +5,9 @@ import { seoData } from '@/utils/seoData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getEUPollutants, getEUWaterComposition, type EUPollutant, type EUWaterComposition } from '@/services/europeWaterApi';
-import { FlaskConical, Beaker } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { getEUPollutantsBaseline, enrichPollutantsWithApi, getEUWaterComposition, type EUPollutant, type EUWaterComposition } from '@/services/europeWaterApi';
+import { FlaskConical, Beaker, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const KEY_PARAMS = ['pH', 'Total hardness', 'Electrical conductivity'];
@@ -21,11 +22,19 @@ const PolluantsEurope: React.FC = () => {
   const [composition, setComposition] = useState<EUWaterComposition[]>([]);
   const [selectedPollutant, setSelectedPollutant] = useState<string>('all');
   const [selectedCountry, setSelectedCountry] = useState<string>('all');
+  const [loading, setLoading] = useState(true);
+  const [enriching, setEnriching] = useState(false);
 
   useEffect(() => {
-    Promise.all([getEUPollutants(), getEUWaterComposition()]).then(([p, c]) => {
+    Promise.all([getEUPollutantsBaseline(), getEUWaterComposition()]).then(([p, c]) => {
       setData(p);
       setComposition(c);
+      setLoading(false);
+
+      setEnriching(true);
+      enrichPollutantsWithApi(p)
+        .then(enriched => setData(enriched))
+        .finally(() => setEnriching(false));
     });
   }, []);
 
@@ -39,7 +48,6 @@ const PolluantsEurope: React.FC = () => {
     return result.sort((a, b) => b.exceedanceRatePct - a.exceedanceRatePct);
   }, [data, selectedPollutant, selectedCountry]);
 
-  // Get composition context for selected country
   const countryCode = useMemo(() => {
     if (selectedCountry === 'all') return null;
     const match = data.find(d => d.countryName === selectedCountry);
@@ -64,9 +72,7 @@ const PolluantsEurope: React.FC = () => {
 
   return (
     <Layout>
-      <SEOHead
-        {...seoData.polluantsEurope}
-      />
+      <SEOHead {...seoData.polluantsEurope} />
 
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
         <div className="text-center space-y-2">
@@ -78,80 +84,102 @@ const PolluantsEurope: React.FC = () => {
           <Link to="/polluants" className="text-sm text-primary hover:underline">
             ← Retour aux polluants France
           </Link>
+          {enriching && (
+            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Mise à jour en cours…
+            </div>
+          )}
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap gap-4 justify-center">
-          <Select value={selectedPollutant} onValueChange={setSelectedPollutant}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Tous les polluants" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tous les polluants</SelectItem>
-              {pollutants.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Tous les pays" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tous les pays</SelectItem>
-              {countries.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Composition context banner */}
-        {contextParams.length > 0 && (
-          <div className="flex items-center justify-center gap-6 rounded-lg border bg-muted/30 px-4 py-3">
-            <Beaker className="h-4 w-4 text-primary shrink-0" />
-            {contextParams.map(c => (
-              <span key={c.parameter} className="text-sm">
-                <span className="text-muted-foreground">{PARAM_LABELS[c.parameter] || c.parameter} :</span>{' '}
-                <strong className="text-foreground">{c.avgValue} {c.unit}</strong>
-              </span>
-            ))}
+        {loading ? (
+          <div className="space-y-4">
+            <div className="flex gap-4 justify-center">
+              <Skeleton className="h-10 w-48" />
+              <Skeleton className="h-10 w-48" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-32 w-full" />
+              ))}
+            </div>
           </div>
-        )}
+        ) : (
+          <>
+            {/* Filters */}
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Select value={selectedPollutant} onValueChange={setSelectedPollutant}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Tous les polluants" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les polluants</SelectItem>
+                  {pollutants.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Tous les pays" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les pays</SelectItem>
+                  {countries.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* Results */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filtered.map((p, i) => (
-            <Card key={`${p.countryCode}-${p.pollutant}-${i}`}>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-semibold">{p.pollutant}</CardTitle>
-                  <Badge className={categoryColor(p.category)}>{p.category}</Badge>
-                </div>
-                <p className="text-xs text-muted-foreground">{p.countryName}</p>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Valeur moyenne</span>
-                  <span className="font-medium">{p.avgValue} {p.unit}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Limite réglementaire</span>
-                  <span>{p.limitValue} {p.unit}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Taux de dépassement</span>
-                  <span className={`font-semibold ${p.exceedanceRatePct > 2 ? 'text-destructive' : p.exceedanceRatePct > 1 ? 'text-yellow-600' : 'text-foreground'}`}>
-                    {p.exceedanceRatePct}%
+            {/* Composition context banner */}
+            {contextParams.length > 0 && (
+              <div className="flex items-center justify-center gap-6 rounded-lg border bg-muted/30 px-4 py-3">
+                <Beaker className="h-4 w-4 text-primary shrink-0" />
+                {contextParams.map(c => (
+                  <span key={c.parameter} className="text-sm">
+                    <span className="text-muted-foreground">{PARAM_LABELS[c.parameter] || c.parameter} :</span>{' '}
+                    <strong className="text-foreground">{c.avgValue} {c.unit}</strong>
                   </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Zones affectées</span>
-                  <span>{p.affectedZones}</span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                ))}
+              </div>
+            )}
 
-        {filtered.length === 0 && (
-          <p className="text-center text-muted-foreground py-8">Aucune donnée pour cette sélection.</p>
+            {/* Results */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filtered.map((p, i) => (
+                <Card key={`${p.countryCode}-${p.pollutant}-${i}`}>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-semibold">{p.pollutant}</CardTitle>
+                      <Badge className={categoryColor(p.category)}>{p.category}</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{p.countryName}</p>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Valeur moyenne</span>
+                      <span className="font-medium">{p.avgValue} {p.unit}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Limite réglementaire</span>
+                      <span>{p.limitValue} {p.unit}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Taux de dépassement</span>
+                      <span className={`font-semibold ${p.exceedanceRatePct > 2 ? 'text-destructive' : p.exceedanceRatePct > 1 ? 'text-yellow-600' : 'text-foreground'}`}>
+                        {p.exceedanceRatePct}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Zones affectées</span>
+                      <span>{p.affectedZones}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {filtered.length === 0 && (
+              <p className="text-center text-muted-foreground py-8">Aucune donnée pour cette sélection.</p>
+            )}
+          </>
         )}
 
         <p className="text-xs text-muted-foreground text-center">
