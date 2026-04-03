@@ -380,10 +380,10 @@ export default function PrixEaux() {
 
               <Select value={filters.brand || ''} onValueChange={(value) => updateFilter('brand', value || null)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Marque" />
+                  <SelectValue placeholder={t('prices.brand')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Toutes les marques</SelectItem>
+                  <SelectItem value="all">{t('prices.allBrands')}</SelectItem>
                   {brands
                     .filter(brand => brand && brand.trim() !== '')
                     .sort((a, b) => a.localeCompare(b))
