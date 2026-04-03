@@ -9,6 +9,7 @@ import { buildSources, type SourceItem } from "@/utils/sourcesAdapter";
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function SourcesEau() {
+  const { t } = useLanguage();
   const [sources, setSources] = useState<SourceItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const loadedRef = useRef(false);
