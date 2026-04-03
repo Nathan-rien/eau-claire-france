@@ -1,50 +1,41 @@
 
 
-## Enrichir la carte eau du robinet : villes manquantes + ramifications communes
+## Enrichir massivement les communes satellites du parcours eau du robinet
 
-### Constat
+### Etat actuel
 
-Actuellement 15 routes (Paris x2, Lyon, Marseille, Bordeaux, Lille, Toulouse, Nantes, Strasbourg, Nice, Rennes, Montpellier, Grenoble, Dijon, Clermont-Ferrand). Il manque ~20 agglomerations importantes et le modele actuel ne montre qu'une seule commune par route — pas de ramification vers les communes voisines desservies par la meme source.
+- 35 routes couvrant 35 villes principales
+- ~85 communes satellites au total (moyenne ~2.5 par route)
+- Certaines grandes agglos n'ont que 2-3 communes alors que leur intercommunalité en dessert 20+
+
+### Objectif
+
+Porter à **~300 communes satellites** en enrichissant chaque route existante avec davantage de communes de l'agglomération/intercommunalité. Cible : 8-12 communes par grande métropole, 5-8 pour les villes moyennes.
 
 ### Modifications
 
-**1. Enrichir le modele de donnees** (`src/data/tapWaterSources.ts`)
+**`src/data/tapWaterSources.ts`** — Seul fichier modifié
 
-Ajouter un champ optionnel `communes` sur `TapWaterRoute` pour lister les communes peripheriques desservies par le meme reseau :
+Enrichir le champ `communes` de chaque route :
 
-```ts
-export interface ServedCommune {
-  name: string;
-  lat: number;
-  lng: number;
-  population?: number;
-}
+- **Paris** : passer de 5 à ~15 (ajouter Argenteuil, Colombes, Courbevoie, Vitry, Ivry, Aubervilliers, Pantin, Asnières, Rueil-Malmaison, Clichy...)
+- **Paris Est** : passer de 2 à ~8 (Fontenay, Le Perreux, Champigny, Saint-Maur, Charenton...)
+- **Lyon** : passer de 4 à ~12 (Bron, Écully, Oullins, Meyzieu, Rillieux, Décines, Saint-Priest, Tassin...)
+- **Marseille** : passer de 3 à ~10 (Aix-en-Provence, Vitrolles, Salon, Istres, Cassis, Allauch, Plan-de-Cuques...)
+- **Bordeaux** : enrichir à ~10 (Mérignac, Pessac, Talence, Bègles, Villenave, Cenon, Lormont, Le Bouscat, Bruges...)
+- **Lille** : enrichir à ~10 (Roubaix, Tourcoing, Villeneuve-d'Ascq, Wattrelos, Marcq-en-Barœul, Lambersart, Croix, Hem...)
+- **Toulouse** : enrichir à ~10 (Colomiers, Tournefeuille, Blagnac, Balma, L'Union, Ramonville, Cugnaux, Muret...)
+- **Nantes** : enrichir à ~8 (Saint-Herblain, Rezé, Orvault, Vertou, Carquefou, Couëron, Bouguenais...)
+- **Strasbourg** : enrichir à ~8 (Illkirch, Schiltigheim, Lingolsheim, Bischheim, Hoenheim, Ostwald...)
+- **Nice** : enrichir à ~8 (Antibes, Cagnes, Saint-Laurent-du-Var, Vence, Villeneuve-Loubet, La Trinité...)
+- **Rennes, Montpellier, Grenoble, Dijon, Clermont-Ferrand** : enrichir à ~6-8 chacune
+- **Villes moyennes** (Rouen, Caen, Le Havre, Tours, etc.) : enrichir à ~5-6 chacune
 
-export interface TapWaterRoute {
-  // ... existant
-  communes?: ServedCommune[]; // communes peripheriques desservies
-}
-```
+Aucun changement de structure ni de composant — uniquement de la donnée ajoutée dans les tableaux `communes` existants.
 
-**2. Ajouter ~20 nouvelles agglomerations**
-
-Rouen, Caen, Le Havre, Tours, Orléans, Limoges, Angers, Brest, Amiens, Metz, Nancy, Besançon, Perpignan, Toulon, Aix-en-Provence, Saint-Étienne, Annecy, Le Mans, Reims, Mulhouse — avec captage, traitement, reservoir et commune principale.
-
-**3. Ajouter les ramifications** pour les routes existantes et nouvelles
-
-Exemple pour Paris : ajouter Boulogne-Billancourt, Montreuil, Saint-Denis, Nanterre, Créteil. Pour Lyon : Villeurbanne, Vénissieux, Vaulx-en-Velin. Etc. Environ 3-5 communes satellites par agglomeration.
-
-**4. Adapter le composant carte** (`src/components/TapWaterJourneyMap.tsx`)
-
-En mode detail (route selectionnee) :
-- Apres l'animation principale (captage → commune centre), ajouter des arcs secondaires depuis la commune ou le reservoir vers chaque commune peripherique
-- Marqueurs plus petits pour les communes satellites, avec popup indiquant le nom et la population
-- Animation en cascade : d'abord le trajet principal, puis les ramifications avec un leger delai
-
-### Fichiers modifies
+### Fichiers modifiés
 
 | Fichier | Action |
 |---------|--------|
-| `src/data/tapWaterSources.ts` | Ajouter interface `ServedCommune`, champ `communes?`, ~20 nouvelles routes, communes satellites pour chaque route |
-| `src/components/TapWaterJourneyMap.tsx` | Afficher les communes satellites en mode detail avec arcs secondaires depuis la commune/reservoir |
+| `src/data/tapWaterSources.ts` | Enrichir les `communes[]` de chaque route (~85 → ~300 communes satellites) |
 
