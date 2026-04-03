@@ -3,7 +3,7 @@
  * Ensures type safety across the application
  */
 
-import { BottleWaterData } from '@/data/bottleComparisonData';
+import type { BottleWaterData } from '@/types/bottleTypes';
 import { WaterData } from '@/data/bottleWaterData';
 
 // Strict typing for mineral composition

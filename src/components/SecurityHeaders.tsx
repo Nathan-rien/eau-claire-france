@@ -1,7 +1,8 @@
 // Security headers component for CSP and other security measures
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const SecurityHeaders = () => {
+const SecurityHeaders = React.memo(() => {
   const isDevelopment = process.env.NODE_ENV === 'development';
   
   // Content Security Policy - more permissive in development
@@ -50,6 +51,8 @@ const SecurityHeaders = () => {
       )}
     </Helmet>
   );
-};
+});
+
+SecurityHeaders.displayName = 'SecurityHeaders';
 
 export default SecurityHeaders;

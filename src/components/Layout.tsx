@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { HelmetProvider } from 'react-helmet-async';
 import Header from './Header';
 import Footer from './Footer';
 
@@ -10,15 +9,13 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <HelmetProvider>
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1" role="main" id="main-content">
-          {children}
-        </main>
-        <Footer />
-      </div>
-    </HelmetProvider>
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-1" role="main" id="main-content">
+        {children}
+      </main>
+      <Footer />
+    </div>
   );
 };
 

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Star } from 'lucide-react';
-import { BottleWaterData } from '@/data/bottleComparisonData';
+import type { BottleWaterData } from '@/types/bottleTypes';
 import { WaterData } from '@/data/bottleWaterData';
 import BottleComparisonTable from './BottleComparisonTable';
 import { convertWaterDataToBottleWaterData } from '@/utils/conversionUtils';

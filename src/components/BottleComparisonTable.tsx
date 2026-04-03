@@ -1,7 +1,7 @@
 import React from 'react';
 import { Droplets } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { BottleWaterData } from '@/data/bottleComparisonData';
+import type { BottleWaterData } from '@/types/bottleTypes';
 import { useBottleComparison } from '@/hooks/useBottleComparison';
 import BottleComparisonDesktop from './Bottle/BottleComparisonDesktop';
 import BottleComparisonMobile from './Bottle/BottleComparisonMobile';
