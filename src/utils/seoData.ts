@@ -385,6 +385,21 @@ export const seoData = {
     }
   },
 
+  compositionEurope: {
+    title: "Composition physico-chimique de l'eau en Europe - 27 pays UE",
+    description: "Tableau comparatif interactif des paramètres physico-chimiques (pH, dureté, nitrates, calcium, magnésium…) de l'eau potable dans les 27 pays de l'UE. Données DISCODATA / AEE.",
+    keywords: "composition eau Europe, paramètres physico-chimiques eau UE, dureté eau pays européens, pH eau potable Europe, minéraux eau robinet",
+    canonical: "/composition-europe",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "Dataset",
+      "name": "Composition physico-chimique de l'eau potable en Europe",
+      "description": "Paramètres physico-chimiques de l'eau potable dans les 27 pays de l'UE",
+      "url": "https://infoeau.fr/composition-europe",
+      "creator": { "@type": "Organization", "name": "Agence européenne de l'environnement" }
+    }
+  },
+
   prixEauxEurope: {
     title: "Prix de l'eau du robinet en Europe - Comparaison 27 pays",
     description: "Comparaison des prix de l'eau potable dans les 27 pays de l'Union européenne (€/m³). Données EurEau et OCDE. Tendances et évolutions.",

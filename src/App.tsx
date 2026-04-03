@@ -52,6 +52,7 @@ const PolluantsEurope = React.lazy(() => import("./pages/PolluantsEurope"));
 const DiagnosticEurope = React.lazy(() => import("./pages/DiagnosticEurope"));
 const AlertesEurope = React.lazy(() => import("./pages/AlertesEurope"));
 const PrixEauxEurope = React.lazy(() => import("./pages/PrixEauxEurope"));
+const CompositionEurope = React.lazy(() => import("./pages/CompositionEurope"));
 const ParcoursEau = React.lazy(() => import("./pages/ParcoursEau"));
 const ParcoursEauBouteille = React.lazy(() => import("./pages/ParcoursEauBouteille"));
 
@@ -132,6 +133,7 @@ const App = () => {
                 <Route path="/diagnostic-europe" element={<DiagnosticEurope />} />
                 <Route path="/alertes-europe" element={<AlertesEurope />} />
                 <Route path="/prix-eaux-europe" element={<PrixEauxEurope />} />
+                <Route path="/composition-europe" element={<CompositionEurope />} />
                 <Route path="/parcours-eau" element={<ParcoursEau />} />
                 <Route path="/parcours-eau-bouteille" element={<ParcoursEauBouteille />} />
                 <Route 
