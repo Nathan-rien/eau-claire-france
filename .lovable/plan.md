@@ -1,35 +1,31 @@
 
 
-## Intégrer les données de composition dans les pages Europe existantes
+## Créer la page /composition-europe
 
-Les données `getEUWaterComposition()` sont prêtes. Il faut maintenant les injecter dans 3 pages existantes sans casser leur structure actuelle.
+### Approche
 
-### Pages concernées
+Nouvelle page dédiée affichant un tableau comparatif interactif des 11 paramètres physico-chimiques pour les 27 pays de l'UE. Utilise `getEUWaterComposition()` existant. Style cohérent avec les autres pages Europe (ClassementEurope, DiagnosticEurope).
 
-**1. DiagnosticEurope (`/diagnostic-europe`)** — Ajout d'une carte "Composition de l'eau"
+### Fonctionnalités
 
-Quand un pays est sélectionné, ajouter une nouvelle Card sous les violations affichant les 11 paramètres physico-chimiques en grille. Chaque paramètre dans un mini-bloc avec icône, valeur moyenne et unité. Charger via `getEUWaterComposition(selectedCountry)`.
-
-**2. ClassementEurope (`/classement-europe`)** — Enrichir la ligne dépliable
-
-Dans la zone expandable de chaque pays (après les polluants détectés), ajouter une section "Composition physico-chimique" avec un tableau compact : Paramètre | Moyenne | Min | Max | Unité. Charger les données au montage avec `getEUWaterComposition()`.
-
-**3. PolluantsEurope (`/polluants-europe`)** — Ajouter les paramètres de composition comme contexte
-
-En haut de page, ajouter un encart résumé optionnel quand un pays est filtré, montrant les principaux paramètres physico-chimiques du pays sélectionné (pH, dureté, conductivité) pour contextualiser les dépassements.
-
-### Détails techniques
-
-- **Service** : `getEUWaterComposition()` existe déjà dans `europeWaterApi.ts` avec fallback CSV
-- **Import** : ajouter `getEUWaterComposition, type EUWaterComposition` dans les imports de chaque page
-- **State** : `useState<EUWaterComposition[]>([])` + chargement dans le `useEffect` existant
-- **Labels français** : mapping `parameter → label` (ex: "Total hardness" → "Dureté totale", "Calcium" → "Calcium", "pH" → "pH", etc.)
-- **Aucune nouvelle page** créée, aucune route ajoutée
-- **Aucune modification** du service ou des données CSV
+- **Tableau pivot** : lignes = pays (27), colonnes = paramètres (11). Valeurs moyennes avec unité.
+- **Tri interactif** : clic sur l'en-tête de colonne pour trier par n'importe quel paramètre (asc/desc).
+- **Filtre pays** : champ de recherche pour filtrer les pays affichés.
+- **Coloration conditionnelle** : cellules colorées selon les seuils réglementaires (vert = OK, orange = proche limite, rouge = dépassement). Ex: nitrate > 50 mg/L = rouge, > 40 = orange.
+- **Responsive** : sur mobile, le tableau scroll horizontalement avec la colonne pays sticky à gauche.
+- **Détail au clic** : cliquer sur une ligne pays affiche min/max/échantillons sous la ligne.
 
 ### Fichiers modifiés
 
-1. `src/pages/DiagnosticEurope.tsx` — nouvelle Card composition
-2. `src/pages/ClassementEurope.tsx` — section composition dans l'expandable
-3. `src/pages/PolluantsEurope.tsx` — encart contextuel par pays
+1. **`src/pages/CompositionEurope.tsx`** (nouveau) — Page principale avec tableau pivot, tri, filtre, coloration.
+2. **`src/App.tsx`** — Ajouter lazy import + route `/composition-europe`.
+3. **`src/utils/seoData.ts`** — Ajouter entrée SEO `compositionEurope`.
+
+### Détails techniques
+
+- Mapping PARAM_LABELS identique aux autres pages (Total hardness → Dureté totale, etc.)
+- Seuils de coloration : `{ 'Nitrate': { warn: 40, danger: 50 }, 'pH': { warn: [6.5, 9.0], danger: [6.0, 9.5] }, ... }`
+- Données pivotées en mémoire : groupBy countryCode, puis spread des paramètres en colonnes
+- Tri sur `useState<string>` pour le paramètre actif + `sortAsc` boolean
+- Filtre texte sur `countryName` avec `toLowerCase().includes()`
 
