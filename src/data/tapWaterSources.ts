@@ -121,6 +121,13 @@ export const TAP_WATER_ROUTES: TapWaterRoute[] = [
       { name: 'Aubagne', lat: 43.2927, lng: 5.5712, population: 48000 },
       { name: 'Martigues', lat: 43.4055, lng: 5.0474, population: 49000 },
       { name: 'La Ciotat', lat: 43.1747, lng: 5.6044, population: 36000 },
+      { name: 'Aix-en-Provence', lat: 43.5297, lng: 5.4474, population: 145000 },
+      { name: 'Vitrolles', lat: 43.4601, lng: 5.2489, population: 35000 },
+      { name: 'Salon-de-Provence', lat: 43.6407, lng: 5.0973, population: 45000 },
+      { name: 'Istres', lat: 43.5133, lng: 4.9871, population: 44000 },
+      { name: 'Cassis', lat: 43.2141, lng: 5.5393, population: 7500 },
+      { name: 'Allauch', lat: 43.3358, lng: 5.4838, population: 21000 },
+      { name: 'Plan-de-Cuques', lat: 43.3484, lng: 5.4618, population: 12000 },
     ],
   },
 
