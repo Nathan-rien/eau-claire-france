@@ -232,14 +232,14 @@ const WaterJourneyMap: React.FC = () => {
       <div className="flex items-center gap-3 flex-wrap">
         <div className="flex items-center gap-2">
           <Building2 className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-medium">{t('waterJourney.filterLabel')}</span>
+          <span className="text-sm font-medium">{t('bottleJourney.filterLabel')}</span>
         </div>
         <Select value={selectedRetailer} onValueChange={setSelectedRetailer}>
           <SelectTrigger className="w-[220px]">
-            <SelectValue placeholder={t('waterJourney.allDistributors')} />
+            <SelectValue placeholder={t('bottleJourney.allDistributors')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t('waterJourney.allDistributors')}</SelectItem>
+            <SelectItem value="all">{t('bottleJourney.allDistributors')}</SelectItem>
             {retailers.map(r => (
               <SelectItem key={r} value={r}>{r}</SelectItem>
             ))}
@@ -251,15 +251,15 @@ const WaterJourneyMap: React.FC = () => {
       <div className="flex items-center gap-6 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-full bg-blue-600 inline-block" />
-          {t('waterJourney.legendSource')}
+          {t('bottleJourney.legendSource')}
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block" />
-          {t('waterJourney.legendCommune')}
+          {t('bottleJourney.legendStore')}
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-6 h-0.5 bg-blue-600 inline-block" />
-          {t('waterJourney.legendRoute')}
+          {t('bottleJourney.legendRoute')}
         </span>
       </div>
 

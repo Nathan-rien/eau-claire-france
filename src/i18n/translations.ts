@@ -8,7 +8,8 @@ export const translations = {
     'nav.maps.pollutants': 'Carte des polluants',
     'nav.maps.europeQuality': 'Carte qualité Europe',
     'nav.maps.europePollutants': 'Carte des polluants Europe',
-    'nav.maps.journey': 'Parcours source → robinet',
+    'nav.maps.bottleJourney': 'Parcours eau en bouteille',
+    'nav.maps.tapJourney': 'Parcours eau du robinet',
     'nav.diagnostic': 'Diagnostic',
     'nav.which-water': 'Quelle eau boire ?',
     'nav.bottles': 'Robinet vs Bouteilles',
@@ -1030,15 +1031,23 @@ export const translations = {
     'contact.emailBodyMessage': 'Message:',
     'contact.emailBodySentFrom': 'Envoyé depuis InfoEau.fr',
 
-    // Water Journey Map
-    'waterJourney.title': 'Parcours de l\'eau : source → robinet',
-    'waterJourney.subtitle': 'Visualisez le trajet animé de l\'eau depuis sa source de captage jusqu\'au robinet de votre commune. Filtrez par distributeur.',
-    'waterJourney.breadcrumb': 'Parcours source → robinet',
-    'waterJourney.filterLabel': 'Distributeur',
-    'waterJourney.allDistributors': 'Tous les distributeurs',
-    'waterJourney.legendSource': 'Source de captage',
-    'waterJourney.legendCommune': 'Commune desservie',
-    'waterJourney.legendRoute': 'Trajet de l\'eau',
+    // Bottle Journey Map (eau en bouteille)
+    'bottleJourney.title': 'Parcours de l\'eau en bouteille : source → magasin',
+    'bottleJourney.subtitle': 'Visualisez le trajet de l\'eau en bouteille depuis sa source de captage jusqu\'aux magasins distributeurs. Filtrez par enseigne.',
+    'bottleJourney.breadcrumb': 'Parcours eau en bouteille',
+    'bottleJourney.filterLabel': 'Distributeur',
+    'bottleJourney.allDistributors': 'Tous les distributeurs',
+    'bottleJourney.legendSource': 'Source de captage',
+    'bottleJourney.legendStore': 'Magasin distributeur',
+    'bottleJourney.legendRoute': 'Trajet de l\'eau',
+
+    // Tap Water Journey Map (eau du robinet)
+    'tapJourney.title': 'Parcours de l\'eau du robinet : captage → traitement → robinet',
+    'tapJourney.subtitle': 'Visualisez le trajet de l\'eau potable en France, du captage (nappe, rivière) à la station de traitement jusqu\'au robinet de votre commune.',
+    'tapJourney.breadcrumb': 'Parcours eau du robinet',
+    'tapJourney.filterLabel': 'Type de source',
+    'tapJourney.allTypes': 'Toutes les sources',
+    'tapJourney.legendRoute': 'Trajet de l\'eau',
 
     // Common
     'common.error': 'Erreur',
@@ -1054,7 +1063,8 @@ export const translations = {
     'nav.maps.pollutants': 'Pollutants map',
     'nav.maps.europeQuality': 'Europe quality map',
     'nav.maps.europePollutants': 'Europe pollutants map',
-    'nav.maps.journey': 'Source → tap journey',
+    'nav.maps.bottleJourney': 'Bottled water journey',
+    'nav.maps.tapJourney': 'Tap water journey',
     'nav.diagnostic': 'Diagnostic',
     'nav.which-water': 'Which water to drink?',
     'nav.bottles': 'Tap vs Bottles',
@@ -2081,15 +2091,23 @@ export const translations = {
     'common.loading': 'Loading...',
     'common.free': 'Free',
 
-    // Water Journey Map
-    'waterJourney.title': 'Water Journey: source → tap',
-    'waterJourney.subtitle': 'Visualize the animated route of water from its collection source to your city tap. Filter by distributor.',
-    'waterJourney.breadcrumb': 'Source → tap journey',
-    'waterJourney.filterLabel': 'Distributor',
-    'waterJourney.allDistributors': 'All distributors',
-    'waterJourney.legendSource': 'Collection source',
-    'waterJourney.legendCommune': 'Served city',
-    'waterJourney.legendRoute': 'Water route',
+    // Bottle Journey Map
+    'bottleJourney.title': 'Bottled Water Journey: source → store',
+    'bottleJourney.subtitle': 'Visualize the route of bottled water from its collection source to retail stores. Filter by retailer.',
+    'bottleJourney.breadcrumb': 'Bottled water journey',
+    'bottleJourney.filterLabel': 'Retailer',
+    'bottleJourney.allDistributors': 'All retailers',
+    'bottleJourney.legendSource': 'Collection source',
+    'bottleJourney.legendStore': 'Retail store',
+    'bottleJourney.legendRoute': 'Water route',
+
+    // Tap Water Journey Map
+    'tapJourney.title': 'Tap Water Journey: collection → treatment → tap',
+    'tapJourney.subtitle': 'Visualize the route of drinking water in France, from collection (groundwater, rivers) to treatment plants and your city tap.',
+    'tapJourney.breadcrumb': 'Tap water journey',
+    'tapJourney.filterLabel': 'Source type',
+    'tapJourney.allTypes': 'All sources',
+    'tapJourney.legendRoute': 'Water route',
   }
 } as const;
 

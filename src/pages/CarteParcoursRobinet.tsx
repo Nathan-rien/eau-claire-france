@@ -3,26 +3,26 @@ import { Droplets } from 'lucide-react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
-import WaterJourneyMap from '@/components/WaterJourneyMap';
+import TapWaterJourneyMap from '@/components/TapWaterJourneyMap';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-const CarteParcoursEau = () => {
+const CarteParcoursRobinet = () => {
   const { t } = useLanguage();
 
   return (
     <Layout>
       <SEOHead
-        title="Parcours de l'eau en bouteille : source → magasin | InfoEau.fr"
-        description="Visualisez le trajet de l'eau en bouteille depuis sa source de captage jusqu'aux magasins distributeurs (Carrefour, Leclerc, etc.)."
-        keywords="parcours eau bouteille, source, distributeur, MDD, carte, animation"
-        canonical="/carte-parcours-eau"
+        title="Parcours de l'eau du robinet : captage → traitement → robinet | InfoEau.fr"
+        description="Visualisez le trajet de l'eau potable en France : du captage (nappe, rivière) à la station de traitement jusqu'au robinet de votre commune."
+        keywords="parcours eau robinet, captage, traitement, eau potable, carte, animation, France"
+        canonical="/carte-parcours-robinet"
       />
 
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50">
         <div className="container mx-auto">
           <Breadcrumb items={[
             { name: t('nav.maps'), href: '/carte' },
-            { name: t('bottleJourney.breadcrumb'), href: '/carte-parcours-eau', current: true },
+            { name: t('tapJourney.breadcrumb'), href: '/carte-parcours-robinet', current: true },
           ]} />
         </div>
 
@@ -31,14 +31,14 @@ const CarteParcoursEau = () => {
             <div className="text-center mb-6 md:mb-8">
               <h1 className="text-xl md:text-3xl font-bold text-foreground mb-3 flex items-center justify-center gap-2">
                 <Droplets className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
-                <span>{t('bottleJourney.title')}</span>
+                <span>{t('tapJourney.title')}</span>
               </h1>
               <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-                {t('bottleJourney.subtitle')}
+                {t('tapJourney.subtitle')}
               </p>
             </div>
 
-            <WaterJourneyMap />
+            <TapWaterJourneyMap />
           </div>
         </section>
       </div>
@@ -46,4 +46,4 @@ const CarteParcoursEau = () => {
   );
 };
 
-export default CarteParcoursEau;
+export default CarteParcoursRobinet;
