@@ -223,7 +223,7 @@ export default function MarquePrix() {
           {/* Tableau des prix récents */}
           <Card>
             <CardHeader>
-              <CardTitle>Derniers prix relevés</CardTitle>
+              <CardTitle>{t('brandPrice.recentPrices')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
