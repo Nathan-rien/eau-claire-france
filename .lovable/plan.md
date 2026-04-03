@@ -1,29 +1,66 @@
 
 
-## Toggle réseau communes + optimisation animations
+## Optimiser et enrichir la carte parcours eau en bouteille
 
-### Modifications dans `src/components/TapWaterJourneyMap.tsx`
+### 1. Optimisation des performances (`src/components/WaterJourneyMap.tsx`)
 
-**1. Toggle affichage des communes satellites**
+Aligner sur les mêmes patterns que `TapWaterJourneyMap` :
 
-Ajouter un state `showCommunes` (default `true`) et un bouton Switch dans la barre de contrôles en mode détail. Quand désactivé :
-- Les marqueurs satellites et leurs arcs ne sont pas rendus
-- Seul le parcours principal (captage → traitement → réservoir → commune) reste visible
-- Le `fitBounds` ne prend en compte que les steps principaux
+- **Réduire les points par arc** : 50 → 25 points dans `createArc`
+- **Remplacer le RAF non-throttlé** par un RAF bridé à ~10fps (100ms) avec `lastFrameRef`
+- **Ajouter un toggle communes** : state `showCommunes` + `Switch` UI pour masquer/afficher les marqueurs communes et leurs arcs
+- **Séparer les refs marqueurs** : `markersRef` (sources) vs `communeMarkersRef` (communes) pour toggle instantané
+- **Batch les dasharray updates** : calculer une seule valeur `da` et l'appliquer en boucle, skip si toggle off
 
-Le toggle sera un composant `Switch` avec label "Communes desservies" placé à côté du bouton retour.
+### 2. Enrichissement massif des données (`src/data/waterDistributors.ts`)
 
-**2. Optimisation des animations**
+Le fichier actuel ne contient que **11 routes** avec des communes tirées de `FRENCH_CITIES` (37 villes seulement). Plan d'enrichissement :
 
-Trois améliorations de performance :
+**Nouvelles sources MDD** (~15 ajouts) :
 
-- **Réduire les points par arc** : passer de 50 à 25 points pour les arcs principaux, et de 30 à 15 pour les arcs satellites (qualité visuelle quasi identique)
-- **Remplacer `setInterval` par `requestAnimationFrame`** avec throttle à ~10fps (100ms) au lieu de ~15fps (66ms) — réduit de 33% les appels `setPaintProperty`
-- **Batch les mises à jour** : regrouper tous les `setPaintProperty` dans un seul frame RAF, et ne mettre à jour les arcs satellites que si `showCommunes` est actif
+| Retailer | Source | Catégorie |
+|----------|--------|-----------|
+| Carrefour | Eau de source des Alpes | Eau de source |
+| Monoprix | Eau de source Montclar | Eau de source |
+| Franprix | Eau de source Montclar | Eau de source |
+| Leclerc | Eco+ Eau minérale (Clairvic) | EMN |
+| Lidl | Saskia source Wüllner | Eau de source |
+| Lidl | Saskia source Jandun | Eau de source |
+| Auchan | Auchan Eau minérale (Auvergne) | EMN |
+| Système U | U Eau de source Ondine | Eau de source |
+| Intermarché | Paquito Eau de source | Eau de source |
+| Casino | Leader Price Eau de source | Eau de source |
+| Cora | Cora Eau minérale | EMN |
+| Aldi | Eau de source Marquise | Eau de source |
+| Carrefour | Carrefour Eau minérale (Auvergne) | EMN |
 
-### Fichier modifié
+**Enrichissement des communes desservies** :
+
+Passer de la lookup `FRENCH_CITIES` (seulement 37 villes) à des listes de communes directement dans `waterDistributors.ts` avec coordonnées GPS, couvrant les intercommunalités réelles :
+
+- Chaque source desservira **8-15 communes** au lieu de 3-4
+- Ajout de villes moyennes absentes de `FRENCH_CITIES` (Pau, Bayonne, La Rochelle, Poitiers, Nîmes, Avignon, Valence, Dunkerque, etc.)
+- Total estimé : passage de ~47 communes à **~250 communes**
+
+**Nouvelles sources avec coordonnées** :
+
+| Source | Lat | Lng |
+|--------|-----|-----|
+| Montclar | 44.08 | 6.35 |
+| Wüllner | 51.38 | 7.62 |
+| Jandun | 49.68 | 4.58 |
+| Marquise | 50.81 | 1.71 |
+| Ondine (Orbey) | 48.13 | 7.16 |
+| Auvergne (St-Géron) | 45.22 | 3.33 |
+
+### 3. Fichiers modifiés
 
 | Fichier | Changement |
 |---------|-----------|
-| `src/components/TapWaterJourneyMap.tsx` | Ajout state `showCommunes` + Switch UI, optimisation animation RAF + réduction points arcs |
+| `src/components/WaterJourneyMap.tsx` | RAF throttlé 10fps, createArc 25pts, toggle Switch communes, refs séparées |
+| `src/data/waterDistributors.ts` | ~15 nouvelles routes MDD, communes directes avec coordonnées (~250 total), nouvelles sources GPS |
+
+### Impact
+- **Performance** : ~33% de réduction des appels setPaintProperty, toggle instantané
+- **Données** : 11 → ~25 routes, ~47 → ~250 communes, couverture nationale complète
 
