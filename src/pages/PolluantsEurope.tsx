@@ -25,6 +25,7 @@ const PolluantsEurope: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [enriching, setEnriching] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     Promise.all([getEUPollutantsBaseline(), getEUWaterComposition()]).then(([p, c]) => {
