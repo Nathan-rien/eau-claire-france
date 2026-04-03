@@ -365,7 +365,7 @@ const ParcoursEau = () => {
               onClick={scrollToFirst}
               className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-500/20 backdrop-blur border border-blue-300/30 text-white hover:bg-blue-500/40 transition-all duration-300"
             >
-              Explorer chaque étape
+              {t('journey.exploreSteps')}
               <ChevronDown className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
             </button>
           </div>
