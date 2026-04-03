@@ -1,41 +1,41 @@
 
 
-## Enrichir massivement les communes satellites du parcours eau du robinet
+## Enrichissement massif des communes satellites — analyse des limites
 
-### Etat actuel
+### État actuel
+- **35 routes**, **244 communes satellites** (moy. 7/route)
+- Fichier : **42 Ko / 833 lignes** — relativement léger
 
-- 35 routes couvrant 35 villes principales
-- ~85 communes satellites au total (moyenne ~2.5 par route)
-- Certaines grandes agglos n'ont que 2-3 communes alors que leur intercommunalité en dessert 20+
+### Limites techniques
 
-### Objectif
+Le fichier TypeScript est compilé côté client. La contrainte principale est la **taille du bundle** et la **performance de rendu Mapbox** (nombre d'arcs animés en mode détail).
 
-Porter à **~300 communes satellites** en enrichissant chaque route existante avec davantage de communes de l'agglomération/intercommunalité. Cible : 8-12 communes par grande métropole, 5-8 pour les villes moyennes.
+- **Taille fichier** : on peut aller jusqu'à ~150-200 Ko sans impact notable sur le chargement (~3-5x la taille actuelle)
+- **Rendu Mapbox** : en mode détail, on affiche les arcs d'une seule route → même avec 30 communes par métropole, ça reste ~30 arcs animés, très gérable
+- **Limite pratique réaliste** : **~600-800 communes satellites** (moy. 15-20 par route)
 
-### Modifications
+### Plan d'enrichissement : passer de 244 à ~600 communes
 
-**`src/data/tapWaterSources.ts`** — Seul fichier modifié
+**`src/data/tapWaterSources.ts`** — seul fichier modifié
 
-Enrichir le champ `communes` de chaque route :
+Cibles par catégorie :
 
-- **Paris** : passer de 5 à ~15 (ajouter Argenteuil, Colombes, Courbevoie, Vitry, Ivry, Aubervilliers, Pantin, Asnières, Rueil-Malmaison, Clichy...)
-- **Paris Est** : passer de 2 à ~8 (Fontenay, Le Perreux, Champigny, Saint-Maur, Charenton...)
-- **Lyon** : passer de 4 à ~12 (Bron, Écully, Oullins, Meyzieu, Rillieux, Décines, Saint-Priest, Tassin...)
-- **Marseille** : passer de 3 à ~10 (Aix-en-Provence, Vitrolles, Salon, Istres, Cassis, Allauch, Plan-de-Cuques...)
-- **Bordeaux** : enrichir à ~10 (Mérignac, Pessac, Talence, Bègles, Villenave, Cenon, Lormont, Le Bouscat, Bruges...)
-- **Lille** : enrichir à ~10 (Roubaix, Tourcoing, Villeneuve-d'Ascq, Wattrelos, Marcq-en-Barœul, Lambersart, Croix, Hem...)
-- **Toulouse** : enrichir à ~10 (Colomiers, Tournefeuille, Blagnac, Balma, L'Union, Ramonville, Cugnaux, Muret...)
-- **Nantes** : enrichir à ~8 (Saint-Herblain, Rezé, Orvault, Vertou, Carquefou, Couëron, Bouguenais...)
-- **Strasbourg** : enrichir à ~8 (Illkirch, Schiltigheim, Lingolsheim, Bischheim, Hoenheim, Ostwald...)
-- **Nice** : enrichir à ~8 (Antibes, Cagnes, Saint-Laurent-du-Var, Vence, Villeneuve-Loubet, La Trinité...)
-- **Rennes, Montpellier, Grenoble, Dijon, Clermont-Ferrand** : enrichir à ~6-8 chacune
-- **Villes moyennes** (Rouen, Caen, Le Havre, Tours, etc.) : enrichir à ~5-6 chacune
+| Catégorie | Routes | Cible/route | Total ajouté |
+|-----------|--------|-------------|-------------|
+| Grandes métropoles (Paris, Lyon, Marseille, Lille, Toulouse, Bordeaux) | 7 | 20-25 | ~140 |
+| Métropoles régionales (Nantes, Strasbourg, Nice, Rennes, Montpellier, Grenoble, Rouen, Toulon) | 8 | 12-15 | ~100 |
+| Villes moyennes (les 20 restantes) | 20 | 8-10 | ~120 |
 
-Aucun changement de structure ni de composant — uniquement de la donnée ajoutée dans les tableaux `communes` existants.
+Soit un passage de **244 → ~600 communes**, couvrant la quasi-totalité des intercommunalités françaises majeures.
+
+Exemples d'ajouts :
+- **Paris** : Suresnes, Puteaux, Levallois, Gennevilliers, Malakoff, Issy, Clamart, Meudon, Châtillon, Le Kremlin-Bicêtre, Gentilly, Cachan, Arcueil...
+- **Lyon** : Champagne-au-Mont-d'Or, Pierre-Bénite, Francheville, La Mulatière, Saint-Fons, Corbas, Mions, Feyzin, Givors, Grigny...
+- **Marseille** : Aubagne, La Ciotat, Gardanne, Septèmes, Les Pennes-Mirabeau, Gémenos, Roquevaire, Carnoux...
 
 ### Fichiers modifiés
 
 | Fichier | Action |
 |---------|--------|
-| `src/data/tapWaterSources.ts` | Enrichir les `communes[]` de chaque route (~85 → ~300 communes satellites) |
+| `src/data/tapWaterSources.ts` | Enrichir communes[] de 244 → ~600 entrées |
 
