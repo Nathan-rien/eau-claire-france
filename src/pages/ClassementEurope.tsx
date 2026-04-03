@@ -222,7 +222,7 @@ const ClassementEurope: React.FC = () => {
                                     <Beaker className="w-4 h-4 text-primary" />
                                     Composition physico-chimique
                                   </h4>
-                                  <div className="rounded-md border overflow-hidden">
+                                  <div className="rounded-md border overflow-x-auto">
                                     <Table>
                                       <TableHeader>
                                         <TableRow>
