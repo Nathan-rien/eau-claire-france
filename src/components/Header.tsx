@@ -260,6 +260,25 @@ const Header = () => {
                       ))}
                     </div>
 
+                    {/* Section parcours */}
+                    <div className="mb-4">
+                      <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
+                        {t('nav.journey')}
+                      </div>
+                      {journeyItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          to={item.href}
+                          onClick={() => setIsOpen(false)}
+                          className={`block px-3 py-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground ml-3 ${
+                            isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+
                     <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
                       {t('nav.navigation')}
                     </div>
