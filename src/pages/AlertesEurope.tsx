@@ -34,9 +34,9 @@ const AlertesEurope = () => {
         {...seoData.alertesEurope}
       />
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">Alertes qualité — Europe</h1>
+        <h1 className="text-3xl font-bold mb-2">{t('europeAlerts.title')}</h1>
         <p className="text-muted-foreground mb-8">
-          Pays en situation de non-conformité et polluants avec les taux de dépassement les plus élevés (données EEA 2023).
+          {t('europeAlerts.subtitle')}
         </p>
 
         {/* Countries with worst scores */}
