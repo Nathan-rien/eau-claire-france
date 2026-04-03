@@ -409,7 +409,7 @@ export default function ComparateurPrix() {
           {hasNoResults && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
-                Aucune donnée trouvée pour ces critères. Essayez d'autres {mode === 'brands' ? 'marques' : 'enseignes'}.
+                {t('priceComparator.noData', { type: mode === 'brands' ? t('priceComparator.brands') : t('priceComparator.retailers') })}
               </p>
             </div>
           )}
