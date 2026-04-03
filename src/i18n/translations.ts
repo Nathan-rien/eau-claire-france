@@ -2091,15 +2091,23 @@ export const translations = {
     'common.loading': 'Loading...',
     'common.free': 'Free',
 
-    // Water Journey Map
-    'waterJourney.title': 'Water Journey: source → tap',
-    'waterJourney.subtitle': 'Visualize the animated route of water from its collection source to your city tap. Filter by distributor.',
-    'waterJourney.breadcrumb': 'Source → tap journey',
-    'waterJourney.filterLabel': 'Distributor',
-    'waterJourney.allDistributors': 'All distributors',
-    'waterJourney.legendSource': 'Collection source',
-    'waterJourney.legendCommune': 'Served city',
-    'waterJourney.legendRoute': 'Water route',
+    // Bottle Journey Map
+    'bottleJourney.title': 'Bottled Water Journey: source → store',
+    'bottleJourney.subtitle': 'Visualize the route of bottled water from its collection source to retail stores. Filter by retailer.',
+    'bottleJourney.breadcrumb': 'Bottled water journey',
+    'bottleJourney.filterLabel': 'Retailer',
+    'bottleJourney.allDistributors': 'All retailers',
+    'bottleJourney.legendSource': 'Collection source',
+    'bottleJourney.legendStore': 'Retail store',
+    'bottleJourney.legendRoute': 'Water route',
+
+    // Tap Water Journey Map
+    'tapJourney.title': 'Tap Water Journey: collection → treatment → tap',
+    'tapJourney.subtitle': 'Visualize the route of drinking water in France, from collection (groundwater, rivers) to treatment plants and your city tap.',
+    'tapJourney.breadcrumb': 'Tap water journey',
+    'tapJourney.filterLabel': 'Source type',
+    'tapJourney.allTypes': 'All sources',
+    'tapJourney.legendRoute': 'Water route',
   }
 } as const;
 
