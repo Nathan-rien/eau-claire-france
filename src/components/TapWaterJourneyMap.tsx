@@ -56,6 +56,8 @@ const SOURCE_TYPE_COLORS: Record<string, string> = {
   canal: '#ea580c',
 };
 
+const SATELLITE_COLOR = '#6366f1';
+
 const TapWaterJourneyMap: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -175,14 +177,15 @@ const TapWaterJourneyMap: React.FC = () => {
     const route = TAP_WATER_ROUTES.find(r => r.id === routeId);
     if (!route) return;
 
-    const { steps } = route;
+    const { steps, communes } = route;
 
-    // Fit bounds to route
+    // Fit bounds to route + communes
     const bounds = new mapboxgl.LngLatBounds();
     steps.forEach(s => bounds.extend([s.lng, s.lat]));
+    if (communes) communes.forEach(c => bounds.extend([c.lng, c.lat]));
     map.fitBounds(bounds, { padding: 80, maxZoom: 11, duration: 1200 });
 
-    // Add markers
+    // Add step markers
     steps.forEach((step, stepIdx) => {
       const color = STEP_COLORS[step.type];
       const size = step.type === 'commune' ? 'w-7 h-7' : 'w-5 h-5';
@@ -248,10 +251,86 @@ const TapWaterJourneyMap: React.FC = () => {
       }
     });
 
-    // Throttled animation at ~15fps
+    // ── Satellite communes (ramifications) ──
+    const communeStep = steps.find(s => s.type === 'commune') || steps[steps.length - 1];
+    if (communes && communes.length > 0) {
+      communes.forEach((sat, idx) => {
+        // Smaller marker for satellite
+        const el = document.createElement('div');
+        el.className = 'flex flex-col items-center';
+
+        const dot = document.createElement('div');
+        dot.className = 'w-4 h-4 rounded-full border-2 border-white shadow-md';
+        dot.style.backgroundColor = SATELLITE_COLOR;
+
+        const label = document.createElement('div');
+        label.className = 'text-[9px] font-medium mt-0.5 px-1 py-0.5 rounded bg-background/70 text-foreground shadow-sm whitespace-nowrap';
+        label.textContent = sat.name;
+
+        el.appendChild(dot);
+        el.appendChild(label);
+
+        const popupHtml = `<div class="p-2">
+          <span class="text-[10px] font-semibold uppercase tracking-wider" style="color:${SATELLITE_COLOR}">${language === 'en' ? 'Served commune' : 'Commune desservie'}</span>
+          <h3 class="font-bold text-sm mt-0.5">${sat.name}</h3>
+          ${sat.population ? `<p class="text-xs text-gray-500 mt-1">${sat.population.toLocaleString('fr-FR')} habitants</p>` : ''}
+        </div>`;
+
+        const popup = new mapboxgl.Popup({ offset: 20 }).setHTML(popupHtml);
+
+        const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
+          .setLngLat([sat.lng, sat.lat])
+          .setPopup(popup)
+          .addTo(map);
+        markersRef.current.push(marker);
+
+        // Arc from commune center to satellite
+        const arcId = `tap-sat-${idx}`;
+        const arcCoords = createArc(
+          [communeStep.lng, communeStep.lat],
+          [sat.lng, sat.lat],
+          30
+        );
+
+        map.addSource(arcId, {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            properties: {},
+            geometry: { type: 'LineString', coordinates: arcCoords },
+          },
+        });
+
+        map.addLayer({
+          id: `${arcId}-bg`,
+          type: 'line',
+          source: arcId,
+          paint: {
+            'line-color': SATELLITE_COLOR,
+            'line-width': 1.5,
+            'line-opacity': 0.2,
+          },
+        });
+
+        map.addLayer({
+          id: `${arcId}-anim`,
+          type: 'line',
+          source: arcId,
+          paint: {
+            'line-color': SATELLITE_COLOR,
+            'line-width': 2,
+            'line-dasharray': [0, 4, 3],
+          },
+        });
+      });
+    }
+
+    // Throttled animation at ~15fps for all arcs (main + satellite)
     let dashOffset = 0;
     animIntervalRef.current = setInterval(() => {
       dashOffset = (dashOffset + 0.15) % 7;
+
+      // Main arcs
       steps.forEach((_, stepIdx) => {
         if (stepIdx >= steps.length - 1) return;
         const layerId = `tap-arc-${stepIdx}-anim`;
@@ -261,6 +340,18 @@ const TapWaterJourneyMap: React.FC = () => {
           ]);
         }
       });
+
+      // Satellite arcs
+      if (communes) {
+        communes.forEach((_, idx) => {
+          const layerId = `tap-sat-${idx}-anim`;
+          if (map.getLayer(layerId)) {
+            map.setPaintProperty(layerId, 'line-dasharray', [
+              dashOffset, 4 - dashOffset * 0.3, 3 + dashOffset * 0.3,
+            ]);
+          }
+        });
+      }
     }, 66);
   }, [mapLoaded, clearMap, language]);
 
@@ -325,12 +416,18 @@ const TapWaterJourneyMap: React.FC = () => {
       {/* Legend */}
       <div className="flex items-center gap-4 flex-wrap text-xs text-muted-foreground">
         {selectedRoute ? (
-          Object.entries(STEP_LABELS).map(([key, labels]) => (
-            <span key={key} className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: STEP_COLORS[key] }} />
-              {labels[language === 'en' ? 'en' : 'fr']}
+          <>
+            {Object.entries(STEP_LABELS).map(([key, labels]) => (
+              <span key={key} className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: STEP_COLORS[key] }} />
+                {labels[language === 'en' ? 'en' : 'fr']}
+              </span>
+            ))}
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: SATELLITE_COLOR }} />
+              {language === 'en' ? 'Served communes' : 'Communes desservies'}
             </span>
-          ))
+          </>
         ) : (
           Object.entries(SOURCE_TYPE_LABELS)
             .filter(([key]) => selectedType === 'all' || key === selectedType)
