@@ -12,9 +12,9 @@ const CarteParcoursEau = () => {
   return (
     <Layout>
       <SEOHead
-        title="Parcours de l'eau : source → robinet | InfoEau.fr"
-        description="Visualisez le trajet animé de l'eau depuis sa source de captage jusqu'au robinet de votre commune. Filtrez par distributeur."
-        keywords="parcours eau, source, commune, distributeur, carte, animation"
+        title="Parcours de l'eau en bouteille : source → magasin | InfoEau.fr"
+        description="Visualisez le trajet de l'eau en bouteille depuis sa source de captage jusqu'aux magasins distributeurs (Carrefour, Leclerc, etc.)."
+        keywords="parcours eau bouteille, source, distributeur, MDD, carte, animation"
         canonical="/carte-parcours-eau"
       />
 
