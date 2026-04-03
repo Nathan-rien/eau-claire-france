@@ -409,14 +409,14 @@ export default function PrixEaux() {
 
               <Select value={filters.format || ''} onValueChange={(value) => updateFilter('format', value || null)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Format" />
+                  <SelectValue placeholder={t('prices.format')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les formats</SelectItem>
+                  <SelectItem value="all">{t('prices.allFormats')}</SelectItem>
                   <SelectItem value="50cl">50cl</SelectItem>
                   <SelectItem value="1L">1L</SelectItem>
                   <SelectItem value="1,5L">1,5L</SelectItem>
-                  <SelectItem value="autre">Autre</SelectItem>
+                  <SelectItem value="autre">{t('prices.format')}</SelectItem>
                 </SelectContent>
               </Select>
 
