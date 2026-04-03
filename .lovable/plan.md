@@ -1,46 +1,29 @@
 
 
-## Ajouter les villes manquantes à la carte parcours eau du robinet
+## Toggle réseau communes + optimisation animations
 
-### Constat
+### Modifications dans `src/components/TapWaterJourneyMap.tsx`
 
-35 routes actuelles couvrent les grandes métropoles mais il manque ~15-20 agglomérations françaises significatives (préfectures/sous-préfectures de 50 000+ habitants ou villes côtières majeures).
+**1. Toggle affichage des communes satellites**
 
-### Nouvelles routes à ajouter (~18)
+Ajouter un state `showCommunes` (default `true`) et un bouton Switch dans la barre de contrôles en mode détail. Quand désactivé :
+- Les marqueurs satellites et leurs arcs ne sont pas rendus
+- Seul le parcours principal (captage → traitement → réservoir → commune) reste visible
+- Le `fitBounds` ne prend en compte que les steps principaux
 
-| Ville | Population | Captage type |
-|-------|-----------|-------------|
-| Pau | 77k | Gave de Pau |
-| Bayonne | 52k | Nive/Adour |
-| La Rochelle | 79k | Nappe du Cénomanien |
-| Poitiers | 89k | Nappe du Clain |
-| Nîmes | 151k | Source du Lez / BRL |
-| Avignon | 92k | Canal de Provence / Durance |
-| Valence | 65k | Rhône |
-| Chambéry | 60k | Lac du Bourget |
-| Dunkerque | 87k | Nappe d'Artois |
-| Troyes | 62k | Seine amont |
-| Saint-Nazaire | 72k | Loire |
-| Lorient | 57k | Scorff |
-| Vannes | 55k | Nappe de Noyalo |
-| Quimper | 63k | Odet |
-| Colmar | 70k | Nappe phréatique du Rhin |
-| Ajaccio | 72k | Gravona |
-| Bastia | 48k | Golo |
-| Calais | 73k | Nappe de la Craie |
+Le toggle sera un composant `Switch` avec label "Communes desservies" placé à côté du bouton retour.
 
-Chaque route suit la structure existante : 4 étapes (captage → traitement → réservoir → commune) + 3-5 communes satellites.
+**2. Optimisation des animations**
+
+Trois améliorations de performance :
+
+- **Réduire les points par arc** : passer de 50 à 25 points pour les arcs principaux, et de 30 à 15 pour les arcs satellites (qualité visuelle quasi identique)
+- **Remplacer `setInterval` par `requestAnimationFrame`** avec throttle à ~10fps (100ms) au lieu de ~15fps (66ms) — réduit de 33% les appels `setPaintProperty`
+- **Batch les mises à jour** : regrouper tous les `setPaintProperty` dans un seul frame RAF, et ne mettre à jour les arcs satellites que si `showCommunes` est actif
 
 ### Fichier modifié
 
-| Fichier | Action |
-|---------|--------|
-| `src/data/tapWaterSources.ts` | Ajouter ~18 nouvelles routes avec communes satellites (~90 communes supplémentaires) |
-
-### Impact
-
-- Passage de 35 à ~53 routes
-- Communes satellites : ~600 → ~690
-- Taille fichier estimée : ~85 Ko (reste dans les limites de performance)
-- Couverture : quasi-totalité des préfectures françaises métropolitaines + Corse
+| Fichier | Changement |
+|---------|-----------|
+| `src/components/TapWaterJourneyMap.tsx` | Ajout state `showCommunes` + Switch UI, optimisation animation RAF + réduction points arcs |
 
