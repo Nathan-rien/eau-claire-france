@@ -395,10 +395,10 @@ export default function PrixEaux() {
 
               <Select value={filters.retailer || ''} onValueChange={(value) => updateFilter('retailer', value || null)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Enseigne" />
+                  <SelectValue placeholder={t('prices.retailer')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Toutes les enseignes</SelectItem>
+                  <SelectItem value="all">{t('prices.allRetailers')}</SelectItem>
                   {retailers
                     .filter(retailer => retailer.id && retailer.id.trim() !== '')
                     .map(retailer => (
