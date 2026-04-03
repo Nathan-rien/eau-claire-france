@@ -358,9 +358,9 @@ export default function PrixEaux() {
           {/* No active retailers banner */}
           {noActiveRetailers && (
             <Alert variant="destructive" className="mb-6">
-              <AlertTitle>Aucune enseigne active visible</AlertTitle>
+              <AlertTitle>{t('prices.noActiveRetailers')}</AlertTitle>
               <AlertDescription>
-                Vérifiez le seed des enseignes et les politiques RLS.
+                {t('prices.checkConfig')}
               </AlertDescription>
             </Alert>
           )}
