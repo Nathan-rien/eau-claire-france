@@ -32,7 +32,7 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const emailSubject = `[InfoEau.fr] ${contactTypes.find(ct => ct.value === formData.type)?.label} - ${formData.subject}`;
-    const emailBody = `Type: ${contactTypes.find(ct => ct.value === formData.type)?.label}\n\nNom: ${formData.name}\nEmail: ${formData.email}\nSujet: ${formData.subject}\n\nMessage:\n${formData.message}\n\n---\nEnvoyé depuis InfoEau.fr`;
+    const emailBody = `Type: ${contactTypes.find(ct => ct.value === formData.type)?.label}\n\n${t('contact.emailBodyName')} ${formData.name}\n${t('contact.emailBodyEmail')} ${formData.email}\n${t('contact.emailBodySubject')} ${formData.subject}\n\n${t('contact.emailBodyMessage')}\n${formData.message}\n\n---\n${t('contact.emailBodySentFrom')}`;
     window.location.href = `mailto:nth.orso@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
     toast({ title: t('contact.redirecting'), description: t('contact.redirectDesc') });
   };

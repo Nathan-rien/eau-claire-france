@@ -12,24 +12,21 @@ import { useLanguage } from '@/contexts/LanguageContext';
 const Sources = () => {
   const { t } = useLanguage();
 
-  const dataSources = [
-    { name: "Agences Régionales de Santé (ARS)", description: "Données officielles de qualité de l'eau potable distribuée en France", url: "https://solidarites-sante.gouv.fr/", type: "Officiel", frequency: "Quotidienne", coverage: "100% du territoire français" },
-    { name: "EauFrance", description: "Base de données nationale sur l'eau et les milieux aquatiques", url: "https://www.eaufrance.fr/", type: "Officiel", frequency: "Temps réel", coverage: "Métropole et DOM-TOM" },
-    { name: "BRGM", description: "Données géologiques et hydrogéologiques françaises", url: "https://www.brgm.fr/", type: "Scientifique", frequency: "Mensuelle", coverage: "Données géologiques nationales" },
-    { name: "SISE-Eaux", description: "Base de données sanitaires sur la qualité de l'eau de consommation", url: "https://sise-eaux.fr/", type: "Officiel", frequency: "Continue", coverage: "Tous les réseaux publics" },
-    { name: "Open Data France", description: "Données ouvertes françaises sur l'environnement et la santé publique", url: "https://www.data.gouv.fr/", type: "Open Data", frequency: "Variable", coverage: "Données publiques françaises" },
-    { name: "EEA", description: "Données officielles de qualité de l'eau potable dans les 27 pays de l'UE", url: "https://www.eea.europa.eu/", type: "Officiel", frequency: "Triennale", coverage: "27 pays de l'UE" },
-    { name: "WISE DWD", description: "Base de données européenne sur la conformité à la Directive Eau Potable", url: "https://water.europa.eu/", type: "Officiel", frequency: "Triennale", coverage: "Union européenne" },
-    { name: "Eurostat", description: "Statistiques comparatives sur l'eau potable et l'assainissement en Europe", url: "https://ec.europa.eu/eurostat/", type: "Statistique", frequency: "Annuelle", coverage: "UE 27 + pays associés" },
-    { name: "OMS / WHO Europe", description: "Indicateurs de santé liés à l'eau potable", url: "https://www.who.int/europe/", type: "Scientifique", frequency: "Annuelle", coverage: "Région européenne OMS" }
+  const srcKeys = ['ars', 'eaufrance', 'brgm', 'sise', 'opendata', 'eea', 'wise', 'eurostat', 'who'] as const;
+  const urls = [
+    "https://solidarites-sante.gouv.fr/", "https://www.eaufrance.fr/", "https://www.brgm.fr/",
+    "https://sise-eaux.fr/", "https://www.data.gouv.fr/", "https://www.eea.europa.eu/",
+    "https://water.europa.eu/", "https://ec.europa.eu/eurostat/", "https://www.who.int/europe/"
   ];
+  const dataSources = srcKeys.map((k, i) => ({
+    name: t(`sources.src.${k}.name`), description: t(`sources.src.${k}.desc`),
+    url: urls[i], type: t(`sources.src.${k}.type`), frequency: t(`sources.src.${k}.freq`), coverage: t(`sources.src.${k}.cov`)
+  }));
 
-  const qualityStandards = [
-    { organism: "Organisation Mondiale de la Santé (OMS)", role: "Standards internationaux de qualité de l'eau potable", reference: "Guidelines for drinking-water quality, 4th edition" },
-    { organism: "Commission Européenne", role: "Directive européenne sur l'eau potable révisée", reference: "Directive (UE) 2020/2184" },
-    { organism: "Ministère de la Santé français", role: "Réglementation française sur l'eau potable", reference: "Code de la santé publique" },
-    { organism: "EEA", role: "Reporting et conformité de la Directive Eau Potable pour les 27 États membres", reference: "WISE Drinking Water Directive dataset" }
-  ];
+  const stdKeys = ['oms', 'eu', 'fr', 'eea'] as const;
+  const qualityStandards = stdKeys.map(k => ({
+    organism: t(`sources.std.${k}.org`), role: t(`sources.std.${k}.role`), reference: t(`sources.std.${k}.ref`)
+  }));
 
   return (
     <Layout>
@@ -66,7 +63,7 @@ const Sources = () => {
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <CardTitle className="text-lg">{source.name}</CardTitle>
-                      <Badge variant={source.type === 'Officiel' ? 'default' : 'secondary'}>{source.type}</Badge>
+                      <Badge variant={source.type === t('sources.src.ars.type') ? 'default' : 'secondary'}>{source.type}</Badge>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -123,17 +120,17 @@ const Sources = () => {
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">{t('sources.realTime')}</h4>
                   <ul className="space-y-1 text-gray-600">
-                    <li>• Alertes sanitaires</li>
-                    <li>• Restrictions d'usage</li>
-                    <li>• Incidents de qualité</li>
+                    <li>• {t('sources.rt.1')}</li>
+                    <li>• {t('sources.rt.2')}</li>
+                    <li>• {t('sources.rt.3')}</li>
                   </ul>
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">{t('sources.periodic')}</h4>
                   <ul className="space-y-1 text-gray-600">
-                    <li>• Analyses de routine (hebdomadaire)</li>
-                    <li>• Contrôles réglementaires (mensuel)</li>
-                    <li>• Rapports de synthèse (annuel)</li>
+                    <li>• {t('sources.pd.1')}</li>
+                    <li>• {t('sources.pd.2')}</li>
+                    <li>• {t('sources.pd.3')}</li>
                   </ul>
                 </div>
               </div>

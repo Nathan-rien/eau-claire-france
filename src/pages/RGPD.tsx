@@ -47,9 +47,9 @@ const RGPD = () => {
             </CardHeader>
             <CardContent>
               <div className="text-blue-700 space-y-2">
-                <p><strong>Nom :</strong> Nathan Orso</p>
-                <p><strong>Contact :</strong> contact@infoeau.fr</p>
-                <p><strong>Adresse :</strong> Bordeaux, France</p>
+                <p><strong>{t('rgpd.label.name')}</strong> Nathan Orso</p>
+                <p><strong>{t('rgpd.label.contact')}</strong> contact@infoeau.fr</p>
+                <p><strong>{t('rgpd.label.address')}</strong> {t('rgpd.label.addressVal')}</p>
               </div>
             </CardContent>
           </Card>
@@ -121,19 +121,19 @@ const RGPD = () => {
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">{t('rgpd.technicalMeasures')}</h4>
                   <ul className="space-y-1 text-gray-600 text-sm">
-                    <li>• Chiffrement des données en transit (HTTPS)</li>
-                    <li>• Stockage sécurisé des données</li>
-                    <li>• Accès limité et contrôlé</li>
-                    <li>• Sauvegardes régulières</li>
+                    <li>• {t('rgpd.sec.t1')}</li>
+                    <li>• {t('rgpd.sec.t2')}</li>
+                    <li>• {t('rgpd.sec.t3')}</li>
+                    <li>• {t('rgpd.sec.t4')}</li>
                   </ul>
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">{t('rgpd.orgMeasures')}</h4>
                   <ul className="space-y-1 text-gray-600 text-sm">
-                    <li>• Formation à la protection des données</li>
-                    <li>• Procédures de gestion des incidents</li>
-                    <li>• Audits de sécurité réguliers</li>
-                    <li>• Politique de confidentialité stricte</li>
+                    <li>• {t('rgpd.sec.o1')}</li>
+                    <li>• {t('rgpd.sec.o2')}</li>
+                    <li>• {t('rgpd.sec.o3')}</li>
+                    <li>• {t('rgpd.sec.o4')}</li>
                   </ul>
                 </div>
               </div>
@@ -157,11 +157,11 @@ const RGPD = () => {
               <div className="space-y-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="font-semibold text-gray-900 mb-2">{t('rgpd.navData')}</h4>
-                  <p className="text-gray-600 text-sm">Conservées pendant 25 mois maximum (recommandation CNIL)</p>
+                  <p className="text-gray-600 text-sm">{t('rgpd.ret.nav')}</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="font-semibold text-gray-900 mb-2">{t('rgpd.searchData')}</h4>
-                  <p className="text-gray-600 text-sm">Anonymisées après 12 mois, conservées à des fins statistiques</p>
+                  <p className="text-gray-600 text-sm">{t('rgpd.ret.search')}</p>
                 </div>
               </div>
             </CardContent>
@@ -174,8 +174,8 @@ const RGPD = () => {
             <CardContent>
               <p className="text-gray-600 mb-4">{t('rgpd.exerciseDesc')}</p>
               <div className="bg-blue-50 p-4 rounded-lg">
-                <p className="text-blue-800"><strong>Email :</strong> contact@infoeau.fr</p>
-                <p className="text-blue-800"><strong>Objet :</strong> "RGPD - Exercice de droits"</p>
+                <p className="text-blue-800"><strong>{t('rgpd.label.email')}</strong> contact@infoeau.fr</p>
+                <p className="text-blue-800"><strong>{t('rgpd.label.subject')}</strong> {t('rgpd.label.subjectVal')}</p>
               </div>
               <p className="text-gray-600 text-sm mt-4">
                 {t('rgpd.cnilNote')}{' '}

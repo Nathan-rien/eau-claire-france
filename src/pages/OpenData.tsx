@@ -14,22 +14,23 @@ import { useLanguage } from '@/contexts/LanguageContext';
 const OpenData = () => {
   const { composition, catalog, mdd, loading, error } = useBottleData();
   const { t } = useLanguage();
-  
-  const datasets = [
-    { name: "Qualité de l'eau par commune", description: "Données de qualité de l'eau potable pour toutes les communes françaises", format: "JSON, CSV, XML", size: "45 MB", lastUpdate: "2024-01-15", license: "Open Database License (ODbL)" },
-    { name: "Index des polluants", description: "Catalogue complet des polluants surveillés avec leurs seuils réglementaires", format: "JSON, CSV", size: "2.3 MB", lastUpdate: "2024-01-10", license: "Creative Commons CC-BY-SA 4.0" },
-    { name: "Réseaux de distribution", description: "Informations sur les réseaux de distribution d'eau par région", format: "GeoJSON, CSV", size: "12 MB", lastUpdate: "2024-01-08", license: "Open Database License (ODbL)" },
-    { name: "Historique des alertes", description: "Historique des alertes sanitaires et restrictions d'usage", format: "JSON, CSV", size: "8.7 MB", lastUpdate: "2024-01-12", license: "Creative Commons CC-BY-SA 4.0" },
-    { name: "Qualité de l'eau par pays (UE 27)", description: "Taux de conformité, population desservie et violations par pays européen (source EEA WISE DWD)", format: "JSON, CSV", size: "1.2 MB", lastUpdate: "2025-01-15", license: "EEA Standard re-use policy" },
-    { name: "Polluants européens par pays", description: "Concentrations moyennes et dépassements pour nitrates, pesticides, PFAS, microplastiques, THM dans les 27 pays UE", format: "JSON, CSV", size: "0.8 MB", lastUpdate: "2025-01-15", license: "EEA Standard re-use policy" }
-  ];
+
+  const dsKeys = ['1', '2', '3', '4', '5', '6'] as const;
+  const dsFormats = ["JSON, CSV, XML", "JSON, CSV", "GeoJSON, CSV", "JSON, CSV", "JSON, CSV", "JSON, CSV"];
+  const dsSizes = ["45 MB", "2.3 MB", "12 MB", "8.7 MB", "1.2 MB", "0.8 MB"];
+  const dsUpdates = ["2024-01-15", "2024-01-10", "2024-01-08", "2024-01-12", "2025-01-15", "2025-01-15"];
+  const dsLicenses = ["Open Database License (ODbL)", "Creative Commons CC-BY-SA 4.0", "Open Database License (ODbL)", "Creative Commons CC-BY-SA 4.0", "EEA Standard re-use policy", "EEA Standard re-use policy"];
+  const datasets = dsKeys.map((k, i) => ({
+    name: t(`opendata.ds.${k}.name`), description: t(`opendata.ds.${k}.desc`),
+    format: dsFormats[i], size: dsSizes[i], lastUpdate: dsUpdates[i], license: dsLicenses[i]
+  }));
 
   const apiEndpoints = [
-    { endpoint: "/api/v1/communes/{insee}/water-quality", method: "GET", description: "Récupère les données de qualité de l'eau pour une commune", example: "curl https://api.infoeau.fr/v1/communes/33063/water-quality" },
-    { endpoint: "/api/v1/pollutants", method: "GET", description: "Liste tous les polluants surveillés avec leurs informations", example: "curl https://api.infoeau.fr/v1/pollutants" },
-    { endpoint: "/api/v1/alerts", method: "GET", description: "Récupère les alertes en cours par département ou région", example: "curl https://api.infoeau.fr/v1/alerts?department=33" },
-    { endpoint: "/api/v1/eu/water-quality/{country}", method: "GET", description: "Qualité de l'eau potable pour un pays européen", example: "curl https://api.infoeau.fr/v1/eu/water-quality/DE" },
-    { endpoint: "/api/v1/eu/pollutants/{country}", method: "GET", description: "Polluants détectés dans un pays européen", example: "curl https://api.infoeau.fr/v1/eu/pollutants/FR" }
+    { endpoint: "/api/v1/communes/{insee}/water-quality", method: "GET", description: t('opendata.api.1.desc'), example: "curl https://api.infoeau.fr/v1/communes/33063/water-quality" },
+    { endpoint: "/api/v1/pollutants", method: "GET", description: t('opendata.api.2.desc'), example: "curl https://api.infoeau.fr/v1/pollutants" },
+    { endpoint: "/api/v1/alerts", method: "GET", description: t('opendata.api.3.desc'), example: "curl https://api.infoeau.fr/v1/alerts?department=33" },
+    { endpoint: "/api/v1/eu/water-quality/{country}", method: "GET", description: t('opendata.api.4.desc'), example: "curl https://api.infoeau.fr/v1/eu/water-quality/DE" },
+    { endpoint: "/api/v1/eu/pollutants/{country}", method: "GET", description: t('opendata.api.5.desc'), example: "curl https://api.infoeau.fr/v1/eu/pollutants/FR" }
   ];
 
   return (
@@ -48,8 +49,8 @@ const OpenData = () => {
           <Card className="mb-8 border-purple-200 bg-purple-50">
             <CardHeader><CardTitle className="text-purple-800">{t('opendata.csvStatus')}</CardTitle></CardHeader>
             <CardContent>
-              {loading && <div className="text-purple-700">Chargement...</div>}
-              {error && <div className="text-red-600">Erreur: {error}</div>}
+              {loading && <div className="text-purple-700">{t('opendata.loading')}</div>}
+              {error && <div className="text-red-600">{t('opendata.error')} {error}</div>}
               {!loading && !error && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-purple-700">
                   <div className="bg-white p-3 rounded"><div className="font-semibold">Composition</div><div className="text-2xl font-bold">{composition?.length ?? 0}</div><div className="text-sm">{t('opendata.loaded')}</div></div>
@@ -69,10 +70,9 @@ const OpenData = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-green-700">
-                <div><h4 className="font-semibold mb-2">✅ Librement accessibles</h4><p className="text-sm">Toutes les données sont téléchargeables gratuitement sans inscription</p></div>
-                <div><h4 className="font-semibold mb-2">✅ Formats ouverts</h4><p className="text-sm">JSON, CSV, XML et GeoJSON</p></div>
-                <div><h4 className="font-semibold mb-2">✅ Licences ouvertes</h4><p className="text-sm">Creative Commons et ODbL</p></div>
-                <div><h4 className="font-semibold mb-2">✅ Mises à jour régulières</h4><p className="text-sm">Données actualisées quotidiennement</p></div>
+                {(['1','2','3','4'] as const).map(k => (
+                  <div key={k}><h4 className="font-semibold mb-2">{t(`opendata.pr.${k}.title`)}</h4><p className="text-sm">{t(`opendata.pr.${k}.desc`)}</p></div>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -109,12 +109,12 @@ const OpenData = () => {
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">{t('opendata.api')}</h2>
             <Card className="mb-6">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2"><Code className="w-6 h-6 text-purple-600" /><span>Accès programmatique</span></CardTitle>
+                <CardTitle className="flex items-center space-x-2"><Code className="w-6 h-6 text-purple-600" /><span>{t('opendata.apiAccess')}</span></CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600 mb-4">Notre API REST permet d'intégrer facilement les données.</p>
+                <p className="text-gray-600 mb-4">{t('opendata.apiIntro')}</p>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-2"><strong>URL de base :</strong></p>
+                  <p className="text-sm text-gray-600 mb-2"><strong>{t('opendata.apiBaseUrl')}</strong></p>
                   <code className="text-blue-600 font-mono">https://api.infoeau.fr/v1/</code>
                 </div>
               </CardContent>
@@ -144,15 +144,15 @@ const OpenData = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-3">Projets utilisant nos données</h4>
+                  <h4 className="font-semibold text-gray-900 mb-3">{t('opendata.comm.projects')}</h4>
                   <ul className="space-y-2 text-gray-600 text-sm">
-                    <li>• Applications mobiles</li><li>• Études académiques</li><li>• Outils de visualisation</li><li>• Systèmes d'alerte</li>
+                    <li>• {t('opendata.comm.p1')}</li><li>• {t('opendata.comm.p2')}</li><li>• {t('opendata.comm.p3')}</li><li>• {t('opendata.comm.p4')}</li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-3">Contribuer</h4>
+                  <h4 className="font-semibold text-gray-900 mb-3">{t('opendata.comm.contribute')}</h4>
                   <ul className="space-y-2 text-gray-600 text-sm">
-                    <li>• Signaler des erreurs</li><li>• Proposer de nouvelles sources</li><li>• Améliorer la documentation</li><li>• Partager vos réutilisations</li>
+                    <li>• {t('opendata.comm.c1')}</li><li>• {t('opendata.comm.c2')}</li><li>• {t('opendata.comm.c3')}</li><li>• {t('opendata.comm.c4')}</li>
                   </ul>
                 </div>
               </div>
@@ -165,9 +165,9 @@ const OpenData = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button variant="outline" className="flex items-center space-x-2 h-auto p-4"><FileText className="w-5 h-5" /><div className="text-left"><div className="font-medium">Guide des données</div><div className="text-sm text-gray-500">Documentation complète</div></div></Button>
-                <Button variant="outline" className="flex items-center space-x-2 h-auto p-4"><Code className="w-5 h-5" /><div className="text-left"><div className="font-medium">Référence API</div><div className="text-sm text-gray-500">Endpoints et exemples</div></div></Button>
-                <Button variant="outline" className="flex items-center space-x-2 h-auto p-4"><Download className="w-5 h-5" /><div className="text-left"><div className="font-medium">SDKs</div><div className="text-sm text-gray-500">Python, JavaScript, R</div></div></Button>
+                <Button variant="outline" className="flex items-center space-x-2 h-auto p-4"><FileText className="w-5 h-5" /><div className="text-left"><div className="font-medium">{t('opendata.doc.guide')}</div><div className="text-sm text-gray-500">{t('opendata.doc.guideDesc')}</div></div></Button>
+                <Button variant="outline" className="flex items-center space-x-2 h-auto p-4"><Code className="w-5 h-5" /><div className="text-left"><div className="font-medium">{t('opendata.doc.apiRef')}</div><div className="text-sm text-gray-500">{t('opendata.doc.apiRefDesc')}</div></div></Button>
+                <Button variant="outline" className="flex items-center space-x-2 h-auto p-4"><Download className="w-5 h-5" /><div className="text-left"><div className="font-medium">SDKs</div><div className="text-sm text-gray-500">{t('opendata.doc.sdkDesc')}</div></div></Button>
               </div>
             </CardContent>
           </Card>
@@ -177,8 +177,8 @@ const OpenData = () => {
             <CardContent>
               <p className="text-blue-700 mb-4">{t('opendata.helpDesc')}</p>
               <div className="text-blue-700 text-sm">
-                <p><strong>Contact :</strong> contact@infoeau.fr</p>
-                <p><strong>Objet :</strong> "Open Data - Demande d'assistance"</p>
+                <p><strong>{t('opendata.contactLabel')}</strong> contact@infoeau.fr</p>
+                <p><strong>{t('opendata.contactSubject')}</strong> {t('opendata.contactSubjectVal')}</p>
               </div>
             </CardContent>
           </Card>
