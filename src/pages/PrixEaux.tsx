@@ -327,7 +327,7 @@ export default function PrixEaux() {
           {/* Légende des types de sources */}
           <Alert className="mb-6 bg-muted/50">
             <Info className="h-4 w-4" />
-            <AlertTitle>Sources de prix</AlertTitle>
+            <AlertTitle>{t('prices.sourcesTitle')}</AlertTitle>
             <AlertDescription>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 text-sm">
                 <div className="flex items-center gap-2">
