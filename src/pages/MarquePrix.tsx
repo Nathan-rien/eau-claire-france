@@ -20,6 +20,7 @@ interface PriceWithRetailer extends Price {
 export default function MarquePrix() {
   const { slug } = useParams<{ slug: string }>();
   const { toast } = useToast();
+  const { t } = useLanguage();
   
   const [brand, setBrand] = useState<string>('');
   const [prices, setPrices] = useState<PriceWithRetailer[]>([]);
