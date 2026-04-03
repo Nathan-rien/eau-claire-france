@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
