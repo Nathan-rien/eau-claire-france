@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Layout from '@/components/Layout';
 import { PriceDisplay } from '@/components/PriceDisplay';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { makeTapPrice, aggregateBottlePrices, sanityCheckEuroPerL } from '@/lib/price';
 import { PRICE_INPUTS } from '@/data/prices.example';
 import { bottleWaterDatabase } from '@/data/bottleComparisonData';
