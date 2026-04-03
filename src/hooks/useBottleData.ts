@@ -1,7 +1,7 @@
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { useEffect, useState } from "react";
 import { bottleApi } from '@/services/bottleApi';
-import { BottleWaterData } from '@/data/bottleComparisonData';
+import type { BottleWaterData } from '@/types/bottleTypes';
 import { loadComposition, loadCatalog, loadMdd } from "@/services/waterData";
 
 export const useBottles = (options: {

@@ -11,7 +11,7 @@ import BottleComparisonTable from '@/components/BottleComparisonTable';
 import NutritionalGuide from '@/components/NutritionalGuide';
 import ComparisonControls from '@/components/ComparisonControls';
 import FavoritesTab from '@/components/FavoritesTab';
-import { BottleWaterData } from '@/data/bottleComparisonData';
+import type { BottleWaterData } from '@/types/bottleTypes';
 import { convertBottleWaterDataToWaterData } from '@/utils/bottleConversion';
 import { useLanguage } from '@/contexts/LanguageContext';
 

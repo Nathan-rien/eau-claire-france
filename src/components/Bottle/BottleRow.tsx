@@ -1,6 +1,6 @@
 import React from 'react';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { BottleWaterData } from '@/data/bottleComparisonData';
+import type { BottleWaterData } from '@/types/bottleTypes';
 
 interface BottleRowProps {
   label: string;

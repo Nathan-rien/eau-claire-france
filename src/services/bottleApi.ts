@@ -1,4 +1,4 @@
-import { BottleWaterData } from '@/data/bottleComparisonData';
+import type { BottleWaterData } from '@/types/bottleTypes';
 
 // Simulated API service for bottle data
 class BottleApiService {
