@@ -401,7 +401,7 @@ export default function ComparateurPrix() {
           {!showDataBanner && isSelectionEmpty && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
-                Sélectionnez 2 {mode === 'brands' ? 'marques' : 'enseignes'} pour commencer la comparaison
+                {t('priceComparator.selectToStart', { type: mode === 'brands' ? t('priceComparator.brands') : t('priceComparator.retailers') })}
               </p>
             </div>
           )}
