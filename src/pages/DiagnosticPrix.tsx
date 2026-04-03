@@ -51,8 +51,8 @@ export default function DiagnosticPrix() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              💧 Prix Eau du Robinet
-              <Badge variant="outline">Source Centralisée</Badge>
+              💧 {t('priceDiag.tapWater')}
+              <Badge variant="outline">{t('priceDiag.centralSource')}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
