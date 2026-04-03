@@ -36,7 +36,7 @@ const Accessibilite = () => {
             </CardHeader>
             <CardContent>
               <p className="text-green-700 leading-relaxed">{t('a11y.conformanceDesc')}</p>
-              <p className="text-green-700 mt-2"><strong>{t('a11y.lastEval')}</strong> Janvier 2024</p>
+              <p className="text-green-700 mt-2"><strong>{t('a11y.lastEval')}</strong> {t('a11y.lastEvalDate')}</p>
             </CardContent>
           </Card>
 
@@ -52,10 +52,10 @@ const Accessibilite = () => {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-gray-600 text-sm">
-                    <li>• Contrastes de couleurs optimisés</li>
-                    <li>• Textes alternatifs sur les images</li>
-                    <li>• Tailles de police adaptables</li>
-                    <li>• Support des lecteurs d'écran</li>
+                    <li>• {t('a11y.vis.1')}</li>
+                    <li>• {t('a11y.vis.2')}</li>
+                    <li>• {t('a11y.vis.3')}</li>
+                    <li>• {t('a11y.vis.4')}</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -68,10 +68,10 @@ const Accessibilite = () => {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-gray-600 text-sm">
-                    <li>• Navigation complète au clavier</li>
-                    <li>• Indicateurs de focus visibles</li>
-                    <li>• Raccourcis clavier logiques</li>
-                    <li>• Ordre de tabulation cohérent</li>
+                    <li>• {t('a11y.kb.1')}</li>
+                    <li>• {t('a11y.kb.2')}</li>
+                    <li>• {t('a11y.kb.3')}</li>
+                    <li>• {t('a11y.kb.4')}</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -84,10 +84,10 @@ const Accessibilite = () => {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-gray-600 text-sm">
-                    <li>• Interface simple et intuitive</li>
-                    <li>• Messages d'erreur clairs</li>
-                    <li>• Aide contextuelle disponible</li>
-                    <li>• Temps de session adaptés</li>
+                    <li>• {t('a11y.cog.1')}</li>
+                    <li>• {t('a11y.cog.2')}</li>
+                    <li>• {t('a11y.cog.3')}</li>
+                    <li>• {t('a11y.cog.4')}</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -100,10 +100,10 @@ const Accessibilite = () => {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-gray-600 text-sm">
-                    <li>• Pas de contenu audio automatique</li>
-                    <li>• Alternatives textuelles</li>
-                    <li>• Signaux visuels pour alertes</li>
-                    <li>• Sous-titres si vidéos</li>
+                    <li>• {t('a11y.aud.1')}</li>
+                    <li>• {t('a11y.aud.2')}</li>
+                    <li>• {t('a11y.aud.3')}</li>
+                    <li>• {t('a11y.aud.4')}</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -146,29 +146,29 @@ const Accessibilite = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <div className="flex justify-between items-center border-b pb-2">
-                    <span className="text-gray-600">Aller au contenu principal</span>
+                    <span className="text-gray-600">{t('a11y.sc.1')}</span>
                     <Badge variant="outline">Alt + C</Badge>
                   </div>
                   <div className="flex justify-between items-center border-b pb-2">
-                    <span className="text-gray-600">Aller au menu de navigation</span>
+                    <span className="text-gray-600">{t('a11y.sc.2')}</span>
                     <Badge variant="outline">Alt + M</Badge>
                   </div>
                   <div className="flex justify-between items-center border-b pb-2">
-                    <span className="text-gray-600">Aller à la recherche</span>
+                    <span className="text-gray-600">{t('a11y.sc.3')}</span>
                     <Badge variant="outline">Alt + S</Badge>
                   </div>
                 </div>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center border-b pb-2">
-                    <span className="text-gray-600">Navigation entre onglets</span>
+                    <span className="text-gray-600">{t('a11y.sc.4')}</span>
                     <Badge variant="outline">Tab / Shift+Tab</Badge>
                   </div>
                   <div className="flex justify-between items-center border-b pb-2">
-                    <span className="text-gray-600">Activer un élément</span>
+                    <span className="text-gray-600">{t('a11y.sc.5')}</span>
                     <Badge variant="outline">Entrée / Espace</Badge>
                   </div>
                   <div className="flex justify-between items-center border-b pb-2">
-                    <span className="text-gray-600">Fermer un dialogue</span>
+                    <span className="text-gray-600">{t('a11y.sc.6')}</span>
                     <Badge variant="outline">Échap</Badge>
                   </div>
                 </div>
@@ -183,8 +183,8 @@ const Accessibilite = () => {
             <CardContent>
               <p className="text-gray-600 mb-4">{t('a11y.reportDesc')}</p>
               <div className="bg-blue-50 p-4 rounded-lg">
-                <p className="text-blue-800 mb-2"><strong>Email :</strong> contact@infoeau.fr</p>
-                <p className="text-blue-800 mb-2"><strong>Objet :</strong> "Accessibilité - Problème signalé"</p>
+                <p className="text-blue-800 mb-2"><strong>{t('a11y.reportEmail')}</strong> contact@infoeau.fr</p>
+                <p className="text-blue-800 mb-2"><strong>{t('a11y.reportSubject')}</strong> {t('a11y.reportSubjectVal')}</p>
               </div>
             </CardContent>
           </Card>

@@ -11,73 +11,19 @@ import { useLanguage } from '@/contexts/LanguageContext';
 const Methodologie = () => {
   const { t } = useLanguage();
 
-  const methodology = [
-    {
-      step: "1",
-      title: "Collecte des données",
-      description: "Récupération automatisée des données depuis les API officielles",
-      details: [
-        "Connexion sécurisée aux bases de données ARS",
-        "Synchronisation quotidienne avec SISE-Eaux",
-        "Validation de l'intégrité des données",
-        "Gestion des formats de données hétérogènes"
-      ]
-    },
-    {
-      step: "2",
-      title: "Traitement et normalisation",
-      description: "Harmonisation et structuration des données pour l'analyse",
-      details: [
-        "Conversion des unités de mesure",
-        "Normalisation des noms de polluants",
-        "Géocodage des points de distribution",
-        "Détection et correction des anomalies"
-      ]
-    },
-    {
-      step: "3",
-      title: "Analyse et classification",
-      description: "Évaluation de la qualité selon les normes en vigueur",
-      details: [
-        "Comparaison aux seuils réglementaires",
-        "Calcul d'indices de qualité globaux",
-        "Classification des niveaux de risque",
-        "Identification des tendances temporelles"
-      ]
-    },
-    {
-      step: "4",
-      title: "Visualisation et diffusion",
-      description: "Présentation accessible et transparente des résultats",
-      details: [
-        "Cartographie interactive des données",
-        "Tableaux de bord personnalisés",
-        "Alertes automatiques en cas de dépassement",
-        "Export des données en format ouvert"
-      ]
-    }
-  ];
+  const methodology = (['1','2','3','4'] as const).map(s => ({
+    step: s,
+    title: t(`methodology.step.${s}.title`),
+    description: t(`methodology.step.${s}.desc`),
+    details: [t(`methodology.step.${s}.d1`), t(`methodology.step.${s}.d2`), t(`methodology.step.${s}.d3`), t(`methodology.step.${s}.d4`)]
+  }));
 
-  const qualityIndicators = [
-    {
-      name: "Indice de conformité microbiologique",
-      description: "Évalue la présence de bactéries pathogènes",
-      calculation: "Pourcentage d'analyses conformes aux normes E.coli et entérocoques",
-      threshold: "100% de conformité exigée"
-    },
-    {
-      name: "Indice de conformité physico-chimique",
-      description: "Mesure la conformité des paramètres chimiques",
-      calculation: "Respect des limites pour nitrates, pesticides, métaux lourds",
-      threshold: "95% de conformité minimum"
-    },
-    {
-      name: "Niveau de risque sanitaire",
-      description: "Classification globale du risque pour la santé",
-      calculation: "Pondération des dépassements selon leur gravité",
-      threshold: "Faible / Modéré / Élevé"
-    }
-  ];
+  const qualityIndicators = (['1','2','3'] as const).map(i => ({
+    name: t(`methodology.ind.${i}.name`),
+    description: t(`methodology.ind.${i}.desc`),
+    calculation: t(`methodology.ind.${i}.calc`),
+    threshold: t(`methodology.ind.${i}.threshold`)
+  }));
 
   return (
     <Layout>
@@ -103,22 +49,12 @@ const Methodologie = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-semibold text-green-800 mb-2">Transparence totale</h4>
-                  <p className="text-green-700 text-sm">Toutes nos méthodes sont documentées et nos sources sont publiques</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-green-800 mb-2">Rigueur scientifique</h4>
-                  <p className="text-green-700 text-sm">Application stricte des normes et protocoles officiels</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-green-800 mb-2">Neutralité</h4>
-                  <p className="text-green-700 text-sm">Présentation objective des données sans interprétation biaisée</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-green-800 mb-2">Accessibilité</h4>
-                  <p className="text-green-700 text-sm">Information compréhensible pour tous les citoyens</p>
-                </div>
+                {(['1','2','3','4'] as const).map(k => (
+                  <div key={k}>
+                    <h4 className="font-semibold text-green-800 mb-2">{t(`methodology.pr.${k}.title`)}</h4>
+                    <p className="text-green-700 text-sm">{t(`methodology.pr.${k}.desc`)}</p>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -169,11 +105,11 @@ const Methodologie = () => {
                     <p className="text-gray-600 mb-4">{indicator.description}</p>
                     <div className="space-y-3">
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Calcul:</p>
+                        <p className="text-sm font-medium text-gray-700">{t('methodology.calcLabel')}</p>
                         <p className="text-sm text-gray-600">{indicator.calculation}</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Seuils:</p>
+                        <p className="text-sm font-medium text-gray-700">{t('methodology.thresholdLabel')}</p>
                         <Badge variant="outline" className="text-xs">{indicator.threshold}</Badge>
                       </div>
                     </div>
@@ -191,26 +127,23 @@ const Methodologie = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-blue-700 leading-relaxed mb-4">
-                Le portail Europe d'InfoEau.fr s'appuie sur les données officielles de l'Agence Européenne
-                de l'Environnement (EEA), issues du reporting de la Directive Eau Potable (WISE DWD).
-              </p>
+              <p className="text-blue-700 leading-relaxed mb-4">{t('methodology.eu.intro')}</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-semibold text-blue-800 mb-2">Sources et couverture</h4>
+                  <h4 className="font-semibold text-blue-800 mb-2">{t('methodology.eu.sourcesTitle')}</h4>
                   <ul className="space-y-1 text-blue-700 text-sm">
-                    <li>• 27 pays membres de l'Union européenne</li>
-                    <li>• Datasets EEA WISE DWD</li>
-                    <li>• Polluants couverts : nitrates, pesticides, plomb, bactéries, PFAS, microplastiques, trihalométhanes, arsenic, chlore résiduel</li>
+                    <li>• {t('methodology.eu.s1')}</li>
+                    <li>• {t('methodology.eu.s2')}</li>
+                    <li>• {t('methodology.eu.s3')}</li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-blue-800 mb-2">Traitement et scoring</h4>
+                  <h4 className="font-semibold text-blue-800 mb-2">{t('methodology.eu.scoringTitle')}</h4>
                   <ul className="space-y-1 text-blue-700 text-sm">
-                    <li>• Score de conformité (A/B/C)</li>
-                    <li>• Fréquence : tous les 3 ans</li>
-                    <li>• Dernières données : cycle 2020-2022</li>
-                    <li>• Fallback sur fichiers CSV enrichis</li>
+                    <li>• {t('methodology.eu.sc1')}</li>
+                    <li>• {t('methodology.eu.sc2')}</li>
+                    <li>• {t('methodology.eu.sc3')}</li>
+                    <li>• {t('methodology.eu.sc4')}</li>
                   </ul>
                 </div>
               </div>
@@ -223,10 +156,9 @@ const Methodologie = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4 text-orange-700">
-                <p><strong>Fréquence des analyses :</strong> Les données reflètent les analyses officielles qui ne sont pas effectuées en continu.</p>
-                <p><strong>Représentativité géographique :</strong> Les points de mesure peuvent ne pas couvrir l'intégralité d'un réseau de distribution.</p>
-                <p><strong>Évolution réglementaire :</strong> Les normes et seuils peuvent évoluer. Notre plateforme s'adapte aux changements réglementaires.</p>
-                <p><strong>Utilisation responsable :</strong> Ces données sont indicatives et ne remplacent pas un avis médical en cas de préoccupation sanitaire.</p>
+                {(['1','2','3','4'] as const).map(k => (
+                  <p key={k}><strong>{t(`methodology.lim.${k}.title`)}</strong> {t(`methodology.lim.${k}.desc`)}</p>
+                ))}
               </div>
             </CardContent>
           </Card>

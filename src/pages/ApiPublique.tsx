@@ -13,13 +13,13 @@ const ApiPublique = () => {
   const { t } = useLanguage();
 
   const endpoints = [
-    { method: "GET", path: "/api/v1/water-quality/{commune}", description: "Obtenir les données de qualité de l'eau pour une commune", parameters: [{ name: "commune", type: "string", required: true, description: "Code INSEE ou nom de la commune" }], example: "https://api.infoeau.fr/v1/water-quality/75001" },
-    { method: "GET", path: "/api/v1/pollutants/{region}", description: "Lister les polluants détectés dans une région", parameters: [{ name: "region", type: "string", required: true, description: "Code région" }, { name: "limit", type: "number", required: false, description: "Nombre de résultats (défaut: 100)" }], example: "https://api.infoeau.fr/v1/pollutants/11?limit=50" },
-    { method: "GET", path: "/api/v1/alerts", description: "Récupérer les alertes sanitaires en cours", parameters: [{ name: "type", type: "string", required: false, description: "Type d'alerte" }, { name: "since", type: "date", required: false, description: "Date de début (ISO 8601)" }], example: "https://api.infoeau.fr/v1/alerts?type=sanitaire" },
-    { method: "GET", path: "/api/v1/networks", description: "Informations sur les réseaux de distribution", parameters: [{ name: "department", type: "string", required: false, description: "Code département" }, { name: "operator", type: "string", required: false, description: "Nom de l'opérateur" }], example: "https://api.infoeau.fr/v1/networks?department=75" },
-    { method: "GET", path: "/api/v1/eu/water-quality/{country}", description: "Données de qualité de l'eau pour un pays européen", parameters: [{ name: "country", type: "string", required: true, description: "Code pays ISO 2 lettres" }], example: "https://api.infoeau.fr/v1/eu/water-quality/DE" },
-    { method: "GET", path: "/api/v1/eu/pollutants", description: "Liste des polluants européens avec moyennes et dépassements par pays", parameters: [{ name: "category", type: "string", required: false, description: "Catégorie (Chimique, Métaux lourds...)" }], example: "https://api.infoeau.fr/v1/eu/pollutants?category=Chimique%20émergent" },
-    { method: "GET", path: "/api/v1/eu/pollutants/{country}", description: "Polluants détaillés pour un pays européen spécifique", parameters: [{ name: "country", type: "string", required: true, description: "Code pays ISO 2 lettres" }], example: "https://api.infoeau.fr/v1/eu/pollutants/FR" }
+    { method: "GET", path: "/api/v1/water-quality/{commune}", description: t('api.ep.1.desc'), parameters: [{ name: "commune", type: "string", required: true, description: t('api.ep.1.p1.desc') }], example: "https://api.infoeau.fr/v1/water-quality/75001" },
+    { method: "GET", path: "/api/v1/pollutants/{region}", description: t('api.ep.2.desc'), parameters: [{ name: "region", type: "string", required: true, description: t('api.ep.2.p1.desc') }, { name: "limit", type: "number", required: false, description: t('api.ep.2.p2.desc') }], example: "https://api.infoeau.fr/v1/pollutants/11?limit=50" },
+    { method: "GET", path: "/api/v1/alerts", description: t('api.ep.3.desc'), parameters: [{ name: "type", type: "string", required: false, description: t('api.ep.3.p1.desc') }, { name: "since", type: "date", required: false, description: t('api.ep.3.p2.desc') }], example: "https://api.infoeau.fr/v1/alerts?type=sanitaire" },
+    { method: "GET", path: "/api/v1/networks", description: t('api.ep.4.desc'), parameters: [{ name: "department", type: "string", required: false, description: t('api.ep.4.p1.desc') }, { name: "operator", type: "string", required: false, description: t('api.ep.4.p2.desc') }], example: "https://api.infoeau.fr/v1/networks?department=75" },
+    { method: "GET", path: "/api/v1/eu/water-quality/{country}", description: t('api.ep.5.desc'), parameters: [{ name: "country", type: "string", required: true, description: t('api.ep.5.p1.desc') }], example: "https://api.infoeau.fr/v1/eu/water-quality/DE" },
+    { method: "GET", path: "/api/v1/eu/pollutants", description: t('api.ep.6.desc'), parameters: [{ name: "category", type: "string", required: false, description: t('api.ep.6.p1.desc') }], example: "https://api.infoeau.fr/v1/eu/pollutants?category=Chimique%20émergent" },
+    { method: "GET", path: "/api/v1/eu/pollutants/{country}", description: t('api.ep.7.desc'), parameters: [{ name: "country", type: "string", required: true, description: t('api.ep.7.p1.desc') }], example: "https://api.infoeau.fr/v1/eu/pollutants/FR" }
   ];
 
   const responseExample = {
@@ -56,9 +56,9 @@ const ApiPublique = () => {
             <CardContent>
               <p className="text-blue-700 leading-relaxed mb-4">{t('api.freeDesc')}</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center space-x-2"><Badge className="bg-green-600">Gratuit</Badge><span className="text-sm text-blue-700">Aucun coût</span></div>
-                <div className="flex items-center space-x-2"><Badge className="bg-green-600">Open Data</Badge><span className="text-sm text-blue-700">Données ouvertes</span></div>
-                <div className="flex items-center space-x-2"><Badge className="bg-green-600">RESTful</Badge><span className="text-sm text-blue-700">API REST standard</span></div>
+                <div className="flex items-center space-x-2"><Badge className="bg-green-600">{t('api.badge.free')}</Badge><span className="text-sm text-blue-700">{t('api.badge.freeDesc')}</span></div>
+                <div className="flex items-center space-x-2"><Badge className="bg-green-600">Open Data</Badge><span className="text-sm text-blue-700">{t('api.badge.openDataDesc')}</span></div>
+                <div className="flex items-center space-x-2"><Badge className="bg-green-600">RESTful</Badge><span className="text-sm text-blue-700">{t('api.badge.restDesc')}</span></div>
               </div>
             </CardContent>
           </Card>
@@ -129,20 +129,20 @@ const ApiPublique = () => {
             <CardContent>
               <div className="space-y-4 text-orange-700">
                 <div>
-                  <h4 className="font-semibold mb-2">Limites techniques:</h4>
+                  <h4 className="font-semibold mb-2">{t('api.limits.techTitle')}</h4>
                   <ul className="space-y-1 list-disc list-inside text-sm">
-                    <li>1000 requêtes par heure par adresse IP</li>
-                    <li>Réponses limitées à 1000 enregistrements par requête</li>
-                    <li>Timeout de 30 secondes maximum</li>
+                    <li>{t('api.limits.t1')}</li>
+                    <li>{t('api.limits.t2')}</li>
+                    <li>{t('api.limits.t3')}</li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-2">Conditions d'utilisation:</h4>
+                  <h4 className="font-semibold mb-2">{t('api.limits.condTitle')}</h4>
                   <ul className="space-y-1 list-disc list-inside text-sm">
-                    <li>Usage respectueux des ressources serveur</li>
-                    <li>Attribution de la source (InfoEau.fr) recommandée</li>
-                    <li>Pas d'usage commercial sans autorisation</li>
-                    <li>Respect de la vie privée et du RGPD</li>
+                    <li>{t('api.limits.c1')}</li>
+                    <li>{t('api.limits.c2')}</li>
+                    <li>{t('api.limits.c3')}</li>
+                    <li>{t('api.limits.c4')}</li>
                   </ul>
                 </div>
               </div>

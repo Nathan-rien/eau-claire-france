@@ -42,8 +42,8 @@ const MentionsLegales = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">{t('legal.contact')}</h4>
-                  <p className="text-gray-700">Email : contact@infoeau.fr</p>
-                  <p className="text-gray-600">LinkedIn : <a href="https://www.linkedin.com/in/nathan-orso-bdx/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">Nathan Orso</a></p>
+                  <p className="text-gray-700">{t('legal.emailLabel')} contact@infoeau.fr</p>
+                  <p className="text-gray-600">{t('legal.linkedinLabel')} <a href="https://www.linkedin.com/in/nathan-orso-bdx/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">Nathan Orso</a></p>
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">{t('legal.siteStatus')}</h4>
