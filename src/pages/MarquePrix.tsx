@@ -167,12 +167,11 @@ export default function MarquePrix() {
           {/* Composition placeholder */}
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Composition minérale (pour information)</CardTitle>
+              <CardTitle>{t('brandPrice.composition')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Les données de composition minérale seront ajoutées prochainement.
-                Consultez l'étiquette du produit pour les informations précises.
+                {t('brandPrice.compositionNote')}
               </p>
             </CardContent>
           </Card>
