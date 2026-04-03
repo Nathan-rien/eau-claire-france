@@ -236,10 +236,10 @@ const WaterJourneyMap: React.FC = () => {
         </div>
         <Select value={selectedRetailer} onValueChange={setSelectedRetailer}>
           <SelectTrigger className="w-[220px]">
-            <SelectValue placeholder={t('waterJourney.allDistributors')} />
+            <SelectValue placeholder={t('bottleJourney.allDistributors')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t('waterJourney.allDistributors')}</SelectItem>
+            <SelectItem value="all">{t('bottleJourney.allDistributors')}</SelectItem>
             {retailers.map(r => (
               <SelectItem key={r} value={r}>{r}</SelectItem>
             ))}
