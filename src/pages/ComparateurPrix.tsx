@@ -150,8 +150,8 @@ export default function ComparateurPrix() {
   const handleCompare = async () => {
     if (mode === 'brands' && (!selectedBrand1 || !selectedBrand2)) {
       toast({
-        title: "Sélection incomplète",
-        description: "Veuillez sélectionner deux marques à comparer",
+        title: t('priceComparator.incompleteSelection'),
+        description: t('priceComparator.selectTwoBrands'),
         variant: "destructive"
       });
       return;
@@ -159,8 +159,8 @@ export default function ComparateurPrix() {
 
     if (mode === 'retailers' && (!selectedRetailer1 || !selectedRetailer2)) {
       toast({
-        title: "Sélection incomplète", 
-        description: "Veuillez sélectionner deux enseignes à comparer",
+        title: t('priceComparator.incompleteSelection'),
+        description: t('priceComparator.selectTwoRetailers'),
         variant: "destructive"
       });
       return;
