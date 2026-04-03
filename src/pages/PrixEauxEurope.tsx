@@ -55,9 +55,9 @@ const PrixEauxEurope = () => {
         {...seoData.prixEauxEurope}
       />
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">Prix de l'eau du robinet — Europe</h1>
+        <h1 className="text-3xl font-bold mb-2">{t('europePrices.title')}</h1>
         <p className="text-muted-foreground mb-6">
-          Comparaison des tarifs moyens de l'eau potable dans les 27 pays de l'UE (sources : EurEau, OCDE 2023).
+          {t('europePrices.subtitle')}
         </p>
 
         <Alert className="mb-6">
