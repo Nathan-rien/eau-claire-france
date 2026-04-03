@@ -177,14 +177,14 @@ const CarteEurope: React.FC = () => {
           <div className="flex items-center justify-center gap-2">
             <span className="text-3xl">🇪🇺</span>
             <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-              Qualité de l'eau en Europe
+              {t('europeMap.title')}
             </h1>
           </div>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Données de conformité de l'eau potable dans les 27 pays de l'UE, basées sur la Directive Eau Potable (Drinking Water Directive) de l'Agence européenne pour l'environnement.
+            {t('europeMap.subtitle')}
           </p>
           <Link to="/carte" className="text-sm text-primary hover:underline">
-            ← Retour à la carte France
+            {t('europeMap.backFrance')}
           </Link>
         </div>
 
