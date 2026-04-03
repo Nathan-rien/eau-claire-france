@@ -6,6 +6,7 @@ import { useBottleComparison } from '@/hooks/useBottleComparison';
 import BottleComparisonDesktop from './Bottle/BottleComparisonDesktop';
 import BottleComparisonMobile from './Bottle/BottleComparisonMobile';
 import type { BottleComparisonProps } from '@/types/bottle';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Re-export types for backwards compatibility
 export type { BottleComparisonProps as BottleComparisonTableProps };
@@ -18,6 +19,7 @@ const BottleComparisonTable: React.FC<BottleComparisonProps> = ({
   isFavorite,
   showFavoriteControls = false
 }) => {
+  const { t } = useLanguage();
   const {
     allItems,
     isEmpty,
@@ -25,7 +27,7 @@ const BottleComparisonTable: React.FC<BottleComparisonProps> = ({
     getEcoScoreColor,
     loadingState
   } = useBottleComparison({
-    selectedBottles: [...selectedBottles], // Convert readonly to mutable
+    selectedBottles: [...selectedBottles],
     showTapWater,
     onToggleFavorite,
     onRemoveFavorite,
@@ -37,8 +39,8 @@ const BottleComparisonTable: React.FC<BottleComparisonProps> = ({
       <Card>
         <CardContent className="py-12 text-center text-muted-foreground">
           <Droplets className="w-16 h-16 mx-auto mb-4 text-muted-foreground/50" />
-          <h3 className="text-lg font-medium mb-2">Aucune bouteille sélectionnée</h3>
-          <p>Sélectionnez jusqu'à 3 bouteilles pour commencer la comparaison</p>
+          <h3 className="text-lg font-medium mb-2">{t('comp.bottleComparison.noSelection')}</h3>
+          <p>{t('comp.bottleComparison.noSelectionDesc')}</p>
         </CardContent>
       </Card>
     );
@@ -46,7 +48,6 @@ const BottleComparisonTable: React.FC<BottleComparisonProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Desktop view */}
       <div className="hidden lg:block">
         <BottleComparisonDesktop
           selectedBottles={[...selectedBottles]}
@@ -58,8 +59,6 @@ const BottleComparisonTable: React.FC<BottleComparisonProps> = ({
           loadingState={loadingState}
         />
       </div>
-
-      {/* Mobile view */}
       <div className="lg:hidden">
         <BottleComparisonMobile
           selectedBottles={[...selectedBottles]}

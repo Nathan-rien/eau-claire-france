@@ -1,6 +1,7 @@
 import React from 'react';
 import { Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MineralInfo {
   name: string;
@@ -55,6 +56,7 @@ interface MineralTooltipProps {
 }
 
 const MineralTooltip: React.FC<MineralTooltipProps> = ({ mineral, value, className = "" }) => {
+  const { t } = useLanguage();
   const info = mineralInfos[mineral];
   
   if (!info) return null;
@@ -76,7 +78,7 @@ const MineralTooltip: React.FC<MineralTooltipProps> = ({ mineral, value, classNa
               {info.description}
             </p>
             <div className="text-xs">
-              <p className="font-medium mb-1">Bienfaits:</p>
+              <p className="font-medium mb-1">{t('comp.mineral.benefits')}</p>
               <ul className="list-disc list-inside space-y-0.5">
                 {info.benefits.map((benefit, index) => (
                   <li key={index} className="text-gray-600">{benefit}</li>
@@ -84,7 +86,7 @@ const MineralTooltip: React.FC<MineralTooltipProps> = ({ mineral, value, classNa
               </ul>
             </div>
             <div className="text-xs">
-              <p className="font-medium">Recommandations:</p>
+              <p className="font-medium">{t('comp.mineral.recommendations')}</p>
               <p className="text-gray-600">{info.recommendations}</p>
             </div>
           </div>

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BottleWaterData, getUniqueBottles } from '@/data/bottleComparisonData';
 import { usePrices } from '@/hooks/usePrices';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface BottleSelectorProps {
   selectedBottles: BottleWaterData[];
@@ -20,6 +21,7 @@ const BottleSelector: React.FC<BottleSelectorProps> = ({
   onBottleAdd,
   onBottleRemove
 }) => {
+  const { t } = useLanguage();
   const { bottle: bottlePrice } = usePrices();
   const fmt = (v: number) => (v < 0.01 ? v.toFixed(3) : v.toFixed(2)).replace(".", ",") + " €/L";
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,14 +51,13 @@ const BottleSelector: React.FC<BottleSelectorProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <Search className="w-5 h-5" />
-          <span>Sélectionner des bouteilles à comparer (max 3)</span>
+          <span>{t('comp.bottleSelector.title')}</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {/* Bouteilles sélectionnées */}
         {selectedBottles.length > 0 && (
           <div className="mb-4">
-            <h3 className="text-sm font-medium mb-2">Bouteilles sélectionnées:</h3>
+            <h3 className="text-sm font-medium mb-2">{t('comp.bottleSelector.selected')}</h3>
             <div className="flex flex-wrap gap-2">
               {selectedBottles.map(bottle => (
                 <Badge key={bottle.id} variant="secondary" className="flex items-center space-x-1">
@@ -73,12 +74,11 @@ const BottleSelector: React.FC<BottleSelectorProps> = ({
           </div>
         )}
 
-        {/* Filtres et recherche */}
         <div className="space-y-4 mb-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Recherche</label>
+            <label className="block text-sm font-medium mb-2">{t('comp.bottleSelector.search')}</label>
             <Input
-              placeholder="Marque, nom ou source..."
+              placeholder={t('comp.bottleSelector.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-12 text-base"
@@ -86,38 +86,37 @@ const BottleSelector: React.FC<BottleSelectorProps> = ({
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Type d'eau</label>
+              <label className="block text-sm font-medium mb-2">{t('comp.bottleSelector.waterType')}</label>
               <Select value={typeFilter} onValueChange={setTypeFilter}>
                 <SelectTrigger className="h-12">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les types</SelectItem>
-                  <SelectItem value="plate">Eau plate</SelectItem>
-                  <SelectItem value="gazeuse">Eau gazeuse</SelectItem>
+                  <SelectItem value="all">{t('comp.bottleSelector.allTypes')}</SelectItem>
+                  <SelectItem value="plate">{t('comp.bottleSelector.still')}</SelectItem>
+                  <SelectItem value="gazeuse">{t('comp.bottleSelector.sparkling')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Éco-score</label>
+              <label className="block text-sm font-medium mb-2">{t('comp.bottleSelector.ecoScore')}</label>
               <Select value={ecoFilter} onValueChange={setEcoFilter}>
                 <SelectTrigger className="h-12">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les scores</SelectItem>
-                  <SelectItem value="A">A - Excellent</SelectItem>
-                  <SelectItem value="B">B - Très bon</SelectItem>
-                  <SelectItem value="C">C - Bon</SelectItem>
-                  <SelectItem value="D">D - Moyen</SelectItem>
-                  <SelectItem value="E">E - Mauvais</SelectItem>
+                  <SelectItem value="all">{t('comp.bottleSelector.allScores')}</SelectItem>
+                  <SelectItem value="A">{t('comp.bottleSelector.ecoScoreA')}</SelectItem>
+                  <SelectItem value="B">{t('comp.bottleSelector.ecoScoreB')}</SelectItem>
+                  <SelectItem value="C">{t('comp.bottleSelector.ecoScoreC')}</SelectItem>
+                  <SelectItem value="D">{t('comp.bottleSelector.ecoScoreD')}</SelectItem>
+                  <SelectItem value="E">{t('comp.bottleSelector.ecoScoreE')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
         </div>
 
-        {/* Liste des bouteilles disponibles */}
         <div className="max-h-60 overflow-y-auto">
           <div className="grid grid-cols-1 gap-2">
             {filteredBottles.map(bottle => (
@@ -153,7 +152,7 @@ const BottleSelector: React.FC<BottleSelectorProps> = ({
                 </div>
                 {selectedBottles.length < 3 && (
                   <Button size="sm" variant="outline">
-                    Ajouter
+                    {t('comp.bottleSelector.add')}
                   </Button>
                 )}
               </div>
@@ -161,7 +160,7 @@ const BottleSelector: React.FC<BottleSelectorProps> = ({
           </div>
           {filteredBottles.length === 0 && (
             <div className="text-center py-8 text-gray-500">
-              Aucune bouteille trouvée avec ces critères
+              {t('comp.bottleSelector.noResults')}
             </div>
           )}
         </div>

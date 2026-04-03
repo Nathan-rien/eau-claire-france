@@ -4,6 +4,7 @@ import { AlertTriangle, Info, TrendingUp, TrendingDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export interface Pollutant {
   id: string;
@@ -25,6 +26,8 @@ interface PollutantCardProps {
 }
 
 const PollutantCard: React.FC<PollutantCardProps> = ({ pollutant }) => {
+  const { t } = useLanguage();
+
   const getRiskColor = (level: string) => {
     switch (level) {
       case 'low': return 'bg-green-100 text-green-800 border-green-200';
@@ -36,10 +39,10 @@ const PollutantCard: React.FC<PollutantCardProps> = ({ pollutant }) => {
 
   const getRiskLabel = (level: string) => {
     switch (level) {
-      case 'low': return 'Faible';
-      case 'medium': return 'Modéré';
-      case 'high': return 'Élevé';
-      default: return 'Non évalué';
+      case 'low': return t('comp.pollutantCard.riskLow');
+      case 'medium': return t('comp.pollutantCard.riskMedium');
+      case 'high': return t('comp.pollutantCard.riskHigh');
+      default: return t('comp.pollutantCard.riskUnknown');
     }
   };
 
@@ -72,19 +75,19 @@ const PollutantCard: React.FC<PollutantCardProps> = ({ pollutant }) => {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-gray-600">Catégorie:</span>
+              <span className="text-gray-600">{t('comp.pollutantCard.category')}</span>
               <p className="font-medium">{pollutant.category}</p>
             </div>
             <div>
-              <span className="text-gray-600">Limite légale:</span>
+              <span className="text-gray-600">{t('comp.pollutantCard.legalLimit')}</span>
               <p className="font-medium">{pollutant.limit} {pollutant.unit}</p>
             </div>
             <div>
-              <span className="text-gray-600">Détection:</span>
+              <span className="text-gray-600">{t('comp.pollutantCard.detection')}</span>
               <p className="font-medium">{pollutant.detection}</p>
             </div>
             <div>
-              <span className="text-gray-600">Valeurs courantes:</span>
+              <span className="text-gray-600">{t('comp.pollutantCard.commonValues')}</span>
               <p className="font-medium">{pollutant.commonValues}</p>
             </div>
           </div>
@@ -92,24 +95,24 @@ const PollutantCard: React.FC<PollutantCardProps> = ({ pollutant }) => {
           <div className="bg-gray-50 rounded-lg p-3">
             <h4 className="font-medium text-sm mb-2 flex items-center">
               <Info className="w-4 h-4 mr-1" />
-              Origine
+              {t('comp.pollutantCard.origin')}
             </h4>
             <p className="text-sm text-gray-700">{pollutant.origin}</p>
           </div>
 
           <div className="bg-red-50 rounded-lg p-3">
-            <h4 className="font-medium text-sm mb-2 text-red-800">Effets sur la santé</h4>
+            <h4 className="font-medium text-sm mb-2 text-red-800">{t('comp.pollutantCard.healthEffects')}</h4>
             <p className="text-sm text-red-700">{pollutant.health}</p>
           </div>
 
           <div className="flex items-center justify-between pt-2">
             <div className="text-sm">
-              <span className="text-gray-600">Prévalence: </span>
-              <span className="font-medium">{pollutant.prevalence}% des réseaux</span>
+              <span className="text-gray-600">{t('comp.pollutantCard.prevalence')} </span>
+              <span className="font-medium">{pollutant.prevalence}{t('comp.pollutantCard.ofNetworks')}</span>
             </div>
             <Button size="sm" variant="outline" asChild>
               <a href="/carte-polluants">
-                Voir sur la carte
+                {t('comp.pollutantCard.viewOnMap')}
               </a>
             </Button>
           </div>

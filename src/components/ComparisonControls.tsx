@@ -4,6 +4,7 @@ import { RotateCcw, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ComparisonControlsProps {
   showTapWater: boolean;
@@ -18,20 +19,22 @@ const ComparisonControls: React.FC<ComparisonControlsProps> = ({
   selectedBottlesCount,
   onReset
 }) => {
+  const { t } = useLanguage();
+
   const handleShare = async () => {
     const url = window.location.href;
     
     try {
       await navigator.clipboard.writeText(url);
       toast({
-        title: "Lien copié !",
-        description: "Le lien de comparaison a été copié dans le presse-papiers."
+        title: t('comp.comparisonControls.linkCopied'),
+        description: t('comp.comparisonControls.linkCopiedDesc')
       });
     } catch (error) {
-      console.error('Erreur lors de la copie:', error);
+      console.error('Copy error:', error);
       toast({
-        title: "Erreur",
-        description: "Impossible de copier le lien. Copiez l'URL manuellement.",
+        title: t('common.error'),
+        description: t('comp.comparisonControls.copyError'),
         variant: "destructive"
       });
     }
@@ -46,7 +49,7 @@ const ComparisonControls: React.FC<ComparisonControlsProps> = ({
           onCheckedChange={setShowTapWater}
         />
         <label htmlFor="tap-water" className="text-sm font-medium">
-          Comparer avec l'eau du robinet
+          {t('comp.comparisonControls.compareWithTap')}
         </label>
       </div>
       
@@ -58,7 +61,7 @@ const ComparisonControls: React.FC<ComparisonControlsProps> = ({
           disabled={selectedBottlesCount === 0 && !showTapWater}
         >
           <RotateCcw className="w-4 h-4 mr-2" />
-          Réinitialiser
+          {t('comp.comparisonControls.reset')}
         </Button>
         
         <Button
@@ -68,7 +71,7 @@ const ComparisonControls: React.FC<ComparisonControlsProps> = ({
           disabled={selectedBottlesCount === 0}
         >
           <Share2 className="w-4 h-4 mr-2" />
-          Partager
+          {t('comp.comparisonControls.share')}
         </Button>
       </div>
     </div>

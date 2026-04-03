@@ -6,6 +6,7 @@ import { Filter, RotateCcw } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getSourcesStatistics } from '@/data/waterSources';
 import { bottledWaters } from '@/data/bottleWaterData';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface WaterSourceFiltersProps {
   selectedType: string;
@@ -22,30 +23,31 @@ const WaterSourceFilters: React.FC<WaterSourceFiltersProps> = ({
   onBrandChange,
   onReset
 }) => {
+  const { t } = useLanguage();
   const stats = getSourcesStatistics();
 
   const filterOptions = [
     {
       id: 'all',
-      label: 'Toutes les sources',
+      label: t('comp.waterSourceFilters.allSources'),
       count: stats.total,
       color: 'bg-gray-100 text-gray-800 border-gray-200'
     },
     {
       id: 'source',
-      label: 'Eau de source',
+      label: t('comp.waterSourceFilters.springWater'),
       count: stats.byType['Eau de source'],
       color: 'bg-green-100 text-green-800 border-green-200'
     },
     {
       id: 'minerale',
-      label: 'Eau minérale naturelle',
+      label: t('comp.waterSourceFilters.mineralWater'),
       count: stats.byType['Eau minérale naturelle'],
       color: 'bg-blue-100 text-blue-800 border-blue-200'
     },
     {
       id: 'gazeuse',
-      label: 'Eau minérale gazeuse',
+      label: t('comp.waterSourceFilters.sparklingWater'),
       count: stats.byType['Eau minérale naturelle gazeuse'],
       color: 'bg-amber-100 text-amber-800 border-amber-200'
     }
@@ -57,7 +59,7 @@ const WaterSourceFilters: React.FC<WaterSourceFiltersProps> = ({
         <div className="flex justify-between items-center">
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5" />
-            Filtres
+            {t('comp.waterSourceFilters.title')}
           </CardTitle>
           {(selectedType !== 'all' || selectedBrand !== 'all') && (
             <Button
@@ -67,7 +69,7 @@ const WaterSourceFilters: React.FC<WaterSourceFiltersProps> = ({
               className="gap-2"
             >
               <RotateCcw className="h-4 w-4" />
-              Réinitialiser
+              {t('comp.waterSourceFilters.reset')}
             </Button>
           )}
         </div>
@@ -75,7 +77,7 @@ const WaterSourceFilters: React.FC<WaterSourceFiltersProps> = ({
       <CardContent>
         <div className="space-y-3">
           <div>
-            <h4 className="text-sm font-medium mb-2">Type d'eau</h4>
+            <h4 className="text-sm font-medium mb-2">{t('comp.waterSourceFilters.waterType')}</h4>
             <div className="grid grid-cols-1 gap-2">
               {filterOptions.map((option) => (
                 <Button
@@ -98,15 +100,14 @@ const WaterSourceFilters: React.FC<WaterSourceFiltersProps> = ({
             </div>
           </div>
 
-          {/* Sélection par marque */}
           <div className="space-y-2">
-            <h4 className="text-sm font-medium">Marque d'eau</h4>
+            <h4 className="text-sm font-medium">{t('comp.waterSourceFilters.brand')}</h4>
             <Select value={selectedBrand} onValueChange={onBrandChange}>
               <SelectTrigger>
-                <SelectValue placeholder="Toutes les marques" />
+                <SelectValue placeholder={t('comp.waterSourceFilters.allBrands')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Toutes les marques</SelectItem>
+                <SelectItem value="all">{t('comp.waterSourceFilters.allBrands')}</SelectItem>
                 {bottledWaters
                   .filter(water => water.id && water.id.trim() !== '')
                   .sort((a, b) => a.name.localeCompare(b.name))
