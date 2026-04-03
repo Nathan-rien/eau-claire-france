@@ -208,7 +208,7 @@ const CarteEurope: React.FC = () => {
             <CardContent className="pt-4 text-center">
               <Users className="w-6 h-6 mx-auto mb-1 text-primary" />
               <div className="text-2xl font-bold text-foreground">{totalPop}M</div>
-              <div className="text-xs text-muted-foreground">Population couverte</div>
+              <div className="text-xs text-muted-foreground">{t('europeMap.populationCovered')}</div>
             </CardContent>
           </Card>
           <Card>
