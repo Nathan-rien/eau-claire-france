@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
@@ -69,7 +70,7 @@ const CompositionEurope: React.FC = () => {
   const [sortAsc, setSortAsc] = useState(true);
   const [filter, setFilter] = useState('');
   const [expandedCountry, setExpandedCountry] = useState<string | null>(null);
-
+  const { t } = useLanguage();
   useEffect(() => {
     getEUWaterComposition().then(d => { setRaw(d); setLoading(false); });
   }, []);
@@ -133,12 +134,11 @@ const CompositionEurope: React.FC = () => {
           <div className="flex items-center justify-center gap-2 mb-2">
             <Beaker className="h-8 w-8 text-primary" />
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-              Composition physico-chimique de l'eau en Europe
+              {t('europeComposition.title')}
             </h1>
           </div>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Tableau comparatif interactif des 11 paramètres physico-chimiques de l'eau potable dans les 27 pays de l'UE.
-            Données DISCODATA / Agence européenne de l'environnement.
+            {t('europeComposition.subtitle')}
           </p>
           <div className="flex flex-wrap gap-2 justify-center mt-4">
             <Link to="/classement-europe">

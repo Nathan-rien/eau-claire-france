@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
@@ -24,6 +25,7 @@ const PolluantsEurope: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [enriching, setEnriching] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     Promise.all([getEUPollutantsBaseline(), getEUWaterComposition()]).then(([p, c]) => {
@@ -78,9 +80,9 @@ const PolluantsEurope: React.FC = () => {
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2">
             <FlaskConical className="w-7 h-7 text-primary" />
-            <h1 className="text-3xl font-bold text-foreground">Polluants en Europe</h1>
+            <h1 className="text-3xl font-bold text-foreground">{t('europePollutants.title')}</h1>
           </div>
-          <p className="text-muted-foreground">Dépassements de seuils dans l'eau potable des 27 pays de l'UE</p>
+          <p className="text-muted-foreground">{t('europePollutants.subtitle')}</p>
           <Link to="/polluants" className="text-sm text-primary hover:underline">
             ← Retour aux polluants France
           </Link>

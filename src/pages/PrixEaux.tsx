@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useSearchParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
@@ -35,7 +36,7 @@ interface PriceWithRetailer extends Price {
 export default function PrixEaux() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
-  
+  const { t } = useLanguage();
   const [prices, setPrices] = useState<PriceWithRetailer[]>([]);
   const [retailers, setRetailers] = useState<Retailer[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
@@ -318,33 +319,32 @@ export default function PrixEaux() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">Prix des eaux en bouteille</h1>
+          <h1 className="text-3xl font-bold mb-4">{t('prices.title')}</h1>
           <p className="text-muted-foreground mb-6">
-            Comparez les prix des eaux en bouteille dans toutes les enseignes. 
-            Données mises à jour quotidiennement.
+            {t('prices.subtitle')}
           </p>
 
           {/* Légende des types de sources */}
           <Alert className="mb-6 bg-muted/50">
             <Info className="h-4 w-4" />
-            <AlertTitle>Sources de prix</AlertTitle>
+            <AlertTitle>{t('prices.sourcesTitle')}</AlertTitle>
             <AlertDescription>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 text-sm">
                 <div className="flex items-center gap-2">
                   <Store className="h-4 w-4" />
-                  <span><strong>Site principal :</strong> Prix grand public</span>
+                  <span><strong>{t('prices.mainSite')}</strong> {t('prices.mainSiteDesc')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Truck className="h-4 w-4" />
-                  <span><strong>Drive :</strong> Click & Collect</span>
+                  <span><strong>{t('prices.drive')}</strong> {t('prices.driveDesc')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Package className="h-4 w-4" />
-                  <span><strong>Grossiste/Pro :</strong> Peut nécessiter conditions</span>
+                  <span><strong>{t('prices.wholesale')}</strong> {t('prices.wholesaleDesc')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <ShoppingCart className="h-4 w-4" />
-                  <span><strong>Marketplace :</strong> Vendeur tiers</span>
+                  <span><strong>{t('prices.marketplace')}</strong> {t('prices.marketplaceDesc')}</span>
                 </div>
               </div>
             </AlertDescription>
@@ -358,9 +358,9 @@ export default function PrixEaux() {
           {/* No active retailers banner */}
           {noActiveRetailers && (
             <Alert variant="destructive" className="mb-6">
-              <AlertTitle>Aucune enseigne active visible</AlertTitle>
+              <AlertTitle>{t('prices.noActiveRetailers')}</AlertTitle>
               <AlertDescription>
-                Vérifiez le seed des enseignes et les politiques RLS.
+                {t('prices.checkConfig')}
               </AlertDescription>
             </Alert>
           )}
@@ -371,7 +371,7 @@ export default function PrixEaux() {
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Rechercher un produit..."
+                  placeholder={t('prices.searchProduct')}
                   value={filters.search || ''}
                   onChange={(e) => updateFilter('search', e.target.value || null)}
                   className="pl-10"
@@ -380,10 +380,10 @@ export default function PrixEaux() {
 
               <Select value={filters.brand || ''} onValueChange={(value) => updateFilter('brand', value || null)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Marque" />
+                  <SelectValue placeholder={t('prices.brand')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Toutes les marques</SelectItem>
+                  <SelectItem value="all">{t('prices.allBrands')}</SelectItem>
                   {brands
                     .filter(brand => brand && brand.trim() !== '')
                     .sort((a, b) => a.localeCompare(b))
@@ -395,10 +395,10 @@ export default function PrixEaux() {
 
               <Select value={filters.retailer || ''} onValueChange={(value) => updateFilter('retailer', value || null)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Enseigne" />
+                  <SelectValue placeholder={t('prices.retailer')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Toutes les enseignes</SelectItem>
+                  <SelectItem value="all">{t('prices.allRetailers')}</SelectItem>
                   {retailers
                     .filter(retailer => retailer.id && retailer.id.trim() !== '')
                     .map(retailer => (
@@ -409,39 +409,39 @@ export default function PrixEaux() {
 
               <Select value={filters.format || ''} onValueChange={(value) => updateFilter('format', value || null)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Format" />
+                  <SelectValue placeholder={t('prices.format')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les formats</SelectItem>
+                  <SelectItem value="all">{t('prices.allFormats')}</SelectItem>
                   <SelectItem value="50cl">50cl</SelectItem>
                   <SelectItem value="1L">1L</SelectItem>
                   <SelectItem value="1,5L">1,5L</SelectItem>
-                  <SelectItem value="autre">Autre</SelectItem>
+                  <SelectItem value="autre">{t('prices.format')}</SelectItem>
                 </SelectContent>
               </Select>
 
               <div className="flex gap-2">
                 <Select value={filters.pack || ''} onValueChange={(value) => updateFilter('pack', value || null)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Pack" />
+                    <SelectValue placeholder={t('prices.pack')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Tous les packs</SelectItem>
+                    <SelectItem value="all">{t('prices.allPacks')}</SelectItem>
                     <SelectItem value="6">Pack de 6</SelectItem>
                     <SelectItem value="8">Pack de 8</SelectItem>
                     <SelectItem value="12">Pack de 12</SelectItem>
-                    <SelectItem value="autre">Autre</SelectItem>
+                    <SelectItem value="autre">{t('prices.pack')}</SelectItem>
                   </SelectContent>
                 </Select>
 
-                <Select value={searchParams.get('availability') || ''} onValueChange={(value) => updateFilter('availability', value || null)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Disponibilité" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Tous produits</SelectItem>
-                    <SelectItem value="in_stock">En stock</SelectItem>
-                  </SelectContent>
+              <Select value={searchParams.get('availability') || ''} onValueChange={(value) => updateFilter('availability', value || null)}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('prices.availability')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('prices.allProducts')}</SelectItem>
+                  <SelectItem value="in_stock">{t('prices.inStock')}</SelectItem>
+                </SelectContent>
                 </Select>
               </div>
             </div>
@@ -450,24 +450,24 @@ export default function PrixEaux() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t">
               <Select value={searchParams.get('is_promo') || ''} onValueChange={(value) => updateFilter('is_promo', value || null)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Promotions" />
+                  <SelectValue placeholder={t('prices.promotions')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous</SelectItem>
-                  <SelectItem value="true">En promo</SelectItem>
-                  <SelectItem value="false">Prix normal</SelectItem>
+                  <SelectItem value="all">{t('prices.allItems')}</SelectItem>
+                  <SelectItem value="true">{t('prices.onPromo')}</SelectItem>
+                  <SelectItem value="false">{t('prices.normalPrice')}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={searchParams.get('channel_type') || ''} onValueChange={(value) => updateFilter('channel_type', value || null)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Type de source" />
+                  <SelectValue placeholder={t('prices.sourceType')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Toutes les sources</SelectItem>
-                  <SelectItem value="retail">🏪 Site principal</SelectItem>
+                  <SelectItem value="all">{t('prices.allSources')}</SelectItem>
+                  <SelectItem value="retail">🏪 {t('prices.mainSite').replace(' :', '')}</SelectItem>
                   <SelectItem value="drive">🚗 Drive</SelectItem>
-                  <SelectItem value="wholesale">📦 Grossiste/Pro</SelectItem>
+                  <SelectItem value="wholesale">📦 {t('prices.wholesale').replace(' :', '')}</SelectItem>
                   <SelectItem value="marketplace">🛒 Marketplace</SelectItem>
                 </SelectContent>
               </Select>
@@ -475,22 +475,18 @@ export default function PrixEaux() {
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    setSearchParams(new URLSearchParams());
-                  }}
+                  onClick={() => { setSearchParams(new URLSearchParams()); }}
                   className="flex items-center gap-2"
                 >
                   <Filter className="h-4 w-4" />
-                  Réinitialiser
+                  {t('prices.reset')}
                 </Button>
                 <Button
                   variant="default"
-                  onClick={() => {
-                    setSearchParams(new URLSearchParams({ pageSize: '500' }));
-                  }}
+                  onClick={() => { setSearchParams(new URLSearchParams({ pageSize: '500' })); }}
                   className="flex items-center gap-2"
                 >
-                  Afficher tous
+                  {t('prices.showAll')}
                 </Button>
               </div>
             </div>
@@ -500,42 +496,28 @@ export default function PrixEaux() {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <p className="text-sm text-muted-foreground">
-                {pagination.total} produits trouvés
+                {t('prices.productsFound', { count: String(pagination.total) })}
               </p>
             </div>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={pagination.page <= 1}
+              <Button variant="outline" size="sm" disabled={pagination.page <= 1}
                 onClick={() => updateFilter('page', (pagination.page - 1).toString())}
-              >
-                Précédent
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={pagination.page >= pagination.totalPages}
+              >{t('prices.previous')}</Button>
+              <Button variant="outline" size="sm" disabled={pagination.page >= pagination.totalPages}
                 onClick={() => updateFilter('page', (pagination.page + 1).toString())}
-              >
-                Suivant
-              </Button>
+              >{t('prices.next')}</Button>
             </div>
           </div>
 
           {loading ? (
-            <div className="text-center py-12">Chargement...</div>
+            <div className="text-center py-12">{t('common.loading')}</div>
           ) : showDataBanner ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">
-                Aucune donnée disponible. Les données de prix sont mises à jour périodiquement.
-              </p>
+              <p className="text-muted-foreground">{t('prices.noData')}</p>
             </div>
           ) : prices.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">
-                Aucun prix trouvé pour ces critères. Modifiez vos filtres ou essayez une recherche différente.
-              </p>
+              <p className="text-muted-foreground">{t('prices.noResults')}</p>
             </div>
           ) : (
             <>

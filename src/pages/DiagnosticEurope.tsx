@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
@@ -30,6 +31,7 @@ const DiagnosticEurope = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [enriching, setEnriching] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     Promise.all([getEUWaterQuality(), getEUPollutantsBaseline(), getEUWaterComposition()])
@@ -55,9 +57,9 @@ const DiagnosticEurope = () => {
     <Layout>
       <SEOHead {...seoData.diagnosticEurope} />
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">Diagnostic qualité de l'eau — Europe</h1>
+        <h1 className="text-3xl font-bold mb-2">{t('europeDiag.title')}</h1>
         <p className="text-muted-foreground mb-6">
-          Sélectionnez un pays pour visualiser ses indicateurs de qualité de l'eau potable (données EEA 2023).
+          {t('europeDiag.subtitle')}
         </p>
 
         {loading ? (
@@ -70,7 +72,7 @@ const DiagnosticEurope = () => {
             <div className="flex items-center gap-3 mb-8">
               <Select value={selectedCountry} onValueChange={setSelectedCountry}>
                 <SelectTrigger className="w-full max-w-sm">
-                  <SelectValue placeholder="Choisir un pays…" />
+                  <SelectValue placeholder={t('europeDiag.selectCountry')} />
                 </SelectTrigger>
                 <SelectContent>
                   {quality.map(c => (

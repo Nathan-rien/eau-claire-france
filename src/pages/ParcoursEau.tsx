@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
@@ -176,6 +177,7 @@ const WaterTowerSVG = ({ isVisible }: { isVisible: boolean }) => (
 /* ───── Main Page ───── */
 
 const ParcoursEau = () => {
+  const { t } = useLanguage();
   const [activeSection, setActiveSection] = useState(0);
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
@@ -274,22 +276,22 @@ const ParcoursEau = () => {
         {/* Content */}
         <div className="relative z-10 text-center px-6 max-w-3xl mx-auto">
           <div className="inline-block px-4 py-1.5 rounded-full border border-blue-300/30 bg-blue-500/10 backdrop-blur text-blue-200 text-sm mb-6 animate-fade-in">
-            Infographie interactive immersive
+            {t('journey.heroTag')}
           </div>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-            <span className="block animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>Le parcours</span>
-            <span className="block bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'both' }}>de l'eau</span>
-            <span className="block text-2xl md:text-3xl font-normal text-white/70 mt-2 animate-fade-in" style={{ animationDelay: '0.8s', animationFillMode: 'both' }}>en France</span>
+            <span className="block animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>{t('journey.heroTitle1')}</span>
+            <span className="block bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'both' }}>{t('journey.heroTitle2')}</span>
+            <span className="block text-2xl md:text-3xl font-normal text-white/70 mt-2 animate-fade-in" style={{ animationDelay: '0.8s', animationFillMode: 'both' }}>{t('journey.heroTitle3')}</span>
           </h1>
           <p className="text-lg text-white/60 mb-10 animate-fade-in" style={{ animationDelay: '1s', animationFillMode: 'both' }}>
-            De la source naturelle à votre robinet : découvrez les 6 étapes du voyage
+            {t('journey.heroSubtitle')}
           </p>
           <button
             onClick={scrollToFirst}
             className="group inline-flex items-center gap-2 px-8 py-4 rounded-full bg-blue-500/20 backdrop-blur border border-blue-300/30 text-white hover:bg-blue-500/40 transition-all duration-300 animate-fade-in"
             style={{ animationDelay: '1.3s', animationFillMode: 'both' }}
           >
-            Commencer le voyage
+            {t('journey.startJourney')}
             <ChevronDown className="w-5 h-5 group-hover:translate-y-1 transition-transform" />
           </button>
         </div>
@@ -331,9 +333,9 @@ const ParcoursEau = () => {
       <section className="relative overflow-hidden bg-gradient-to-b from-blue-950 via-blue-900/90 to-blue-950 py-16 md:py-24">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">Le voyage complet de l'eau</h2>
+            <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">{t('journey.overviewTitle')}</h2>
             <p className="text-blue-200/60 text-sm md:text-base max-w-xl mx-auto">
-              De la source naturelle à votre robinet, suivez les 6 étapes du parcours de l'eau potable en France
+              {t('journey.overviewSubtitle')}
             </p>
           </div>
 
@@ -345,9 +347,9 @@ const ParcoursEau = () => {
           {/* Quick stats */}
           <div className="grid grid-cols-3 gap-4 md:gap-8 mb-10">
             {[
-              { value: '906 000 km', label: 'de réseau', icon: '🔧' },
-              { value: '24–48h', label: 'de voyage', icon: '⏱️' },
-              { value: '63', label: 'paramètres contrôlés', icon: '🔬' },
+              { value: '906 000 km', label: t('journey.network'), icon: '🔧' },
+              { value: '24–48h', label: t('journey.travelTime'), icon: '⏱️' },
+              { value: '63', label: t('journey.controlledParams'), icon: '🔬' },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-xl md:text-2xl mb-1">{stat.icon}</div>
@@ -363,7 +365,7 @@ const ParcoursEau = () => {
               onClick={scrollToFirst}
               className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-500/20 backdrop-blur border border-blue-300/30 text-white hover:bg-blue-500/40 transition-all duration-300"
             >
-              Explorer chaque étape
+              {t('journey.exploreSteps')}
               <ChevronDown className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
             </button>
           </div>

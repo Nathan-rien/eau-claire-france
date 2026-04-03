@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
@@ -11,6 +12,7 @@ import { AlertTriangle, ShieldAlert, TrendingDown, ChevronDown, Bug, FlaskConica
 const AlertesEurope = () => {
   const [quality, setQuality] = useState<EUCountryWaterQuality[]>([]);
   const [pollutants, setPollutants] = useState<EUPollutant[]>([]);
+  const { t } = useLanguage();
 
   useEffect(() => {
     Promise.all([getEUWaterQuality(), getEUPollutants()]).then(([q, p]) => {
@@ -32,9 +34,9 @@ const AlertesEurope = () => {
         {...seoData.alertesEurope}
       />
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">Alertes qualité — Europe</h1>
+        <h1 className="text-3xl font-bold mb-2">{t('europeAlerts.title')}</h1>
         <p className="text-muted-foreground mb-8">
-          Pays en situation de non-conformité et polluants avec les taux de dépassement les plus élevés (données EEA 2023).
+          {t('europeAlerts.subtitle')}
         </p>
 
         {/* Countries with worst scores */}
@@ -42,12 +44,12 @@ const AlertesEurope = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShieldAlert className="h-5 w-5 text-destructive" />
-              Pays en alerte
+              {t('europeAlerts.alertCountries')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {worstCountries.length === 0 ? (
-              <p className="text-muted-foreground">Aucun pays en situation critique identifié.</p>
+              <p className="text-muted-foreground">{t('europeAlerts.noAlert')}</p>
             ) : (
               <div className="space-y-4">
                 {worstCountries.map(c => {

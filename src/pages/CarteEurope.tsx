@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
@@ -147,7 +148,7 @@ const CarteEurope: React.FC = () => {
   const [data, setData] = useState<EUCountryWaterQuality[]>([]);
   const [selected, setSelected] = useState<EUCountryWaterQuality | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const { t } = useLanguage();
   useEffect(() => {
     getEUWaterQuality().then(d => {
       setData(d);
@@ -176,14 +177,14 @@ const CarteEurope: React.FC = () => {
           <div className="flex items-center justify-center gap-2">
             <span className="text-3xl">🇪🇺</span>
             <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-              Qualité de l'eau en Europe
+              {t('europeMap.title')}
             </h1>
           </div>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Données de conformité de l'eau potable dans les 27 pays de l'UE, basées sur la Directive Eau Potable (Drinking Water Directive) de l'Agence européenne pour l'environnement.
+            {t('europeMap.subtitle')}
           </p>
           <Link to="/carte" className="text-sm text-primary hover:underline">
-            ← Retour à la carte France
+            {t('europeMap.backFrance')}
           </Link>
         </div>
 
@@ -193,28 +194,28 @@ const CarteEurope: React.FC = () => {
             <CardContent className="pt-4 text-center">
               <Droplets className="w-6 h-6 mx-auto mb-1 text-primary" />
               <div className="text-2xl font-bold text-foreground">{avgCompliance}%</div>
-              <div className="text-xs text-muted-foreground">Conformité moyenne</div>
+              <div className="text-xs text-muted-foreground">{t('europeMap.avgCompliance')}</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-4 text-center">
               <MapPin className="w-6 h-6 mx-auto mb-1 text-primary" />
               <div className="text-2xl font-bold text-foreground">27</div>
-              <div className="text-xs text-muted-foreground">Pays analysés</div>
+              <div className="text-xs text-muted-foreground">{t('europeMap.countriesAnalyzed')}</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-4 text-center">
               <Users className="w-6 h-6 mx-auto mb-1 text-primary" />
               <div className="text-2xl font-bold text-foreground">{totalPop}M</div>
-              <div className="text-xs text-muted-foreground">Population couverte</div>
+              <div className="text-xs text-muted-foreground">{t('europeMap.populationCovered')}</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-4 text-center">
               <AlertTriangle className="w-6 h-6 mx-auto mb-1 text-primary" />
               <div className="text-2xl font-bold text-foreground">{countA}</div>
-              <div className="text-xs text-muted-foreground">Pays score A</div>
+              <div className="text-xs text-muted-foreground">{t('europeMap.scoreA')}</div>
             </CardContent>
           </Card>
         </div>
@@ -257,7 +258,7 @@ const CarteEurope: React.FC = () => {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Conformité</span>
+                      <span className="text-muted-foreground">{t('europeMap.compliance')}</span>
                       <span className="font-semibold text-foreground">{country.complianceRate}%</span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-2">
@@ -286,7 +287,7 @@ const CarteEurope: React.FC = () => {
         </div>
 
         <p className="text-xs text-muted-foreground text-center">
-          Source : EEA Waterbase – WISE Drinking Water Directive (DWD), rapport 2023. Données agrégées au niveau national.
+          {t('europeMap.source')}
         </p>
       </div>
     </Layout>

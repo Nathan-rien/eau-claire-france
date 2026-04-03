@@ -6,8 +6,10 @@ import Breadcrumb from '@/components/Breadcrumb';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import WaterSourcesMap from '@/components/WaterSourcesMap';
 import { buildSources, type SourceItem } from "@/utils/sourcesAdapter";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function SourcesEau() {
+  const { t } = useLanguage();
   const [sources, setSources] = useState<SourceItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const loadedRef = useRef(false);
@@ -34,15 +36,15 @@ export default function SourcesEau() {
     return () => { cancelled = true; };
   }, []);
 
-  if (error) return <div>Erreur: {error}</div>;
-  if (!sources) return <div>Chargement des sources…</div>;
-  if (sources.length === 0) return <div>Aucune source à afficher.</div>;
+  if (error) return <div>{t('waterSources.error')} {error}</div>;
+  if (!sources) return <div>{t('waterSources.loading')}</div>;
+  if (sources.length === 0) return <div>{t('waterSources.noSources')}</div>;
 
   return (
     <Layout>
       <SEOHead 
-        title="Sources d'Eau Minérale en France - Carte Interactive | InfoEau"
-        description="Explorez les principales sources des bouteilles d'eau vendues en France. Découvrez leur localisation, leur composition et les marques associées."
+        title={t('waterSources.seoTitle')}
+        description={t('waterSources.seoDesc')}
         keywords="sources eau bouteilles, carte sources eau, bouteilles eau France, géolocalisation sources, composition, Evian, Volvic, Vittel, Contrex"
         canonical="/sources-eau"
         schemaData={{
@@ -72,10 +74,10 @@ export default function SourcesEau() {
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
                 <Droplets className="w-8 h-8 text-blue-600" />
-                <span>Sources d'eau en France</span>
+                <span>{t('waterSources.title')}</span>
               </h1>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                {sources.length} captages trouvés — cliquez sur une source pour voir ses détails.
+                {t('waterSources.subtitle', { count: String(sources.length) })}
               </p>
             </div>
 
@@ -90,31 +92,22 @@ export default function SourcesEau() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Info className="h-5 w-5" />
-                    À propos des sources d'eau
+                    {t('waterSources.aboutTitle')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid md:grid-cols-3 gap-6">
                     <div>
-                      <h3 className="font-semibold text-green-800 mb-2">Eau de source</h3>
-                      <p className="text-sm text-gray-600">
-                        Eau d'origine souterraine, microbiologiquement saine et protégée contre la pollution. 
-                        Sa composition peut varier selon la source.
-                      </p>
+                      <h3 className="font-semibold text-green-800 mb-2">{t('waterSources.springWater')}</h3>
+                      <p className="text-sm text-gray-600">{t('waterSources.springWaterDesc')}</p>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-blue-800 mb-2">Eau minérale naturelle</h3>
-                      <p className="text-sm text-gray-600">
-                        Eau souterraine avec une composition minérale constante et des propriétés favorables à la santé. 
-                        Chaque source a sa propre signature minérale.
-                      </p>
+                      <h3 className="font-semibold text-blue-800 mb-2">{t('waterSources.mineralWater')}</h3>
+                      <p className="text-sm text-gray-600">{t('waterSources.mineralWaterDesc')}</p>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-amber-800 mb-2">Eau minérale gazeuse</h3>
-                      <p className="text-sm text-gray-600">
-                        Eau minérale naturellement gazéifiée ou enrichie en gaz carbonique. 
-                        Le CO₂ peut être d'origine naturelle ou ajouté.
-                      </p>
+                      <h3 className="font-semibold text-amber-800 mb-2">{t('waterSources.sparklingWater')}</h3>
+                      <p className="text-sm text-gray-600">{t('waterSources.sparklingWaterDesc')}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -128,41 +121,25 @@ export default function SourcesEau() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <MapPin className="h-5 w-5" />
-                    Comprendre les sources d'eau
+                    {t('waterSources.understand')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <h3 className="font-semibold mb-3">Formation des sources</h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Les sources d'eau minérale se forment lorsque l'eau de pluie s'infiltre dans le sol 
-                        et traverse différentes couches géologiques. Ce voyage peut durer plusieurs années 
-                        à plusieurs décennies, permettant à l'eau de se charger en minéraux.
-                      </p>
+                      <h3 className="font-semibold mb-3">{t('waterSources.formation')}</h3>
+                      <p className="text-sm text-gray-600 mb-4">{t('waterSources.formationDesc')}</p>
                       
-                      <h3 className="font-semibold mb-3">Protection naturelle</h3>
-                      <p className="text-sm text-gray-600">
-                        Les sources sont naturellement protégées par des couches imperméables qui empêchent 
-                        les contaminants de surface d'atteindre l'eau. Cette protection géologique garantit 
-                        la pureté de l'eau extraite.
-                      </p>
+                      <h3 className="font-semibold mb-3">{t('waterSources.protection')}</h3>
+                      <p className="text-sm text-gray-600">{t('waterSources.protectionDesc')}</p>
                     </div>
                     
                     <div>
-                      <h3 className="font-semibold mb-3">Contrôles qualité</h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Chaque source fait l'objet de contrôles rigoureux et réguliers. Les eaux minérales 
-                        naturelles bénéficient d'une reconnaissance officielle après étude hydrogéologique 
-                        et validation de leurs propriétés.
-                      </p>
+                      <h3 className="font-semibold mb-3">{t('waterSources.qualityControls')}</h3>
+                      <p className="text-sm text-gray-600 mb-4">{t('waterSources.qualityControlsDesc')}</p>
                       
-                      <h3 className="font-semibold mb-3">Préservation environnementale</h3>
-                      <p className="text-sm text-gray-600">
-                        Les zones de captage sont protégées par des périmètres de sécurité. Les exploitants 
-                        mettent en place des programmes de préservation de l'environnement pour maintenir 
-                        la qualité des sources à long terme.
-                      </p>
+                      <h3 className="font-semibold mb-3">{t('waterSources.preservation')}</h3>
+                      <p className="text-sm text-gray-600">{t('waterSources.preservationDesc')}</p>
                     </div>
                   </div>
                 </CardContent>

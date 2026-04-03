@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
@@ -19,6 +20,7 @@ interface PriceWithRetailer extends Price {
 export default function MarquePrix() {
   const { slug } = useParams<{ slug: string }>();
   const { toast } = useToast();
+  const { t } = useLanguage();
   
   const [brand, setBrand] = useState<string>('');
   const [prices, setPrices] = useState<PriceWithRetailer[]>([]);
@@ -141,7 +143,7 @@ export default function MarquePrix() {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center">Chargement...</div>
+          <div className="text-center">{t('common.loading')}</div>
         </div>
       </Layout>
     );
@@ -150,27 +152,26 @@ export default function MarquePrix() {
   return (
     <Layout>
       <SEOHead 
-        title={`Prix ${brand} - Comparaison par enseigne`}
-        description={`Comparez les prix de l'eau ${brand} dans toutes les enseignes. Trouvez les meilleures offres et économisez sur vos achats.`}
+        title={t('brandPrice.price', { brand })}
+        description={t('brandPrice.comparison', { brand })}
         canonical={`/marque/${slug}`}
       />
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">Prix {brand}</h1>
+          <h1 className="text-3xl font-bold mb-4">{t('brandPrice.price', { brand })}</h1>
           <p className="text-muted-foreground mb-6">
-            Comparaison des prix de l'eau {brand} par enseigne
+            {t('brandPrice.comparison', { brand })}
           </p>
 
           {/* Composition placeholder */}
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Composition minérale (pour information)</CardTitle>
+              <CardTitle>{t('brandPrice.composition')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Les données de composition minérale seront ajoutées prochainement.
-                Consultez l'étiquette du produit pour les informations précises.
+                {t('brandPrice.compositionNote')}
               </p>
             </CardContent>
           </Card>
@@ -179,14 +180,14 @@ export default function MarquePrix() {
           {stats && (
             <Card className="mb-6">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Prix médian par enseigne</CardTitle>
+                <CardTitle>{t('brandPrice.medianByRetailer')}</CardTitle>
                 <Select value={selectedPeriod.toString()} onValueChange={(value) => setSelectedPeriod(parseInt(value) as 7 | 30)}>
                   <SelectTrigger className="w-32">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="7">7 jours</SelectItem>
-                    <SelectItem value="30">30 jours</SelectItem>
+                    <SelectItem value="7">7 {t('brandPrice.days')}</SelectItem>
+                    <SelectItem value="30">30 {t('brandPrice.days')}</SelectItem>
                   </SelectContent>
                 </Select>
               </CardHeader>
@@ -208,7 +209,7 @@ export default function MarquePrix() {
                         </div>
                         {index === 0 && (
                           <Badge variant="default" className="text-xs">
-                            Meilleur prix
+                            {t('brandPrice.bestPrice')}
                           </Badge>
                         )}
                       </div>
@@ -222,7 +223,7 @@ export default function MarquePrix() {
           {/* Tableau des prix récents */}
           <Card>
             <CardHeader>
-              <CardTitle>Derniers prix relevés</CardTitle>
+              <CardTitle>{t('brandPrice.recentPrices')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">

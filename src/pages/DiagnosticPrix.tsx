@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Layout from '@/components/Layout';
 import { PriceDisplay } from '@/components/PriceDisplay';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { makeTapPrice, aggregateBottlePrices, sanityCheckEuroPerL } from '@/lib/price';
 import { PRICE_INPUTS } from '@/data/prices.example';
 import { bottleWaterDatabase } from '@/data/bottleComparisonData';
@@ -12,6 +13,7 @@ import { bottleWaterDatabase } from '@/data/bottleComparisonData';
  * Affiche les sources, calculs et garde-fous pour transparence
  */
 export default function DiagnosticPrix() {
+  const { t } = useLanguage();
   // Calcul des prix avec logging
   const tapPrice = makeTapPrice(PRICE_INPUTS.tap!);
   
@@ -39,10 +41,9 @@ export default function DiagnosticPrix() {
     <Layout>
       <div className="container mx-auto px-4 py-8 space-y-8">
         <div className="text-center space-y-4">
-          <h1 className="text-3xl font-bold">Diagnostic des Prix - Audit & Transparence</h1>
+          <h1 className="text-3xl font-bold">{t('priceDiag.title')}</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Analyse des sources de données, calculs de conversion et systèmes de garde-fous 
-            pour garantir la cohérence des prix affichés (eau du robinet vs bouteilles).
+            {t('priceDiag.subtitle')}
           </p>
         </div>
 
@@ -50,18 +51,18 @@ export default function DiagnosticPrix() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              💧 Prix Eau du Robinet
-              <Badge variant="outline">Source Centralisée</Badge>
+              💧 {t('priceDiag.tapWater')}
+              <Badge variant="outline">{t('priceDiag.centralSource')}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 className="font-semibold mb-2">Affichage Public</h3>
+                <h3 className="font-semibold mb-2">{t('priceDiag.publicDisplay')}</h3>
                 <PriceDisplay priceData={tapPrice} kind="tap" showMetadata={true} />
               </div>
               <div>
-                <h3 className="font-semibold mb-2">Données Brutes</h3>
+                <h3 className="font-semibold mb-2">{t('priceDiag.rawData')}</h3>
                 <pre className="text-xs bg-muted p-3 rounded overflow-auto">
                   {JSON.stringify(PRICE_INPUTS.tap, null, 2)}
                 </pre>
@@ -74,8 +75,8 @@ export default function DiagnosticPrix() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              🍶 Prix Eaux en Bouteille
-              <Badge variant="outline">Échantillon</Badge>
+              🍶 {t('priceDiag.bottleWater')}
+              <Badge variant="outline">{t('priceDiag.sample')}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -92,7 +93,7 @@ export default function DiagnosticPrix() {
                       showMetadata={true} 
                     />
                     <div className="mt-2 text-xs text-muted-foreground">
-                      Prix brut: {bottle.prix_moyen_litre}€/L
+                      {t('priceDiag.rawPrice')} {bottle.prix_moyen_litre}€/L
                     </div>
                   </CardContent>
                 </Card>
@@ -105,8 +106,8 @@ export default function DiagnosticPrix() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              🛡️ Tests de Validation
-              <Badge variant="outline">Garde-fous</Badge>
+              🛡️ {t('priceDiag.validation')}
+              <Badge variant="outline">{t('priceDiag.guardrails')}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -122,7 +123,7 @@ export default function DiagnosticPrix() {
                       </div>
                     </div>
                     <Badge variant={check.ok ? "default" : "destructive"}>
-                      {check.ok ? "✓ Valide" : `✗ ${check.reason}`}
+                      {check.ok ? `✓ ${t('priceDiag.valid')}` : `✗ ${check.reason}`}
                     </Badge>
                   </div>
                 );
@@ -134,12 +135,12 @@ export default function DiagnosticPrix() {
         {/* Méthode de calcul */}
         <Card>
           <CardHeader>
-            <CardTitle>📊 Méthodes de Calcul</CardTitle>
+            <CardTitle>📊 {t('priceDiag.methods')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 className="font-semibold text-green-700 mb-2">Eau du Robinet</h3>
+                <h3 className="font-semibold text-green-700 mb-2">{t('priceDiag.tapMethod')}</h3>
                 <ul className="text-sm space-y-1 text-muted-foreground">
                   <li>• Source: Prix au m³ (€/m³)</li>
                   <li>• Conversion: prix / 1000 → €/L</li>
@@ -148,7 +149,7 @@ export default function DiagnosticPrix() {
                 </ul>
               </div>
               <div>
-                <h3 className="font-semibold text-blue-700 mb-2">Eau en Bouteille</h3>
+                <h3 className="font-semibold text-blue-700 mb-2">{t('priceDiag.bottleMethod')}</h3>
                 <ul className="text-sm space-y-1 text-muted-foreground">
                   <li>• Source: Prix pack/bouteille + volume</li>
                   <li>• Conversion: prix / volume → €/L</li>
@@ -163,7 +164,7 @@ export default function DiagnosticPrix() {
         {/* Informations système */}
         <Card>
           <CardHeader>
-            <CardTitle>🔍 Informations système</CardTitle>
+            <CardTitle>🔍 {t('priceDiag.systemInfo')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-sm text-muted-foreground">

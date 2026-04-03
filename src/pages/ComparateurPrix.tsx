@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
@@ -28,7 +29,7 @@ interface ComparisonData {
 
 export default function ComparateurPrix() {
   const { toast } = useToast();
-  
+  const { t } = useLanguage();
   const [mode, setMode] = useState<'brands' | 'retailers'>('brands');
   const [brands, setBrands] = useState<string[]>([]);
   const [retailers, setRetailers] = useState<Retailer[]>([]);
@@ -149,8 +150,8 @@ export default function ComparateurPrix() {
   const handleCompare = async () => {
     if (mode === 'brands' && (!selectedBrand1 || !selectedBrand2)) {
       toast({
-        title: "Sélection incomplète",
-        description: "Veuillez sélectionner deux marques à comparer",
+        title: t('priceComparator.incompleteSelection'),
+        description: t('priceComparator.selectTwoBrands'),
         variant: "destructive"
       });
       return;
@@ -158,8 +159,8 @@ export default function ComparateurPrix() {
 
     if (mode === 'retailers' && (!selectedRetailer1 || !selectedRetailer2)) {
       toast({
-        title: "Sélection incomplète", 
-        description: "Veuillez sélectionner deux enseignes à comparer",
+        title: t('priceComparator.incompleteSelection'),
+        description: t('priceComparator.selectTwoRetailers'),
         variant: "destructive"
       });
       return;
@@ -244,9 +245,9 @@ export default function ComparateurPrix() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">Comparateur de prix</h1>
+          <h1 className="text-3xl font-bold mb-4">{t('priceComparator.title')}</h1>
           <p className="text-muted-foreground mb-6">
-            Comparez les prix entre marques ou entre enseignes pour trouver les meilleures offres.
+            {t('priceComparator.subtitle')}
           </p>
 
           <DataBanner onDataUpdate={refreshData} />
@@ -257,9 +258,9 @@ export default function ComparateurPrix() {
           {/* No active retailers banner */}
           {noActiveRetailers && (
             <Alert variant="destructive" className="mb-6">
-              <AlertTitle>Aucune enseigne active visible</AlertTitle>
+              <AlertTitle>{t('prices.noActiveRetailers')}</AlertTitle>
               <AlertDescription>
-                Vérifiez le seed des enseignes et les politiques RLS.
+                {t('prices.checkConfig')}
               </AlertDescription>
             </Alert>
           )}
@@ -267,18 +268,18 @@ export default function ComparateurPrix() {
           {/* Sélection du mode */}
           <Tabs value={mode} onValueChange={(value) => setMode(value as 'brands' | 'retailers')}>
             <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="brands">Comparer des marques</TabsTrigger>
-              <TabsTrigger value="retailers">Comparer des enseignes</TabsTrigger>
+              <TabsTrigger value="brands">{t('priceComparator.compareBrands')}</TabsTrigger>
+              <TabsTrigger value="retailers">{t('priceComparator.compareRetailers')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="brands">
               <Card className="p-6 mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Première marque</label>
+                    <label className="block text-sm font-medium mb-2">{t('priceComparator.firstBrand')}</label>
                     <Select value={selectedBrand1} onValueChange={setSelectedBrand1}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner une marque" />
+                        <SelectValue placeholder={t('priceComparator.selectBrand')} />
                       </SelectTrigger>
                       <SelectContent>
                         {brands
@@ -303,10 +304,10 @@ export default function ComparateurPrix() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Seconde marque</label>
+                    <label className="block text-sm font-medium mb-2">{t('priceComparator.secondBrand')}</label>
                     <Select value={selectedBrand2} onValueChange={setSelectedBrand2}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner une marque" />
+                        <SelectValue placeholder={t('priceComparator.selectBrand')} />
                       </SelectTrigger>
                       <SelectContent>
                         {brands
@@ -325,10 +326,10 @@ export default function ComparateurPrix() {
               <Card className="p-6 mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Première enseigne</label>
+                    <label className="block text-sm font-medium mb-2">{t('priceComparator.firstRetailer')}</label>
                     <Select value={selectedRetailer1} onValueChange={setSelectedRetailer1}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner une enseigne" />
+                        <SelectValue placeholder={t('priceComparator.selectRetailer')} />
                       </SelectTrigger>
                       <SelectContent>
                         {retailers
@@ -353,10 +354,10 @@ export default function ComparateurPrix() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Seconde enseigne</label>
+                    <label className="block text-sm font-medium mb-2">{t('priceComparator.secondRetailer')}</label>
                     <Select value={selectedRetailer2} onValueChange={setSelectedRetailer2}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner une enseigne" />
+                        <SelectValue placeholder={t('priceComparator.selectRetailer')} />
                       </SelectTrigger>
                       <SelectContent>
                         {retailers
@@ -380,12 +381,12 @@ export default function ComparateurPrix() {
               size="lg"
               className="px-8"
             >
-              {loading ? 'Comparaison en cours...' : 'Comparer'}
+              {loading ? t('priceComparator.comparing') : t('priceComparator.compare')}
             </Button>
             
             {lastUpdate && (
               <p className="text-sm text-muted-foreground mt-2">
-                Dernière mise à jour : {new Date(lastUpdate).toLocaleDateString('fr-FR', {
+                {t('priceComparator.lastUpdate')} {new Date(lastUpdate).toLocaleDateString('fr-FR', {
                   day: '2-digit',
                   month: '2-digit',
                   year: 'numeric',
@@ -400,7 +401,7 @@ export default function ComparateurPrix() {
           {!showDataBanner && isSelectionEmpty && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
-                Sélectionnez 2 {mode === 'brands' ? 'marques' : 'enseignes'} pour commencer la comparaison
+                {t('priceComparator.selectToStart', { type: mode === 'brands' ? t('priceComparator.brands') : t('priceComparator.retailers') })}
               </p>
             </div>
           )}
@@ -408,7 +409,7 @@ export default function ComparateurPrix() {
           {hasNoResults && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
-                Aucune donnée trouvée pour ces critères. Essayez d'autres {mode === 'brands' ? 'marques' : 'enseignes'}.
+                {t('priceComparator.noData', { type: mode === 'brands' ? t('priceComparator.brands') : t('priceComparator.retailers') })}
               </p>
             </div>
           )}
@@ -430,24 +431,24 @@ export default function ComparateurPrix() {
                         <div className="text-2xl font-bold text-green-600">
                           {formatPrice(comparison1.minPrice)}
                         </div>
-                        <div className="text-sm text-muted-foreground">Prix min/L</div>
+                        <div className="text-sm text-muted-foreground">{t('priceComparator.minPrice')}</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold">
                           {formatPrice(comparison1.medianPrice)}
                         </div>
-                        <div className="text-sm text-muted-foreground">Prix médian/L</div>
+                        <div className="text-sm text-muted-foreground">{t('priceComparator.medianPrice')}</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-red-600">
                           {formatPrice(comparison1.maxPrice)}
                         </div>
-                        <div className="text-sm text-muted-foreground">Prix max/L</div>
+                        <div className="text-sm text-muted-foreground">{t('priceComparator.maxPrice')}</div>
                       </div>
                     </div>
                     
                     <div className="text-sm text-muted-foreground text-center">
-                      {comparison1.prices.length} produits analysés
+                      {t('priceComparator.productsAnalyzed', { count: String(comparison1.prices.length) })}
                     </div>
                   </div>
                 </CardContent>
@@ -467,24 +468,24 @@ export default function ComparateurPrix() {
                         <div className="text-2xl font-bold text-green-600">
                           {formatPrice(comparison2.minPrice)}
                         </div>
-                        <div className="text-sm text-muted-foreground">Prix min/L</div>
+                        <div className="text-sm text-muted-foreground">{t('priceComparator.minPrice')}</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold">
                           {formatPrice(comparison2.medianPrice)}
                         </div>
-                        <div className="text-sm text-muted-foreground">Prix médian/L</div>
+                        <div className="text-sm text-muted-foreground">{t('priceComparator.medianPrice')}</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-red-600">
                           {formatPrice(comparison2.maxPrice)}
                         </div>
-                        <div className="text-sm text-muted-foreground">Prix max/L</div>
+                        <div className="text-sm text-muted-foreground">{t('priceComparator.maxPrice')}</div>
                       </div>
                     </div>
                     
                     <div className="text-sm text-muted-foreground text-center">
-                      {comparison2.prices.length} produits analysés
+                      {t('priceComparator.productsAnalyzed', { count: String(comparison2.prices.length) })}
                     </div>
                   </div>
                 </CardContent>
@@ -496,13 +497,13 @@ export default function ComparateurPrix() {
           {comparison1 && comparison2 && (
             <Card className="mt-6">
               <CardHeader>
-                <CardTitle>Analyse comparative</CardTitle>
+                <CardTitle>{t('priceComparator.analysis')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Prix minimum */}
                   <div className="text-center">
-                    <h3 className="font-medium mb-2">Prix minimum</h3>
+                    <h3 className="font-medium mb-2">{t('priceComparator.minPriceLabel')}</h3>
                     {(() => {
                       const comp = getPriceComparison(comparison1.minPrice, comparison2.minPrice);
                       const winner = (comparison1.minPrice || 0) < (comparison2.minPrice || 0) ? 1 : 2;
@@ -526,7 +527,7 @@ export default function ComparateurPrix() {
 
                   {/* Prix médian */}
                   <div className="text-center">
-                    <h3 className="font-medium mb-2">Prix médian</h3>
+                    <h3 className="font-medium mb-2">{t('priceComparator.medianPriceLabel')}</h3>
                     {(() => {
                       const comp = getPriceComparison(comparison1.medianPrice, comparison2.medianPrice);
                       const winner = (comparison1.medianPrice || 0) < (comparison2.medianPrice || 0) ? 1 : 2;
@@ -550,7 +551,7 @@ export default function ComparateurPrix() {
 
                   {/* Nombre de produits */}
                   <div className="text-center">
-                    <h3 className="font-medium mb-2">Choix disponible</h3>
+                    <h3 className="font-medium mb-2">{t('priceComparator.availableChoice')}</h3>
                     {(() => {
                       const winner = comparison1.prices.length > comparison2.prices.length ? 1 : 2;
                       return (

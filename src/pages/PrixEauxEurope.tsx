@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
@@ -47,22 +48,23 @@ const getTrendIcon = (trend: string) => {
 };
 
 const PrixEauxEurope = () => {
+  const { t } = useLanguage();
   return (
     <Layout>
       <SEOHead
         {...seoData.prixEauxEurope}
       />
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">Prix de l'eau du robinet — Europe</h1>
+        <h1 className="text-3xl font-bold mb-2">{t('europePrices.title')}</h1>
         <p className="text-muted-foreground mb-6">
-          Comparaison des tarifs moyens de l'eau potable dans les 27 pays de l'UE (sources : EurEau, OCDE 2023).
+          {t('europePrices.subtitle')}
         </p>
 
         <Alert className="mb-6">
           <Info className="h-4 w-4" />
           <AlertDescription>
-            Les prix incluent eau potable et assainissement. Les prix de l'eau en bouteille varient fortement selon les pays et ne sont pas couverts ici. 
-            Consultez le <a href="/prix-eaux" className="underline font-medium">comparateur prix France</a> pour les bouteilles.
+            {t('europePrices.note')}{' '}
+            <a href="/prix-eaux" className="underline font-medium">{t('europePrices.seeFrance')}</a>
           </AlertDescription>
         </Alert>
 
@@ -72,21 +74,21 @@ const PrixEauxEurope = () => {
             <CardContent className="pt-6 text-center">
               <Euro className="h-6 w-6 mx-auto mb-2 text-primary" />
               <div className="text-2xl font-bold">{avg.toFixed(2)} €/m³</div>
-              <div className="text-sm text-muted-foreground">Moyenne UE-27</div>
+              <div className="text-sm text-muted-foreground">{t('europePrices.euAverage')}</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-6 text-center">
               <div className="text-2xl font-bold text-primary">{EU_TAP_WATER_PRICES[0].name}</div>
               <div className="text-lg">{EU_TAP_WATER_PRICES[0].pricePerM3} €/m³</div>
-              <div className="text-sm text-muted-foreground">Le plus cher</div>
+              <div className="text-sm text-muted-foreground">{t('europePrices.mostExpensive')}</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-6 text-center">
               <div className="text-2xl font-bold text-primary">{EU_TAP_WATER_PRICES[EU_TAP_WATER_PRICES.length - 1].name}</div>
               <div className="text-lg">{EU_TAP_WATER_PRICES[EU_TAP_WATER_PRICES.length - 1].pricePerM3} €/m³</div>
-              <div className="text-sm text-muted-foreground">Le moins cher</div>
+              <div className="text-sm text-muted-foreground">{t('europePrices.leastExpensive')}</div>
             </CardContent>
           </Card>
         </div>
@@ -96,7 +98,7 @@ const PrixEauxEurope = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Droplets className="h-5 w-5 text-primary" />
-              Tarifs par pays
+              {t('europePrices.byCountry')}
             </CardTitle>
           </CardHeader>
           <CardContent>
