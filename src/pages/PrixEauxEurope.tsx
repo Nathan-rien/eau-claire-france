@@ -74,7 +74,7 @@ const PrixEauxEurope = () => {
             <CardContent className="pt-6 text-center">
               <Euro className="h-6 w-6 mx-auto mb-2 text-primary" />
               <div className="text-2xl font-bold">{avg.toFixed(2)} €/m³</div>
-              <div className="text-sm text-muted-foreground">Moyenne UE-27</div>
+              <div className="text-sm text-muted-foreground">{t('europePrices.euAverage')}</div>
             </CardContent>
           </Card>
           <Card>
