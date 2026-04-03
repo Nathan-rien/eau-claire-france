@@ -333,9 +333,9 @@ const ParcoursEau = () => {
       <section className="relative overflow-hidden bg-gradient-to-b from-blue-950 via-blue-900/90 to-blue-950 py-16 md:py-24">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">Le voyage complet de l'eau</h2>
+            <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">{t('journey.overviewTitle')}</h2>
             <p className="text-blue-200/60 text-sm md:text-base max-w-xl mx-auto">
-              De la source naturelle à votre robinet, suivez les 6 étapes du parcours de l'eau potable en France
+              {t('journey.overviewSubtitle')}
             </p>
           </div>
 
