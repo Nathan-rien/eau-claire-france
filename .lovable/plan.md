@@ -1,50 +1,71 @@
 
 
-## Corriger les textes francais restants dans toutes les pages i18n
+## Carte animee du parcours de l'eau : source → commune
 
-### Probleme
+### Concept
 
-Les pages utilisent bien `useLanguage` et `t()` pour les titres et sections, mais de nombreux **contenus inline** (tableaux de donnees, listes, badges, libelles de formulaire) restent en francais en dur. Resultat : en mode anglais, on voit un melange anglais/francais.
+Nouvelle page `/carte-parcours-eau` affichant une carte Mapbox de la France avec animation du trajet de l'eau depuis une source de captage jusqu'aux communes desservies. Un filtre par distributeur d'eau permet de visualiser les reseaux de distribution specifiques. Le lien sera ajoute dans le menu "Les cartes" de la navigation.
 
-### Pages et zones concernees
+### Donnees disponibles
 
-| Page | Textes en dur restants |
-|------|----------------------|
-| **Sources.tsx** | 9 dataSources (name, description, type, frequency, coverage), 4 qualityStandards (organism, role, reference), 6 items dans les listes "temps reel" et "periodique" |
-| **OpenData.tsx** | 6 datasets (name, description), 5 apiEndpoints (description), "Chargement...", "Erreur:", 4 principes Open Data, section communaute (8 items), 3 boutons docs, contact labels |
-| **ApiPublique.tsx** | 7 endpoints (description, parameter descriptions), 3 badges ("Gratuit", "Aucun cout", etc.), section limites techniques (7 items), conditions d'utilisation (4 items) |
-| **Methodologie.tsx** | 4 etapes methodology (title, description, 16 details), 3 qualityIndicators (name, description, calculation, threshold), 4 principes (titres+desc), section EU (8 items), 4 limitations |
-| **RGPD.tsx** | Labels "Nom:", "Contact:", "Adresse:", retention periods (2 items), 8 security measures, labels "Email:", "Objet:" |
-| **Accessibilite.tsx** | 16 items dans 4 cartes accessibilite (visual, keyboard, cognitive, auditory), 6 raccourcis clavier, "Janvier 2024", labels "Email:", "Objet:" |
-| **MentionsLegales.tsx** | Labels "Email:", "LinkedIn:" |
-| **Contact.tsx** | Email body labels "Nom:", "Sujet:", "Envoye depuis" |
+- **Sources d'eau** : `public/data/water_sources_coordinates.csv` (58 sources avec coordonnees GPS)
+- **Distributeurs MDD** : `public/data/eaux_MDD_par_distributeur_et_source_FR_v3.csv` (11 distributeurs lies a des sources)
+- **Villes francaises** : `src/data/frenchCities.ts` (50+ villes avec coordonnees)
+- **Sources detaillees** : `src/data/waterSources.ts` (WaterSource avec composition minerale)
+- **Mapbox** : token et service de securite deja configures (`MapboxSecurityService`)
 
-### Plan d'implementation
+### Architecture
 
-**Etape 1 — Ajouter ~200 nouvelles cles dans `translations.ts`**
+```text
+src/pages/CarteParcoursEau.tsx          ← Page avec SEO, layout, breadcrumb
+src/components/WaterJourneyMap.tsx       ← Composant carte Mapbox principal
+src/data/waterDistributors.ts           ← Donnees distributeurs + liaisons source→communes
+```
 
-Organiser par namespace existant :
-- `sources.src.*` (9 sources x 5 champs + 4 standards x 3 champs + 6 items listes)
-- `opendata.ds.*` (6 datasets x 2 champs + 5 api desc + principes + communaute + docs)
-- `api.ep.*` (7 endpoints + params + limites + conditions)
-- `methodology.step.*`, `methodology.ind.*`, `methodology.principle.*`, `methodology.limit.*`, `methodology.eu.*`
-- `rgpd.label.*`, `rgpd.retention.*`, `rgpd.security.*`
-- `a11y.item.*`, `a11y.shortcut.*`
+### Fonctionnalites
 
-**Etape 2 — Mettre a jour les 8 pages**
+1. **Carte Mapbox centree sur la France** avec le style existant
+2. **Marqueurs sources** (icone montagne/goutte) aux coordonnees GPS reelles
+3. **Marqueurs communes** desservies par chaque source/distributeur
+4. **Animation de trajet** : ligne courbe animee (arc GeoJSON ou `line-dasharray` anime) reliant source → commune(s), avec une goutte d'eau qui se deplace le long du trajet
+5. **Filtre distributeur** : dropdown/select listant les distributeurs (Carrefour, Leclerc, Auchan, Lidl, etc.) — la selection filtre les sources et communes affichees, puis lance l'animation
+6. **Popup au clic** sur une source : nom, marque MDD, categorie d'eau
+7. **Popup au clic** sur une commune : nom, distributeur, source d'approvisionnement
 
-Remplacer chaque chaine en dur par `t('key')` dans les tableaux et listes inline des fichiers :
-- `Sources.tsx` — dataSources et qualityStandards comme tableaux dynamiques via `t()`
-- `OpenData.tsx` — datasets, apiEndpoints, principes, communaute, docs
-- `ApiPublique.tsx` — endpoints, badges, limites
-- `Methodologie.tsx` — methodology, qualityIndicators, principes, EU, limitations
-- `RGPD.tsx` — labels, retention, security measures
-- `Accessibilite.tsx` — items listes, raccourcis, date
-- `MentionsLegales.tsx` — labels contact
-- `Contact.tsx` — email body template
+### Detail technique
 
-### Fichiers modifies
+**Donnees distributeurs** (`waterDistributors.ts`) :
+- Parsing statique du CSV MDD pour creer un mapping `distributeur → [{source, coordonnees, communes}]`
+- Association source→communes via les villes de `frenchCities.ts` (attribution regionale simplifiee puisque les donnees exactes commune→source n'existent pas — on utilisera des villes representantes par region)
 
-1. **`src/i18n/translations.ts`** — ~200 nouvelles cles fr + en
-2. **8 fichiers pages** — Sources, OpenData, ApiPublique, Methodologie, RGPD, Accessibilite, MentionsLegales, Contact
+**Animation Mapbox** :
+- Utiliser une source GeoJSON `LineString` pour chaque trajet source→commune
+- Animer avec `line-dasharray` progressif (technique Mapbox standard) pour simuler le flux d'eau
+- Point anime (marker deplace via `requestAnimationFrame` le long de la ligne)
+- Couleur du trajet : gradient bleu clair → bleu fonce
+
+**Filtre** :
+- Composant `Select` (shadcn) au-dessus de la carte
+- Option "Tous les distributeurs" par defaut
+- Au changement : filtrer les features GeoJSON, relancer l'animation
+
+### Integration navigation
+
+Ajouter dans `Navigation.tsx` → `mapsItems` (mode France) :
+```
+{ href: '/carte-parcours-eau', label: t('nav.maps.journey') }
+```
+
+Ajouter route dans `App.tsx`, cle i18n dans `translations.ts`.
+
+### Fichiers modifies/crees
+
+| Fichier | Action |
+|---------|--------|
+| `src/data/waterDistributors.ts` | Creer — donnees distributeurs + liaisons |
+| `src/components/WaterJourneyMap.tsx` | Creer — carte Mapbox avec animations |
+| `src/pages/CarteParcoursEau.tsx` | Creer — page avec layout/SEO |
+| `src/App.tsx` | Ajouter lazy import + route |
+| `src/components/Navigation.tsx` | Ajouter lien dans mapsItems |
+| `src/i18n/translations.ts` | Ajouter cles nav + page |
 
