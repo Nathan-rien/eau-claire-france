@@ -4,6 +4,7 @@ import { Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SearchFiltersProps {
   searchQuery: string;
@@ -20,12 +21,14 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   onCategoryChange,
   categories
 }) => {
+  const { t } = useLanguage();
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <Search className="w-5 h-5" />
-          <span>Index des polluants surveillés</span>
+          <span>{t('comp.searchFilters.title')}</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -35,7 +38,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Rechercher un polluant..."
+              placeholder={t('comp.searchFilters.placeholder')}
               className="w-full h-12 text-base"
             />
           </div>
@@ -48,7 +51,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                     value={category}
                     className="text-xs sm:text-sm py-2 px-1"
                   >
-                    {category === 'all' ? 'Tous' : category}
+                    {category === 'all' ? t('comp.searchFilters.all') : category}
                   </TabsTrigger>
                 ))}
               </TabsList>

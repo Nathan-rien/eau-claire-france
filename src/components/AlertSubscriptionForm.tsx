@@ -8,31 +8,32 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import SearchBar from './SearchBar';
 import { z } from 'zod';
-
-// Schéma de validation Zod pour les abonnements
-const alertSchema = z.object({
-  email: z.string()
-    .email("Email invalide")
-    .max(255, "Email trop long")
-    .toLowerCase()
-    .trim(),
-  commune: z.string()
-    .min(1, "La commune est requise")
-    .max(100, "Nom de commune trop long")
-    .regex(/^[a-zA-ZÀ-ÿ\s\-']+$/, "Caractères invalides dans le nom de commune")
-    .trim(),
-  consent_rgpd: z.boolean().refine(val => val === true, {
-    message: "Vous devez accepter la politique de confidentialité"
-  })
-});
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const AlertSubscriptionForm = () => {
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [commune, setCommune] = useState('');
   const [consentRgpd, setConsentRgpd] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
+
+  const alertSchema = z.object({
+    email: z.string()
+      .email(t('comp.alertForm.invalidEmail'))
+      .max(255, t('comp.alertForm.emailTooLong'))
+      .toLowerCase()
+      .trim(),
+    commune: z.string()
+      .min(1, t('comp.alertForm.communeRequired'))
+      .max(100, t('comp.alertForm.communeTooLong'))
+      .regex(/^[a-zA-ZÀ-ÿ\s\-']+$/, t('comp.alertForm.communeInvalidChars'))
+      .trim(),
+    consent_rgpd: z.boolean().refine(val => val === true, {
+      message: t('comp.alertForm.consentRequired')
+    })
+  });
 
   const handleCommuneSelect = (selectedCommune: string) => {
     setCommune(selectedCommune);
@@ -43,7 +44,6 @@ const AlertSubscriptionForm = () => {
     setIsSubmitting(true);
     
     try {
-      // Validation côté client avec Zod
       const validated = alertSchema.safeParse({ 
         email, 
         commune, 
@@ -53,25 +53,23 @@ const AlertSubscriptionForm = () => {
       if (!validated.success) {
         const firstError = validated.error.errors[0];
         toast({
-          title: "Erreur de validation",
+          title: t('comp.alertForm.validationError'),
           description: firstError.message,
           variant: "destructive",
         });
         return;
       }
 
-      // Vérifier que l'utilisateur est authentifié
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({
-          title: "Authentification requise",
-          description: "Vous devez être connecté pour vous abonner aux alertes.",
+          title: t('comp.alertForm.authRequired'),
+          description: t('comp.alertForm.authRequiredDesc'),
           variant: "destructive",
         });
         return;
       }
 
-      // Insertion avec données validées (typage explicite)
       const { error } = await supabase
         .from('alertes_utilisateurs')
         .insert([{
@@ -81,25 +79,24 @@ const AlertSubscriptionForm = () => {
         }]);
 
       if (error) {
-        // Message d'erreur générique pour éviter l'énumération d'emails
-        console.error("Erreur d'inscription:", error);
+        console.error("Subscription error:", error);
         toast({
-          title: "Erreur d'inscription",
-          description: "Impossible de traiter votre demande. Vérifiez vos informations et réessayez.",
+          title: t('comp.alertForm.subscriptionError'),
+          description: t('comp.alertForm.subscriptionErrorDesc'),
           variant: "destructive",
         });
       } else {
         setIsSubmitted(true);
         toast({
-          title: "Abonnement confirmé !",
-          description: "Merci, vous serez alerté(e) par email en cas de problème de qualité de l'eau dans votre commune.",
+          title: t('comp.alertForm.confirmed'),
+          description: t('comp.alertForm.confirmedDesc'),
         });
       }
     } catch (error) {
-      console.error('Erreur lors de l\'abonnement:', error);
+      console.error('Subscription error:', error);
       toast({
-        title: "Erreur",
-        description: "Une erreur s'est produite. Veuillez réessayer.",
+        title: t('common.error'),
+        description: t('comp.alertForm.genericError'),
         variant: "destructive",
       });
     } finally {
@@ -114,9 +111,9 @@ const AlertSubscriptionForm = () => {
           <div className="flex items-center space-x-3 text-green-800">
             <CheckCircle className="w-6 h-6" />
             <div>
-              <h3 className="font-semibold">Abonnement confirmé !</h3>
+              <h3 className="font-semibold">{t('comp.alertForm.confirmed')}</h3>
               <p className="text-sm">
-                Merci, vous serez alerté(e) par email en cas de problème de qualité de l'eau dans votre commune.
+                {t('comp.alertForm.confirmedDesc')}
               </p>
             </div>
           </div>
@@ -130,17 +127,17 @@ const AlertSubscriptionForm = () => {
       <CardHeader>
         <CardTitle className="flex items-center space-x-2 text-blue-900">
           <Bell className="w-6 h-6" />
-          <span>Abonnement aux alertes locales de qualité de l'eau</span>
+          <span>{t('comp.alertForm.title')}</span>
         </CardTitle>
         <p className="text-sm text-blue-700">
-          Recevez un email automatique en cas de contamination ou pollution de l'eau dans votre commune.
+          {t('comp.alertForm.subtitle')}
         </p>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email *
+              {t('comp.alertForm.email')}
             </label>
             <Input
               id="email"
@@ -155,15 +152,15 @@ const AlertSubscriptionForm = () => {
 
           <div>
             <label htmlFor="commune" className="block text-sm font-medium text-gray-700 mb-1">
-              Commune *
+              {t('comp.alertForm.commune')}
             </label>
             <SearchBar
               onCitySelect={handleCommuneSelect}
-              placeholder="Recherchez votre commune..."
+              placeholder={t('comp.alertForm.communePlaceholder')}
             />
             {commune && (
               <p className="text-xs text-green-600 mt-1">
-                Commune sélectionnée : {commune}
+                {t('comp.alertForm.communeSelected')} {commune}
               </p>
             )}
           </div>
@@ -178,11 +175,11 @@ const AlertSubscriptionForm = () => {
               required
             />
             <label htmlFor="consent" className="text-sm text-gray-700">
-              J'accepte de recevoir des alertes par email et j'ai lu la{' '}
+              {t('comp.alertForm.consent')}{' '}
               <a href="/mentions-legales" className="text-blue-600 hover:underline">
-                politique de confidentialité
+                {t('comp.alertForm.privacyPolicy')}
               </a>{' '}
-              (obligatoire) *
+              {t('comp.alertForm.required')}
             </label>
           </div>
 
@@ -191,13 +188,13 @@ const AlertSubscriptionForm = () => {
             disabled={isSubmitting || !email || !commune || !consentRgpd}
             className="w-full bg-blue-600 hover:bg-blue-700"
           >
-            {isSubmitting ? 'Inscription en cours...' : 'S\'abonner aux alertes'}
+            {isSubmitting ? t('comp.alertForm.submitting') : t('comp.alertForm.subscribe')}
           </Button>
 
           <div className="flex items-start space-x-2 text-xs text-gray-500">
             <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
             <p>
-              Vos données sont traitées conformément au RGPD. Vous pouvez vous désabonner à tout moment.
+              {t('comp.alertForm.rgpdNotice')}
             </p>
           </div>
         </form>

@@ -13,41 +13,43 @@ import { cn } from "@/lib/utils";
 import { Droplets, ChevronDown } from 'lucide-react';
 import RegionSwitcher from '@/components/RegionSwitcher';
 import { useRegion } from '@/contexts/RegionContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Navigation = () => {
   const location = useLocation();
   const [mapsMenuOpen, setMapsMenuOpen] = useState(false);
   const { isEurope } = useRegion();
+  const { t } = useLanguage();
 
   const mapsItems = isEurope
     ? [
-        { href: '/carte-europe', label: 'Carte qualité Europe' },
-        { href: '/carte-polluants-europe', label: 'Carte des polluants Europe' },
+        { href: '/carte-europe', label: t('nav.maps.europeQuality') },
+        { href: '/carte-polluants-europe', label: t('nav.maps.europePollutants') },
       ]
     : [
-        { href: '/carte', label: 'Carte des sources du robinet' },
-        { href: '/sources-eau', label: 'Carte des sources des bouteilles' },
-        { href: '/carte-polluants', label: 'Carte des polluants' },
+        { href: '/carte', label: t('nav.maps.tap') },
+        { href: '/sources-eau', label: t('nav.maps.bottles') },
+        { href: '/carte-polluants', label: t('nav.maps.pollutants') },
       ];
 
   const directNavigationItems = isEurope
     ? [
-        { href: '/diagnostic-europe', label: 'Diagnostic' },
-        { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
-        { href: '/prix-eaux-europe', label: 'Prix des eaux' },
-        { href: '/classement-europe', label: 'Classement' },
-        { href: '/polluants-europe', label: 'Polluants' },
-        { href: '/alertes-europe', label: 'Alertes' },
-        { href: '/parcours-eau', label: 'Parcours de l\'eau' },
+        { href: '/diagnostic-europe', label: t('nav.diagnostic') },
+        { href: '/quelle-eau-boire', label: t('nav.which-water') },
+        { href: '/prix-eaux-europe', label: t('nav.prices') },
+        { href: '/classement-europe', label: t('nav.ranking') },
+        { href: '/polluants-europe', label: t('nav.pollutants') },
+        { href: '/alertes-europe', label: t('nav.alerts') },
+        { href: '/parcours-eau', label: t('nav.journey') },
       ]
     : [
-        { href: '/diagnostic', label: 'Diagnostic' },
-        { href: '/quelle-eau-boire', label: 'Quelle eau boire ?' },
-        { href: '/prix-eaux', label: 'Prix des eaux' },
-        { href: '/classement', label: 'Classement' },
-        { href: '/polluants', label: 'Polluants' },
-        { href: '/alertes', label: 'Alertes' },
-        { href: '/parcours-eau', label: 'Parcours de l\'eau' },
+        { href: '/diagnostic', label: t('nav.diagnostic') },
+        { href: '/quelle-eau-boire', label: t('nav.which-water') },
+        { href: '/prix-eaux', label: t('nav.prices') },
+        { href: '/classement', label: t('nav.ranking') },
+        { href: '/polluants', label: t('nav.pollutants') },
+        { href: '/alertes', label: t('nav.alerts') },
+        { href: '/parcours-eau', label: t('nav.journey') },
       ];
 
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
@@ -80,7 +82,7 @@ const Navigation = () => {
                     onMouseLeave={() => setMapsMenuOpen(false)}
                   >
                     <span className="flex items-center gap-1">
-                      Les cartes
+                      {t('nav.maps')}
                       <ChevronDown className="h-3 w-3" />
                     </span>
                   </NavigationMenuTrigger>
