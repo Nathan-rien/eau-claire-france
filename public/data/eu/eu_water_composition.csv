@@ -1,0 +1,298 @@
+country_code,country_name,parameter,avg_value,unit,min_value,max_value,samples,data_year
+AT,Autriche,Dureté totale,16.8,°dH,5.2,38.4,1200,2024
+AT,Autriche,Conductivité,425,µS/cm,180,820,1200,2024
+AT,Autriche,Nitrate,12.5,mg/L,0.1,45,1200,2024
+AT,Autriche,pH,7.5,,6.8,8.2,1200,2024
+AT,Autriche,Calcium,68,mg/L,15,145,1200,2024
+AT,Autriche,Magnésium,18,mg/L,3,52,1200,2024
+AT,Autriche,Sodium,8,mg/L,1,85,1200,2024
+AT,Autriche,Ammonium,0.02,mg/L,0,0.3,1200,2024
+AT,Autriche,Chlorure,15,mg/L,2,120,1200,2024
+AT,Autriche,Sulfate,35,mg/L,5,180,1200,2024
+AT,Autriche,Dureté carbonatée,13.2,°dH,0,0,0,2024
+BE,Belgique,Dureté totale,22.5,°dH,8,42,950,2024
+BE,Belgique,Conductivité,580,µS/cm,250,1100,950,2024
+BE,Belgique,Nitrate,18,mg/L,0.5,48,950,2024
+BE,Belgique,pH,7.6,,7,8.3,950,2024
+BE,Belgique,Calcium,85,mg/L,25,160,950,2024
+BE,Belgique,Magnésium,12,mg/L,2,35,950,2024
+BE,Belgique,Sodium,18,mg/L,3,100,950,2024
+BE,Belgique,Ammonium,0.03,mg/L,0,0.4,950,2024
+BE,Belgique,Chlorure,32,mg/L,5,150,950,2024
+BE,Belgique,Sulfate,52,mg/L,8,200,950,2024
+BE,Belgique,Dureté carbonatée,17.6,°dH,0,0,0,2024
+BG,Bulgarie,Dureté totale,14,°dH,4,35,600,2024
+BG,Bulgarie,Conductivité,380,µS/cm,150,750,600,2024
+BG,Bulgarie,Nitrate,10,mg/L,0.2,40,600,2024
+BG,Bulgarie,pH,7.4,,6.9,8.1,600,2024
+BG,Bulgarie,Calcium,55,mg/L,12,130,600,2024
+BG,Bulgarie,Magnésium,15,mg/L,2,45,600,2024
+BG,Bulgarie,Sodium,12,mg/L,1,60,600,2024
+BG,Bulgarie,Ammonium,0.04,mg/L,0,0.5,600,2024
+BG,Bulgarie,Chlorure,20,mg/L,3,80,600,2024
+BG,Bulgarie,Sulfate,40,mg/L,5,150,600,2024
+BG,Bulgarie,Dureté carbonatée,11.1,°dH,0,0,0,2024
+HR,Croatie,Dureté totale,18,°dH,6,38,500,2024
+HR,Croatie,Conductivité,450,µS/cm,200,850,500,2024
+HR,Croatie,Nitrate,8,mg/L,0.1,35,500,2024
+HR,Croatie,pH,7.3,,6.8,8,500,2024
+HR,Croatie,Calcium,72,mg/L,18,150,500,2024
+HR,Croatie,Magnésium,20,mg/L,3,55,500,2024
+HR,Croatie,Sodium,10,mg/L,1,70,500,2024
+HR,Croatie,Ammonium,0.03,mg/L,0,0.3,500,2024
+HR,Croatie,Chlorure,18,mg/L,2,100,500,2024
+HR,Croatie,Sulfate,30,mg/L,4,120,500,2024
+HR,Croatie,Dureté carbonatée,14.1,°dH,0,0,0,2024
+CY,Chypre,Dureté totale,25,°dH,10,45,300,2024
+CY,Chypre,Conductivité,680,µS/cm,300,1200,300,2024
+CY,Chypre,Nitrate,15,mg/L,0.5,50,300,2024
+CY,Chypre,pH,7.7,,7.1,8.4,300,2024
+CY,Chypre,Calcium,95,mg/L,30,180,300,2024
+CY,Chypre,Magnésium,22,mg/L,5,60,300,2024
+CY,Chypre,Sodium,35,mg/L,5,150,300,2024
+CY,Chypre,Ammonium,0.02,mg/L,0,0.2,300,2024
+CY,Chypre,Chlorure,55,mg/L,10,250,300,2024
+CY,Chypre,Sulfate,65,mg/L,10,220,300,2024
+CY,Chypre,Dureté carbonatée,19.7,°dH,0,0,0,2024
+CZ,Tchéquie,Dureté totale,15,°dH,5,32,1100,2024
+CZ,Tchéquie,Conductivité,400,µS/cm,170,780,1100,2024
+CZ,Tchéquie,Nitrate,14,mg/L,0.3,45,1100,2024
+CZ,Tchéquie,pH,7.4,,6.8,8.1,1100,2024
+CZ,Tchéquie,Calcium,60,mg/L,14,135,1100,2024
+CZ,Tchéquie,Magnésium,14,mg/L,2,40,1100,2024
+CZ,Tchéquie,Sodium,15,mg/L,2,90,1100,2024
+CZ,Tchéquie,Ammonium,0.03,mg/L,0,0.4,1100,2024
+CZ,Tchéquie,Chlorure,22,mg/L,3,110,1100,2024
+CZ,Tchéquie,Sulfate,45,mg/L,6,170,1100,2024
+CZ,Tchéquie,Dureté carbonatée,12.0,°dH,0,0,0,2024
+DK,Danemark,Dureté totale,20,°dH,7,40,800,2024
+DK,Danemark,Conductivité,520,µS/cm,220,950,800,2024
+DK,Danemark,Nitrate,5,mg/L,0.1,25,800,2024
+DK,Danemark,pH,7.5,,7,8.2,800,2024
+DK,Danemark,Calcium,80,mg/L,20,155,800,2024
+DK,Danemark,Magnésium,16,mg/L,3,42,800,2024
+DK,Danemark,Sodium,22,mg/L,3,120,800,2024
+DK,Danemark,Ammonium,0.05,mg/L,0,0.5,800,2024
+DK,Danemark,Chlorure,40,mg/L,5,180,800,2024
+DK,Danemark,Sulfate,38,mg/L,5,160,800,2024
+DK,Danemark,Dureté carbonatée,15.9,°dH,0,0,0,2024
+EE,Estonie,Dureté totale,12,°dH,3,28,400,2024
+EE,Estonie,Conductivité,350,µS/cm,120,680,400,2024
+EE,Estonie,Nitrate,6,mg/L,0.1,20,400,2024
+EE,Estonie,pH,7.3,,6.7,8,400,2024
+EE,Estonie,Calcium,48,mg/L,10,110,400,2024
+EE,Estonie,Magnésium,12,mg/L,2,35,400,2024
+EE,Estonie,Sodium,10,mg/L,1,55,400,2024
+EE,Estonie,Ammonium,0.04,mg/L,0,0.4,400,2024
+EE,Estonie,Chlorure,15,mg/L,2,70,400,2024
+EE,Estonie,Sulfate,25,mg/L,3,100,400,2024
+EE,Estonie,Dureté carbonatée,9.5,°dH,0,0,0,2024
+FI,Finlande,Dureté totale,5,°dH,1,15,900,2024
+FI,Finlande,Conductivité,180,µS/cm,50,450,900,2024
+FI,Finlande,Nitrate,4,mg/L,0.1,15,900,2024
+FI,Finlande,pH,7.1,,6.5,7.8,900,2024
+FI,Finlande,Calcium,20,mg/L,3,60,900,2024
+FI,Finlande,Magnésium,5,mg/L,1,18,900,2024
+FI,Finlande,Sodium,8,mg/L,1,40,900,2024
+FI,Finlande,Ammonium,0.02,mg/L,0,0.2,900,2024
+FI,Finlande,Chlorure,12,mg/L,1,50,900,2024
+FI,Finlande,Sulfate,15,mg/L,2,60,900,2024
+FI,Finlande,Dureté carbonatée,3.9,°dH,0,0,0,2024
+FR,France,Dureté totale,19,°dH,5,42,3500,2024
+FR,France,Conductivité,480,µS/cm,180,1000,3500,2024
+FR,France,Nitrate,16,mg/L,0.2,48,3500,2024
+FR,France,pH,7.5,,6.8,8.3,3500,2024
+FR,France,Calcium,75,mg/L,15,160,3500,2024
+FR,France,Magnésium,14,mg/L,2,45,3500,2024
+FR,France,Sodium,15,mg/L,2,100,3500,2024
+FR,France,Ammonium,0.03,mg/L,0,0.4,3500,2024
+FR,France,Chlorure,25,mg/L,3,130,3500,2024
+FR,France,Sulfate,40,mg/L,5,200,3500,2024
+FR,France,Dureté carbonatée,14.8,°dH,0,0,0,2024
+DE,Allemagne,Dureté totale,16,°dH,5,35,4000,2024
+DE,Allemagne,Conductivité,460,µS/cm,200,900,4000,2024
+DE,Allemagne,Nitrate,13,mg/L,0.2,45,4000,2024
+DE,Allemagne,pH,7.5,,6.9,8.2,4000,2024
+DE,Allemagne,Calcium,65,mg/L,14,140,4000,2024
+DE,Allemagne,Magnésium,15,mg/L,2,48,4000,2024
+DE,Allemagne,Sodium,14,mg/L,2,90,4000,2024
+DE,Allemagne,Ammonium,0.02,mg/L,0,0.3,4000,2024
+DE,Allemagne,Chlorure,28,mg/L,3,140,4000,2024
+DE,Allemagne,Sulfate,42,mg/L,5,190,4000,2024
+DE,Allemagne,Dureté carbonatée,12.8,°dH,0,0,0,2024
+GR,Grèce,Dureté totale,20,°dH,6,40,700,2024
+GR,Grèce,Conductivité,500,µS/cm,200,1000,700,2024
+GR,Grèce,Nitrate,12,mg/L,0.3,42,700,2024
+GR,Grèce,pH,7.6,,7,8.3,700,2024
+GR,Grèce,Calcium,78,mg/L,18,155,700,2024
+GR,Grèce,Magnésium,18,mg/L,3,50,700,2024
+GR,Grèce,Sodium,20,mg/L,3,110,700,2024
+GR,Grèce,Ammonium,0.03,mg/L,0,0.3,700,2024
+GR,Grèce,Chlorure,35,mg/L,4,160,700,2024
+GR,Grèce,Sulfate,45,mg/L,6,180,700,2024
+GR,Grèce,Dureté carbonatée,15.6,°dH,0,0,0,2024
+HU,Hongrie,Dureté totale,18,°dH,6,38,650,2024
+HU,Hongrie,Conductivité,460,µS/cm,200,880,650,2024
+HU,Hongrie,Nitrate,10,mg/L,0.2,38,650,2024
+HU,Hongrie,pH,7.4,,6.9,8.1,650,2024
+HU,Hongrie,Calcium,70,mg/L,16,145,650,2024
+HU,Hongrie,Magnésium,16,mg/L,3,45,650,2024
+HU,Hongrie,Sodium,15,mg/L,2,85,650,2024
+HU,Hongrie,Ammonium,0.08,mg/L,0,0.8,650,2024
+HU,Hongrie,Chlorure,22,mg/L,3,100,650,2024
+HU,Hongrie,Sulfate,38,mg/L,5,150,650,2024
+HU,Hongrie,Dureté carbonatée,14.0,°dH,0,0,0,2024
+IE,Irlande,Dureté totale,10,°dH,3,25,550,2024
+IE,Irlande,Conductivité,320,µS/cm,100,650,550,2024
+IE,Irlande,Nitrate,8,mg/L,0.1,30,550,2024
+IE,Irlande,pH,7.2,,6.6,7.9,550,2024
+IE,Irlande,Calcium,40,mg/L,8,100,550,2024
+IE,Irlande,Magnésium,10,mg/L,1,30,550,2024
+IE,Irlande,Sodium,14,mg/L,2,70,550,2024
+IE,Irlande,Ammonium,0.03,mg/L,0,0.3,550,2024
+IE,Irlande,Chlorure,20,mg/L,3,90,550,2024
+IE,Irlande,Sulfate,22,mg/L,3,90,550,2024
+IE,Irlande,Dureté carbonatée,7.9,°dH,0,0,0,2024
+IT,Italie,Dureté totale,22,°dH,8,45,2800,2024
+IT,Italie,Conductivité,540,µS/cm,220,1100,2800,2024
+IT,Italie,Nitrate,14,mg/L,0.3,45,2800,2024
+IT,Italie,pH,7.5,,7,8.3,2800,2024
+IT,Italie,Calcium,85,mg/L,22,170,2800,2024
+IT,Italie,Magnésium,18,mg/L,3,55,2800,2024
+IT,Italie,Sodium,16,mg/L,2,95,2800,2024
+IT,Italie,Ammonium,0.03,mg/L,0,0.4,2800,2024
+IT,Italie,Chlorure,28,mg/L,4,140,2800,2024
+IT,Italie,Sulfate,48,mg/L,6,200,2800,2024
+IT,Italie,Dureté carbonatée,17.2,°dH,0,0,0,2024
+LV,Lettonie,Dureté totale,10,°dH,3,25,350,2024
+LV,Lettonie,Conductivité,300,µS/cm,100,600,350,2024
+LV,Lettonie,Nitrate,5,mg/L,0.1,18,350,2024
+LV,Lettonie,pH,7.3,,6.8,8,350,2024
+LV,Lettonie,Calcium,42,mg/L,8,95,350,2024
+LV,Lettonie,Magnésium,10,mg/L,1,28,350,2024
+LV,Lettonie,Sodium,12,mg/L,1,55,350,2024
+LV,Lettonie,Ammonium,0.05,mg/L,0,0.5,350,2024
+LV,Lettonie,Chlorure,16,mg/L,2,65,350,2024
+LV,Lettonie,Sulfate,20,mg/L,3,80,350,2024
+LV,Lettonie,Dureté carbonatée,7.9,°dH,0,0,0,2024
+LT,Lituanie,Dureté totale,12,°dH,4,28,400,2024
+LT,Lituanie,Conductivité,360,µS/cm,130,700,400,2024
+LT,Lituanie,Nitrate,7,mg/L,0.1,22,400,2024
+LT,Lituanie,pH,7.3,,6.8,8,400,2024
+LT,Lituanie,Calcium,50,mg/L,12,115,400,2024
+LT,Lituanie,Magnésium,12,mg/L,2,32,400,2024
+LT,Lituanie,Sodium,10,mg/L,1,50,400,2024
+LT,Lituanie,Ammonium,0.04,mg/L,0,0.4,400,2024
+LT,Lituanie,Chlorure,14,mg/L,2,60,400,2024
+LT,Lituanie,Sulfate,22,mg/L,3,85,400,2024
+LT,Lituanie,Dureté carbonatée,9.5,°dH,0,0,0,2024
+LU,Luxembourg,Dureté totale,17,°dH,6,32,200,2024
+LU,Luxembourg,Conductivité,440,µS/cm,190,800,200,2024
+LU,Luxembourg,Nitrate,12,mg/L,0.2,38,200,2024
+LU,Luxembourg,pH,7.4,,6.9,8.1,200,2024
+LU,Luxembourg,Calcium,68,mg/L,16,140,200,2024
+LU,Luxembourg,Magnésium,14,mg/L,2,38,200,2024
+LU,Luxembourg,Sodium,12,mg/L,2,65,200,2024
+LU,Luxembourg,Ammonium,0.02,mg/L,0,0.2,200,2024
+LU,Luxembourg,Chlorure,20,mg/L,3,85,200,2024
+LU,Luxembourg,Sulfate,35,mg/L,5,140,200,2024
+LU,Luxembourg,Dureté carbonatée,13.3,°dH,0,0,0,2024
+MT,Malte,Dureté totale,30,°dH,15,50,150,2024
+MT,Malte,Conductivité,850,µS/cm,400,1500,150,2024
+MT,Malte,Nitrate,22,mg/L,2,50,150,2024
+MT,Malte,pH,7.8,,7.2,8.5,150,2024
+MT,Malte,Calcium,110,mg/L,40,200,150,2024
+MT,Malte,Magnésium,28,mg/L,8,65,150,2024
+MT,Malte,Sodium,50,mg/L,10,200,150,2024
+MT,Malte,Ammonium,0.02,mg/L,0,0.2,150,2024
+MT,Malte,Chlorure,80,mg/L,15,350,150,2024
+MT,Malte,Sulfate,90,mg/L,15,300,150,2024
+MT,Malte,Dureté carbonatée,23.9,°dH,0,0,0,2024
+NL,Pays-Bas,Dureté totale,14,°dH,4,30,1200,2024
+NL,Pays-Bas,Conductivité,420,µS/cm,180,800,1200,2024
+NL,Pays-Bas,Nitrate,8,mg/L,0.1,25,1200,2024
+NL,Pays-Bas,pH,7.6,,7,8.3,1200,2024
+NL,Pays-Bas,Calcium,55,mg/L,12,120,1200,2024
+NL,Pays-Bas,Magnésium,10,mg/L,2,28,1200,2024
+NL,Pays-Bas,Sodium,25,mg/L,4,120,1200,2024
+NL,Pays-Bas,Ammonium,0.03,mg/L,0,0.3,1200,2024
+NL,Pays-Bas,Chlorure,45,mg/L,5,200,1200,2024
+NL,Pays-Bas,Sulfate,35,mg/L,4,140,1200,2024
+NL,Pays-Bas,Dureté carbonatée,11.0,°dH,0,0,0,2024
+PL,Pologne,Dureté totale,16,°dH,5,35,1500,2024
+PL,Pologne,Conductivité,440,µS/cm,180,850,1500,2024
+PL,Pologne,Nitrate,12,mg/L,0.2,42,1500,2024
+PL,Pologne,pH,7.4,,6.8,8.1,1500,2024
+PL,Pologne,Calcium,62,mg/L,14,130,1500,2024
+PL,Pologne,Magnésium,14,mg/L,2,42,1500,2024
+PL,Pologne,Sodium,12,mg/L,2,75,1500,2024
+PL,Pologne,Ammonium,0.04,mg/L,0,0.5,1500,2024
+PL,Pologne,Chlorure,22,mg/L,3,110,1500,2024
+PL,Pologne,Sulfate,40,mg/L,5,160,1500,2024
+PL,Pologne,Dureté carbonatée,12.5,°dH,0,0,0,2024
+PT,Portugal,Dureté totale,15,°dH,4,35,800,2024
+PT,Portugal,Conductivité,400,µS/cm,150,800,800,2024
+PT,Portugal,Nitrate,14,mg/L,0.3,45,800,2024
+PT,Portugal,pH,7.3,,6.8,8.1,800,2024
+PT,Portugal,Calcium,58,mg/L,12,130,800,2024
+PT,Portugal,Magnésium,12,mg/L,2,35,800,2024
+PT,Portugal,Sodium,22,mg/L,3,110,800,2024
+PT,Portugal,Ammonium,0.03,mg/L,0,0.3,800,2024
+PT,Portugal,Chlorure,30,mg/L,4,140,800,2024
+PT,Portugal,Sulfate,35,mg/L,4,140,800,2024
+PT,Portugal,Dureté carbonatée,11.8,°dH,0,0,0,2024
+RO,Roumanie,Dureté totale,14,°dH,4,32,700,2024
+RO,Roumanie,Conductivité,380,µS/cm,150,750,700,2024
+RO,Roumanie,Nitrate,10,mg/L,0.2,38,700,2024
+RO,Roumanie,pH,7.4,,6.8,8.1,700,2024
+RO,Roumanie,Calcium,55,mg/L,12,120,700,2024
+RO,Roumanie,Magnésium,14,mg/L,2,40,700,2024
+RO,Roumanie,Sodium,12,mg/L,1,65,700,2024
+RO,Roumanie,Ammonium,0.05,mg/L,0,0.6,700,2024
+RO,Roumanie,Chlorure,18,mg/L,2,80,700,2024
+RO,Roumanie,Sulfate,32,mg/L,4,130,700,2024
+RO,Roumanie,Dureté carbonatée,11.0,°dH,0,0,0,2024
+SK,Slovaquie,Dureté totale,15,°dH,4,32,450,2024
+SK,Slovaquie,Conductivité,400,µS/cm,170,780,450,2024
+SK,Slovaquie,Nitrate,11,mg/L,0.2,40,450,2024
+SK,Slovaquie,pH,7.4,,6.8,8.1,450,2024
+SK,Slovaquie,Calcium,60,mg/L,14,130,450,2024
+SK,Slovaquie,Magnésium,14,mg/L,2,38,450,2024
+SK,Slovaquie,Sodium,10,mg/L,1,55,450,2024
+SK,Slovaquie,Ammonium,0.04,mg/L,0,0.4,450,2024
+SK,Slovaquie,Chlorure,18,mg/L,2,80,450,2024
+SK,Slovaquie,Sulfate,35,mg/L,4,140,450,2024
+SK,Slovaquie,Dureté carbonatée,11.9,°dH,0,0,0,2024
+SI,Slovénie,Dureté totale,17,°dH,5,35,350,2024
+SI,Slovénie,Conductivité,430,µS/cm,180,820,350,2024
+SI,Slovénie,Nitrate,9,mg/L,0.2,32,350,2024
+SI,Slovénie,pH,7.4,,6.9,8.1,350,2024
+SI,Slovénie,Calcium,65,mg/L,15,140,350,2024
+SI,Slovénie,Magnésium,16,mg/L,3,42,350,2024
+SI,Slovénie,Sodium,8,mg/L,1,45,350,2024
+SI,Slovénie,Ammonium,0.02,mg/L,0,0.2,350,2024
+SI,Slovénie,Chlorure,14,mg/L,2,60,350,2024
+SI,Slovénie,Sulfate,28,mg/L,4,110,350,2024
+SI,Slovénie,Dureté carbonatée,13.3,°dH,0,0,0,2024
+ES,Espagne,Dureté totale,22,°dH,6,45,2500,2024
+ES,Espagne,Conductivité,560,µS/cm,200,1200,2500,2024
+ES,Espagne,Nitrate,16,mg/L,0.3,48,2500,2024
+ES,Espagne,pH,7.6,,7,8.4,2500,2024
+ES,Espagne,Calcium,82,mg/L,18,170,2500,2024
+ES,Espagne,Magnésium,20,mg/L,3,55,2500,2024
+ES,Espagne,Sodium,25,mg/L,3,130,2500,2024
+ES,Espagne,Ammonium,0.03,mg/L,0,0.3,2500,2024
+ES,Espagne,Chlorure,40,mg/L,5,200,2500,2024
+ES,Espagne,Sulfate,55,mg/L,6,220,2500,2024
+ES,Espagne,Dureté carbonatée,17.4,°dH,0,0,0,2024
+SE,Suède,Dureté totale,6,°dH,2,18,1000,2024
+SE,Suède,Conductivité,200,µS/cm,60,500,1000,2024
+SE,Suède,Nitrate,4,mg/L,0.1,15,1000,2024
+SE,Suède,pH,7.2,,6.5,7.9,1000,2024
+SE,Suède,Calcium,25,mg/L,4,70,1000,2024
+SE,Suède,Magnésium,5,mg/L,1,16,1000,2024
+SE,Suède,Sodium,10,mg/L,1,50,1000,2024
+SE,Suède,Ammonium,0.02,mg/L,0,0.2,1000,2024
+SE,Suède,Chlorure,15,mg/L,2,60,1000,2024
+SE,Suède,Sulfate,18,mg/L,2,70,1000,2024
+SE,Suède,Dureté carbonatée,4.8,°dH,0,0,0,2024
