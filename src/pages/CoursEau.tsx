@@ -197,20 +197,21 @@ const CoursEau = () => {
       .finally(() => setTimeseriesLoading(false));
   }, [selectedBrand]);
 
-  // Reset selected retailers when brand data changes — default to first 5
+  // Reset selected retailers when brand data changes — default to Moyenne only
   useEffect(() => {
-    const slugs = brandTimeseries.map(s => s.retailer_slug || 'unknown');
-    setSelectedRetailers(slugs.slice(0, 5));
+    setSelectedRetailers([MOYENNE_KEY]);
   }, [brandTimeseries]);
 
-  // Filtered series based on selected retailers
+  // Filtered series based on selected retailers (excluding __moyenne__ which is virtual)
   const visibleSeries = React.useMemo(
     () => brandTimeseries.filter(s => selectedRetailers.includes(s.retailer_slug || 'unknown')),
     [brandTimeseries, selectedRetailers]
   );
 
+  const showMoyenne = selectedRetailers.includes(MOYENNE_KEY);
+
   const allRetailerSlugs = React.useMemo(
-    () => brandTimeseries.map(s => s.retailer_slug || 'unknown'),
+    () => [MOYENNE_KEY, ...brandTimeseries.map(s => s.retailer_slug || 'unknown')],
     [brandTimeseries]
   );
 
@@ -222,18 +223,35 @@ const CoursEau = () => {
 
   // Merge timeseries data into a single dataset for the line chart
   const timeseriesChartData = React.useMemo(() => {
-    if (!visibleSeries.length) return [];
+    if (!brandTimeseries.length) return [];
+    // Build from all series (for moyenne), but only include visible keys + moyenne
     const dateMap: Record<string, Record<string, number>> = {};
-    for (const series of visibleSeries) {
+    // Always compute all retailer values per date (needed for moyenne)
+    const allRetailersByDate: Record<string, number[]> = {};
+    for (const series of brandTimeseries) {
       for (const pt of series.points) {
-        if (!dateMap[pt.date]) dateMap[pt.date] = {};
-        dateMap[pt.date][series.retailer_slug || 'unknown'] = pt.median_price_per_l;
+        if (!allRetailersByDate[pt.date]) allRetailersByDate[pt.date] = [];
+        allRetailersByDate[pt.date].push(pt.median_price_per_l);
+        // Only add individual retailer data if visible
+        if (selectedRetailers.includes(series.retailer_slug || 'unknown')) {
+          if (!dateMap[pt.date]) dateMap[pt.date] = {};
+          dateMap[pt.date][series.retailer_slug || 'unknown'] = pt.median_price_per_l;
+        }
       }
     }
-    return Object.entries(dateMap)
-      .map(([date, retailers]) => ({ date, ...retailers }))
-      .sort((a, b) => a.date.localeCompare(b.date));
-  }, [visibleSeries]);
+    // Compute moyenne
+    const dates = new Set([...Object.keys(dateMap), ...(showMoyenne ? Object.keys(allRetailersByDate) : [])]);
+    const result: Record<string, any>[] = [];
+    for (const date of dates) {
+      const row: Record<string, any> = { date, ...(dateMap[date] || {}) };
+      if (showMoyenne && allRetailersByDate[date]) {
+        const vals = allRetailersByDate[date];
+        row[MOYENNE_KEY] = vals.reduce((a, b) => a + b, 0) / vals.length;
+      }
+      result.push(row);
+    }
+    return result.sort((a, b) => a.date.localeCompare(b.date));
+  }, [brandTimeseries, selectedRetailers, showMoyenne]);
 
   const bottleData = filterByPeriod(bottlePriceHistory, period);
   const tapData = filterByPeriod(tapPriceHistory, period);
