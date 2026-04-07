@@ -216,6 +216,9 @@ const CoursEau = () => {
       prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]
     );
   };
+
+  // Merge timeseries data into a single dataset for the line chart
+  const timeseriesChartData = React.useMemo(() => {
     if (!brandTimeseries.length) return [];
     const dateMap: Record<string, Record<string, number>> = {};
     for (const series of brandTimeseries) {
