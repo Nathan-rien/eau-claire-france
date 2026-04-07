@@ -1,42 +1,26 @@
 
 
-## Remplacer le BarChart par un graphique d'évolution (AreaChart) dans la section "Prix par marque"
+## Fix: Brand timeseries data not loading
 
-### Objectif
-Fusionner les deux sections actuelles (BarChart par enseigne + LineChart timeseries) en une seule section avec un graphique d'évolution type AreaChart (ligne + gradient fill), similaire au style des graphiques généraux de la page (cf. image de référence).
+### Root cause
+`getBrandTimeseries` in `src/services/timeseriesApi.ts` uses a Supabase relational join (`retailers!inner(slug, name)`) on the `prices_history` table. However, there is **no foreign key** between `prices_history.retailer_id` and `retailers.id`, so the join returns an error or empty results.
 
-### Modifications dans `src/pages/CoursEau.tsx`
+### Solution
+Refactor `getBrandTimeseries` to perform a **two-step query**:
+1. Fetch `retailers` list separately (id, slug, name)
+2. Query `prices_history` directly (without join) filtering by brand + date range
+3. Map `retailer_id` to retailer slug/name using the retailers lookup in JavaScript
 
-1. **Supprimer le BarChart** (lignes 417-445) et les stats min/max/moy/médiane en dessous (lignes 447-472)
+### File modified: `src/services/timeseriesApi.ts`
 
-2. **Remplacer par un AreaChart** utilisant les données timeseries existantes (`getBrandTimeseries`), avec :
-   - Gradient fill sous la courbe (style identique au graphique "Prix moyen eau en bouteille")
-   - Une `Area` par retailer, empilées visuellement avec des opacités différentes
-   - Axes formatés en `€/L` et dates `dd/mm`
-   - Tooltip personnalisé montrant le prix par enseigne
-   - Légende des enseignes
+**`getBrandTimeseries` function changes:**
+- Remove `retailers!inner(slug, name)` from the select
+- Add a separate query to `retailers` table to get the id-to-slug/name mapping
+- Join data client-side using the `retailer_id` field
+- Keep all existing aggregation logic (daily median calculation, grouping by retailer)
 
-3. **Supprimer la section "BRAND TIMESERIES" séparée** (lignes 479-561) puisqu'elle est absorbée dans la section principale
+**`getLatestRetailerMedians` function** — apply the same fix (also uses `retailers!inner`).
 
-4. **Déplacer le chargement timeseries** directement dans la section brand (le `useEffect` pour `getBrandTimeseries` reste inchangé)
-
-5. **Conserver** : le sélecteur de marque, les skeletons de chargement, le message "aucune donnée"
-
-6. **Mettre à jour le titre** : "Prix par marque — évolution" avec l'icône `TrendingUp` au lieu de `BarChart3`
-
-7. **Retirer les imports inutilisés** : `Bar`, `Cell`, `BarChart`, `BarChart3` si plus utilisés nulle part
-
-### Résultat visuel
-
-```text
-┌─────────────────────────────────────────┐
-│ 📈 Prix par marque — évolution          │
-│ [Select: Evian ▼]                       │
-│                                         │
-│  AreaChart (ligne + gradient fill)       │
-│  Une courbe par enseigne                │
-│  Axe X: dates (90j)  Axe Y: €/L        │
-│  Légende: Carrefour, Leclerc, Auchan... │
-└─────────────────────────────────────────┘
-```
+### No other files need changes
+The chart code in `CoursEau.tsx` is correct and will work once the API returns data.
 
