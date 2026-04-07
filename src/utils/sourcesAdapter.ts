@@ -132,18 +132,19 @@ export async function buildSources(): Promise<SourceItem[]> {
     const department = r["department"] || r["Département"] || r["Departement"] || "";
     const rawCategory = r["category"] || r["Catégorie"] || r["Categorie"] || "";
 
-    const k =
-      key(srcName, brand, commune) ||
-      key(srcName, undefined, commune) ||
-      key(undefined, brand, commune) ||
-      key(srcName) ||
-      key(undefined, brand);
+    const candidateKeys = [
+      key(srcName, brand, commune),
+      key(srcName, undefined, commune),
+      key(undefined, brand, commune),
+      key(srcName),
+      key(undefined, brand),
+    ].filter(Boolean) as string[];
 
-    const meta = (k && compIndex.get(k)) || {};
+    const matchedKey = candidateKeys.find((candidate) => compIndex.has(candidate));
+    const meta = matchedKey ? compIndex.get(matchedKey) ?? {} : {};
     
-    // Log pour debug
     if (srcName.toLowerCase().includes('romains') || brand.toLowerCase().includes('rozana')) {
-      log('🔍 Des Romains/Rozana found:', { srcName, brand, commune, k, hasMeta: !!k && compIndex.has(k), meta });
+      log('🔍 Des Romains/Rozana found:', { srcName, brand, commune, matchedKey, hasMeta: !!matchedKey, meta });
     }
 
     const it: SourceItem = {
