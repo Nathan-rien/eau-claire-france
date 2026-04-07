@@ -87,7 +87,7 @@ const PriceTooltip = ({ active, payload, unit }: any) => {
 };
 
 // ─── Animated factor card (extracted to avoid hooks in loops) ───
-const FactorCard = ({ factor, index, colorClass }: { factor: typeof bottlePriceFactors[0]; index: number; colorClass: string }) => {
+const FactorCard = ({ factor, index, colorClass }: { factor: { icon: string; title: string; description: string; trend: string }; index: number; colorClass: string }) => {
   const { ref, inView } = useInView(0.15);
   return (
     <div
