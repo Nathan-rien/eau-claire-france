@@ -463,6 +463,11 @@ const CoursEau = () => {
                               />
                               {selectedRetailers.length === allRetailerSlugs.length ? 'Tout désélectionner' : 'Tout sélectionner'}
                             </CommandItem>
+                            <CommandItem onSelect={() => toggleRetailer(MOYENNE_KEY)} className="font-semibold border-b border-border mb-1">
+                              <Checkbox checked={showMoyenne} className="mr-2" />
+                              <TrendingUp className="w-4 h-4 mr-1" />
+                              Moyenne
+                            </CommandItem>
                             {brandTimeseries.map((series) => {
                               const slug = series.retailer_slug || 'unknown';
                               const isSelected = selectedRetailers.includes(slug);
