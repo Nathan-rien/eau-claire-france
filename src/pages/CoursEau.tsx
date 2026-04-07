@@ -6,12 +6,23 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine,
+  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell,
 } from 'recharts';
 import {
-  TrendingUp, Droplets, FlaskConical, Truck, Zap, Scale, Wrench, Shield, Thermometer, ArrowUpRight, ArrowDownRight, Minus, Clock,
+  TrendingUp, Droplets, FlaskConical, Truck, Zap, Scale, Wrench, Shield, Thermometer, ArrowUpRight, ArrowDownRight, Minus, Clock, BarChart3,
 } from 'lucide-react';
+import {
+  bottlePriceHistory, tapPriceHistory,
+  bottlePriceFactors, tapPriceFactors,
+  keyStats, priceEvents,
+  type PriceEvent,
+} from '@/data/waterPriceHistory';
+import { useBrands } from '@/hooks/usePricesData';
+import { getBrandStats } from '@/services/pricesApi';
+import type { BrandPriceStats } from '@/types/pricing';
 import {
   bottlePriceHistory, tapPriceHistory,
   bottlePriceFactors, tapPriceFactors,
