@@ -1,18 +1,17 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Search, MapPin, Droplets, AlertTriangle, Leaf, Award, Zap, ClipboardList, Globe, Shield, Heart, Baby, Dumbbell, FlaskConical, Bell, Activity, Skull } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import SearchBar from '@/components/SearchBar';
+import waterBg from '@/assets/water-background.jpg';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Index = () => {
-  const [selectedCity, setSelectedCity] = useState<string>('');
   const { t } = useLanguage();
 
   return (
@@ -40,25 +39,11 @@ const Index = () => {
               </p>
               
               <div className="mb-6 md:mb-8 lg:mb-12">
-                <SearchBar onCitySelect={setSelectedCity} />
-                {selectedCity && (
-                  <div className="mt-4 px-4">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4 max-w-lg mx-auto">
-                      <p className="text-blue-800 text-sm md:text-base">
-                        <MapPin className="w-4 h-4 inline mr-2" />
-                        {t('home.searchResult', { city: selectedCity })}
-                      </p>
-                      <div className="mt-2">
-                        <Link 
-                          to={`/diagnostic?city=${encodeURIComponent(selectedCity)}`}
-                          className="text-primary hover:text-primary/80 font-medium underline text-sm md:text-base"
-                        >
-                          {t('home.seeFullDiagnostic')}
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <Link to="/diagnostic">
+                  <Button size="lg" className="bg-gradient-to-r from-primary to-green-600 hover:from-primary/90 hover:to-green-700 text-primary-foreground text-base md:text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                    Lancer un diagnostic →
+                  </Button>
+                </Link>
               </div>
 
               {/* Stats */}
@@ -88,8 +73,9 @@ const Index = () => {
         </section>
 
         {/* Section 1 — Quelle eau boire ? */}
-        <section className="py-8 md:py-12 lg:py-16 px-4 bg-card" role="region" aria-labelledby="diagnostic-title">
-          <div className="container mx-auto max-w-4xl">
+        <section className="relative py-8 md:py-12 lg:py-16 px-4 bg-cover bg-center" style={{ backgroundImage: `url(${waterBg})` }} role="region" aria-labelledby="diagnostic-title">
+          <div className="absolute inset-0 bg-white/85 backdrop-blur-sm" />
+          <div className="relative container mx-auto max-w-4xl">
             <div className="text-center mb-6 md:mb-8">
               <h2 id="diagnostic-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3">
                 Quelle eau boire ?
