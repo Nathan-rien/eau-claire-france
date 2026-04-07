@@ -28,7 +28,7 @@ const Index = () => {
       
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50">
         {/* Hero Section */}
-        <section className="py-8 md:py-12 lg:py-16 px-4" role="banner">
+        <section className="py-8 md:py-12 lg:py-16 px-4 bg-[sidebar-primary-foreground] bg-sky-200" role="banner">
           <div className="container mx-auto text-center">
             <div className="max-w-4xl mx-auto">
               <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-foreground mb-4 md:mb-6 leading-tight px-2">
@@ -75,7 +75,7 @@ const Index = () => {
 
         {/* Section 1 — Quelle eau boire ? */}
         <section className="relative py-8 md:py-12 lg:py-16 px-4 bg-cover bg-center" style={{ backgroundImage: `url(${waterBg})` }} role="region" aria-labelledby="diagnostic-title">
-          <div className="absolute inset-0 bg-white/85 backdrop-blur-sm" />
+          <div className="absolute inset-0 backdrop-blur-sm bg-primary-foreground" />
           <div className="relative container mx-auto max-w-4xl">
             <div className="text-center mb-6 md:mb-8">
               <h2 id="diagnostic-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3">
@@ -158,7 +158,7 @@ const Index = () => {
         </section>
 
         {/* Section 3 — Cartes & Infographies */}
-        <section className="py-8 md:py-12 lg:py-16 px-4 bg-card" role="region" aria-labelledby="maps-title">
+        <section className="py-8 md:py-12 lg:py-16 px-4 bg-sky-200" role="region" aria-labelledby="maps-title">
           <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-6 md:mb-8">
               <h2 id="maps-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3">
