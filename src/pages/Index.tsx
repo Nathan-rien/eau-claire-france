@@ -33,7 +33,7 @@ const Index = () => {
             <div className="max-w-4xl mx-auto">
               <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-foreground mb-4 md:mb-6 leading-tight px-2">
                 {t('home.title')} 
-                <span className="bg-gradient-to-r from-primary to-green-600 bg-clip-text text-transparent"> {t('home.titleHighlight')}</span> ?
+                <span className="bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent"> {t('home.titleHighlight')}</span> ?
               </h1>
               <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 leading-relaxed px-2">
                 {t('home.subtitle')}
@@ -41,7 +41,7 @@ const Index = () => {
               
               <div className="mb-6 md:mb-8 lg:mb-12">
                 <Link to="/diagnostic">
-                  <Button size="lg" className="bg-gradient-to-r from-primary to-green-600 hover:from-primary/90 hover:to-green-700 text-primary-foreground text-base md:text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                  <Button size="lg" className="bg-gradient-to-r from-[#3b82f6] to-[#22c55e] hover:from-[#2563eb] hover:to-[#16a34a] text-white text-base md:text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                     Lancer un diagnostic →
                   </Button>
                 </Link>
