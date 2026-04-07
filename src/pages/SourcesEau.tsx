@@ -109,6 +109,44 @@ export default function SourcesEau() {
               </p>
             </div>
 
+            {/* Cartes statistiques synthétiques */}
+            {stats && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <Card>
+                  <CardContent className="pt-4 pb-3 text-center">
+                    <Database className="h-6 w-6 mx-auto mb-1 text-blue-600" />
+                    <p className="text-2xl font-bold">{stats.total}</p>
+                    <p className="text-xs text-muted-foreground">Sources référencées</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4 pb-3 text-center">
+                    <Droplets className="h-6 w-6 mx-auto mb-1 text-green-600" />
+                    <div className="flex justify-center gap-2 text-xs mt-1">
+                      <span className="text-green-700">{stats.byType.source} source</span>
+                      <span className="text-blue-700">{stats.byType.minerale} minérale</span>
+                      <span className="text-amber-700">{stats.byType.gazeuse} gazeuse</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Répartition par type</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4 pb-3 text-center">
+                    <FlaskConical className="h-6 w-6 mx-auto mb-1 text-purple-600" />
+                    <p className="text-2xl font-bold">{stats.withComposition}</p>
+                    <p className="text-xs text-muted-foreground">Compositions connues</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4 pb-3 text-center">
+                    <BarChart3 className="h-6 w-6 mx-auto mb-1 text-orange-600" />
+                    <p className="text-2xl font-bold">{stats.avgResidue ?? '—'}</p>
+                    <p className="text-xs text-muted-foreground">Résidu sec moyen (mg/L)</p>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
             {/* Carte des sources */}
             <div className="mb-8">
               <WaterSourcesMap sources={sources} />
