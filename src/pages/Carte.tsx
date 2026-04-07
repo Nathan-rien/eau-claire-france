@@ -32,12 +32,12 @@ const Carte = () => {
         <section className="py-6 md:py-12 px-4" role="main">
           <div className="container mx-auto">
             <div className="text-center mb-6 md:mb-8">
-              <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
+              <h1 className="text-xl md:text-3xl font-bold text-foreground mb-4 flex items-center justify-center space-x-2">
                 <MapPin className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
-                <span>{t('map.title')}</span>
+                <span>Qualité & polluants de l'eau en France</span>
               </h1>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                {t('map.subtitle')}
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Carte interactive des 13 régions métropolitaines : niveaux de risque, conformité et polluants détectés.
               </p>
             </div>
             
