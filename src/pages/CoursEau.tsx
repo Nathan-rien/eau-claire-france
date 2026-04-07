@@ -8,11 +8,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Legend,
 } from 'recharts';
 import {
-  TrendingUp, Droplets, FlaskConical, Truck, Zap, Scale, Wrench, Shield, Thermometer, ArrowUpRight, ArrowDownRight, Minus, Clock,
+  TrendingUp, Droplets, FlaskConical, Truck, Zap, Scale, Wrench, Shield, Thermometer, ArrowUpRight, ArrowDownRight, Minus, Clock, ChevronsUpDown, Check,
 } from 'lucide-react';
 import {
   bottlePriceHistory, tapPriceHistory,
@@ -171,6 +174,8 @@ const CHART_COLORS = [
 const CoursEau = () => {
   const [period, setPeriod] = useState<Period>('max');
   const [selectedBrand, setSelectedBrand] = useState<string>('');
+  const [selectedRetailers, setSelectedRetailers] = useState<string[]>([]);
+  const [retailerPopoverOpen, setRetailerPopoverOpen] = useState(false);
   const [brandTimeseries, setBrandTimeseries] = useState<BrandTimeseries[]>([]);
   const [timeseriesLoading, setTimeseriesLoading] = useState(false);
   const heroRef = useInView(0.3);
@@ -188,6 +193,29 @@ const CoursEau = () => {
       .catch(() => setBrandTimeseries([]))
       .finally(() => setTimeseriesLoading(false));
   }, [selectedBrand]);
+
+  // Reset selected retailers when brand data changes — default to first 5
+  useEffect(() => {
+    const slugs = brandTimeseries.map(s => s.retailer_slug || 'unknown');
+    setSelectedRetailers(slugs.slice(0, 5));
+  }, [brandTimeseries]);
+
+  // Filtered series based on selected retailers
+  const visibleSeries = React.useMemo(
+    () => brandTimeseries.filter(s => selectedRetailers.includes(s.retailer_slug || 'unknown')),
+    [brandTimeseries, selectedRetailers]
+  );
+
+  const allRetailerSlugs = React.useMemo(
+    () => brandTimeseries.map(s => s.retailer_slug || 'unknown'),
+    [brandTimeseries]
+  );
+
+  const toggleRetailer = (slug: string) => {
+    setSelectedRetailers(prev =>
+      prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]
+    );
+  };
 
   // Merge timeseries data into a single dataset for the line chart
   const timeseriesChartData = React.useMemo(() => {
@@ -374,16 +402,63 @@ const CoursEau = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-                <SelectTrigger className="w-full max-w-xs">
-                  <SelectValue placeholder="Choisir une marque…" />
-                </SelectTrigger>
-                <SelectContent>
-                  {brands.map(b => (
-                    <SelectItem key={b} value={b}>{b}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex flex-wrap gap-3">
+                <Select value={selectedBrand} onValueChange={setSelectedBrand}>
+                  <SelectTrigger className="w-full max-w-xs">
+                    <SelectValue placeholder="Choisir une marque…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {brands.map(b => (
+                      <SelectItem key={b} value={b}>{b}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {allRetailerSlugs.length > 0 && (
+                  <Popover open={retailerPopoverOpen} onOpenChange={setRetailerPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="max-w-xs justify-between gap-2">
+                        Distributeurs ({selectedRetailers.length}/{allRetailerSlugs.length})
+                        <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-0" align="start">
+                      <Command>
+                        <CommandList>
+                          <CommandGroup>
+                            <CommandItem
+                              onSelect={() => {
+                                if (selectedRetailers.length === allRetailerSlugs.length) {
+                                  setSelectedRetailers([]);
+                                } else {
+                                  setSelectedRetailers([...allRetailerSlugs]);
+                                }
+                              }}
+                              className="font-semibold"
+                            >
+                              <Checkbox
+                                checked={selectedRetailers.length === allRetailerSlugs.length}
+                                className="mr-2"
+                              />
+                              {selectedRetailers.length === allRetailerSlugs.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+                            </CommandItem>
+                            {brandTimeseries.map((series) => {
+                              const slug = series.retailer_slug || 'unknown';
+                              const isSelected = selectedRetailers.includes(slug);
+                              return (
+                                <CommandItem key={slug} onSelect={() => toggleRetailer(slug)}>
+                                  <Checkbox checked={isSelected} className="mr-2" />
+                                  {series.retailer_name || slug}
+                                </CommandItem>
+                              );
+                            })}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                )}
+              </div>
 
               {!selectedBrand && (
                 <p className="text-sm text-muted-foreground">Sélectionnez une marque pour visualiser l'évolution de ses prix par enseigne.</p>
@@ -401,12 +476,15 @@ const CoursEau = () => {
                 <ResponsiveContainer width="100%" height={360}>
                   <AreaChart data={timeseriesChartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                     <defs>
-                      {brandTimeseries.map((series, i) => (
-                        <linearGradient key={series.retailer_slug} id={`gradBrand-${series.retailer_slug}`} x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor={CHART_COLORS[i % CHART_COLORS.length]} stopOpacity={0.25} />
-                          <stop offset="100%" stopColor={CHART_COLORS[i % CHART_COLORS.length]} stopOpacity={0.02} />
-                        </linearGradient>
-                      ))}
+                      {visibleSeries.map((series, i) => {
+                        const globalIdx = brandTimeseries.indexOf(series);
+                        return (
+                          <linearGradient key={series.retailer_slug} id={`gradBrand-${series.retailer_slug}`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor={CHART_COLORS[globalIdx % CHART_COLORS.length]} stopOpacity={0.25} />
+                            <stop offset="100%" stopColor={CHART_COLORS[globalIdx % CHART_COLORS.length]} stopOpacity={0.02} />
+                          </linearGradient>
+                        );
+                      })}
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis
@@ -449,19 +527,22 @@ const CoursEau = () => {
                         return retailer?.retailer_name || value;
                       }}
                     />
-                    {brandTimeseries.map((series, i) => (
-                      <Area
-                        key={series.retailer_slug}
-                        type="monotone"
-                        dataKey={series.retailer_slug || 'unknown'}
-                        stroke={CHART_COLORS[i % CHART_COLORS.length]}
-                        strokeWidth={2}
-                        fill={`url(#gradBrand-${series.retailer_slug})`}
-                        activeDot={{ r: 4 }}
-                        animationDuration={1500}
-                        animationEasing="ease-out"
-                      />
-                    ))}
+                    {visibleSeries.map((series) => {
+                      const globalIdx = brandTimeseries.indexOf(series);
+                      return (
+                        <Area
+                          key={series.retailer_slug}
+                          type="monotone"
+                          dataKey={series.retailer_slug || 'unknown'}
+                          stroke={CHART_COLORS[globalIdx % CHART_COLORS.length]}
+                          strokeWidth={2}
+                          fill={`url(#gradBrand-${series.retailer_slug})`}
+                          activeDot={{ r: 4 }}
+                          animationDuration={1500}
+                          animationEasing="ease-out"
+                        />
+                      );
+                    })}
                   </AreaChart>
                 </ResponsiveContainer>
               )}
