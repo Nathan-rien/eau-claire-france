@@ -32,7 +32,7 @@ const quickObjectives = [
   { id: 'pure', name: 'Eau la plus pure', icon: Search, preferenceId: 'eau-legere' },
 ];
 
-
+const QuelleEauBoire: React.FC = () => {
   const { t } = useLanguage();
   
   const faqData = [
