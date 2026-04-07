@@ -1,72 +1,65 @@
 
 
-## Audit SEO complet — Plan de corrections
+## Refonte de la page d'accueil — Mise en avant des diagnostics, classement et infographies
 
-### Problemes identifies
+### Objectif
 
-**1. Pages publiques sans SEOHead (4 pages)**
-- `/classement` (Classement.tsx) — pas de SEOHead, pas de meta
-- `/comparatif-bouteilles` (ComparatifBouteilles.tsx) — pas de SEOHead
-- `/polluants` (Polluants.tsx) — pas de SEOHead
-- `/diagnostic-prix` (DiagnosticPrix.tsx) — pas de SEOHead (page publique d'audit)
+Restructurer la page `/` pour :
+1. Reprendre les deux cartes de choix de diagnostic (rapide / complet) de `/quelle-eau-boire`
+2. Ajouter une carte mise en avant vers `/classement`
+3. Ajouter une section "Infographies & Cartes" renvoyant vers les cartes interactives et pages visuelles du site
 
-**2. seoData.ts — entrees manquantes**
-- `classement` (FR) : absent — seul `classementEurope` existe
-- `comparatifBouteilles` : existe mais sans `schemaData`
-- `polluants` : existe mais sans `schemaData`
-- `diagnosticPrix` : absent
-- `parcoursEauBouteille` : absent (page utilise des meta en dur)
-- `carteParcoursEau` : absent (meta en dur)
-- `carteParcoursRobinet` : absent (meta en dur)
-- `sourcesEau` : absent
+### Modifications
 
-**3. Sitemap incomplet — pages manquantes**
-- `/composition-europe` — route existe, absente du sitemap
+**Fichier : `src/pages/Index.tsx`**
 
-**4. SEOHead — canonical fragile**
-- Quand `canonical` n'est pas fourni, fallback sur `window.location.href` qui inclut les query params et ne fonctionne pas en SSR/prerendering. Devrait utiliser `window.location.origin + window.location.pathname`.
+Restructurer le contenu sous le hero (SearchBar + stats) en remplacant la section "Quick Access" actuelle et la section "Features" par :
 
-**5. Web Core Vitals — optimisations**
-- Images : pas de `width`/`height` sur les images (CLS). Ajouter des dimensions explicites dans les composants critiques (Header, Index hero).
-- Lazy loading : deja en place via `React.lazy` — OK.
-- Font : pas de `font-display: swap` dans les imports CSS eventuels.
-- LCP : le hero de la page d'accueil charge des icones Lucide mais pas d'image hero large — OK.
+**Section 1 — "Quelle eau boire ?" (apres les stats)**
+- Titre + sous-titre reprenant le meme texte que `/quelle-eau-boire`
+- Deux cartes cote a cote (grid 1 col mobile, 2 col desktop) :
+  - **Diagnostic rapide** : icone Zap, titre, description "3 questions, resultat en 30 secondes", badge "Rapide" — lien vers `/quelle-eau-boire` (le composant la-bas gere le mode)
+  - **Diagnostic complet** : icone ClipboardList, titre, description "Analyse detaillee avec profils, intolerances et preferences", badge "4 etapes" — lien vers `/quelle-eau-boire`
+- Style identique aux cartes de QuelleEauBoire (hover shadow, border primary)
 
----
+**Section 2 — Carte "Classement des eaux"**
+- Grande carte horizontale (full width) avec fond gradient bleu/vert
+- Icone Award, titre "Classement des eaux en bouteille", description "Decouvrez le top des eaux minerales et de source classees par composition minerale"
+- Bouton CTA "Voir le classement" → `/classement`
 
-### Modifications prevues
+**Section 3 — "Cartes & Infographies" (grille 2x2 ou 2x3)**
+Grille de cartes cliquables vers les pages visuelles :
+- **Carte qualite de l'eau** (`/carte`) — icone MapPin, "Qualite de l'eau par commune"
+- **Carte des polluants** (`/carte-polluants`) — icone AlertTriangle, "Polluants detectes en France"
+- **Parcours de l'eau en bouteille** (`/carte-parcours-eau`) — icone Droplets, "De la source au magasin"
+- **Parcours de l'eau du robinet** (`/carte-parcours-robinet`) — icone GlassWater, "Du captage au robinet"
+- **Sources d'eau** (`/sources-eau`) — icone Leaf, "Carte des sources en France"
+- **Carte Europe** (`/carte-europe`) — icone Globe, "Qualite de l'eau en Europe"
 
-**Fichier : `src/utils/seoData.ts`**
-- Ajouter les entrees manquantes : `classement`, `diagnosticPrix`, `parcoursEauBouteille`, `carteParcoursEau`, `carteParcoursRobinet`, `sourcesEau`
-- Ajouter `schemaData` a `comparatifBouteilles` et `polluants`
+Conserver la section NavigationCTA en bas.
 
-**Fichier : `src/pages/Classement.tsx`**
-- Importer et ajouter `SEOHead` avec `seoData.classement`
+**Imports a ajouter** : `Zap`, `ClipboardList`, `GlassWater`, `Globe` depuis lucide-react.
 
-**Fichier : `src/pages/ComparatifBouteilles.tsx`**
-- Importer et ajouter `SEOHead` avec `seoData.comparatifBouteilles`
+### Structure finale de la page
 
-**Fichier : `src/pages/Polluants.tsx`**
-- Importer et ajouter `SEOHead` avec `seoData.polluants`
+```text
+Hero (titre + SearchBar + stats)
+───────────────────────────────
+Section "Quelle eau boire ?"
+  [Diag rapide]  [Diag complet]
+───────────────────────────────
+Section "Classement des eaux"
+  [Grande carte CTA → /classement]
+───────────────────────────────
+Section "Cartes & Infographies"
+  [Carte qualite] [Polluants]
+  [Parcours bout.] [Parcours rob.]
+  [Sources]        [Europe]
+───────────────────────────────
+NavigationCTA (existant)
+```
 
-**Fichier : `src/pages/DiagnosticPrix.tsx`**
-- Importer et ajouter `SEOHead` avec `seoData.diagnosticPrix`
+### Fichiers modifies
 
-**Fichier : `src/pages/ParcoursEauBouteille.tsx`**
-- Remplacer les meta en dur par `SEOHead` + `seoData.parcoursEauBouteille`
-
-**Fichier : `src/pages/CarteParcoursEau.tsx`**
-- Remplacer les meta en dur par `SEOHead` + `seoData.carteParcoursEau`
-
-**Fichier : `src/pages/CarteParcoursRobinet.tsx`**
-- Remplacer les meta en dur par `SEOHead` + `seoData.carteParcoursRobinet`
-
-**Fichier : `src/components/SEOHead.tsx`**
-- Fix canonical fallback : `window.location.origin + window.location.pathname` au lieu de `window.location.href`
-
-**Fichier : `public/sitemap.xml`**
-- Ajouter `/composition-europe`
-
-**Fichier : `public/robots.txt`**
-- Ajouter `Disallow: /diagnostic-prix` (page technique d'audit, pas utile pour les moteurs)
+- `src/pages/Index.tsx` — seul fichier modifie
 
