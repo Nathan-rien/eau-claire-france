@@ -361,7 +361,7 @@ const CoursEau = () => {
           </TabsContent>
         </Tabs>
 
-        {/* ─── BRAND PRICE SECTION ─── */}
+        {/* ─── BRAND PRICE EVOLUTION SECTION ─── */}
         <section
           ref={brandRef.ref}
           className={`transition-all duration-700 ${brandRef.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
@@ -369,8 +369,8 @@ const CoursEau = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <BarChart3 className="w-5 h-5 text-primary" />
-                Prix par marque — moyenne par enseigne
+                <TrendingUp className="w-5 h-5 text-primary" />
+                Prix par marque — évolution
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -386,170 +386,88 @@ const CoursEau = () => {
               </Select>
 
               {!selectedBrand && (
-                <p className="text-sm text-muted-foreground">Sélectionnez une marque pour visualiser ses prix par enseigne.</p>
+                <p className="text-sm text-muted-foreground">Sélectionnez une marque pour visualiser l'évolution de ses prix par enseigne.</p>
               )}
 
-              {brandLoading && (
-                <div className="space-y-3">
-                  <Skeleton className="h-[280px] w-full" />
-                  <div className="grid grid-cols-4 gap-3">
-                    {[1,2,3,4].map(i => <Skeleton key={i} className="h-16" />)}
-                  </div>
-                </div>
+              {timeseriesLoading && <Skeleton className="h-[360px] w-full" />}
+
+              {selectedBrand && !timeseriesLoading && timeseriesChartData.length === 0 && (
+                <p className="text-sm text-muted-foreground py-8 text-center">
+                  Aucune donnée historique disponible pour {selectedBrand} sur les 90 derniers jours.
+                </p>
               )}
 
-              {selectedBrand && !brandLoading && (!brandStats || brandStats.retailer_prices.length === 0) && (
-                <p className="text-sm text-muted-foreground">Aucune donnée disponible pour cette marque.</p>
-              )}
-
-              {selectedBrand && !brandLoading && brandStats && brandStats.retailer_prices.length > 0 && (
-                <>
-                  <ResponsiveContainer width="100%" height={Math.max(200, brandStats.retailer_prices.length * 50)}>
-                    <BarChart
-                      data={brandStats.retailer_prices.sort((a, b) => a.avg_price_per_l - b.avg_price_per_l)}
-                      layout="vertical"
-                      margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" horizontal={false} />
-                      <XAxis type="number" tick={{ fontSize: 12 }} className="fill-muted-foreground" tickFormatter={v => `${v.toFixed(2)}€`} />
-                      <YAxis type="category" dataKey="retailer_name" tick={{ fontSize: 12 }} className="fill-muted-foreground" width={90} />
-                      <Tooltip
-                        content={({ active, payload }) => {
-                          if (!active || !payload?.length) return null;
-                          const d = payload[0].payload;
-                          return (
-                            <div className="bg-popover border border-border rounded-lg p-3 shadow-lg text-sm">
-                              <p className="font-semibold text-foreground">{d.retailer_name}</p>
-                              <p className="text-primary font-bold">{d.avg_price_per_l.toFixed(3)} €/L</p>
-                              <p className="text-muted-foreground text-xs">{d.product_count} produit{d.product_count > 1 ? 's' : ''}</p>
-                            </div>
-                          );
-                        }}
+              {selectedBrand && !timeseriesLoading && timeseriesChartData.length > 0 && (
+                <ResponsiveContainer width="100%" height={360}>
+                  <AreaChart data={timeseriesChartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                    <defs>
+                      {brandTimeseries.map((series, i) => (
+                        <linearGradient key={series.retailer_slug} id={`gradBrand-${series.retailer_slug}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={CHART_COLORS[i % CHART_COLORS.length]} stopOpacity={0.25} />
+                          <stop offset="100%" stopColor={CHART_COLORS[i % CHART_COLORS.length]} stopOpacity={0.02} />
+                        </linearGradient>
+                      ))}
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fontSize: 11 }}
+                      className="fill-muted-foreground"
+                      tickFormatter={(d: string) => {
+                        const [, m, day] = d.split('-');
+                        return `${day}/${m}`;
+                      }}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 12 }}
+                      className="fill-muted-foreground"
+                      tickFormatter={(v: number) => `${v.toFixed(2)}€`}
+                      domain={['auto', 'auto']}
+                    />
+                    <Tooltip
+                      content={({ active, payload, label }) => {
+                        if (!active || !payload?.length) return null;
+                        const [, m, day] = (label as string).split('-');
+                        return (
+                          <div className="bg-popover border border-border rounded-lg p-3 shadow-lg text-sm">
+                            <p className="font-semibold text-foreground mb-1">{day}/{m}</p>
+                            {payload.map((entry: any) => {
+                              const retailer = brandTimeseries.find(s => s.retailer_slug === entry.dataKey);
+                              return (
+                                <p key={entry.dataKey} style={{ color: entry.color }} className="font-medium">
+                                  {retailer?.retailer_name || entry.dataKey} : {Number(entry.value).toFixed(3)} €/L
+                                </p>
+                              );
+                            })}
+                          </div>
+                        );
+                      }}
+                    />
+                    <Legend
+                      formatter={(value: string) => {
+                        const retailer = brandTimeseries.find(s => s.retailer_slug === value);
+                        return retailer?.retailer_name || value;
+                      }}
+                    />
+                    {brandTimeseries.map((series, i) => (
+                      <Area
+                        key={series.retailer_slug}
+                        type="monotone"
+                        dataKey={series.retailer_slug || 'unknown'}
+                        stroke={CHART_COLORS[i % CHART_COLORS.length]}
+                        strokeWidth={2}
+                        fill={`url(#gradBrand-${series.retailer_slug})`}
+                        activeDot={{ r: 4 }}
+                        animationDuration={1500}
+                        animationEasing="ease-out"
                       />
-                      <Bar dataKey="avg_price_per_l" radius={[0, 4, 4, 0]} animationDuration={1200}>
-                        {brandStats.retailer_prices.map((_, i) => (
-                          <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <Card className="text-center">
-                      <CardContent className="p-3">
-                        <div className="text-lg font-bold text-primary tabular-nums">{brandStats.overall_stats.min_price_per_l.toFixed(3)}€</div>
-                        <p className="text-xs text-muted-foreground">Min</p>
-                      </CardContent>
-                    </Card>
-                    <Card className="text-center">
-                      <CardContent className="p-3">
-                        <div className="text-lg font-bold text-primary tabular-nums">{brandStats.overall_stats.avg_price_per_l.toFixed(3)}€</div>
-                        <p className="text-xs text-muted-foreground">Moyenne</p>
-                      </CardContent>
-                    </Card>
-                    <Card className="text-center">
-                      <CardContent className="p-3">
-                        <div className="text-lg font-bold text-primary tabular-nums">{brandStats.overall_stats.median_price_per_l.toFixed(3)}€</div>
-                        <p className="text-xs text-muted-foreground">Médiane</p>
-                      </CardContent>
-                    </Card>
-                    <Card className="text-center">
-                      <CardContent className="p-3">
-                        <div className="text-lg font-bold text-primary tabular-nums">{brandStats.overall_stats.max_price_per_l.toFixed(3)}€</div>
-                        <p className="text-xs text-muted-foreground">Max</p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </>
+                    ))}
+                  </AreaChart>
+                </ResponsiveContainer>
               )}
             </CardContent>
           </Card>
         </section>
-
-        {/* ─── BRAND TIMESERIES SECTION ─── */}
-        {selectedBrand && (
-          <section
-            ref={timeseriesRef.ref}
-            className={`transition-all duration-700 ${timeseriesRef.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <LineChartIcon className="w-5 h-5 text-primary" />
-                  Évolution du prix — {selectedBrand} (90 derniers jours)
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {timeseriesLoading && <Skeleton className="h-[320px] w-full" />}
-
-                {!timeseriesLoading && timeseriesChartData.length === 0 && (
-                  <p className="text-sm text-muted-foreground py-8 text-center">
-                    Aucune donnée historique disponible pour {selectedBrand} sur les 90 derniers jours.
-                  </p>
-                )}
-
-                {!timeseriesLoading && timeseriesChartData.length > 0 && (
-                  <ResponsiveContainer width="100%" height={360}>
-                    <LineChart data={timeseriesChartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                      <XAxis
-                        dataKey="date"
-                        tick={{ fontSize: 11 }}
-                        className="fill-muted-foreground"
-                        tickFormatter={(d: string) => {
-                          const [, m, day] = d.split('-');
-                          return `${day}/${m}`;
-                        }}
-                      />
-                      <YAxis
-                        tick={{ fontSize: 12 }}
-                        className="fill-muted-foreground"
-                        tickFormatter={(v: number) => `${v.toFixed(2)}€`}
-                        domain={['auto', 'auto']}
-                      />
-                      <Tooltip
-                        content={({ active, payload, label }) => {
-                          if (!active || !payload?.length) return null;
-                          return (
-                            <div className="bg-popover border border-border rounded-lg p-3 shadow-lg text-sm">
-                              <p className="font-semibold text-foreground mb-1">{label}</p>
-                              {payload.map((entry: any) => {
-                                const retailer = brandTimeseries.find(s => s.retailer_slug === entry.dataKey);
-                                return (
-                                  <p key={entry.dataKey} style={{ color: entry.color }} className="font-medium">
-                                    {retailer?.retailer_name || entry.dataKey} : {Number(entry.value).toFixed(3)} €/L
-                                  </p>
-                                );
-                              })}
-                            </div>
-                          );
-                        }}
-                      />
-                      <Legend
-                        formatter={(value: string) => {
-                          const retailer = brandTimeseries.find(s => s.retailer_slug === value);
-                          return retailer?.retailer_name || value;
-                        }}
-                      />
-                      {brandTimeseries.map((series, i) => (
-                        <Line
-                          key={series.retailer_slug}
-                          type="monotone"
-                          dataKey={series.retailer_slug || 'unknown'}
-                          stroke={CHART_COLORS[i % CHART_COLORS.length]}
-                          strokeWidth={2}
-                          dot={false}
-                          activeDot={{ r: 4 }}
-                          animationDuration={1500}
-                        />
-                      ))}
-                    </LineChart>
-                  </ResponsiveContainer>
-                )}
-              </CardContent>
-            </Card>
-          </section>
-        )}
 
 
         <section>
