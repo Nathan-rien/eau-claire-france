@@ -174,6 +174,8 @@ const CHART_COLORS = [
 const CoursEau = () => {
   const [period, setPeriod] = useState<Period>('max');
   const [selectedBrand, setSelectedBrand] = useState<string>('');
+  const [selectedRetailers, setSelectedRetailers] = useState<string[]>([]);
+  const [retailerPopoverOpen, setRetailerPopoverOpen] = useState(false);
   const [brandTimeseries, setBrandTimeseries] = useState<BrandTimeseries[]>([]);
   const [timeseriesLoading, setTimeseriesLoading] = useState(false);
   const heroRef = useInView(0.3);
