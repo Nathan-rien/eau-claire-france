@@ -202,10 +202,12 @@ const WaterJourneyMap: React.FC = () => {
     cancelAnimationFrame(animFrameRef.current);
 
     // Remove previous layers/sources
-    ['journey-arcs-bg', 'journey-arcs-anim'].forEach(id => {
+    ['journey-arcs-bg', 'journey-arcs-anim', 'journey-steps-line'].forEach(id => {
       if (map.getLayer(id)) map.removeLayer(id);
     });
-    if (map.getSource('journey-arcs')) map.removeSource('journey-arcs');
+    ['journey-arcs', 'journey-steps-lines'].forEach(id => {
+      if (map.getSource(id)) map.removeSource(id);
+    });
 
     const routes = getRoutesByRetailer(selectedRetailer);
 
