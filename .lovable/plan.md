@@ -1,65 +1,43 @@
 
 
-## Refonte de la page d'accueil — Mise en avant des diagnostics, classement et infographies
+## Refonte page d'accueil — Retrait NavigationCTA + Ajout sections editoriales et visuelles
 
-### Objectif
+### Ce qui est retire
 
-Restructurer la page `/` pour :
-1. Reprendre les deux cartes de choix de diagnostic (rapide / complet) de `/quelle-eau-boire`
-2. Ajouter une carte mise en avant vers `/classement`
-3. Ajouter une section "Infographies & Cartes" renvoyant vers les cartes interactives et pages visuelles du site
+- La section `NavigationCTA` en bas de page (l'encart "Explorez nos services" avec les 3 cartes Carte des eaux / Diagnostic / Quelle eau boire). Ces liens existent deja dans les sections precedentes.
 
-### Modifications
+### Ce qui est ajoute
 
-**Fichier : `src/pages/Index.tsx`**
+3 nouvelles sections editoriales entre la section "Cartes & Infographies" et le footer, avec des icones animees et des illustrations CSS pour rendre la page vivante.
 
-Restructurer le contenu sous le hero (SearchBar + stats) en remplacant la section "Quick Access" actuelle et la section "Features" par :
+**Section A — "Les risques lies a l'eau du robinet"**
+- Layout : texte a gauche, illustration a droite (icone animee goutte + alerte)
+- Contenu : pesticides, microplastiques, residus medicamenteux, plomb des canalisations anciennes, chlore et sous-produits. Ton informatif, pas alarmiste.
+- Icone AlertTriangle avec animation pulse subtile
+- Fond leger rouge/orange transparent
+- CTA : lien vers `/polluants`
 
-**Section 1 — "Quelle eau boire ?" (apres les stats)**
-- Titre + sous-titre reprenant le meme texte que `/quelle-eau-boire`
-- Deux cartes cote a cote (grid 1 col mobile, 2 col desktop) :
-  - **Diagnostic rapide** : icone Zap, titre, description "3 questions, resultat en 30 secondes", badge "Rapide" — lien vers `/quelle-eau-boire` (le composant la-bas gere le mode)
-  - **Diagnostic complet** : icone ClipboardList, titre, description "Analyse detaillee avec profils, intolerances et preferences", badge "4 etapes" — lien vers `/quelle-eau-boire`
-- Style identique aux cartes de QuelleEauBoire (hover shadow, border primary)
+**Section B — "Bien choisir son eau en bouteille"**
+- Layout : illustration a gauche, texte a droite (inverse de la section A)
+- Contenu : composition minerale adaptee a vos besoins (calcium, magnesium), eau pour bebes, sportifs, personnes agees. Importance du pH et du residu sec.
+- Icone Award/Droplets avec animation fade-in au scroll (via classe `animate-fade-in`)
+- Fond leger bleu/vert transparent
+- CTA : lien vers `/classement`
 
-**Section 2 — Carte "Classement des eaux"**
-- Grande carte horizontale (full width) avec fond gradient bleu/vert
-- Icone Award, titre "Classement des eaux en bouteille", description "Decouvrez le top des eaux minerales et de source classees par composition minerale"
-- Bouton CTA "Voir le classement" → `/classement`
+**Section C — "Surveiller la qualite de votre eau"**
+- Layout : centree, style "call to action" final
+- Contenu : importance du suivi regulier, donnees publiques accessibles, alertes en temps reel, comprendre les analyses de votre commune
+- Icone Shield/Search avec animation scale-in
+- Fond gradient bleu
+- CTA : lien vers `/diagnostic`
 
-**Section 3 — "Cartes & Infographies" (grille 2x2 ou 2x3)**
-Grille de cartes cliquables vers les pages visuelles :
-- **Carte qualite de l'eau** (`/carte`) — icone MapPin, "Qualite de l'eau par commune"
-- **Carte des polluants** (`/carte-polluants`) — icone AlertTriangle, "Polluants detectes en France"
-- **Parcours de l'eau en bouteille** (`/carte-parcours-eau`) — icone Droplets, "De la source au magasin"
-- **Parcours de l'eau du robinet** (`/carte-parcours-robinet`) — icone GlassWater, "Du captage au robinet"
-- **Sources d'eau** (`/sources-eau`) — icone Leaf, "Carte des sources en France"
-- **Carte Europe** (`/carte-europe`) — icone Globe, "Qualite de l'eau en Europe"
+### Animations et visuels
 
-Conserver la section NavigationCTA en bas.
+- Utilisation des animations Tailwind existantes : `animate-fade-in`, `hover-scale`, `animate-[pulse_3s_ease-in-out_infinite]`
+- Icones decoratives de grande taille (w-20 h-20) avec opacite reduite en arriere-plan des sections
+- Bordures laterales colorees sur les blocs de texte (style "accent bar")
 
-**Imports a ajouter** : `Zap`, `ClipboardList`, `GlassWater`, `Globe` depuis lucide-react.
+### Fichier modifie
 
-### Structure finale de la page
-
-```text
-Hero (titre + SearchBar + stats)
-───────────────────────────────
-Section "Quelle eau boire ?"
-  [Diag rapide]  [Diag complet]
-───────────────────────────────
-Section "Classement des eaux"
-  [Grande carte CTA → /classement]
-───────────────────────────────
-Section "Cartes & Infographies"
-  [Carte qualite] [Polluants]
-  [Parcours bout.] [Parcours rob.]
-  [Sources]        [Europe]
-───────────────────────────────
-NavigationCTA (existant)
-```
-
-### Fichiers modifies
-
-- `src/pages/Index.tsx` — seul fichier modifie
+- `src/pages/Index.tsx` — retrait de la section NavigationCTA, ajout des 3 sections editoriales. L'import de NavigationCTA peut etre supprime.
 
