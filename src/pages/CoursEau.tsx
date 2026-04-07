@@ -171,26 +171,18 @@ const CHART_COLORS = [
 const CoursEau = () => {
   const [period, setPeriod] = useState<Period>('max');
   const [selectedBrand, setSelectedBrand] = useState<string>('');
-  const [brandStats, setBrandStats] = useState<BrandPriceStats | null>(null);
-  const [brandLoading, setBrandLoading] = useState(false);
   const [brandTimeseries, setBrandTimeseries] = useState<BrandTimeseries[]>([]);
   const [timeseriesLoading, setTimeseriesLoading] = useState(false);
   const heroRef = useInView(0.3);
   const statsRef = useInView(0.2);
   const brandRef = useInView(0.2);
-  const timeseriesRef = useInView(0.2);
   const seo = (seoData as any).coursEau ?? seoData.prixEaux;
 
   const { brands } = useBrands();
 
   useEffect(() => {
     if (!selectedBrand) return;
-    setBrandLoading(true);
     setTimeseriesLoading(true);
-    getBrandStats(selectedBrand)
-      .then(setBrandStats)
-      .catch(() => setBrandStats(null))
-      .finally(() => setBrandLoading(false));
     getBrandTimeseries(selectedBrand, 90)
       .then(setBrandTimeseries)
       .catch(() => setBrandTimeseries([]))
