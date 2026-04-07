@@ -23,12 +23,6 @@ import {
 import { useBrands } from '@/hooks/usePricesData';
 import { getBrandStats } from '@/services/pricesApi';
 import type { BrandPriceStats } from '@/types/pricing';
-import {
-  bottlePriceHistory, tapPriceHistory,
-  bottlePriceFactors, tapPriceFactors,
-  keyStats, priceEvents,
-  type PriceEvent,
-} from '@/data/waterPriceHistory';
 
 // ─── Animated counter hook ───
 function useCountUp(target: number, duration = 1800, start = false) {
