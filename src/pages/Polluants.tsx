@@ -3,13 +3,16 @@ import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 import PollutantIndex from '@/components/PollutantIndex';
 import Layout from '@/components/Layout';
+import SEOHead from '@/components/SEOHead';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { seoData } from '@/utils/seoData';
 
 const Polluants = () => {
   const { t } = useLanguage();
 
   return (
     <Layout>
+      <SEOHead {...seoData.polluants} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <section className="py-6 md:py-12 px-4">
           <div className="container mx-auto">

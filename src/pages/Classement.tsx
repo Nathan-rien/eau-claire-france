@@ -5,12 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import Layout from '@/components/Layout';
+import SEOHead from '@/components/SEOHead';
 import RankingProfileSelector from '@/components/Ranking/RankingProfileSelector';
 import BottleRankingCard from '@/components/Ranking/BottleRankingCard';
 import { Profile, scoreBottle, Composition, CRITERION_LABELS } from '@/utils/rankingV2';
 import { useWaterCompositions } from '@/hooks/useWaterCompositions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { seoData } from '@/utils/seoData';
 
 const Classement = () => {
   const { t } = useLanguage();
@@ -54,6 +56,7 @@ const Classement = () => {
 
   return (
     <Layout>
+      <SEOHead {...seoData.classement} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <section className="py-8 md:py-12 px-4">
           <div className="container mx-auto max-w-5xl">

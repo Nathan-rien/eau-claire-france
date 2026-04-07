@@ -5,18 +5,14 @@ import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
 import TapWaterJourneyMap from '@/components/TapWaterJourneyMap';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { seoData } from '@/utils/seoData';
 
 const CarteParcoursRobinet = () => {
   const { t } = useLanguage();
 
   return (
     <Layout>
-      <SEOHead
-        title="Parcours de l'eau du robinet : captage → traitement → robinet | InfoEau.fr"
-        description="Visualisez le trajet de l'eau potable en France : du captage (nappe, rivière) à la station de traitement jusqu'au robinet de votre commune."
-        keywords="parcours eau robinet, captage, traitement, eau potable, carte, animation, France"
-        canonical="/carte-parcours-robinet"
-      />
+      <SEOHead {...seoData.carteParcoursRobinet} />
 
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50">
         <div className="container mx-auto">

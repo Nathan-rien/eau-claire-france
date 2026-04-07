@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { seoData } from '@/utils/seoData';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 
@@ -145,11 +146,7 @@ const ParcoursEauBouteille = () => {
 
   return (
     <Layout>
-      <SEOHead
-        title="Parcours de l'eau en bouteille — InfoEau.fr"
-        description="Découvrez le parcours de l'eau en bouteille en 6 étapes : du captage à la source jusqu'à l'achat en magasin. Infographie interactive."
-        keywords="eau en bouteille, parcours, embouteillage, eau minérale, transport eau, prix eau bouteille"
-      />
+      <SEOHead {...seoData.parcoursEauBouteille} />
 
       {/* ━━━ HERO ━━━ */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-cyan-950 via-teal-900 to-cyan-950">

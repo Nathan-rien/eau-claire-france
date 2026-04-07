@@ -5,18 +5,14 @@ import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
 import WaterJourneyMap from '@/components/WaterJourneyMap';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { seoData } from '@/utils/seoData';
 
 const CarteParcoursEau = () => {
   const { t } = useLanguage();
 
   return (
     <Layout>
-      <SEOHead
-        title="Parcours de l'eau en bouteille : source → magasin | InfoEau.fr"
-        description="Visualisez le trajet de l'eau en bouteille depuis sa source de captage jusqu'aux magasins distributeurs (Carrefour, Leclerc, etc.)."
-        keywords="parcours eau bouteille, source, distributeur, MDD, carte, animation"
-        canonical="/carte-parcours-eau"
-      />
+      <SEOHead {...seoData.carteParcoursEau} />
 
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50">
         <div className="container mx-auto">

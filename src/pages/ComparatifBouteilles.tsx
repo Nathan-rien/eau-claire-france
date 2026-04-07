@@ -6,6 +6,7 @@ import { toast } from '@/hooks/use-toast';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useBottleComparisonUrl } from '@/hooks/useBottleComparisonUrl';
 import Layout from '@/components/Layout';
+import SEOHead from '@/components/SEOHead';
 import BottleSelector from '@/components/BottleSelector';
 import BottleComparisonTable from '@/components/BottleComparisonTable';
 import NutritionalGuide from '@/components/NutritionalGuide';
@@ -14,6 +15,7 @@ import FavoritesTab from '@/components/FavoritesTab';
 import type { BottleWaterData } from '@/types/bottleTypes';
 import { convertBottleWaterDataToWaterData } from '@/utils/bottleConversion';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { seoData } from '@/utils/seoData';
 
 const ComparatifBouteilles = () => {
   const { selectedBottles, setSelectedBottles, showTapWater, setShowTapWater } = useBottleComparisonUrl();
@@ -58,6 +60,7 @@ const ComparatifBouteilles = () => {
 
   return (
     <Layout>
+      <SEOHead {...seoData.comparatifBouteilles} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <section className="py-12 px-4">
           <div className="container mx-auto">
