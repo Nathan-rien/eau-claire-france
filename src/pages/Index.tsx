@@ -75,7 +75,7 @@ const Index = () => {
         {/* Section 1 — Quelle eau boire ? */}
         <section className="relative py-8 md:py-12 lg:py-16 px-4 bg-cover bg-center" style={{ backgroundImage: `url(${waterBg})` }} role="region" aria-labelledby="diagnostic-title">
           <div className="absolute inset-0 bg-white/85 backdrop-blur-sm" />
-          <div className="container mx-auto max-w-4xl">
+          <div className="relative container mx-auto max-w-4xl">
             <div className="text-center mb-6 md:mb-8">
               <h2 id="diagnostic-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3">
                 Quelle eau boire ?
