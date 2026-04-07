@@ -504,7 +504,31 @@ const QuelleEauBoire: React.FC = () => {
                 </div>
               </div>
 
-              {/* CTA */}
+              {/* Objective selection */}
+              <div>
+                <h3 className="font-semibold mb-3 text-sm md:text-base">Votre objectif principal</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {quickObjectives.map(objective => {
+                    const IconComp = objective.icon;
+                    const isSelected = quickObjective === objective.id;
+                    return (
+                      <button
+                        key={objective.id}
+                        onClick={() => setQuickObjective(isSelected ? null : objective.id)}
+                        className={`flex flex-col items-center gap-2 p-4 md:p-5 rounded-xl border text-sm font-medium transition-all duration-150 min-h-[80px]
+                          ${isSelected 
+                            ? 'bg-primary/10 border-primary text-primary shadow-sm' 
+                            : 'bg-card border-border hover:border-primary/40 text-foreground'
+                          }`}
+                      >
+                        <IconComp className={`w-6 h-6 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+                        {objective.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               <div className="pt-2">
                 <Button 
                   onClick={handleQuickRecommendations}
