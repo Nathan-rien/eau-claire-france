@@ -8,6 +8,59 @@ import { Switch } from '@/components/ui/switch';
 import { Building2, MapPin } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+// Journey steps definition
+const JOURNEY_STEPS = [
+  {
+    name: 'Analyse & contrôle',
+    description: 'Analyses bactériologiques et physico-chimiques',
+    duration: '24-72h',
+    color: '#60a5fa', // blue-400
+    fraction: 0.10,
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg>',
+  },
+  {
+    name: 'Traitement & filtration',
+    description: 'Filtration, ozonation, UV selon la source',
+    duration: '2-6h',
+    color: '#3b82f6', // blue-500
+    fraction: 0.25,
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3 2 13l6 3"/><path d="M22 3 12 22l-4-6"/></svg>',
+  },
+  {
+    name: 'Embouteillage',
+    description: 'Remplissage, bouchage, étiquetage, mise en pack',
+    duration: '~0.5s/bouteille',
+    color: '#8b5cf6', // violet-500
+    fraction: 0.40,
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>',
+  },
+  {
+    name: 'Stockage & expédition',
+    description: 'Palettisation, contrôle lot, chargement',
+    duration: '1-3 jours',
+    color: '#f59e0b', // amber-500
+    fraction: 0.60,
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+  },
+  {
+    name: 'Transport & distribution',
+    description: 'Acheminement vers plateformes puis magasins',
+    duration: '1-5 jours',
+    color: '#22c55e', // green-500
+    fraction: 0.80,
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 13.52 8H12"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>',
+  },
+];
+
+// Compute a point at fraction t along a short arc from source (north-east offset)
+function getStepPosition(source: [number, number], t: number): [number, number] {
+  const offsetDir: [number, number] = [0.6, 0.4]; // lng, lat offset direction
+  const maxDist = 0.35; // degrees
+  const lng = source[0] + offsetDir[0] * maxDist * t;
+  const lat = source[1] + offsetDir[1] * maxDist * t;
+  return [lng, lat];
+}
+
 // Optimised arc — 15 points for commune arcs
 function createArc(start: [number, number], end: [number, number], steps = 15): [number, number][] {
   const coords: [number, number][] = [];
