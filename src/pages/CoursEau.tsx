@@ -9,10 +9,10 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell,
+  AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell, Legend,
 } from 'recharts';
 import {
-  TrendingUp, Droplets, FlaskConical, Truck, Zap, Scale, Wrench, Shield, Thermometer, ArrowUpRight, ArrowDownRight, Minus, Clock, BarChart3,
+  TrendingUp, Droplets, FlaskConical, Truck, Zap, Scale, Wrench, Shield, Thermometer, ArrowUpRight, ArrowDownRight, Minus, Clock, BarChart3, LineChart as LineChartIcon,
 } from 'lucide-react';
 import {
   bottlePriceHistory, tapPriceHistory,
@@ -22,6 +22,7 @@ import {
 } from '@/data/waterPriceHistory';
 import { useBrands } from '@/hooks/usePricesData';
 import { getBrandStats } from '@/services/pricesApi';
+import { getBrandTimeseries, type BrandTimeseries } from '@/services/timeseriesApi';
 import type { BrandPriceStats } from '@/types/pricing';
 
 // ─── Animated counter hook ───
