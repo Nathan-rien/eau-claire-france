@@ -1,36 +1,45 @@
 
 
-## Ajouter les pages parcours aux cartes + corriger le scroll mobile
+## Corriger les problemes d'indexation Google Search Console
 
-### 1. Ajouter les parcours dans le dropdown "Les cartes" (`src/components/Header.tsx`)
+### Diagnostic des 4 problemes
 
-Les traductions `nav.maps.bottleJourney` et `nav.maps.tapJourney` existent deja. Il suffit d'ajouter 2 entrees dans `mapsItems` (branche France) :
+**1. noindex sur `/en/`, `/en/prix-eaux`, `/en/carte`** : Aucune route `/en/*` n'existe dans App.tsx. Ces URLs tombent sur le catch-all `*` → NotFound.tsx qui pose `<meta name="robots" content="noindex, nofollow" />`. Le probleme vient du SEOHead qui genere par defaut des hreflang vers `/en/...`, incitant Google a explorer ces URLs inexistantes.
 
-```
-{ href: '/carte-parcours-eau', label: t('nav.maps.bottleJourney') },
-{ href: '/carte-parcours-robinet', label: t('nav.maps.tapJourney') },
-```
+**2. Soft 404 sur `/bouteilles` et `/en/diagnostic`** : Le sitemap reference `/bouteilles` (ligne 40) mais la route reelle est `/comparatif-bouteilles`. `/en/diagnostic` n'existe pas non plus.
 
-Ajouter egalement ces 2 liens dans la section "Cartes" du menu mobile (le bloc `mapsItems.map` dans le `SheetContent`).
+**3-4. Pages detectees/explorees non indexees** : `/alertes`, `/carte-polluants`, `/mentions-legales`, `/open-data`, `/rgpd`, `/sources`, `/accessibilite`, `/comparatif-bouteilles` — ces routes existent mais Google les juge insuffisantes. On peut ameliorer en mettant a jour les dates du sitemap et en s'assurant que chaque page a un SEOHead correct.
 
-Mettre a jour `isActiveMapsSection` pour inclure ces nouvelles routes, et retirer la section "Parcours" separee (dropdown desktop + section mobile) puisque ces items sont desormais sous "Les cartes".
+### Plan de correction
 
-### 2. Corriger le scroll du menu mobile (`src/components/Header.tsx`)
+**Fichier 1 : `src/components/SEOHead.tsx`**
+- Supprimer le hreflang par defaut qui genere des URLs `/en/...` inexistantes
+- Changer la valeur par defaut de `hreflang` de `{ 'fr': ..., 'en': ... }` a `{}` (vide)
+- Les pages qui ont reellement une version EN pourront le passer explicitement
 
-Le `SheetContent` ne permet pas le scroll car son contenu depasse la hauteur ecran sans `overflow-y-auto`. Deux corrections :
+**Fichier 2 : `public/sitemap.xml`**
+- Corriger `/bouteilles` → `/comparatif-bouteilles` (corrige le soft 404)
+- Supprimer tous les `xhtml:link hreflang="en"` qui pointent vers des routes `/en/*` inexistantes
+- Ajouter les pages manquantes : `/carte-parcours-eau`, `/carte-parcours-robinet`
+- Mettre a jour toutes les dates `lastmod` a `2026-04-07`
 
-- Ajouter `overflow-y-auto` au `SheetContent` : changer la classe en `"w-72 sm:w-80 overflow-y-auto"`
-- Wraper le contenu interne dans un conteneur avec `flex flex-col h-full overflow-y-auto` pour que le scroll fonctionne meme avec le header fixe du Sheet
+**Fichier 3 : `src/App.tsx`**
+- Ajouter une route `/bouteilles` qui redirige vers `/comparatif-bouteilles` via `<Navigate to="/comparatif-bouteilles" replace />` pour eviter le soft 404 sur les anciens liens
 
-### 3. Nettoyage
+### Recapitulatif
 
-- Supprimer le dropdown "Parcours" du desktop (le `div` avec `parcoursMenuOpen`) et les states/refs associes (`parcoursMenuOpen`, `parcoursTimeoutRef`, handlers `handleParcoursMouseEnter/Leave`)
-- Supprimer la section "Parcours" du menu mobile
-- Garder `parcoursItems` fusionne dans `mapsItems`
+| Probleme GSC | Cause | Correction |
+|---|---|---|
+| noindex `/en/*` | Pas de routes EN → NotFound + noindex | Supprimer hreflang EN par defaut dans SEOHead + sitemap |
+| Soft 404 `/bouteilles` | URL dans sitemap mais route inexistante | Corriger sitemap + ajouter redirect dans App.tsx |
+| Soft 404 `/en/diagnostic` | URL hreflang dans sitemap, route inexistante | Supprimer hreflang EN du sitemap |
+| Pages non indexees | Dates obsoletes, sitemap incomplet | MAJ dates, ajout pages manquantes |
 
-### Fichier modifie
+### Fichiers modifies
 
 | Fichier | Changement |
-|---------|-----------|
-| `src/components/Header.tsx` | Fusion parcours dans mapsItems, suppression dropdown Parcours, ajout overflow-y-auto sur SheetContent mobile |
+|---|---|
+| `src/components/SEOHead.tsx` | Supprimer hreflang EN par defaut |
+| `public/sitemap.xml` | Corriger `/bouteilles`, supprimer hreflang EN, ajouter pages manquantes, MAJ dates |
+| `src/App.tsx` | Ajouter redirect `/bouteilles` → `/comparatif-bouteilles` |
 
