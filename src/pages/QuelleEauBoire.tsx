@@ -1,41 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Zap, ClipboardList, ArrowLeft, Droplets, Sparkles, GlassWater, Baby, Heart, Dumbbell, User, Sun } from 'lucide-react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
 import { seoData, generateFAQSchema } from '@/utils/seoData';
-import { userProfiles, userIntolerances, userPreferences, UserProfile, UserIntolerance, UserPreference } from '@/data/waterProfiles';
+import { userProfiles, userIntolerances, userPreferences, UserProfile } from '@/data/waterProfiles';
 import { waterRecommendationService, WaterRecommendation } from '@/services/waterRecommendationService';
 import { useBottleData } from '@/hooks/useBottleData';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+type DiagnosticMode = null | 'quick' | 'full';
+
+const quickProfiles = [
+  { id: 'sportif-regulier', name: 'Sportif', icon: Dumbbell },
+  { id: 'grossesse', name: 'Grossesse', icon: Heart },
+  { id: 'nourrisson', name: 'Nourrisson', icon: Baby },
+  { id: 'menopause-seniors', name: 'Senior', icon: Sun },
+  { id: 'hypertension', name: 'Hypertension', icon: Heart },
+  { id: 'gout-neutre', name: 'Quotidien', icon: User },
+];
+
 const QuelleEauBoire: React.FC = () => {
   const { t } = useLanguage();
   
-  // FAQ data for schema
   const faqData = [
-    {
-      question: "Comment choisir la meilleure eau en bouteille selon mon profil ?",
-      answer: "Notre outil d'aide au choix prend en compte votre profil (femme enceinte, sportif, etc.), vos intolérances et préférences pour recommander les eaux les plus adaptées à vos besoins spécifiques."
-    },
-    {
-      question: "Quelle eau boire pendant la grossesse ?",
-      answer: "Les femmes enceintes devraient privilégier des eaux faibles en nitrates (< 25 mg/L) et en sodium (< 20 mg/L), riches en calcium et magnésium pour le développement du bébé."
-    },
-    {
-      question: "Quelle eau pour les sportifs ?",
-      answer: "Les sportifs ont besoin d'eaux riches en minéraux pour compenser les pertes liées à la transpiration, particulièrement en magnésium, calcium et avec un taux de sodium modéré."
-    },
-    {
-      question: "Comment éviter les eaux trop riches en sodium ?",
-      answer: "Sélectionnez l'option 'Hypertension' ou 'Pauvre en sodium' dans nos filtres pour obtenir uniquement des eaux avec moins de 20 mg/L de sodium."
-    }
+    { question: "Comment choisir la meilleure eau en bouteille selon mon profil ?", answer: "Notre outil d'aide au choix prend en compte votre profil (femme enceinte, sportif, etc.), vos intolérances et préférences pour recommander les eaux les plus adaptées à vos besoins spécifiques." },
+    { question: "Quelle eau boire pendant la grossesse ?", answer: "Les femmes enceintes devraient privilégier des eaux faibles en nitrates (< 25 mg/L) et en sodium (< 20 mg/L), riches en calcium et magnésium pour le développement du bébé." },
+    { question: "Quelle eau pour les sportifs ?", answer: "Les sportifs ont besoin d'eaux riches en minéraux pour compenser les pertes liées à la transpiration, particulièrement en magnésium, calcium et avec un taux de sodium modéré." },
+    { question: "Comment éviter les eaux trop riches en sodium ?", answer: "Sélectionnez l'option 'Hypertension' ou 'Pauvre en sodium' dans nos filtres pour obtenir uniquement des eaux avec moins de 20 mg/L de sodium." }
   ];
+
+  const [mode, setMode] = useState<DiagnosticMode>(null);
   const [selectedWaterType, setSelectedWaterType] = useState<string>('all');
   const [selectedProfiles, setSelectedProfiles] = useState<string[]>([]);
   const [selectedIntolerances, setSelectedIntolerances] = useState<string[]>([]);
@@ -43,57 +42,63 @@ const QuelleEauBoire: React.FC = () => {
   const [showResults, setShowResults] = useState(false);
   const [recommendations, setRecommendations] = useState<WaterRecommendation[]>([]);
   
-  // Charger les données de bouteilles
+  // Quick diagnostic state
+  const [quickWaterType, setQuickWaterType] = useState<string>('all');
+  const [quickProfile, setQuickProfile] = useState<string | null>(null);
+  
   const { composition, catalog, mdd: mddData, loading, error } = useBottleData();
 
   const handleProfileToggle = (profileId: string) => {
     setSelectedProfiles(prev => 
-      prev.includes(profileId) 
-        ? prev.filter(id => id !== profileId)
-        : [...prev, profileId]
+      prev.includes(profileId) ? prev.filter(id => id !== profileId) : [...prev, profileId]
     );
   };
 
   const handleIntoleranceToggle = (intoleranceId: string) => {
     setSelectedIntolerances(prev => 
-      prev.includes(intoleranceId) 
-        ? prev.filter(id => id !== intoleranceId)
-        : [...prev, intoleranceId]
+      prev.includes(intoleranceId) ? prev.filter(id => id !== intoleranceId) : [...prev, intoleranceId]
     );
   };
 
   const handlePreferenceToggle = (preferenceId: string) => {
     setSelectedPreferences(prev => 
-      prev.includes(preferenceId) 
-        ? prev.filter(id => id !== preferenceId)
-        : [...prev, preferenceId]
+      prev.includes(preferenceId) ? prev.filter(id => id !== preferenceId) : [...prev, preferenceId]
     );
   };
+
+  const filterByWaterType = useCallback((results: WaterRecommendation[], waterType: string) => {
+    if (waterType === 'plate') {
+      return results.filter(rec => rec.bottle.type_eau === 'Eau de source' || rec.bottle.type_eau === 'Eau minérale naturelle');
+    } else if (waterType === 'gazeuse') {
+      return results.filter(rec => rec.bottle.type_eau === 'Eau minérale naturelle gazeuse');
+    }
+    return results;
+  }, []);
 
   const handleGetRecommendations = () => {
     if (!composition.length || !catalog.length) return;
     
     const profiles = userProfiles.filter(p => selectedProfiles.includes(p.id));
-    const intolerances = userIntolerances.filter(i => selectedIntolerances.includes(i.id));
-    const preferences = userPreferences.filter(p => selectedPreferences.includes(p.id));
+    const intolerancesData = userIntolerances.filter(i => selectedIntolerances.includes(i.id));
+    const preferencesData = userPreferences.filter(p => selectedPreferences.includes(p.id));
     
-    let results = waterRecommendationService.calculateRecommendations(
-      profiles, intolerances, preferences
-    );
-    
-    // Filtrer par type d'eau si spécifié
-    if (selectedWaterType === 'plate') {
-      results = results.filter(rec => 
-        rec.bottle.type_eau === 'Eau de source' || 
-        rec.bottle.type_eau === 'Eau minérale naturelle'
-      );
-    } else if (selectedWaterType === 'gazeuse') {
-      results = results.filter(rec => 
-        rec.bottle.type_eau === 'Eau minérale naturelle gazeuse'
-      );
-    }
+    let results = waterRecommendationService.calculateRecommendations(profiles, intolerancesData, preferencesData);
+    results = filterByWaterType(results, selectedWaterType);
     
     setRecommendations(results);
+    setShowResults(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleQuickRecommendations = () => {
+    if (!composition.length || !catalog.length || !quickProfile) return;
+    
+    const profiles = userProfiles.filter(p => p.id === quickProfile);
+    let results = waterRecommendationService.calculateRecommendations(profiles, [], []);
+    results = filterByWaterType(results, quickWaterType);
+    
+    setRecommendations(results);
+    setSelectedProfiles([quickProfile]);
     setShowResults(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -105,389 +110,443 @@ const QuelleEauBoire: React.FC = () => {
     setSelectedPreferences([]);
     setShowResults(false);
     setRecommendations([]);
+    setQuickWaterType('all');
+    setQuickProfile(null);
+    setMode(null);
+  };
+
+  const handleBackToChoice = () => {
+    setMode(null);
+    setQuickWaterType('all');
+    setQuickProfile(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const hasSelections = selectedWaterType !== 'all' || selectedProfiles.length > 0 || selectedIntolerances.length > 0 || selectedPreferences.length > 0;
 
+  const seoProps = {
+    title: seoData.quelleEauBoire.title,
+    description: seoData.quelleEauBoire.description,
+    keywords: seoData.quelleEauBoire.keywords,
+    canonical: "/quelle-eau-boire",
+    ogImage: seoData.quelleEauBoire.ogImage,
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Quelle eau boire ? - Guide personnalisé",
+      "description": seoData.quelleEauBoire.description,
+      "url": "https://infoeau.fr/quelle-eau-boire",
+      "mainEntity": generateFAQSchema(faqData)
+    }
+  };
+
+  // ─── Results view ───
   if (showResults) {
     return (
       <Layout>
-        <SEOHead 
-          title={seoData.quelleEauBoire.title}
-          description={seoData.quelleEauBoire.description}
-          keywords={seoData.quelleEauBoire.keywords}
-          canonical="/quelle-eau-boire"
-          ogImage={seoData.quelleEauBoire.ogImage}
-          schemaData={{
-            "@context": "https://schema.org",
-            "@type": "WebPage",
-            "name": "Recommandations d'eau personnalisées",
-            "description": seoData.quelleEauBoire.description,
-            "url": "https://infoeau.fr/quelle-eau-boire",
-            "mainEntity": generateFAQSchema(faqData)
-          }}
-        />
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+        <SEOHead {...seoProps} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50">
           <div className="container mx-auto">
-            <Breadcrumb items={[
-              { name: t('breadcrumb.waterRecommendation'), href: '/quelle-eau-boire', current: true }
-            ]} />
+            <Breadcrumb items={[{ name: t('breadcrumb.waterRecommendation'), href: '/quelle-eau-boire', current: true }]} />
           </div>
-          
-          <div className="container mx-auto py-8 px-4 max-w-4xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-4">Vos recommandations d'eau</h1>
-          <div className="flex gap-2 justify-center mb-4 flex-wrap">
-            {selectedProfiles.map(profileId => {
-              const profile = userProfiles.find(p => p.id === profileId);
-              return profile ? (
-                <Badge key={profileId} className={profile.color}>
-                  {profile.name}
-                </Badge>
-              ) : null;
-            })}
-            {selectedIntolerances.map(intoleranceId => {
-              const intolerance = userIntolerances.find(i => i.id === intoleranceId);
-              return intolerance ? (
-                <Badge key={intoleranceId} variant="destructive">
-                  ❌ {intolerance.name}
-                </Badge>
-              ) : null;
-            })}
-            {selectedPreferences.map(preferenceId => {
-              const preference = userPreferences.find(p => p.id === preferenceId);
-              return preference ? (
-                <Badge key={preferenceId} variant="outline">
-                  ⭐ {preference.name}
-                </Badge>
-              ) : null;
-            })}
-          </div>
-            <div className="flex gap-4 justify-center">
-              <Button onClick={handleReset} variant="outline">
-                Nouvelle recherche
-              </Button>
+          <div className="container mx-auto py-6 md:py-8 px-4 max-w-4xl">
+            <div className="text-center mb-6 md:mb-8">
+              <h1 className="text-2xl md:text-3xl font-bold mb-4">Vos recommandations d'eau</h1>
+              <div className="flex gap-2 justify-center mb-4 flex-wrap">
+                {selectedProfiles.map(profileId => {
+                  const profile = userProfiles.find(p => p.id === profileId);
+                  return profile ? <Badge key={profileId} className={profile.color}>{profile.name}</Badge> : null;
+                })}
+                {selectedIntolerances.map(intoleranceId => {
+                  const intolerance = userIntolerances.find(i => i.id === intoleranceId);
+                  return intolerance ? <Badge key={intoleranceId} variant="destructive">❌ {intolerance.name}</Badge> : null;
+                })}
+                {selectedPreferences.map(preferenceId => {
+                  const preference = userPreferences.find(p => p.id === preferenceId);
+                  return preference ? <Badge key={preferenceId} variant="outline">⭐ {preference.name}</Badge> : null;
+                })}
+              </div>
+              <Button onClick={handleReset} variant="outline">Nouvelle recherche</Button>
             </div>
-          </div>
 
-          <div className="space-y-6">
-            {recommendations.map((recommendation, index) => (
-              <Card key={`${recommendation.bottle.id}-${index}`}>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
-                          {index + 1}
-                        </span>
-                         {recommendation.bottle.marque === recommendation.bottle.nom_bouteille 
-                           ? recommendation.bottle.marque 
-                           : `${recommendation.bottle.marque} ${recommendation.bottle.nom_bouteille}`
-                         }
-                      </CardTitle>
-                      <p className="text-muted-foreground">{recommendation.bottle.type_eau}</p>
-                      {recommendation.bottle.source && (
-                        <p className="text-sm text-muted-foreground">Source : {recommendation.bottle.source}</p>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <Badge variant="default" className="mb-2">
-                        Score : {recommendation.score}/100
-                      </Badge>
-                      <div className="text-sm text-muted-foreground">
-                        {recommendation.bottle.prix_moyen_litre?.toFixed(2) || 'N/A'}€/L
+            <div className="space-y-4 md:space-y-6">
+              {recommendations.map((recommendation, index) => (
+                <Card key={`${recommendation.bottle.id}-${index}`}>
+                  <CardHeader className="p-4 md:p-6">
+                    <div className="flex justify-between items-start gap-3">
+                      <div className="min-w-0 flex-1">
+                        <CardTitle className="flex items-center gap-2 text-lg md:text-2xl">
+                          <span className="bg-primary text-primary-foreground rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold shrink-0">
+                            {index + 1}
+                          </span>
+                          <span className="truncate">
+                            {recommendation.bottle.marque === recommendation.bottle.nom_bouteille 
+                              ? recommendation.bottle.marque 
+                              : `${recommendation.bottle.marque} ${recommendation.bottle.nom_bouteille}`}
+                          </span>
+                        </CardTitle>
+                        <p className="text-muted-foreground text-sm mt-1">{recommendation.bottle.type_eau}</p>
+                        {recommendation.bottle.source && (
+                          <p className="text-xs md:text-sm text-muted-foreground">Source : {recommendation.bottle.source}</p>
+                        )}
+                      </div>
+                      <div className="text-right shrink-0">
+                        <Badge variant="default" className="mb-1">Score : {recommendation.score}/100</Badge>
+                        <div className="text-sm text-muted-foreground">{recommendation.bottle.prix_moyen_litre?.toFixed(2) || 'N/A'}€/L</div>
                       </div>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {recommendation.warnings.length > 0 && (
-                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                          <h4 className="font-semibold text-yellow-800">Avertissements</h4>
+                  </CardHeader>
+                  <CardContent className="p-4 md:p-6 pt-0">
+                    <div className="space-y-4">
+                      {recommendation.warnings.length > 0 && (
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                            <h4 className="font-semibold text-yellow-800 text-sm">Avertissements</h4>
+                          </div>
+                          <ul className="text-sm text-yellow-700 space-y-1">
+                            {recommendation.warnings.map((warning, i) => <li key={i}>{warning}</li>)}
+                          </ul>
                         </div>
-                        <ul className="text-sm text-yellow-700 space-y-1">
-                          {recommendation.warnings.map((warning, i) => (
-                            <li key={i}>{warning}</li>
-                          ))}
+                      )}
+                      <div>
+                        <h4 className="font-semibold mb-2 text-sm md:text-base">Pourquoi cette eau ?</h4>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                          {recommendation.reasons.map((reason, i) => <li key={i}>{reason}</li>)}
                         </ul>
                       </div>
-                    )}
-                    
-                    <div>
-                      <h4 className="font-semibold mb-2">Pourquoi cette eau ?</h4>
-                      <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                        {recommendation.reasons.map((reason, i) => (
-                          <li key={i}>{reason}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold mb-2">Composition (mg/L)</h4>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="text-center p-2 bg-muted rounded">
-                          <div className="font-semibold">{recommendation.bottle.nitrates_mgL}</div>
-                          <div className="text-sm text-muted-foreground">Nitrates</div>
-                        </div>
-                        <div className="text-center p-2 bg-muted rounded">
-                          <div className="font-semibold">{recommendation.bottle.sodium_mgL}</div>
-                          <div className="text-sm text-muted-foreground">Sodium</div>
-                        </div>
-                        <div className="text-center p-2 bg-muted rounded">
-                          <div className="font-semibold">{recommendation.bottle.calcium_mgL}</div>
-                          <div className="text-sm text-muted-foreground">Calcium</div>
-                        </div>
-                        <div className="text-center p-2 bg-muted rounded">
-                          <div className="font-semibold">{recommendation.bottle.magnesium_mgL}</div>
-                          <div className="text-sm text-muted-foreground">Magnésium</div>
-                        </div>
-                        <div className="text-center p-2 bg-muted rounded">
-                          <div className="font-semibold">{recommendation.bottle.residu_sec_mgL}</div>
-                          <div className="text-sm text-muted-foreground">Résidu sec</div>
-                        </div>
-                        <div className="text-center p-2 bg-muted rounded">
-                          <div className="font-semibold">{recommendation.bottle.ecoscore}</div>
-                          <div className="text-sm text-muted-foreground">Éco-score</div>
+                      <div>
+                        <h4 className="font-semibold mb-2 text-sm md:text-base">Composition (mg/L)</h4>
+                        <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4">
+                          {[
+                            { label: 'Nitrates', value: recommendation.bottle.nitrates_mgL },
+                            { label: 'Sodium', value: recommendation.bottle.sodium_mgL },
+                            { label: 'Calcium', value: recommendation.bottle.calcium_mgL },
+                            { label: 'Magnésium', value: recommendation.bottle.magnesium_mgL },
+                            { label: 'Résidu sec', value: recommendation.bottle.residu_sec_mgL },
+                            { label: 'Éco-score', value: recommendation.bottle.ecoscore },
+                          ].map(item => (
+                            <div key={item.label} className="text-center p-2 bg-muted rounded">
+                              <div className="font-semibold text-sm">{item.value}</div>
+                              <div className="text-xs text-muted-foreground">{item.label}</div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </div>
       </Layout>
     );
   }
 
+  // ─── Mode selection screen ───
+  if (mode === null) {
+    return (
+      <Layout>
+        <SEOHead {...seoProps} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50">
+          <div className="container mx-auto">
+            <Breadcrumb items={[{ name: t('breadcrumb.waterRecommendation'), href: '/quelle-eau-boire', current: true }]} />
+          </div>
+          <div className="container mx-auto py-8 md:py-12 px-4 max-w-3xl">
+            <div className="text-center mb-8 md:mb-12">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4">Quelle eau boire ?</h1>
+              <p className="text-muted-foreground text-base md:text-lg">
+                Trouvez l'eau qui correspond le mieux à vos besoins
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              {/* Quick diagnostic */}
+              <button
+                onClick={() => { setMode('quick'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                className="group text-left"
+              >
+                <Card className="h-full transition-all duration-200 hover:shadow-lg hover:border-primary/50 active:scale-[0.98] cursor-pointer">
+                  <CardContent className="p-6 md:p-8 flex flex-col items-center text-center min-h-[180px] md:min-h-[220px] justify-center gap-4">
+                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                      <Zap className="w-7 h-7 md:w-8 md:h-8 text-primary" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg md:text-xl font-semibold mb-2">Diagnostic rapide</h2>
+                      <p className="text-muted-foreground text-sm md:text-base">
+                        2 questions, résultat en 30 secondes
+                      </p>
+                    </div>
+                    <Badge variant="secondary" className="mt-auto">⚡ Rapide</Badge>
+                  </CardContent>
+                </Card>
+              </button>
+
+              {/* Full diagnostic */}
+              <button
+                onClick={() => { setMode('full'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                className="group text-left"
+              >
+                <Card className="h-full transition-all duration-200 hover:shadow-lg hover:border-primary/50 active:scale-[0.98] cursor-pointer">
+                  <CardContent className="p-6 md:p-8 flex flex-col items-center text-center min-h-[180px] md:min-h-[220px] justify-center gap-4">
+                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-accent/50 flex items-center justify-center group-hover:bg-accent transition-colors">
+                      <ClipboardList className="w-7 h-7 md:w-8 md:h-8 text-accent-foreground" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg md:text-xl font-semibold mb-2">Diagnostic complet</h2>
+                      <p className="text-muted-foreground text-sm md:text-base">
+                        Analyse détaillée avec profils, intolérances et préférences
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="mt-auto">📋 4 étapes</Badge>
+                  </CardContent>
+                </Card>
+              </button>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // ─── Quick diagnostic ───
+  if (mode === 'quick') {
+    return (
+      <Layout>
+        <SEOHead {...seoProps} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50">
+          <div className="container mx-auto">
+            <Breadcrumb items={[{ name: t('breadcrumb.waterRecommendation'), href: '/quelle-eau-boire', current: true }]} />
+          </div>
+          <div className="container mx-auto py-6 md:py-8 px-4 max-w-2xl">
+            <button
+              onClick={handleBackToChoice}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 min-h-[44px]"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="text-sm">Retour au choix</span>
+            </button>
+
+            <div className="text-center mb-6 md:mb-8">
+              <div className="inline-flex items-center gap-2 mb-3">
+                <Zap className="w-5 h-5 text-primary" />
+                <h1 className="text-xl md:text-2xl font-bold">Diagnostic rapide</h1>
+              </div>
+              <p className="text-muted-foreground text-sm md:text-base">
+                Choisissez votre type d'eau et votre profil
+              </p>
+            </div>
+
+            <div className="space-y-6 md:space-y-8">
+              {/* Water type pills */}
+              <div>
+                <h3 className="font-semibold mb-3 text-sm md:text-base">Type d'eau</h3>
+                <div className="flex gap-2 md:gap-3">
+                  {[
+                    { id: 'all', label: 'Toutes', icon: Droplets },
+                    { id: 'plate', label: 'Plate', icon: GlassWater },
+                    { id: 'gazeuse', label: 'Gazeuse', icon: Sparkles },
+                  ].map(option => (
+                    <button
+                      key={option.id}
+                      onClick={() => setQuickWaterType(option.id)}
+                      className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 md:py-3.5 rounded-full border text-sm md:text-base font-medium transition-all duration-150 min-h-[48px]
+                        ${quickWaterType === option.id 
+                          ? 'bg-primary text-primary-foreground border-primary shadow-sm' 
+                          : 'bg-card border-border hover:border-primary/40 text-foreground'
+                        }`}
+                    >
+                      <option.icon className="w-4 h-4" />
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Profile selection */}
+              <div>
+                <h3 className="font-semibold mb-3 text-sm md:text-base">Votre profil principal</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {quickProfiles.map(profile => {
+                    const IconComp = profile.icon;
+                    const isSelected = quickProfile === profile.id;
+                    return (
+                      <button
+                        key={profile.id}
+                        onClick={() => setQuickProfile(isSelected ? null : profile.id)}
+                        className={`flex flex-col items-center gap-2 p-4 md:p-5 rounded-xl border text-sm font-medium transition-all duration-150 min-h-[80px]
+                          ${isSelected 
+                            ? 'bg-primary/10 border-primary text-primary shadow-sm' 
+                            : 'bg-card border-border hover:border-primary/40 text-foreground'
+                          }`}
+                      >
+                        <IconComp className={`w-6 h-6 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+                        {profile.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* CTA */}
+              <div className="pt-2">
+                <Button 
+                  onClick={handleQuickRecommendations}
+                  disabled={!quickProfile}
+                  className="w-full py-6 text-base md:text-lg font-semibold min-h-[52px]"
+                  size="lg"
+                >
+                  Voir mes recommandations
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // ─── Full diagnostic (existing form) ───
   return (
     <Layout>
-      <SEOHead 
-        title={seoData.quelleEauBoire.title}
-        description={seoData.quelleEauBoire.description}
-        keywords={seoData.quelleEauBoire.keywords}
-        canonical="/quelle-eau-boire"
-        ogImage={seoData.quelleEauBoire.ogImage}
-        schemaData={{
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          "name": "Quelle eau boire ? - Guide personnalisé",
-          "description": seoData.quelleEauBoire.description,
-          "url": "https://infoeau.fr/quelle-eau-boire",
-          "mainEntity": generateFAQSchema(faqData)
-        }}
-      />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+      <SEOHead {...seoProps} />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50">
         <div className="container mx-auto">
-          <Breadcrumb items={[
-            { name: t('breadcrumb.waterRecommendation'), href: '/quelle-eau-boire', current: true }
-          ]} />
+          <Breadcrumb items={[{ name: t('breadcrumb.waterRecommendation'), href: '/quelle-eau-boire', current: true }]} />
         </div>
         
-        <div className="container mx-auto py-8 px-4 max-w-4xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-4">Quelle eau boire ?</h1>
-          <p className="text-muted-foreground">
-            Trouvez l'eau qui correspond le mieux à vos besoins et à votre profil
-          </p>
-        </div>
-
-        <div className="space-y-6">
-          {/* 1. Type d'eau préféré */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3">
-                <span className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
-                  1
-                </span>
-                Type d'eau préféré
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Choisissez votre préférence entre eau plate et eau gazeuse
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className={`flex items-start space-x-3 p-4 rounded-lg border cursor-pointer ${selectedWaterType === 'all' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'}`} onClick={() => setSelectedWaterType('all')}>
-                  <Checkbox
-                    id="all-water"
-                    checked={selectedWaterType === 'all'}
-                    onCheckedChange={() => setSelectedWaterType('all')}
-                  />
-                  <div className="flex-1">
-                    <label htmlFor="all-water" className="font-medium cursor-pointer">
-                      Toutes les eaux
-                    </label>
-                    <p className="text-sm text-muted-foreground">
-                      Plates et gazeuses
-                    </p>
-                  </div>
-                </div>
-                <div className={`flex items-start space-x-3 p-4 rounded-lg border cursor-pointer ${selectedWaterType === 'plate' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'}`} onClick={() => setSelectedWaterType('plate')}>
-                  <Checkbox
-                    id="flat-water"
-                    checked={selectedWaterType === 'plate'}
-                    onCheckedChange={() => setSelectedWaterType('plate')}
-                  />
-                  <div className="flex-1">
-                    <label htmlFor="flat-water" className="font-medium cursor-pointer">
-                      Eau plate uniquement
-                    </label>
-                    <p className="text-sm text-muted-foreground">
-                      Sans bulles
-                    </p>
-                  </div>
-                </div>
-                <div className={`flex items-start space-x-3 p-4 rounded-lg border cursor-pointer ${selectedWaterType === 'gazeuse' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'}`} onClick={() => setSelectedWaterType('gazeuse')}>
-                  <Checkbox
-                    id="sparkling-water"
-                    checked={selectedWaterType === 'gazeuse'}
-                    onCheckedChange={() => setSelectedWaterType('gazeuse')}
-                  />
-                  <div className="flex-1">
-                    <label htmlFor="sparkling-water" className="font-medium cursor-pointer">
-                      Eau gazeuse uniquement
-                    </label>
-                    <p className="text-sm text-muted-foreground">
-                      Avec bulles
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 2. Profils */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3">
-                <span className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
-                  2
-                </span>
-                Choisissez votre profil
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Sélectionnez un ou plusieurs profils qui vous correspondent
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {userProfiles.map((profile) => (
-                  <div key={profile.id} className="flex items-start space-x-3 p-4 rounded-lg border">
-                    <Checkbox
-                      id={profile.id}
-                      checked={selectedProfiles.includes(profile.id)}
-                      onCheckedChange={() => handleProfileToggle(profile.id)}
-                    />
-                    <div className="flex-1">
-                      <label 
-                        htmlFor={profile.id} 
-                        className="font-medium cursor-pointer"
-                      >
-                        {profile.name}
-                      </label>
-                      <p className="text-sm text-muted-foreground">
-                        {profile.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 3. Intolérances */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3">
-                <span className="bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
-                  3
-                </span>
-                Intolérances et restrictions
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Sélectionnez les substances que vous souhaitez éviter
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {userIntolerances.map((intolerance) => (
-                  <div key={intolerance.id} className="flex items-start space-x-3 p-4 rounded-lg border border-red-200 bg-red-50">
-                    <Checkbox
-                      id={intolerance.id}
-                      checked={selectedIntolerances.includes(intolerance.id)}
-                      onCheckedChange={() => handleIntoleranceToggle(intolerance.id)}
-                    />
-                    <div className="flex-1">
-                      <label 
-                        htmlFor={intolerance.id} 
-                        className="font-medium cursor-pointer text-red-800"
-                      >
-                        {intolerance.name}
-                      </label>
-                      <p className="text-sm text-red-600">
-                        {intolerance.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 4. Préférences */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3">
-                <span className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
-                  4
-                </span>
-                Préférences personnelles
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Indiquez vos préférences pour le type d'eau
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {userPreferences.map((preference) => (
-                  <div key={preference.id} className="flex items-start space-x-3 p-4 rounded-lg border border-blue-200 bg-blue-50">
-                    <Checkbox
-                      id={preference.id}
-                      checked={selectedPreferences.includes(preference.id)}
-                      onCheckedChange={() => handlePreferenceToggle(preference.id)}
-                    />
-                    <div className="flex-1">
-                      <label 
-                        htmlFor={preference.id} 
-                        className="font-medium cursor-pointer text-blue-800"
-                      >
-                        {preference.name}
-                      </label>
-                      <p className="text-sm text-blue-600">
-                        {preference.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="mt-6 text-center">
-          <Button 
-            onClick={handleGetRecommendations}
-            disabled={!hasSelections}
-            className="px-8"
+        <div className="container mx-auto py-6 md:py-8 px-4 max-w-4xl">
+          <button
+            onClick={handleBackToChoice}
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 min-h-[44px]"
           >
-            Obtenir mes recommandations
-          </Button>
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm">Retour au choix</span>
+          </button>
+
+          <div className="text-center mb-6 md:mb-8">
+            <div className="inline-flex items-center gap-2 mb-3">
+              <ClipboardList className="w-5 h-5 text-muted-foreground" />
+              <h1 className="text-2xl md:text-3xl font-bold">Diagnostic complet</h1>
+            </div>
+            <p className="text-muted-foreground text-sm md:text-base">
+              Trouvez l'eau qui correspond le mieux à vos besoins et à votre profil
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            {/* 1. Type d'eau */}
+            <Card>
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="flex items-center gap-3 text-lg md:text-2xl">
+                  <span className="bg-purple-500 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold">1</span>
+                  Type d'eau préféré
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">Choisissez votre préférence entre eau plate et eau gazeuse</p>
+              </CardHeader>
+              <CardContent className="p-4 md:p-6 pt-0">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+                  {[
+                    { id: 'all', label: 'Toutes les eaux', desc: 'Plates et gazeuses' },
+                    { id: 'plate', label: 'Eau plate uniquement', desc: 'Sans bulles' },
+                    { id: 'gazeuse', label: 'Eau gazeuse uniquement', desc: 'Avec bulles' },
+                  ].map(opt => (
+                    <div 
+                      key={opt.id}
+                      className={`flex items-start space-x-3 p-4 rounded-lg border cursor-pointer min-h-[56px] transition-colors ${
+                        selectedWaterType === opt.id ? 'border-purple-500 bg-purple-50' : 'border-border'
+                      }`} 
+                      onClick={() => setSelectedWaterType(opt.id)}
+                    >
+                      <Checkbox id={`water-${opt.id}`} checked={selectedWaterType === opt.id} onCheckedChange={() => setSelectedWaterType(opt.id)} />
+                      <div className="flex-1">
+                        <label htmlFor={`water-${opt.id}`} className="font-medium cursor-pointer text-sm md:text-base">{opt.label}</label>
+                        <p className="text-xs md:text-sm text-muted-foreground">{opt.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 2. Profils */}
+            <Card>
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="flex items-center gap-3 text-lg md:text-2xl">
+                  <span className="bg-blue-500 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold">2</span>
+                  Choisissez votre profil
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">Sélectionnez un ou plusieurs profils qui vous correspondent</p>
+              </CardHeader>
+              <CardContent className="p-4 md:p-6 pt-0">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                  {userProfiles.map((profile) => (
+                    <div key={profile.id} className="flex items-start space-x-3 p-3 md:p-4 rounded-lg border min-h-[56px]">
+                      <Checkbox id={profile.id} checked={selectedProfiles.includes(profile.id)} onCheckedChange={() => handleProfileToggle(profile.id)} />
+                      <div className="flex-1">
+                        <label htmlFor={profile.id} className="font-medium cursor-pointer text-sm md:text-base">{profile.name}</label>
+                        <p className="text-xs md:text-sm text-muted-foreground">{profile.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 3. Intolérances */}
+            <Card>
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="flex items-center gap-3 text-lg md:text-2xl">
+                  <span className="bg-red-500 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold">3</span>
+                  Intolérances et restrictions
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">Sélectionnez les substances que vous souhaitez éviter</p>
+              </CardHeader>
+              <CardContent className="p-4 md:p-6 pt-0">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                  {userIntolerances.map((intolerance) => (
+                    <div key={intolerance.id} className="flex items-start space-x-3 p-3 md:p-4 rounded-lg border border-red-200 bg-red-50 min-h-[56px]">
+                      <Checkbox id={intolerance.id} checked={selectedIntolerances.includes(intolerance.id)} onCheckedChange={() => handleIntoleranceToggle(intolerance.id)} />
+                      <div className="flex-1">
+                        <label htmlFor={intolerance.id} className="font-medium cursor-pointer text-red-800 text-sm md:text-base">{intolerance.name}</label>
+                        <p className="text-xs md:text-sm text-red-600">{intolerance.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 4. Préférences */}
+            <Card>
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="flex items-center gap-3 text-lg md:text-2xl">
+                  <span className="bg-green-500 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold">4</span>
+                  Préférences personnelles
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">Indiquez vos préférences pour le type d'eau</p>
+              </CardHeader>
+              <CardContent className="p-4 md:p-6 pt-0">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  {userPreferences.map((preference) => (
+                    <div key={preference.id} className="flex items-start space-x-3 p-3 md:p-4 rounded-lg border border-blue-200 bg-blue-50 min-h-[56px]">
+                      <Checkbox id={preference.id} checked={selectedPreferences.includes(preference.id)} onCheckedChange={() => handlePreferenceToggle(preference.id)} />
+                      <div className="flex-1">
+                        <label htmlFor={preference.id} className="font-medium cursor-pointer text-blue-800 text-sm md:text-base">{preference.name}</label>
+                        <p className="text-xs md:text-sm text-blue-600">{preference.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mt-6 text-center">
+            <Button onClick={handleGetRecommendations} disabled={!hasSelections} className="px-8 min-h-[48px]">
+              Obtenir mes recommandations
+            </Button>
           </div>
         </div>
       </div>
