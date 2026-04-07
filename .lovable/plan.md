@@ -1,71 +1,54 @@
 
 
-## Page "Cours de l'eau" — Évolution historique des prix
+## Plan: Encart "Prix par marque" + lien regroupé dans "Prix des eaux"
 
-### Résumé
-Nouvelle page `/cours-eau` accessible depuis la navigation "Prix des eaux", affichant l'évolution des prix de l'eau en bouteille et du robinet sous forme de graphiques animés, avec des explications contextuelles sur les facteurs de variation.
+### 1. Regrouper les liens prix dans un sous-menu "Prix des eaux"
 
-### Structure de la page
+Actuellement, `/prix-eaux` et `/cours-eau` sont deux liens séparés dans la navigation. Il faut les regrouper dans un dropdown "Prix des eaux" (similaire au dropdown "Les cartes").
+
+**Fichiers modifiés** : `Header.tsx`, `Navigation.tsx`
+
+- Retirer `/prix-eaux` et `/cours-eau` de `navigationItems` / `directNavigationItems`
+- Creer un nouveau tableau `pricesItems` avec :
+  - `{ href: '/prix-eaux', label: 'Comparateur de prix' }`
+  - `{ href: '/cours-eau', label: "Cours de l'eau" }`
+- Ajouter un dropdown "Prix des eaux" avec hover (Header desktop) et section accordéon (Header mobile), identique au pattern existant pour "Les cartes"
+- Même pattern dans Navigation.tsx
+
+### 2. Nouvel encart "Évolution du prix par marque" sur `/cours-eau`
+
+Ajouter une section entre les graphiques généraux et la timeline, affichant un graphique par marque avec le prix moyen (toutes enseignes confondues).
+
+**Fichiers modifiés** : `CoursEau.tsx`
+
+- Importer `useBrands` et `getBrandStats` depuis les hooks/services existants
+- Ajouter un `Select` pour choisir une marque (Evian, Cristaline, Vittel, etc.)
+- Afficher un `BarChart` (Recharts) montrant le prix moyen par enseigne pour la marque sélectionnée, basé sur `BrandPriceStats.retailer_prices`
+- Afficher les stats globales (`overall_stats`) : min, max, moyenne, médiane
+- Inclure un état de chargement (Skeleton) et un fallback si pas de données
+- Animation fade-in au scroll comme les autres sections
+
+**Nouveau composant** : `BrandPriceChart` (inline dans CoursEau.tsx ou composant séparé)
 
 ```text
-┌──────────────────────────────────────────┐
-│  Hero animé (gradient + compteur animé)  │
-│  "Cours de l'eau" + chiffre clé animé    │
-├──────────────────────────────────────────┤
-│  Onglets: [Eau en bouteille] [Eau robinet]│
-├──────────────────────────────────────────┤
-│  Graphique principal (Recharts AreaChart) │
-│  Sélecteur période: 1an / 5ans / Max     │
-│  Animation fade-in au scroll              │
-├──────────────────────────────────────────┤
-│  Cards animées "Pourquoi le prix change" │
-│  - Matières premières (PET, énergie)     │
-│  - Transport & logistique                │
-│  - Réglementation & taxes                │
-│  - Inflation générale                    │
-├──────────────────────────────────────────┤
-│  Section eau du robinet                  │
-│  Graphique prix m³ historique            │
-│  Facteurs: investissements réseaux,      │
-│  normes, redevances agences de l'eau     │
-├──────────────────────────────────────────┤
-│  Statistiques clés animées (counters)    │
-│  Prix moyen bouteille vs robinet x300    │
-└──────────────────────────────────────────┘
+┌─────────────────────────────────────┐
+│ 📊 Prix par marque                  │
+│ [Select: Evian ▼]                   │
+│                                     │
+│ BarChart horizontal                 │
+│  Carrefour  ████████ 0.42€/L        │
+│  Leclerc    ██████   0.38€/L        │
+│  Auchan     ███████  0.40€/L        │
+│                                     │
+│ Min: 0.35€  Moy: 0.40€  Max: 0.48€ │
+└─────────────────────────────────────┘
 ```
 
-### Fichiers à créer / modifier
+### Détails techniques
 
-1. **`src/pages/CoursEau.tsx`** — Page principale avec :
-   - Hero avec animation de compteur (prix actuel animé)
-   - Onglets bouteille / robinet via `Tabs`
-   - Graphiques Recharts (`AreaChart` avec gradient fill, animations activées)
-   - Données historiques statiques (prix moyens eau bouteille FR 2015-2025, prix m³ robinet 2010-2025 basés sur données publiques DGCCRF/INSEE)
-   - Cards explicatives avec `animate-fade-in` au scroll via `IntersectionObserver`
-   - Compteurs animés pour les chiffres clés
-
-2. **`src/App.tsx`** — Ajouter lazy import + route `/cours-eau`
-
-3. **`src/components/Navigation.tsx`** — Ajouter lien dans la section prix (sous `/prix-eaux`)
-
-4. **`src/components/Header.tsx`** — Ajouter lien dans le menu mobile
-
-5. **`src/utils/seoData.ts`** — Ajouter entrée SEO `coursEau`
-
-6. **`src/data/waterPriceHistory.ts`** — Données historiques statiques :
-   - Prix moyen bouteille €/L par an (2015-2025) basé sur indices INSEE
-   - Prix moyen robinet €/m³ par an (2010-2025) basé sur rapports SISPEA
-   - Événements marquants (canicules, COVID, inflation 2022-23)
-
-### Animations prévues
-- Compteurs numériques animés (hook `useCountUp`)
-- Graphiques Recharts avec `animationDuration={1500}`
-- Cards qui apparaissent en `animate-fade-in` au scroll
-- Transitions entre onglets bouteille/robinet
-- Gradient animé sur le hero
-
-### Données historiques (statiques, sources publiques)
-- Eau bouteille : ~0.20€/L (2015) → ~0.35€/L (2025), avec pics inflation
-- Eau robinet : ~3.50€/m³ (2010) → ~4.30€/m³ (2025)
-- Ratio bouteille/robinet : ~x100 à x300
+- Le hook `useBrands()` charge la liste des marques depuis Supabase (`prices.brand`)
+- `getBrandStats(brand)` retourne les prix moyens par enseigne sur les 30 derniers jours
+- Le graphique utilise `BarChart` de Recharts avec des barres horizontales, une couleur par enseigne
+- Les stats globales (min/max/moy/médiane) sont affichées dans des mini-cards sous le graphique
+- Gestion d'erreur : message "Aucune donnée disponible" si la requête échoue ou retourne vide
 
