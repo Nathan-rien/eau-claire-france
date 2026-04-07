@@ -120,7 +120,41 @@ const Navigation = () => {
                   </NavigationMenuContent>
                 </NavigationMenuItem>
 
-                {directNavigationItems.map((item) => (
+                {/* Prix des eaux dropdown */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger
+                    className={cn(
+                      "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-2 py-2 text-xs md:text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none",
+                      isActivePricesSection && "bg-accent text-accent-foreground"
+                    )}
+                  >
+                    <span className="flex items-center gap-1">
+                      {t('nav.prices')}
+                      <ChevronDown className="h-3 w-3" />
+                    </span>
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent
+                    className="absolute left-0 top-0 w-full data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out md:w-auto z-50 bg-popover border border-border shadow-md rounded-md"
+                  >
+                    <div className="w-64 p-2">
+                      {pricesItems.map((item) => (
+                        <NavigationMenuLink
+                          key={item.href}
+                          asChild
+                          className={cn(
+                            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground text-sm",
+                            location.pathname === item.href && "bg-accent text-accent-foreground"
+                          )}
+                        >
+                          <Link to={item.href}>
+                            {item.label}
+                          </Link>
+                        </NavigationMenuLink>
+                      ))}
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
                   <NavigationMenuItem key={item.href}>
                     <NavigationMenuLink
                       asChild

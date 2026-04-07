@@ -64,6 +64,7 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
   const isActiveJourneySection = journeyItems.some(item => location.pathname === item.href);
+  const isActivePricesSection = pricesItems.some(item => location.pathname === item.href);
 
   const [mapsMenuOpen, setMapsMenuOpen] = useState(false);
   const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
