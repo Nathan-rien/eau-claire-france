@@ -291,18 +291,52 @@ const WaterJourneyMap: React.FC = () => {
       });
     });
 
+    // Build step-line features (source → 5 steps) per unique source
+    const stepLineFeatures: GeoJSON.Feature<GeoJSON.LineString>[] = [];
+    addedSources.forEach((srcKey) => {
+      const route = routes.find(r => `${r.source.name}-${r.source.lat}` === srcKey);
+      if (!route) return;
+      const srcCoord: [number, number] = [route.source.lng, route.source.lat];
+      const lineCoords: [number, number][] = [srcCoord];
+      JOURNEY_STEPS.forEach((step) => {
+        lineCoords.push(getStepPosition(srcCoord, step.fraction));
+      });
+      stepLineFeatures.push({
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'LineString', coordinates: lineCoords },
+      });
+    });
+
+    // Step connection lines
+    map.addSource('journey-steps-lines', {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: stepLineFeatures },
+    });
+    map.addLayer({
+      id: 'journey-steps-line',
+      type: 'line',
+      source: 'journey-steps-lines',
+      paint: {
+        'line-color': '#6366f1',
+        'line-width': 2,
+        'line-opacity': 0.5,
+        'line-dasharray': [4, 3],
+      },
+    });
+
     // Single GeoJSON source for all arcs
     map.addSource('journey-arcs', {
       type: 'geojson',
       data: { type: 'FeatureCollection', features: arcFeatures },
     });
 
-    // Background layer
+    // Background layer — always visible for context
     map.addLayer({
       id: 'journey-arcs-bg',
       type: 'line',
       source: 'journey-arcs',
-      layout: { visibility: 'none' },
+      layout: { visibility: 'visible' },
       paint: {
         'line-color': '#93c5fd',
         'line-width': 2,
