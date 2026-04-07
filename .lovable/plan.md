@@ -1,50 +1,42 @@
 
 
-## Enrichir la page /quelle-eau-boire avec du contenu SEO et une question supplementaire
+## Étapes du parcours intégrées comme marqueurs Mapbox cliquables
 
-### 1. Contenu editorial sur l'ecran d'accueil (mode = null)
+### Concept
 
-Ajouter sous les deux cartes de choix diagnostic, trois sections de texte riche :
+Ajouter sur la carte Mapbox des marqueurs représentant les étapes intermédiaires du parcours de l'eau en bouteille (analyse, traitement, embouteillage, stockage, transport). Actuellement la carte ne montre que **source** (bleu) et **commune/magasin** (vert). On va ajouter des marqueurs d'étapes positionnés le long de l'arc entre source et destination, chacun cliquable avec un popup détaillant l'étape, sa durée et sa description.
 
-**Section "Pourquoi choisir la bonne eau ?"** : Paragraphe expliquant que chaque eau a une composition minerale unique, que les besoins varient selon l'age, l'activite, la sante. Mots-cles SEO : eau minerale, eau de source, composition, mineraux, sante.
+### Étapes ajoutées (5 marqueurs par route, positionnés sur l'arc)
 
-**Section "Comment fonctionne notre diagnostic ?"** : Explication du systeme de score (criteres mineraux vs profil, ponderation par priorite, score sur 100). Transparence sur la methode = confiance utilisateur + contenu indexable.
+Pour chaque source affichée, on place 5 marqueurs intermédiaires le long d'un arc fictif partant de la source :
 
-**Section "Les risques d'une eau non adaptee"** : Liste des risques concrets (exces de sodium et hypertension, nitrates et nourrissons, manque de calcium et osteoporose, exces de mineralisation et calculs renaux). Avec icone AlertTriangle, fond orange/rouge leger.
+1. **Analyse & contrôle** — Icône flacon — "Analyses bactériologiques et physico-chimiques" — 24-72h
+2. **Traitement & filtration** — Icône filtre — "Filtration, ozonation, UV" — 2-6h  
+3. **Embouteillage** — Icône bouteille/package — "Remplissage, bouchage, étiquetage" — ~0.5s/bouteille
+4. **Stockage** — Icône entrepôt — "Palettisation, contrôle lot" — 1-3 jours
+5. **Transport** — Icône camion — "Acheminement vers magasins" — 1-5 jours
 
-Chaque section utilise des balises h2 pour le SEO, avec des paragraphes informatifs de 3-5 lignes.
+### Positionnement
 
-### 2. Nouvelle question dans le diagnostic rapide
-
-Ajouter une troisieme question : **"Votre objectif principal"** entre le profil et le CTA.
-
-Options : "Sante au quotidien", "Performance sportive", "Digestion & transit", "Os & articulations", "Eau la plus pure possible".
-
-Cela mappe vers une preference utilisateur qui s'ajoute aux criteres du profil selectionne, rendant le diagnostic rapide plus pertinent (3 questions au lieu de 2, comme prevu dans le plan initial).
-
-Le `handleQuickRecommendations` passera cette preference en plus du profil.
+Les marqueurs d'étapes sont placés à des fractions régulières le long de l'arc (à 10%, 25%, 40%, 60%, 80% de la courbe) pour chaque source unique. Ils restent proches de la source car ce sont des étapes **avant** la distribution. On les affiche une seule fois par source (pas par commune).
 
 ### Modifications techniques
 
-**Fichier : `src/pages/QuelleEauBoire.tsx`**
+**Fichier : `src/components/WaterJourneyMap.tsx`**
 
-- Ecran `mode === null` : ajouter 3 sections h2 apres la grille de cartes (Pourquoi, Comment, Risques)
-- Ecran `mode === 'quick'` : ajouter un state `quickObjective` et une grille de boutons objectif apres le profil
-- `handleQuickRecommendations` : mapper l'objectif vers une preference de `userPreferences` et l'inclure dans le calcul
-- Imports supplementaires : `ShieldAlert`, `Info`, `Target` depuis lucide-react
+- Définir un tableau constant `JOURNEY_STEPS` avec nom, description, durée, couleur, icône SVG inline pour chaque étape
+- Dans `renderRoutes()`, pour chaque source unique, calculer 5 points intermédiaires sur un arc court partant de la source (direction nord-est par défaut) et y placer des marqueurs avec popups
+- Chaque marqueur a un style distinct (cercle coloré avec icône, taille 28px) et un popup HTML montrant le nom, la description et la durée
+- Stocker ces marqueurs dans un nouveau ref `stepMarkersRef` pour le nettoyage
+- Ajouter une entrée dans la légende pour les étapes du parcours
+- Les marqueurs d'étapes sont toujours visibles (pas derrière le toggle communes)
 
-### Structure du contenu SEO
+**Fichier : `src/pages/CarteParcoursEau.tsx`** — Aucune modification nécessaire.
 
-```text
-[Cartes diagnostic rapide / complet]
+### Design des marqueurs
 
-── h2: Pourquoi choisir une eau adaptee a vos besoins ?
-   Paragraphe explicatif (composition, mineraux, profils)
-
-── h2: Comment fonctionne notre diagnostic ?
-   Explication score/100, criteres, ponderation
-
-── h2: Les risques d'une eau non adaptee
-   4-5 risques avec icones (sodium/HTA, nitrates/bebe, etc.)
-```
+- Taille 28px, cercles colorés avec bordure blanche
+- Couleur progressive : bleu clair → bleu → violet → orange → vert
+- Popup au clic avec titre en gras, description, et badge de durée coloré
+- Les marqueurs source existants (bleu foncé 32px) restent dominants visuellement
 
