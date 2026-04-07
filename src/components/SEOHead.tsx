@@ -20,7 +20,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   ogImage = "/images/og-default.jpg",
   ogType = "website",
   schemaData,
-  hreflang = { 'fr': window.location.href, 'en': window.location.href.replace('infoeau.fr', 'infoeau.fr/en') }
+  hreflang = {}
 }) => {
   const siteUrl = "https://infoeau.fr";
   const fullTitle = title.includes('InfoEau') ? title : `${title} | InfoEau.fr - Qualité de l'eau potable en France`;

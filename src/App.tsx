@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import React, { useEffect, Suspense } from "react";
 import { HelmetProvider } from "react-helmet-async";
 import { analyticsService } from "@/services/analyticsService";
@@ -101,6 +101,7 @@ const App = () => {
                 <Route path="/alertes" element={<Alertes />} />
                 <Route path="/diagnostic" element={<Diagnostic />} />
                 <Route path="/comparatif-bouteilles" element={<ComparatifBouteilles />} />
+                <Route path="/bouteilles" element={<Navigate to="/comparatif-bouteilles" replace />} />
                 <Route path="/quelle-eau-boire" element={<LazyWaterRecommendation />} />
                 <Route path="/classement" element={<Classement />} />
                 <Route path="/polluants" element={<Polluants />} />
