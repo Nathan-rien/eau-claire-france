@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import waterBg from '@/assets/water-background.jpg';
+import rankingWaterBg from '@/assets/ranking-water-bg.jpg';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
@@ -132,7 +133,7 @@ const Index = () => {
           <div className="container mx-auto max-w-4xl">
             <Link to="/classement" className="group block">
               <Card className="overflow-hidden border-2 border-primary/20 hover:border-primary/50 hover:shadow-xl transition-all duration-300">
-                <div className="relative bg-cover bg-center p-6 md:p-8 lg:p-10" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1560023907-5f339617ea55?w=1200&q=80)' }}>
+                <div className="relative bg-cover bg-center p-6 md:p-8 lg:p-10" style={{ backgroundImage: `url(${rankingWaterBg})` }}>
                   <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg" />
                   <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6">
                     <div className="w-16 h-16 bg-primary/15 rounded-2xl flex items-center justify-center shrink-0">
