@@ -34,23 +34,25 @@ export const bottlePriceHistory: PriceDataPoint[] = [
 ];
 
 // Prix moyen eau du robinet (€/m³) — Source : SISPEA / Observatoire des services d'eau
+// Prix moyen eau du robinet (€/L) — Source : SISPEA / Observatoire des services d'eau
+// Valeurs converties de €/m³ en €/L (÷1000)
 export const tapPriceHistory: PriceDataPoint[] = [
-  { year: 2010, price: 3.45 },
-  { year: 2011, price: 3.50 },
-  { year: 2012, price: 3.55 },
-  { year: 2013, price: 3.62 },
-  { year: 2014, price: 3.65 },
-  { year: 2015, price: 3.70 },
-  { year: 2016, price: 3.74 },
-  { year: 2017, price: 3.78 },
-  { year: 2018, price: 3.82 },
-  { year: 2019, price: 3.85 },
-  { year: 2020, price: 3.89, event: "Investissements réseau post-COVID" },
-  { year: 2021, price: 3.98 },
-  { year: 2022, price: 4.08, event: "Hausse énergie + traitement" },
-  { year: 2023, price: 4.19, event: "Normes PFAS renforcées" },
-  { year: 2024, price: 4.27 },
-  { year: 2025, price: 4.34 },
+  { year: 2010, price: 0.00345 },
+  { year: 2011, price: 0.00350 },
+  { year: 2012, price: 0.00355 },
+  { year: 2013, price: 0.00362 },
+  { year: 2014, price: 0.00365 },
+  { year: 2015, price: 0.00370 },
+  { year: 2016, price: 0.00374 },
+  { year: 2017, price: 0.00378 },
+  { year: 2018, price: 0.00382 },
+  { year: 2019, price: 0.00385 },
+  { year: 2020, price: 0.00389, event: "Investissements réseau post-COVID" },
+  { year: 2021, price: 0.00398 },
+  { year: 2022, price: 0.00408, event: "Hausse énergie + traitement" },
+  { year: 2023, price: 0.00419, event: "Normes PFAS renforcées" },
+  { year: 2024, price: 0.00427 },
+  { year: 2025, price: 0.00434 },
 ];
 
 // Facteurs explicatifs — eau en bouteille

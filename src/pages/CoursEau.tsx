@@ -260,7 +260,7 @@ const CoursEau = () => {
   const latestTap = tapPriceHistory[tapPriceHistory.length - 1].price;
 
   const bottleCounter = useCountUp(Math.round(latestBottle * 100), 1600, heroRef.inView);
-  const tapCounter = useCountUp(Math.round(latestTap * 100), 1600, heroRef.inView);
+  const tapCounter = useCountUp(Math.round(latestTap * 100000), 1600, heroRef.inView);
 
   return (
     <Layout>
@@ -303,7 +303,7 @@ const CoursEau = () => {
             <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/20">
               <Droplets className="w-8 h-8 mx-auto mb-2 text-cyan-200" />
               <div className="text-4xl font-black tabular-nums">
-                {(tapCounter / 100).toFixed(2)}<span className="text-lg ml-1">€/m³</span>
+                {(tapCounter / 100000).toFixed(3)}<span className="text-lg ml-1">€/L</span>
               </div>
               <p className="text-blue-200 text-sm mt-1">Eau du robinet</p>
             </div>
@@ -380,7 +380,7 @@ const CoursEau = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <TrendingUp className="w-5 h-5 text-primary" />
-                  Prix moyen eau du robinet (€/m³)
+                  Prix moyen eau du robinet (€/L)
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -394,8 +394,8 @@ const CoursEau = () => {
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis dataKey="year" tick={{ fontSize: 12 }} className="fill-muted-foreground" />
-                    <YAxis domain={['auto', 'auto']} tick={{ fontSize: 12 }} className="fill-muted-foreground" tickFormatter={v => `${v.toFixed(2)}€`} />
-                    <Tooltip content={<PriceTooltip unit="€/m³" />} />
+                    <YAxis domain={['auto', 'auto']} tick={{ fontSize: 12 }} className="fill-muted-foreground" tickFormatter={v => `${v.toFixed(3)}€`} />
+                    <Tooltip content={<PriceTooltip unit="€/L" />} />
                     <Area type="monotone" dataKey="price" stroke="hsl(160, 60%, 45%)" strokeWidth={2.5} fill="url(#gradTap)" animationDuration={1500} animationEasing="ease-out" />
                   </AreaChart>
                 </ResponsiveContainer>
