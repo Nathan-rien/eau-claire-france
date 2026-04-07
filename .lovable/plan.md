@@ -1,28 +1,39 @@
 
 
-## Plan : Afficher le prix du robinet en €/L (au lieu de €/m³)
+## Plan : Enrichir les données des cartes régionales sur `/carte`
 
-### Contexte
-Le hero de la page `/cours-eau` affiche le prix du robinet en €/m³ (4.34 €/m³). L'utilisateur veut une cohérence avec l'eau en bouteille, donc tout en €/L.
-
-4.34 €/m³ = 0.00434 €/L → affiché comme **0.004 €/L** (3 décimales).
+### Constat
+Les 6 cartes régionales affichent actuellement 4 champs basiques (qualité A-E, source d'eau, communes, alertes). L'utilisateur souhaite plus de richesse informative, comme sur la version Europe, sans modifier les fonctionnalités existantes.
 
 ### Modifications
 
-**Fichier : `src/pages/CoursEau.tsx`**
+**Fichier unique : `src/components/QualityMap.tsx`**
 
-1. **Hero card robinet (ligne ~260-308)** : Convertir `latestTap` de €/m³ en €/L (÷1000), adapter le counter pour 3 décimales, changer le suffixe de `€/m³` à `€/L`.
+1. **Enrichir les données mock des régions** — Ajouter à chaque objet région :
+   - `complianceRate` (%) — taux de conformité
+   - `population` (millions) — population desservie
+   - `waterSupplyZones` — nombre de zones d'approvisionnement
+   - `mainPollutants` — tableau des polluants principaux avec `{ name, avgValue, unit, limitValue, exceedanceRate }`
+   - Couvrir les **13 régions métropolitaines** (au lieu de 6)
 
-2. **Onglet "robinet" — titre du graphique (ligne ~383)** : Changer "Prix moyen eau du robinet (€/m³)" → "Prix moyen eau du robinet (€/L)".
+2. **Enrichir les cartes régionales** — Dans chaque card, ajouter sous les champs existants :
+   - Ligne "Taux de conformité" avec la valeur en %
+   - Ligne "Population desservie" en millions
+   - Ligne "Zones d'approvisionnement"
+   - Section dépliable (Collapsible) "Polluants détectés" avec un mini-tableau : Polluant | Moy. | Limite | Dépassement %
+   - Badge de risque coloré (Faible/Modéré/Élevé) basé sur le taux de conformité
 
-3. **Axe Y du graphique robinet (ligne ~397)** : Diviser les valeurs par 1000 dans le `tickFormatter` ou transformer les données, pour afficher en €/L.
+3. **Enrichir la légende** — Ajouter sous la légende A-E existante une sous-section expliquant les 3 niveaux de risque (Faible ≥98%, Modéré 96-98%, Élevé <96%) avec pastilles colorées vert/orange/rouge.
 
-4. **Tooltip robinet (ligne ~398)** : Passer `unit="€/L"` au lieu de `"€/m³"`.
+### Ce qui ne change pas
+- La carte interactive Mapbox et le toggle sources d'eau
+- Le système de grades A-E
+- Les liens vers /alertes
+- La structure de la page Carte.tsx
 
-**Fichier : `src/data/waterPriceHistory.ts`**
+### Données ajoutées (exemples)
+Les 13 régions avec des ordres de grandeur réalistes basés sur les rapports ARS/Hub'Eau : Île-de-France (98.2%), Auvergne-Rhône-Alpes (99.1%), Bretagne (96.8%), Occitanie (97.5%), etc. Chaque région aura 5-7 polluants (Nitrates, Pesticides, Plomb, PFAS, THM, Chlore, Bactéries).
 
-5. **Optionnel** : Soit convertir les données source `tapPriceHistory` en €/L directement (diviser chaque `price` par 1000), soit faire la conversion côté affichage. La conversion côté données est plus propre pour éviter des divisions répétées.
-
-### Approche retenue
-Convertir les données `tapPriceHistory` en €/L directement dans le fichier source, et adapter tous les labels/tooltips en conséquence. Cela simplifie le code d'affichage.
+### Résultat
+Les cartes régionales passent de 4 lignes d'info à ~8 lignes + un tableau de polluants dépliable, alignant le niveau de détail sur la version Europe tout en conservant l'UX existante.
 
