@@ -135,7 +135,7 @@ const Index = () => {
             <Link to="/classement" className="group block">
               <Card className="overflow-hidden border-2 border-white/60 bg-white/70 backdrop-blur-md hover:border-primary/50 hover:shadow-xl transition-all duration-300">
                 <div className="p-6 md:p-8 lg:p-10">
-                  <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6">
+                  <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
                     <div className="w-16 h-16 bg-primary/15 rounded-2xl flex items-center justify-center shrink-0">
                       <Award className="w-8 h-8 text-primary" />
                     </div>
