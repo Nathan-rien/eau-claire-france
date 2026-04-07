@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, MapPin, Droplets, AlertTriangle, Leaf, Award, Zap, ClipboardList, Globe, Shield } from 'lucide-react';
+import { Search, MapPin, Droplets, AlertTriangle, Leaf, Award, Zap, ClipboardList, Globe, Shield, Heart, Baby, Dumbbell, FlaskConical, Bell, Activity, Skull } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -231,9 +231,13 @@ const Index = () => {
                 </div>
               </div>
               <div className="flex-shrink-0 order-1 md:order-2 relative">
-                <div className="w-32 h-32 md:w-40 md:h-40 bg-orange-100 rounded-full flex items-center justify-center relative">
+                {/* Outer spinning ring */}
+                <div className="absolute inset-0 w-44 h-44 md:w-52 md:h-52 -m-6 rounded-full border-2 border-dashed border-orange-200 animate-[spin_20s_linear_infinite]" />
+                <div className="w-32 h-32 md:w-40 md:h-40 bg-orange-100 rounded-full flex items-center justify-center relative ring-4 ring-orange-200/50 animate-[pulse_4s_ease-in-out_infinite]">
                   <AlertTriangle className="w-16 h-16 md:w-20 md:h-20 text-orange-500 animate-[pulse_3s_ease-in-out_infinite]" />
                   <Droplets className="w-8 h-8 text-orange-300 absolute -top-2 -right-2 animate-fade-in" />
+                  <Skull className="w-7 h-7 text-orange-400 absolute -bottom-3 -right-1 animate-fade-in [animation-delay:0.3s]" />
+                  <FlaskConical className="w-7 h-7 text-orange-400 absolute -left-3 top-1/2 -translate-y-1/2 animate-fade-in [animation-delay:0.6s]" />
                 </div>
               </div>
             </div>
@@ -245,9 +249,18 @@ const Index = () => {
           <div className="container mx-auto max-w-5xl">
             <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
               <div className="flex-shrink-0 relative">
+                {/* Outer dashed ring reverse spin */}
+                <div className="absolute inset-0 w-44 h-44 md:w-52 md:h-52 -m-6 rounded-full border-2 border-dashed border-primary/20 animate-[spin_25s_linear_infinite_reverse]" />
+                {/* Floating bubbles */}
+                <div className="absolute -top-4 -left-4 w-4 h-4 bg-primary/20 rounded-full animate-[bounce_3s_ease-in-out_infinite]" />
+                <div className="absolute -bottom-3 -right-5 w-3 h-3 bg-green-300/40 rounded-full animate-[bounce_3s_ease-in-out_infinite_0.5s]" />
+                <div className="absolute top-1/2 -right-6 w-2.5 h-2.5 bg-primary/15 rounded-full animate-[bounce_4s_ease-in-out_infinite_1s]" />
                 <div className="w-32 h-32 md:w-40 md:h-40 bg-primary/10 rounded-full flex items-center justify-center relative">
                   <Award className="w-16 h-16 md:w-20 md:h-20 text-primary animate-fade-in" />
                   <Droplets className="w-8 h-8 text-green-400 absolute -bottom-2 -left-2 animate-fade-in" />
+                  <Heart className="w-7 h-7 text-red-400 absolute -top-2 -right-2 animate-fade-in [animation-delay:0.2s]" />
+                  <Baby className="w-7 h-7 text-primary/70 absolute -bottom-3 -right-1 animate-fade-in [animation-delay:0.4s]" />
+                  <Dumbbell className="w-7 h-7 text-green-500 absolute -left-3 top-1/4 animate-fade-in [animation-delay:0.6s]" />
                 </div>
               </div>
               <div className="flex-1">
@@ -273,10 +286,25 @@ const Index = () => {
         </section>
 
         {/* Section C — Surveiller la qualité de votre eau */}
-        <section className="py-10 md:py-14 lg:py-20 px-4 bg-gradient-to-br from-primary/10 via-blue-50 to-primary/5" role="region" aria-labelledby="monitor-title">
-          <div className="container mx-auto max-w-3xl text-center">
-            <div className="w-20 h-20 bg-primary/15 rounded-full flex items-center justify-center mx-auto mb-6 animate-scale-in">
-              <Shield className="w-10 h-10 text-primary" />
+        <section className="py-10 md:py-14 lg:py-20 px-4 bg-gradient-to-br from-primary/10 via-blue-50 to-primary/5 relative overflow-hidden" role="region" aria-labelledby="monitor-title">
+          {/* Decorative background particles */}
+          <div className="absolute top-10 left-[10%] w-6 h-6 bg-primary/5 rounded-full animate-[bounce_5s_ease-in-out_infinite]" />
+          <div className="absolute top-1/3 right-[15%] w-4 h-4 bg-primary/10 rounded-full animate-[bounce_4s_ease-in-out_infinite_1s]" />
+          <div className="absolute bottom-16 left-[20%] w-5 h-5 bg-primary/5 rounded-full animate-[bounce_6s_ease-in-out_infinite_2s]" />
+          <div className="absolute bottom-10 right-[25%] w-3 h-3 bg-primary/10 rounded-full animate-[bounce_3s_ease-in-out_infinite_0.5s]" />
+
+          <div className="container mx-auto max-w-3xl text-center relative z-10">
+            <div className="relative w-20 h-20 mx-auto mb-6">
+              {/* Concentric rings */}
+              <div className="absolute inset-0 w-28 h-28 -m-4 rounded-full border border-primary/10 animate-scale-in [animation-delay:0.1s]" />
+              <div className="absolute inset-0 w-36 h-36 -m-8 rounded-full border border-primary/5 animate-scale-in [animation-delay:0.3s]" />
+              <div className="absolute inset-0 w-44 h-44 -m-12 rounded-full border border-primary/[0.03] animate-scale-in [animation-delay:0.5s]" />
+              <div className="w-20 h-20 bg-primary/15 rounded-full flex items-center justify-center animate-scale-in relative">
+                <Shield className="w-10 h-10 text-primary" />
+                <Search className="w-6 h-6 text-primary/60 absolute -top-3 -right-5 animate-fade-in [animation-delay:0.4s]" />
+                <Bell className="w-6 h-6 text-primary/60 absolute -bottom-3 -right-4 animate-fade-in [animation-delay:0.6s]" />
+                <Activity className="w-6 h-6 text-primary/60 absolute -left-5 top-1/2 -translate-y-1/2 animate-fade-in [animation-delay:0.8s]" />
+              </div>
             </div>
             <h2 id="monitor-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-4">
               Surveillez la qualité de votre eau
