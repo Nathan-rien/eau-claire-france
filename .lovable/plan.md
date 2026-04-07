@@ -1,35 +1,54 @@
 
 
-## Diagnostic : prix trop bas sur /cours-eau
+## Plan : Référencement complet et préparation indexation (Google + IA)
 
-### Constat
+### Audit des écarts identifiés
 
-Les prix historiques statiques dans `waterPriceHistory.ts` affichent l'eau en bouteille à **0.19–0.35 €/L** (2010–2025). Or, les données réelles scrapées dans la base montrent :
+**Pages manquantes dans le sitemap.xml :**
+- `/cours-eau` — page active avec SEO configuré, absente du sitemap
 
-- **Médiane actuelle** : 0.68 €/L
-- **Moyenne actuelle** : 0.78 €/L
-- Exemples : Evian = 0.92 €/L, Volvic = 0.73 €/L, Badoit = 0.98 €/L
+**Pages dynamiques non référencées :**
+- `/marque/:slug` — pages de prix par marque (ex: `/marque/evian`), absentes du sitemap et sans données structurées dynamiques suffisantes
 
-Les valeurs statiques sous-estiment les prix d'un facteur ~2x. Elles semblent représenter uniquement les eaux de source premier prix, pas le prix moyen réel du marché.
+**Fichier manquant pour les IA :**
+- Pas de `llms.txt` — fichier standard émergent pour aider Claude, ChatGPT, Perplexity à comprendre et indexer un site
 
-**Impact en cascade** : le hero affiche "0.35 €/L", le ratio bouteille/robinet affiché est "80x" alors qu'il devrait être ~160x, et la hausse "67% depuis 2015" est fausse.
+**Route manquante :**
+- `DiagnosticPrix` a un fichier page + seoData mais aucune route dans App.tsx — soit l'ajouter, soit nettoyer
 
-### Plan de correction
+---
 
-**Fichier : `src/data/waterPriceHistory.ts`**
+### Modifications prévues
 
-1. **Corriger `bottlePriceHistory`** — Recalibrer les prix sur la base des données INSEE réelles (prix moyen toutes eaux confondues, pas seulement premier prix) :
-   - 2010 : 0.38 → 2015 : 0.42 → 2018 : 0.48 → 2020 : 0.52 → 2022 : 0.62 → 2023 : 0.70 → 2024 : 0.74 → 2025 : 0.76
-   - Ces valeurs sont cohérentes avec la médiane observée en base (0.68 €/L) + marge pour les petits formats plus chers
+#### 1. Mettre à jour `public/sitemap.xml`
+- Ajouter l'entrée `/cours-eau` (changefreq: daily, priority: 0.8)
+- Ajouter des entrées pour les principales marques connues (`/marque/evian`, `/marque/cristaline`, `/marque/volvic`, `/marque/vittel`, `/marque/perrier`, `/marque/hepar`, `/marque/badoit`, `/marque/contrex`, `/marque/mont-roucous`, `/marque/saint-amand`) avec priority 0.6
 
-2. **Corriger `keyStats`** — Recalculer les indicateurs :
-   - Ratio bouteille/robinet : **175x** (0.76 / 0.00434)
-   - Hausse bouteille depuis 2015 : **81%** ((0.76 - 0.42) / 0.42)
-   - Hausse robinet depuis 2010 : inchangé (26%)
+#### 2. Créer `public/llms.txt`
+Fichier descriptif pour les IA, contenant :
+- Nom et mission du site
+- Liste des pages principales avec descriptions courtes
+- Types de données disponibles (qualité eau, composition minérale, prix, polluants)
+- Indication des sources officielles (ARS, SISPEA, EEA)
 
-3. **Hero (dans `CoursEau.tsx`)** — Aucun changement de code nécessaire, les valeurs du hero sont dérivées automatiquement de `bottlePriceHistory[last].price` et `tapPriceHistory[last].price`.
+#### 3. Créer `public/llms-full.txt`
+Version détaillée avec la structure complète du site, les fonctionnalités par page, et les données accessibles — pour les crawlers IA qui supportent ce format étendu.
 
-### Aucun changement dans les prix dynamiques (section "par marque")
+#### 4. Mettre à jour `public/robots.txt`
+- Ajouter la référence au `llms.txt` : ligne `# AI crawlers` avec `Sitemap: https://infoeau.fr/llms.txt`
 
-Les prix de la section "Prix par marque — évolution" viennent directement de la base Supabase et sont corrects.
+#### 5. Ajouter la route `/diagnostic-prix` dans `App.tsx`
+Le fichier `src/pages/DiagnosticPrix.tsx` existe avec son SEOHead configuré mais n'est pas routé. Ajouter la route (avec `robots: noindex` déjà géré par robots.txt).
+
+#### 6. Enrichir les données structurées de `index.html`
+- Ajouter un schema `Organization` avec logo, sameAs (réseaux sociaux si existants)
+- Ajouter un schema `BreadcrumbList` par défaut pour la page d'accueil
+
+### Fichiers modifiés
+- `public/sitemap.xml`
+- `public/robots.txt`
+- `public/llms.txt` (nouveau)
+- `public/llms-full.txt` (nouveau)
+- `src/App.tsx` (ajout route diagnostic-prix)
+- `index.html` (enrichissement schema.org)
 
