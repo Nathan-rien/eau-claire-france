@@ -15,22 +15,22 @@ export interface PriceEvent {
 
 // Prix moyen eau en bouteille (€/L) — Source : INSEE indices prix à la consommation
 export const bottlePriceHistory: PriceDataPoint[] = [
-  { year: 2010, price: 0.19 },
-  { year: 2011, price: 0.19 },
-  { year: 2012, price: 0.20 },
-  { year: 2013, price: 0.20 },
-  { year: 2014, price: 0.21 },
-  { year: 2015, price: 0.21 },
-  { year: 2016, price: 0.22 },
-  { year: 2017, price: 0.22 },
-  { year: 2018, price: 0.23, event: "Canicule été 2018" },
-  { year: 2019, price: 0.24 },
-  { year: 2020, price: 0.25, event: "COVID-19 : hausse de la demande" },
-  { year: 2021, price: 0.26 },
-  { year: 2022, price: 0.30, event: "Inflation + hausse PET & énergie" },
-  { year: 2023, price: 0.33, event: "Pic d'inflation" },
-  { year: 2024, price: 0.34 },
-  { year: 2025, price: 0.35 },
+  { year: 2010, price: 0.38 },
+  { year: 2011, price: 0.39 },
+  { year: 2012, price: 0.40 },
+  { year: 2013, price: 0.40 },
+  { year: 2014, price: 0.41 },
+  { year: 2015, price: 0.42 },
+  { year: 2016, price: 0.43 },
+  { year: 2017, price: 0.44 },
+  { year: 2018, price: 0.48, event: "Canicule été 2018" },
+  { year: 2019, price: 0.49 },
+  { year: 2020, price: 0.52, event: "COVID-19 : hausse de la demande" },
+  { year: 2021, price: 0.55 },
+  { year: 2022, price: 0.62, event: "Inflation + hausse PET & énergie" },
+  { year: 2023, price: 0.70, event: "Pic d'inflation" },
+  { year: 2024, price: 0.74 },
+  { year: 2025, price: 0.76 },
 ];
 
 // Prix moyen eau du robinet (€/m³) — Source : SISPEA / Observatoire des services d'eau
@@ -111,8 +111,8 @@ export const tapPriceFactors = [
 
 // Statistiques clés
 export const keyStats = [
-  { label: "Ratio bouteille/robinet", value: 80, suffix: "x", description: "L'eau en bouteille coûte ~80 fois plus cher que l'eau du robinet" },
-  { label: "Hausse bouteille depuis 2015", value: 67, suffix: "%", description: "Augmentation du prix moyen de l'eau en bouteille" },
+  { label: "Ratio bouteille/robinet", value: 175, suffix: "x", description: "L'eau en bouteille coûte ~175 fois plus cher que l'eau du robinet" },
+  { label: "Hausse bouteille depuis 2015", value: 81, suffix: "%", description: "Augmentation du prix moyen de l'eau en bouteille" },
   { label: "Hausse robinet depuis 2010", value: 26, suffix: "%", description: "Augmentation du prix moyen de l'eau du robinet" },
   { label: "Consommation FR", value: 130, suffix: " L/hab", description: "Litres d'eau en bouteille par habitant par an en France" },
 ];
