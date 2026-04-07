@@ -155,6 +155,7 @@ const Navigation = () => {
                   </NavigationMenuContent>
                 </NavigationMenuItem>
 
+                {directNavigationItems.map((item) => (
                   <NavigationMenuItem key={item.href}>
                     <NavigationMenuLink
                       asChild
