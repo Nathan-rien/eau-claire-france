@@ -21,9 +21,7 @@ import {
   type PriceEvent,
 } from '@/data/waterPriceHistory';
 import { useBrands } from '@/hooks/usePricesData';
-import { getBrandStats } from '@/services/pricesApi';
 import { getBrandTimeseries, type BrandTimeseries } from '@/services/timeseriesApi';
-import type { BrandPriceStats } from '@/types/pricing';
 
 // ─── Animated counter hook ───
 function useCountUp(target: number, duration = 1800, start = false) {
