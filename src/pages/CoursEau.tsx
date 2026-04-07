@@ -175,9 +175,12 @@ const CoursEau = () => {
   const [selectedBrand, setSelectedBrand] = useState<string>('');
   const [brandStats, setBrandStats] = useState<BrandPriceStats | null>(null);
   const [brandLoading, setBrandLoading] = useState(false);
+  const [brandTimeseries, setBrandTimeseries] = useState<BrandTimeseries[]>([]);
+  const [timeseriesLoading, setTimeseriesLoading] = useState(false);
   const heroRef = useInView(0.3);
   const statsRef = useInView(0.2);
   const brandRef = useInView(0.2);
+  const timeseriesRef = useInView(0.2);
   const seo = (seoData as any).coursEau ?? seoData.prixEaux;
 
   const { brands } = useBrands();
@@ -185,11 +188,31 @@ const CoursEau = () => {
   useEffect(() => {
     if (!selectedBrand) return;
     setBrandLoading(true);
+    setTimeseriesLoading(true);
     getBrandStats(selectedBrand)
       .then(setBrandStats)
       .catch(() => setBrandStats(null))
       .finally(() => setBrandLoading(false));
+    getBrandTimeseries(selectedBrand, 90)
+      .then(setBrandTimeseries)
+      .catch(() => setBrandTimeseries([]))
+      .finally(() => setTimeseriesLoading(false));
   }, [selectedBrand]);
+
+  // Merge timeseries data into a single dataset for the line chart
+  const timeseriesChartData = React.useMemo(() => {
+    if (!brandTimeseries.length) return [];
+    const dateMap: Record<string, Record<string, number>> = {};
+    for (const series of brandTimeseries) {
+      for (const pt of series.points) {
+        if (!dateMap[pt.date]) dateMap[pt.date] = {};
+        dateMap[pt.date][series.retailer_slug || 'unknown'] = pt.median_price_per_l;
+      }
+    }
+    return Object.entries(dateMap)
+      .map(([date, retailers]) => ({ date, ...retailers }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }, [brandTimeseries]);
 
   const bottleData = filterByPeriod(bottlePriceHistory, period);
   const tapData = filterByPeriod(tapPriceHistory, period);
