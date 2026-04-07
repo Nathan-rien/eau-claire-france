@@ -1,39 +1,48 @@
 
 
-## Plan : Enrichir les données des cartes régionales sur `/carte`
+## Plan : Enrichir les données de la page `/sources-eau`
 
 ### Constat
-Les 6 cartes régionales affichent actuellement 4 champs basiques (qualité A-E, source d'eau, communes, alertes). L'utilisateur souhaite plus de richesse informative, comme sur la version Europe, sans modifier les fonctionnalités existantes.
+Le panneau de détail affiche déjà la composition minérale et les caractéristiques techniques, mais il manque des indicateurs dérivés et des informations contextuelles que les données permettent de calculer. La page manque aussi de statistiques synthétiques.
 
 ### Modifications
 
-**Fichier unique : `src/components/QualityMap.tsx`**
+**Fichier : `src/components/WaterSourcesMap.tsx`**
 
-1. **Enrichir les données mock des régions** — Ajouter à chaque objet région :
-   - `complianceRate` (%) — taux de conformité
-   - `population` (millions) — population desservie
-   - `waterSupplyZones` — nombre de zones d'approvisionnement
-   - `mainPollutants` — tableau des polluants principaux avec `{ name, avgValue, unit, limitValue, exceedanceRate }`
-   - Couvrir les **13 régions métropolitaines** (au lieu de 6)
+1. **Indicateur de minéralisation** — Ajouter un badge coloré sous le type d'eau, calculé à partir du résidu sec :
+   - Très faiblement minéralisée (< 50 mg/L) — bleu clair
+   - Faiblement minéralisée (50-500 mg/L) — vert
+   - Moyennement minéralisée (500-1500 mg/L) — orange
+   - Fortement minéralisée (> 1500 mg/L) — rouge
+   
+2. **Dureté de l'eau (°f)** — Calculer et afficher la dureté française à partir de Ca et Mg : `((Ca/40.08) + (Mg/24.31)) * 5.0`, avec un label qualitatif (Très douce / Douce / Moyennement dure / Dure / Très dure).
 
-2. **Enrichir les cartes régionales** — Dans chaque card, ajouter sous les champs existants :
-   - Ligne "Taux de conformité" avec la valeur en %
-   - Ligne "Population desservie" en millions
-   - Ligne "Zones d'approvisionnement"
-   - Section dépliable (Collapsible) "Polluants détectés" avec un mini-tableau : Polluant | Moy. | Limite | Dépassement %
-   - Badge de risque coloré (Faible/Modéré/Élevé) basé sur le taux de conformité
+3. **Indicateurs d'usage** — Section "Recommandations" avec des badges basés sur la composition :
+   - "Convient aux nourrissons" si résidu sec < 500 et nitrates < 10 et fluor < 0.5
+   - "Pauvre en sodium" si Na < 20 mg/L
+   - "Riche en calcium" si Ca > 150 mg/L
+   - "Riche en magnésium" si Mg > 50 mg/L
+   - "Riche en bicarbonates" si HCO3 > 600 mg/L
 
-3. **Enrichir la légende** — Ajouter sous la légende A-E existante une sous-section expliquant les 3 niveaux de risque (Faible ≥98%, Modéré 96-98%, Élevé <96%) avec pastilles colorées vert/orange/rouge.
+4. **Section "Contrôle qualité" enrichie** — Remplacer le message générique par des informations contextuelles basées sur les données réelles : conformité aux limites réglementaires (nitrates < 50 mg/L, fluor < 1.5 mg/L, sodium < 200 mg/L), avec un indicateur vert/orange/rouge pour chaque paramètre vérifié.
+
+**Fichier : `src/pages/SourcesEau.tsx`**
+
+5. **Cartes statistiques synthétiques** — Ajouter entre le titre et la carte une grille de 4 mini-cards :
+   - Nombre total de sources
+   - Répartition par type (Eau de source / Minérale / Gazeuse) avec compteurs
+   - Nombre de sources avec composition connue
+   - Résidu sec moyen (calculé à partir des données disponibles)
 
 ### Ce qui ne change pas
-- La carte interactive Mapbox et le toggle sources d'eau
-- Le système de grades A-E
-- Les liens vers /alertes
-- La structure de la page Carte.tsx
+- La carte Mapbox, les marqueurs, les couleurs, le zoom/clic
+- La structure du panneau latéral (on ajoute des sections, on n'en supprime pas)
+- Le chargement des données CSV via `buildSources()`
+- Les sections éducatives en bas de page
 
-### Données ajoutées (exemples)
-Les 13 régions avec des ordres de grandeur réalistes basés sur les rapports ARS/Hub'Eau : Île-de-France (98.2%), Auvergne-Rhône-Alpes (99.1%), Bretagne (96.8%), Occitanie (97.5%), etc. Chaque région aura 5-7 polluants (Nitrates, Pesticides, Plomb, PFAS, THM, Chlore, Bactéries).
-
-### Résultat
-Les cartes régionales passent de 4 lignes d'info à ~8 lignes + un tableau de polluants dépliable, alignant le niveau de détail sur la version Europe tout en conservant l'UX existante.
+### Fichiers touchés
+| Fichier | Action |
+|---------|--------|
+| `src/components/WaterSourcesMap.tsx` | Enrichir le panneau de détails (minéralisation, dureté, usages, contrôle qualité) |
+| `src/pages/SourcesEau.tsx` | Ajouter les cartes statistiques synthétiques |
 
