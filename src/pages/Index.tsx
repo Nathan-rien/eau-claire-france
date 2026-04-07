@@ -129,13 +129,13 @@ const Index = () => {
         </section>
 
         {/* Section 2 — Classement des eaux */}
-        <section className="py-8 md:py-12 lg:py-16 px-4" role="region" aria-labelledby="ranking-title">
-          <div className="container mx-auto max-w-4xl">
+        <section className="relative py-8 md:py-12 lg:py-16 px-4 bg-cover bg-center" style={{ backgroundImage: `url(${rankingWaterBg})` }} role="region" aria-labelledby="ranking-title">
+          <div className="absolute inset-0 bg-white/40" />
+          <div className="relative z-10 container mx-auto max-w-4xl">
             <Link to="/classement" className="group block">
-              <Card className="overflow-hidden border-2 border-primary/20 hover:border-primary/50 hover:shadow-xl transition-all duration-300">
-                <div className="relative bg-cover bg-center p-6 md:p-8 lg:p-10" style={{ backgroundImage: `url(${rankingWaterBg})` }}>
-                  <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg" />
-                  <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6">
+              <Card className="overflow-hidden border-2 border-white/60 bg-white/70 backdrop-blur-md hover:border-primary/50 hover:shadow-xl transition-all duration-300">
+                <div className="p-6 md:p-8 lg:p-10">
+                  <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
                     <div className="w-16 h-16 bg-primary/15 rounded-2xl flex items-center justify-center shrink-0">
                       <Award className="w-8 h-8 text-primary" />
                     </div>
