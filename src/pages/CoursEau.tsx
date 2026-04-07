@@ -538,6 +538,7 @@ const CoursEau = () => {
                           strokeWidth={2}
                           fill={`url(#gradBrand-${series.retailer_slug})`}
                           activeDot={{ r: 4 }}
+                          connectNulls={true}
                           animationDuration={1500}
                           animationEasing="ease-out"
                         />
