@@ -502,7 +502,13 @@ const CoursEau = () => {
                 <ResponsiveContainer width="100%" height={360}>
                   <AreaChart data={timeseriesChartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                     <defs>
-                      {visibleSeries.map((series, i) => {
+                      {showMoyenne && (
+                        <linearGradient id="gradBrand-moyenne" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={MOYENNE_COLOR} stopOpacity={0.3} />
+                          <stop offset="100%" stopColor={MOYENNE_COLOR} stopOpacity={0.02} />
+                        </linearGradient>
+                      )}
+                      {visibleSeries.map((series) => {
                         const globalIdx = brandTimeseries.indexOf(series);
                         return (
                           <linearGradient key={series.retailer_slug} id={`gradBrand-${series.retailer_slug}`} x1="0" y1="0" x2="0" y2="1">
@@ -536,10 +542,12 @@ const CoursEau = () => {
                           <div className="bg-popover border border-border rounded-lg p-3 shadow-lg text-sm">
                             <p className="font-semibold text-foreground mb-1">{day}/{m}</p>
                             {payload.map((entry: any) => {
-                              const retailer = brandTimeseries.find(s => s.retailer_slug === entry.dataKey);
+                              const name = entry.dataKey === MOYENNE_KEY
+                                ? 'Moyenne'
+                                : (brandTimeseries.find(s => s.retailer_slug === entry.dataKey)?.retailer_name || entry.dataKey);
                               return (
                                 <p key={entry.dataKey} style={{ color: entry.color }} className="font-medium">
-                                  {retailer?.retailer_name || entry.dataKey} : {Number(entry.value).toFixed(3)} €/L
+                                  {name} : {Number(entry.value).toFixed(3)} €/L
                                 </p>
                               );
                             })}
@@ -549,10 +557,26 @@ const CoursEau = () => {
                     />
                     <Legend
                       formatter={(value: string) => {
+                        if (value === MOYENNE_KEY) return 'Moyenne';
                         const retailer = brandTimeseries.find(s => s.retailer_slug === value);
                         return retailer?.retailer_name || value;
                       }}
                     />
+                    {showMoyenne && (
+                      <Area
+                        key={MOYENNE_KEY}
+                        type="monotone"
+                        dataKey={MOYENNE_KEY}
+                        stroke={MOYENNE_COLOR}
+                        strokeWidth={3}
+                        strokeDasharray="6 3"
+                        fill="url(#gradBrand-moyenne)"
+                        activeDot={{ r: 5 }}
+                        connectNulls={true}
+                        animationDuration={1500}
+                        animationEasing="ease-out"
+                      />
+                    )}
                     {visibleSeries.map((series) => {
                       const globalIdx = brandTimeseries.indexOf(series);
                       return (
