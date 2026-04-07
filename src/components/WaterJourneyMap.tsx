@@ -251,11 +251,9 @@ const WaterJourneyMap: React.FC = () => {
         JOURNEY_STEPS.forEach((step) => {
           const pos = getStepPosition(srcCoord, step.fraction);
           const stepEl = document.createElement('div');
-          stepEl.className = 'flex items-center justify-center w-7 h-7 rounded-full border-2 border-white shadow-md cursor-pointer';
           stepEl.style.backgroundColor = step.color;
           stepEl.innerHTML = step.icon;
           stepEl.title = step.name;
-          stepEl.addEventListener('click', (e) => e.stopPropagation());
 
           const stepPopup = new mapboxgl.Popup({ offset: 20 }).setHTML(
             `<div class="p-2 min-w-[180px]">
@@ -269,9 +267,13 @@ const WaterJourneyMap: React.FC = () => {
             .setLngLat(pos)
             .setPopup(stepPopup)
             .addTo(map);
+
+          stepEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            stepMarker.togglePopup();
+          });
+
           stepMarkersRef.current.push(stepMarker);
-        });
-      }
 
       // Collect arc geometries (no markers yet — lazy)
       route.communes.forEach((commune) => {
