@@ -24,7 +24,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
 }) => {
   const siteUrl = "https://infoeau.fr";
   const fullTitle = title.includes('InfoEau') ? title : `${title} | InfoEau.fr - Qualité de l'eau potable en France`;
-  const canonicalUrl = canonical ? `${siteUrl}${canonical}` : window.location.href;
+  const canonicalUrl = canonical ? `${siteUrl}${canonical}` : (typeof window !== 'undefined' ? window.location.origin + window.location.pathname : siteUrl);
 
   return (
     <Helmet>

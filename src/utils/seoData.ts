@@ -67,14 +67,32 @@ export const seoData = {
     title: "Comparateur eaux en bouteille - Composition et prix",
     description: "Comparez jusqu'à 3 eaux en bouteille simultanément : composition minérale, prix, origine, impact environnemental. Trouvez l'eau qui vous convient.",
     keywords: "comparateur eaux minérales, composition eaux bouteille, prix eaux minérales, comparaison Evian Contrex Badoit",
-    ogImage: "/images/og-comparatif.jpg"
+    ogImage: "/images/og-comparatif.jpg",
+    canonical: "/comparatif-bouteilles",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Comparateur d'eaux en bouteille",
+      "description": "Comparez composition minérale, prix et origine de plus de 50 eaux en bouteille",
+      "url": "https://infoeau.fr/comparatif-bouteilles",
+      "isPartOf": { "@type": "WebSite", "url": "https://infoeau.fr" }
+    }
   },
 
   polluants: {
     title: "Polluants dans l'eau potable - Guide complet",
     description: "Découvrez les différents polluants présents dans l'eau potable : pesticides, métaux lourds, nitrates. Comprenez leurs effets et les seuils réglementaires.",
     keywords: "polluants eau potable, pesticides eau robinet, métaux lourds eau, nitrates eau potable, contamination eau France",
-    ogImage: "/images/og-polluants.jpg"
+    ogImage: "/images/og-polluants.jpg",
+    canonical: "/polluants",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Guide des polluants dans l'eau potable",
+      "description": "Guide complet sur les polluants dans l'eau potable en France : pesticides, nitrates, métaux lourds",
+      "url": "https://infoeau.fr/polluants",
+      "isPartOf": { "@type": "WebSite", "url": "https://infoeau.fr" }
+    }
   },
 
   parcoursEau: {
@@ -411,6 +429,86 @@ export const seoData = {
       "name": "Prix de l'eau du robinet en Europe",
       "description": "Comparaison des prix de l'eau potable dans les 27 pays de l'UE",
       "url": "https://infoeau.fr/prix-eaux-europe"
+    }
+  },
+
+  // === Pages classement, parcours carte, diagnostic prix ===
+
+  classement: {
+    title: "Classement des eaux en bouteille - Meilleures eaux France",
+    description: "Classement interactif des eaux en bouteille selon votre profil : sportif, femme enceinte, quotidien. Score multi-critères basé sur la composition minérale.",
+    keywords: "classement eaux bouteille, meilleure eau minérale, top eau en bouteille France, score eau santé",
+    canonical: "/classement",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Classement des eaux en bouteille en France",
+      "description": "Classement interactif des eaux en bouteille selon votre profil et besoins",
+      "url": "https://infoeau.fr/classement",
+      "isPartOf": { "@type": "WebSite", "url": "https://infoeau.fr" }
+    }
+  },
+
+  diagnosticPrix: {
+    title: "Diagnostic des prix - Audit et vérifications | InfoEau.fr",
+    description: "Page de diagnostic technique des prix de l'eau : sources de données, méthodes de calcul, garde-fous et validations appliquées.",
+    keywords: "diagnostic prix eau, audit prix eau bouteille, vérification prix eau robinet",
+    canonical: "/diagnostic-prix"
+  },
+
+  parcoursEauBouteille: {
+    title: "Parcours de l'eau en bouteille — Du captage au magasin",
+    description: "Découvrez le parcours de l'eau en bouteille en 6 étapes : du captage à la source jusqu'à l'achat en magasin. Infographie interactive.",
+    keywords: "eau en bouteille, parcours, embouteillage, eau minérale, transport eau, prix eau bouteille",
+    canonical: "/parcours-eau-bouteille",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Le parcours de l'eau en bouteille",
+      "description": "Infographie interactive du parcours de l'eau en bouteille en 6 étapes",
+      "url": "https://infoeau.fr/parcours-eau-bouteille"
+    }
+  },
+
+  carteParcoursEau: {
+    title: "Carte du parcours de l'eau en bouteille : source → magasin",
+    description: "Visualisez le trajet de l'eau en bouteille depuis sa source de captage jusqu'aux magasins distributeurs (Carrefour, Leclerc, etc.).",
+    keywords: "parcours eau bouteille, source, distributeur, MDD, carte, animation",
+    canonical: "/carte-parcours-eau",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Carte du parcours de l'eau en bouteille",
+      "description": "Carte interactive du trajet de l'eau en bouteille : source → distributeur → magasin",
+      "url": "https://infoeau.fr/carte-parcours-eau"
+    }
+  },
+
+  carteParcoursRobinet: {
+    title: "Parcours de l'eau du robinet : captage → traitement → robinet",
+    description: "Visualisez le trajet de l'eau potable en France : du captage (nappe, rivière) à la station de traitement jusqu'au robinet de votre commune.",
+    keywords: "parcours eau robinet, captage, traitement, eau potable, carte, animation, France",
+    canonical: "/carte-parcours-robinet",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Parcours de l'eau du robinet en France",
+      "description": "Carte interactive du parcours de l'eau potable : captage → traitement → distribution → robinet",
+      "url": "https://infoeau.fr/carte-parcours-robinet"
+    }
+  },
+
+  sourcesEau: {
+    title: "Sources des eaux en bouteille en France - Carte interactive",
+    description: "Carte interactive des sources d'eau minérale et de source en France. Géolocalisation, composition et informations détaillées pour chaque source.",
+    keywords: "sources eau bouteilles, carte sources eau, bouteilles eau France, géolocalisation sources, Evian, Volvic, Vittel",
+    canonical: "/sources-eau",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Les sources des eaux en bouteille en France",
+      "description": "Carte interactive des principales sources d'eau minérale et de source en France",
+      "url": "https://infoeau.fr/sources-eau"
     }
   },
 

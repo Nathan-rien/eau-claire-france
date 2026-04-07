@@ -19,6 +19,7 @@ Crawl-delay: 1
 # Block sensitive areas and admin access
 Disallow: /login
 Disallow: /dashboard
+Disallow: /diagnostic-prix
 Disallow: /api/
 Disallow: /admin/
 Disallow: /debug/

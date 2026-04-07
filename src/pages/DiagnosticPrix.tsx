@@ -2,8 +2,10 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Layout from '@/components/Layout';
+import SEOHead from '@/components/SEOHead';
 import { PriceDisplay } from '@/components/PriceDisplay';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { seoData } from '@/utils/seoData';
 import { makeTapPrice, aggregateBottlePrices, sanityCheckEuroPerL } from '@/lib/price';
 import { PRICE_INPUTS } from '@/data/prices.example';
 import { bottleWaterDatabase } from '@/data/bottleComparisonData';
@@ -39,6 +41,7 @@ export default function DiagnosticPrix() {
 
   return (
     <Layout>
+      <SEOHead {...seoData.diagnosticPrix} />
       <div className="container mx-auto px-4 py-8 space-y-8">
         <div className="text-center space-y-4">
           <h1 className="text-3xl font-bold">{t('priceDiag.title')}</h1>
