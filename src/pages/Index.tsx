@@ -1,13 +1,12 @@
 
 import React, { useState } from 'react';
-import { Search, MapPin, Droplets, AlertTriangle, TrendingUp, Leaf, Award, Users, Zap, ClipboardList, Globe } from 'lucide-react';
+import { Search, MapPin, Droplets, AlertTriangle, Leaf, Award, Zap, ClipboardList, Globe, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import SearchBar from '@/components/SearchBar';
 import Layout from '@/components/Layout';
-import NavigationCTA from '@/components/NavigationCTA';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -209,10 +208,90 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Navigation CTA */}
-        <section className="py-8 md:py-12 lg:py-16 px-4">
-          <div className="container mx-auto">
-            <NavigationCTA />
+        {/* Section A — Les risques liés à l'eau du robinet */}
+        <section className="py-8 md:py-12 lg:py-16 px-4 bg-orange-50/50" role="region" aria-labelledby="risks-title">
+          <div className="container mx-auto max-w-5xl">
+            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+              <div className="flex-1 order-2 md:order-1">
+                <div className="border-l-4 border-orange-400 pl-5">
+                  <h2 id="risks-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-4">
+                    Les risques liés à l'eau du robinet
+                  </h2>
+                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
+                    L'eau du robinet en France est globalement de bonne qualité, mais elle peut contenir des traces de <strong className="text-foreground">pesticides</strong>, <strong className="text-foreground">microplastiques</strong> ou <strong className="text-foreground">résidus médicamenteux</strong> selon les régions.
+                  </p>
+                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
+                    Les canalisations anciennes peuvent libérer du <strong className="text-foreground">plomb</strong>, tandis que le traitement au chlore génère des sous-produits potentiellement indésirables. Connaître la qualité de votre eau est essentiel.
+                  </p>
+                  <Link to="/polluants">
+                    <Button variant="outline" className="mt-2 border-orange-300 text-orange-700 hover:bg-orange-100">
+                      Découvrir les polluants →
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+              <div className="flex-shrink-0 order-1 md:order-2 relative">
+                <div className="w-32 h-32 md:w-40 md:h-40 bg-orange-100 rounded-full flex items-center justify-center relative">
+                  <AlertTriangle className="w-16 h-16 md:w-20 md:h-20 text-orange-500 animate-[pulse_3s_ease-in-out_infinite]" />
+                  <Droplets className="w-8 h-8 text-orange-300 absolute -top-2 -right-2 animate-fade-in" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section B — Bien choisir son eau en bouteille */}
+        <section className="py-8 md:py-12 lg:py-16 px-4 bg-card" role="region" aria-labelledby="choose-title">
+          <div className="container mx-auto max-w-5xl">
+            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+              <div className="flex-shrink-0 relative">
+                <div className="w-32 h-32 md:w-40 md:h-40 bg-primary/10 rounded-full flex items-center justify-center relative">
+                  <Award className="w-16 h-16 md:w-20 md:h-20 text-primary animate-fade-in" />
+                  <Droplets className="w-8 h-8 text-green-400 absolute -bottom-2 -left-2 animate-fade-in" />
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="border-l-4 border-primary pl-5">
+                  <h2 id="choose-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-4">
+                    Bien choisir son eau en bouteille
+                  </h2>
+                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
+                    Chaque eau en bouteille a une <strong className="text-foreground">composition minérale unique</strong>. Calcium, magnésium, bicarbonates… choisir la bonne eau, c'est adapter sa consommation à ses besoins : <strong className="text-foreground">bébés</strong>, <strong className="text-foreground">sportifs</strong>, <strong className="text-foreground">personnes âgées</strong>.
+                  </p>
+                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
+                    Le <strong className="text-foreground">pH</strong> et le <strong className="text-foreground">résidu sec</strong> sont des indicateurs clés. Une eau faiblement minéralisée convient au quotidien, tandis qu'une eau riche en magnésium aide à combattre la fatigue.
+                  </p>
+                  <Link to="/classement">
+                    <Button className="mt-2">
+                      Voir le classement des eaux →
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section C — Surveiller la qualité de votre eau */}
+        <section className="py-10 md:py-14 lg:py-20 px-4 bg-gradient-to-br from-primary/10 via-blue-50 to-primary/5" role="region" aria-labelledby="monitor-title">
+          <div className="container mx-auto max-w-3xl text-center">
+            <div className="w-20 h-20 bg-primary/15 rounded-full flex items-center justify-center mx-auto mb-6 animate-scale-in">
+              <Shield className="w-10 h-10 text-primary" />
+            </div>
+            <h2 id="monitor-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-4">
+              Surveillez la qualité de votre eau
+            </h2>
+            <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3 max-w-2xl mx-auto">
+              Les données de qualité de l'eau sont publiques et accessibles à tous. Grâce à notre outil de diagnostic, retrouvez en quelques clics les <strong className="text-foreground">analyses officielles</strong> de votre commune.
+            </p>
+            <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-6 max-w-2xl mx-auto">
+              Restez informé des dépassements de seuils, comprenez les résultats et recevez des <strong className="text-foreground">alertes en temps réel</strong> pour protéger votre santé et celle de vos proches.
+            </p>
+            <Link to="/diagnostic">
+              <Button size="lg" className="shadow-lg hover:shadow-xl transition-shadow">
+                Lancer un diagnostic gratuit →
+              </Button>
+            </Link>
           </div>
         </section>
       </div>
