@@ -163,11 +163,32 @@ const StatCard = ({ stat, started }: { stat: typeof keyStats[0]; started: boolea
 };
 
 // ─── MAIN PAGE ───
+const CHART_COLORS = [
+  'hsl(221, 83%, 53%)', 'hsl(160, 60%, 45%)', 'hsl(280, 60%, 55%)',
+  'hsl(30, 80%, 55%)', 'hsl(340, 70%, 50%)', 'hsl(190, 70%, 45%)',
+  'hsl(50, 80%, 50%)', 'hsl(0, 70%, 55%)', 'hsl(120, 50%, 45%)',
+];
+
 const CoursEau = () => {
   const [period, setPeriod] = useState<Period>('max');
+  const [selectedBrand, setSelectedBrand] = useState<string>('');
+  const [brandStats, setBrandStats] = useState<BrandPriceStats | null>(null);
+  const [brandLoading, setBrandLoading] = useState(false);
   const heroRef = useInView(0.3);
   const statsRef = useInView(0.2);
+  const brandRef = useInView(0.2);
   const seo = (seoData as any).coursEau ?? seoData.prixEaux;
+
+  const { brands } = useBrands();
+
+  useEffect(() => {
+    if (!selectedBrand) return;
+    setBrandLoading(true);
+    getBrandStats(selectedBrand)
+      .then(setBrandStats)
+      .catch(() => setBrandStats(null))
+      .finally(() => setBrandLoading(false));
+  }, [selectedBrand]);
 
   const bottleData = filterByPeriod(bottlePriceHistory, period);
   const tapData = filterByPeriod(tapPriceHistory, period);
@@ -325,6 +346,111 @@ const CoursEau = () => {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* ─── BRAND PRICE SECTION ─── */}
+        <section
+          ref={brandRef.ref}
+          className={`transition-all duration-700 ${brandRef.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <BarChart3 className="w-5 h-5 text-primary" />
+                Prix par marque — moyenne par enseigne
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <Select value={selectedBrand} onValueChange={setSelectedBrand}>
+                <SelectTrigger className="w-full max-w-xs">
+                  <SelectValue placeholder="Choisir une marque…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {brands.map(b => (
+                    <SelectItem key={b} value={b}>{b}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {!selectedBrand && (
+                <p className="text-sm text-muted-foreground">Sélectionnez une marque pour visualiser ses prix par enseigne.</p>
+              )}
+
+              {brandLoading && (
+                <div className="space-y-3">
+                  <Skeleton className="h-[280px] w-full" />
+                  <div className="grid grid-cols-4 gap-3">
+                    {[1,2,3,4].map(i => <Skeleton key={i} className="h-16" />)}
+                  </div>
+                </div>
+              )}
+
+              {selectedBrand && !brandLoading && (!brandStats || brandStats.retailer_prices.length === 0) && (
+                <p className="text-sm text-muted-foreground">Aucune donnée disponible pour cette marque.</p>
+              )}
+
+              {selectedBrand && !brandLoading && brandStats && brandStats.retailer_prices.length > 0 && (
+                <>
+                  <ResponsiveContainer width="100%" height={Math.max(200, brandStats.retailer_prices.length * 50)}>
+                    <BarChart
+                      data={brandStats.retailer_prices.sort((a, b) => a.avg_price_per_l - b.avg_price_per_l)}
+                      layout="vertical"
+                      margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" horizontal={false} />
+                      <XAxis type="number" tick={{ fontSize: 12 }} className="fill-muted-foreground" tickFormatter={v => `${v.toFixed(2)}€`} />
+                      <YAxis type="category" dataKey="retailer_name" tick={{ fontSize: 12 }} className="fill-muted-foreground" width={90} />
+                      <Tooltip
+                        content={({ active, payload }) => {
+                          if (!active || !payload?.length) return null;
+                          const d = payload[0].payload;
+                          return (
+                            <div className="bg-popover border border-border rounded-lg p-3 shadow-lg text-sm">
+                              <p className="font-semibold text-foreground">{d.retailer_name}</p>
+                              <p className="text-primary font-bold">{d.avg_price_per_l.toFixed(3)} €/L</p>
+                              <p className="text-muted-foreground text-xs">{d.product_count} produit{d.product_count > 1 ? 's' : ''}</p>
+                            </div>
+                          );
+                        }}
+                      />
+                      <Bar dataKey="avg_price_per_l" radius={[0, 4, 4, 0]} animationDuration={1200}>
+                        {brandStats.retailer_prices.map((_, i) => (
+                          <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <Card className="text-center">
+                      <CardContent className="p-3">
+                        <div className="text-lg font-bold text-primary tabular-nums">{brandStats.overall_stats.min_price_per_l.toFixed(3)}€</div>
+                        <p className="text-xs text-muted-foreground">Min</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="text-center">
+                      <CardContent className="p-3">
+                        <div className="text-lg font-bold text-primary tabular-nums">{brandStats.overall_stats.avg_price_per_l.toFixed(3)}€</div>
+                        <p className="text-xs text-muted-foreground">Moyenne</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="text-center">
+                      <CardContent className="p-3">
+                        <div className="text-lg font-bold text-primary tabular-nums">{brandStats.overall_stats.median_price_per_l.toFixed(3)}€</div>
+                        <p className="text-xs text-muted-foreground">Médiane</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="text-center">
+                      <CardContent className="p-3">
+                        <div className="text-lg font-bold text-primary tabular-nums">{brandStats.overall_stats.max_price_per_l.toFixed(3)}€</div>
+                        <p className="text-xs text-muted-foreground">Max</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </section>
 
         {/* Timeline */}
         <section>
