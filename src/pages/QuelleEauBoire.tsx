@@ -289,7 +289,7 @@ const QuelleEauBoire: React.FC = () => {
                     <div>
                       <h2 className="text-lg md:text-xl font-semibold mb-2">Diagnostic rapide</h2>
                       <p className="text-muted-foreground text-sm md:text-base">
-                        2 questions, résultat en 30 secondes
+                        3 questions, résultat en 30 secondes
                       </p>
                     </div>
                     <Badge variant="secondary" className="mt-auto">⚡ Rapide</Badge>
@@ -449,7 +449,7 @@ const QuelleEauBoire: React.FC = () => {
                 <h1 className="text-xl md:text-2xl font-bold">Diagnostic rapide</h1>
               </div>
               <p className="text-muted-foreground text-sm md:text-base">
-                Choisissez votre type d'eau et votre profil
+                Choisissez votre type d'eau, votre profil et votre objectif
               </p>
             </div>
 
