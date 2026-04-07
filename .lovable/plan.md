@@ -1,28 +1,57 @@
 
 
-## Plan : Afficher le prix du robinet en €/L (au lieu de €/m³)
+## Plan : Enrichir la carte France `/carte` au niveau de la carte Europe
 
-### Contexte
-Le hero de la page `/cours-eau` affiche le prix du robinet en €/m³ (4.34 €/m³). L'utilisateur veut une cohérence avec l'eau en bouteille, donc tout en €/L.
+### Objectif
+Aligner le niveau d'informations de la page `/carte` (France) sur celui de `/carte-polluants-europe` : légende des niveaux de risque, popups détaillées avec tableau de polluants par région, cartes pays/région avec badges risque, conformité, zones affectées.
 
-4.34 €/m³ = 0.00434 €/L → affiché comme **0.004 €/L** (3 décimales).
+### Écart actuel
+- **Europe** : données riches (conformité %, 8-9 polluants par pays avec valeurs/limites/taux de dépassement, niveaux de risque, zones affectées)
+- **France** : données mock basiques (6 régions avec note A-E, nombre de communes, alertes, source d'eau). Popups villes = nom + score + source uniquement.
 
 ### Modifications
 
-**Fichier : `src/pages/CoursEau.tsx`**
+**1. Créer un fichier de données régionales France**
+`public/data/fr/fr_regions_quality.csv` — Données de qualité par région (13 régions métropolitaines) :
+- `region_code, region_name, compliance_rate, nitrate_avg, quality_score, population_millions, communes, water_supply_zones`
 
-1. **Hero card robinet (ligne ~260-308)** : Convertir `latestTap` de €/m³ en €/L (÷1000), adapter le counter pour 3 décimales, changer le suffixe de `€/m³` à `€/L`.
+`public/data/fr/fr_pollutants_by_region.csv` — Polluants détaillés par région (même structure que le CSV Europe) :
+- `region_code, region_name, pollutant, category, avg_value, unit, limit_value, exceedance_rate_pct, affected_zones, report_year`
+- Polluants couverts : Nitrates, Pesticides total, Plomb, PFAS, Trihalométhanes, Chlore résiduel, Bactéries coliformes, Microplastiques
+- Données basées sur les ordres de grandeur réels Hub'Eau / ARS pour chaque région
 
-2. **Onglet "robinet" — titre du graphique (ligne ~383)** : Changer "Prix moyen eau du robinet (€/m³)" → "Prix moyen eau du robinet (€/L)".
+**2. Créer un service de données France**
+`src/services/franceWaterApi.ts` — Service miroir de `europeWaterApi.ts` :
+- `getFRRegionQuality()` : charge le CSV qualité régionale
+- `getFRPollutants()` : charge le CSV polluants régionaux
+- Coordonnées centrales des 13 régions métropolitaines
+- Types `FRRegionWaterQuality` et `FRRegionPollutant`
 
-3. **Axe Y du graphique robinet (ligne ~397)** : Diviser les valeurs par 1000 dans le `tickFormatter` ou transformer les données, pour afficher en €/L.
+**3. Refondre `QualityMap.tsx`**
+Réécrire le composant en s'inspirant directement de `PollutantMapEurope.tsx` :
+- **Légende** : 3 niveaux de risque (Faible / Modéré / Élevé) avec pastilles colorées, comme la version Europe
+- **Carte Mapbox** : Marqueurs ronds par région (32px, code région) colorés selon le risque. Popups riches avec :
+  - Nom de la région, niveau de risque coloré, taux de conformité
+  - Tableau de polluants (Polluant | Moy. | Limite | Dép.) identique à l'Europe
+- **Grille de cartes régionales** : triées par risque décroissant, avec Badge risque, conformité %, polluants principaux (badges), zones affectées, alerte "Région à surveiller" pour les risques élevés
+- Supprimer le toggle "sources d'eau" et la légende A-E devenue obsolète
 
-4. **Tooltip robinet (ligne ~398)** : Passer `unit="€/L"` au lieu de `"€/m³"`.
+**4. Adapter `InteractiveMap.tsx`** (optionnel)
+Ce composant n'est plus utilisé directement si `QualityMap` intègre sa propre carte Mapbox avec les marqueurs régionaux. On peut le conserver pour d'autres usages mais `QualityMap` deviendra autonome.
 
-**Fichier : `src/data/waterPriceHistory.ts`**
+**5. Mettre à jour `Carte.tsx`**
+- Ajuster le titre/sous-titre pour refléter le contenu enrichi (qualité + polluants)
+- Conserver le breadcrumb et le SEO existants
 
-5. **Optionnel** : Soit convertir les données source `tapPriceHistory` en €/L directement (diviser chaque `price` par 1000), soit faire la conversion côté affichage. La conversion côté données est plus propre pour éviter des divisions répétées.
+### Fichiers touchés
+| Fichier | Action |
+|---------|--------|
+| `public/data/fr/fr_regions_quality.csv` | Créer |
+| `public/data/fr/fr_pollutants_by_region.csv` | Créer |
+| `src/services/franceWaterApi.ts` | Créer |
+| `src/components/QualityMap.tsx` | Réécrire (modèle PollutantMapEurope) |
+| `src/pages/Carte.tsx` | Ajuster titres |
 
-### Approche retenue
-Convertir les données `tapPriceHistory` en €/L directement dans le fichier source, et adapter tous les labels/tooltips en conséquence. Cela simplifie le code d'affichage.
+### Résultat attendu
+La page `/carte` affichera les 13 régions métropolitaines avec le même niveau de détail que la carte Europe : niveaux de risque, conformité, popups avec tableaux de polluants détaillés, et grille de cartes régionales triées par risque.
 
