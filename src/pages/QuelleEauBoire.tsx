@@ -318,6 +318,107 @@ const QuelleEauBoire: React.FC = () => {
                 </Card>
               </button>
             </div>
+
+            {/* SEO Content Sections */}
+            <div className="mt-12 md:mt-16 space-y-10 md:space-y-12 max-w-3xl mx-auto">
+              {/* Section 1: Pourquoi */}
+              <section>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Info className="w-5 h-5 text-primary" />
+                  </div>
+                  <h2 className="text-xl md:text-2xl font-bold">Pourquoi choisir une eau adaptée à vos besoins ?</h2>
+                </div>
+                <div className="text-muted-foreground space-y-3 text-sm md:text-base leading-relaxed">
+                  <p>
+                    Chaque <strong>eau minérale</strong> ou <strong>eau de source</strong> possède une <strong>composition minérale unique</strong>, 
+                    déterminée par les roches qu'elle traverse en sous-sol. Calcium, magnésium, sodium, nitrates, résidu sec : 
+                    ces paramètres varient considérablement d'une marque à l'autre et influencent directement votre santé.
+                  </p>
+                  <p>
+                    Vos besoins en minéraux dépendent de votre <strong>âge</strong>, de votre <strong>activité physique</strong>, 
+                    de votre <strong>état de santé</strong> et de situations particulières comme la <strong>grossesse</strong> ou l'<strong>allaitement</strong>. 
+                    Une eau parfaitement adaptée à un sportif ne conviendra pas forcément à un nourrisson ou à une personne souffrant d'hypertension.
+                  </p>
+                  <p>
+                    Notre diagnostic analyse la composition de dizaines d'eaux en bouteille disponibles en France et les compare 
+                    à votre profil pour vous recommander les eaux les plus adaptées à vos besoins spécifiques.
+                  </p>
+                </div>
+              </section>
+
+              {/* Section 2: Comment fonctionne le diagnostic */}
+              <section>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Target className="w-5 h-5 text-primary" />
+                  </div>
+                  <h2 className="text-xl md:text-2xl font-bold">Comment fonctionne notre diagnostic ?</h2>
+                </div>
+                <div className="text-muted-foreground space-y-3 text-sm md:text-base leading-relaxed">
+                  <p>
+                    Notre algorithme attribue un <strong>score sur 100</strong> à chaque eau en fonction de sa compatibilité avec votre profil. 
+                    Chaque critère minéral (calcium, magnésium, sodium, nitrates, résidu sec) est évalué selon des seuils 
+                    recommandés par les autorités sanitaires et pondéré selon son importance pour votre situation.
+                  </p>
+                  <p>
+                    Par exemple, pour un profil « grossesse », la teneur en nitrates et en calcium reçoit une <strong>pondération élevée</strong>, 
+                    car ces minéraux sont critiques pour le développement du fœtus. Pour un sportif, 
+                    le magnésium et le sodium sont prioritaires pour compenser les pertes liées à la transpiration.
+                  </p>
+                  <p>
+                    Les eaux sont ensuite classées du meilleur au moins bon score, avec des explications transparentes 
+                    sur les raisons de chaque recommandation. Vous savez exactement <strong>pourquoi</strong> une eau vous est conseillée.
+                  </p>
+                </div>
+              </section>
+
+              {/* Section 3: Risques */}
+              <section>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center">
+                    <ShieldAlert className="w-5 h-5 text-destructive" />
+                  </div>
+                  <h2 className="text-xl md:text-2xl font-bold">Les risques d'une eau non adaptée</h2>
+                </div>
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-4">
+                  Boire une eau inadaptée à votre profil peut avoir des conséquences sur votre santé à court et long terme. 
+                  Voici les principaux risques identifiés :
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  {[
+                    {
+                      title: 'Excès de sodium & hypertension',
+                      desc: 'Une eau riche en sodium (> 200 mg/L) peut aggraver l\'hypertension artérielle et favoriser la rétention d\'eau.',
+                    },
+                    {
+                      title: 'Nitrates & nourrissons',
+                      desc: 'Les nitrates en excès (> 10 mg/L) sont dangereux pour les bébés : ils réduisent la capacité du sang à transporter l\'oxygène (méthémoglobinémie).',
+                    },
+                    {
+                      title: 'Manque de calcium & ostéoporose',
+                      desc: 'Une eau trop pauvre en calcium ne compense pas les carences, surtout chez les seniors et les femmes ménopausées, augmentant le risque de fragilité osseuse.',
+                    },
+                    {
+                      title: 'Excès de minéralisation & calculs rénaux',
+                      desc: 'Une eau très minéralisée (résidu sec > 1 500 mg/L) consommée quotidiennement peut favoriser la formation de calculs rénaux chez les personnes prédisposées.',
+                    },
+                    {
+                      title: 'Magnésium élevé & troubles digestifs',
+                      desc: 'Un excès de magnésium (> 50 mg/L) peut provoquer des diarrhées et aggraver un syndrome du côlon irritable.',
+                    },
+                  ].map((risk) => (
+                    <div key={risk.title} className="flex gap-3 p-4 rounded-lg border border-destructive/20 bg-destructive/5">
+                      <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                      <div>
+                        <h3 className="font-semibold text-sm md:text-base mb-1">{risk.title}</h3>
+                        <p className="text-xs md:text-sm text-muted-foreground">{risk.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
           </div>
         </div>
       </Layout>
