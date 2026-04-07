@@ -24,7 +24,15 @@ const quickProfiles = [
   { id: 'gout-neutre', name: 'Quotidien', icon: User },
 ];
 
-const QuelleEauBoire: React.FC = () => {
+const quickObjectives = [
+  { id: 'sante', name: 'Santé au quotidien', icon: Heart, preferenceId: 'eau-pauvre-sodium' },
+  { id: 'sport', name: 'Performance sportive', icon: Activity, preferenceId: 'eau-riche-magnesium' },
+  { id: 'digestion', name: 'Digestion & transit', icon: Leaf, preferenceId: 'eau-riche-magnesium' },
+  { id: 'os', name: 'Os & articulations', icon: Bone, preferenceId: 'eau-riche-calcium' },
+  { id: 'pure', name: 'Eau la plus pure', icon: Search, preferenceId: 'eau-legere' },
+];
+
+
   const { t } = useLanguage();
   
   const faqData = [
