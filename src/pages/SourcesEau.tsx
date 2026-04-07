@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Droplets, MapPin, Info } from 'lucide-react';
+import { useEffect, useRef, useState, useMemo } from "react";
+import { Droplets, MapPin, Info, FlaskConical, BarChart3, Database } from 'lucide-react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
@@ -15,7 +15,7 @@ export default function SourcesEau() {
   const loadedRef = useRef(false);
 
   useEffect(() => {
-    if (loadedRef.current) return; // évite double fetch en dev/StrictMode
+    if (loadedRef.current) return;
     loadedRef.current = true;
 
     let cancelled = false;
@@ -35,6 +35,34 @@ export default function SourcesEau() {
 
     return () => { cancelled = true; };
   }, []);
+
+  const stats = useMemo(() => {
+    if (!sources) return null;
+    const byType = { source: 0, minerale: 0, gazeuse: 0 };
+    let residueSum = 0;
+    let residueCount = 0;
+    let withComposition = 0;
+
+    for (const s of sources) {
+      if (s.water_category === 'Eau de source') byType.source++;
+      else if (s.water_category === 'Eau minérale naturelle gazeuse') byType.gazeuse++;
+      else byType.minerale++;
+
+      const r = s.residu_sec_180_mg_L ?? s.residue;
+      if (r !== undefined) {
+        residueSum += r;
+        residueCount++;
+      }
+      if (s.Ca_mg_L || s.Mg_mg_L || s.Na_mg_L || s.pH) withComposition++;
+    }
+
+    return {
+      total: sources.length,
+      byType,
+      withComposition,
+      avgResidue: residueCount > 0 ? Math.round(residueSum / residueCount) : null,
+    };
+  }, [sources]);
 
   if (error) return <div>{t('waterSources.error')} {error}</div>;
   if (!sources) return <div>{t('waterSources.loading')}</div>;
@@ -80,6 +108,44 @@ export default function SourcesEau() {
                 {t('waterSources.subtitle', { count: String(sources.length) })}
               </p>
             </div>
+
+            {/* Cartes statistiques synthétiques */}
+            {stats && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <Card>
+                  <CardContent className="pt-4 pb-3 text-center">
+                    <Database className="h-6 w-6 mx-auto mb-1 text-blue-600" />
+                    <p className="text-2xl font-bold">{stats.total}</p>
+                    <p className="text-xs text-muted-foreground">Sources référencées</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4 pb-3 text-center">
+                    <Droplets className="h-6 w-6 mx-auto mb-1 text-green-600" />
+                    <div className="flex justify-center gap-2 text-xs mt-1">
+                      <span className="text-green-700">{stats.byType.source} source</span>
+                      <span className="text-blue-700">{stats.byType.minerale} minérale</span>
+                      <span className="text-amber-700">{stats.byType.gazeuse} gazeuse</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Répartition par type</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4 pb-3 text-center">
+                    <FlaskConical className="h-6 w-6 mx-auto mb-1 text-purple-600" />
+                    <p className="text-2xl font-bold">{stats.withComposition}</p>
+                    <p className="text-xs text-muted-foreground">Compositions connues</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4 pb-3 text-center">
+                    <BarChart3 className="h-6 w-6 mx-auto mb-1 text-orange-600" />
+                    <p className="text-2xl font-bold">{stats.avgResidue ?? '—'}</p>
+                    <p className="text-xs text-muted-foreground">Résidu sec moyen (mg/L)</p>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
 
             {/* Carte des sources */}
             <div className="mb-8">
