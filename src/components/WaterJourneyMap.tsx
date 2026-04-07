@@ -202,10 +202,12 @@ const WaterJourneyMap: React.FC = () => {
     cancelAnimationFrame(animFrameRef.current);
 
     // Remove previous layers/sources
-    ['journey-arcs-bg', 'journey-arcs-anim'].forEach(id => {
+    ['journey-arcs-bg', 'journey-arcs-anim', 'journey-steps-line'].forEach(id => {
       if (map.getLayer(id)) map.removeLayer(id);
     });
-    if (map.getSource('journey-arcs')) map.removeSource('journey-arcs');
+    ['journey-arcs', 'journey-steps-lines'].forEach(id => {
+      if (map.getSource(id)) map.removeSource(id);
+    });
 
     const routes = getRoutesByRetailer(selectedRetailer);
 
@@ -249,11 +251,9 @@ const WaterJourneyMap: React.FC = () => {
         JOURNEY_STEPS.forEach((step) => {
           const pos = getStepPosition(srcCoord, step.fraction);
           const stepEl = document.createElement('div');
-          stepEl.className = 'flex items-center justify-center w-7 h-7 rounded-full border-2 border-white shadow-md cursor-pointer';
           stepEl.style.backgroundColor = step.color;
           stepEl.innerHTML = step.icon;
           stepEl.title = step.name;
-          stepEl.addEventListener('click', (e) => e.stopPropagation());
 
           const stepPopup = new mapboxgl.Popup({ offset: 20 }).setHTML(
             `<div class="p-2 min-w-[180px]">
@@ -267,6 +267,12 @@ const WaterJourneyMap: React.FC = () => {
             .setLngLat(pos)
             .setPopup(stepPopup)
             .addTo(map);
+
+          stepEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            stepMarker.togglePopup();
+          });
+
           stepMarkersRef.current.push(stepMarker);
         });
       }
@@ -285,18 +291,52 @@ const WaterJourneyMap: React.FC = () => {
       });
     });
 
+    // Build step-line features (source → 5 steps) per unique source
+    const stepLineFeatures: GeoJSON.Feature<GeoJSON.LineString>[] = [];
+    addedSources.forEach((srcKey) => {
+      const route = routes.find(r => `${r.source.name}-${r.source.lat}` === srcKey);
+      if (!route) return;
+      const srcCoord: [number, number] = [route.source.lng, route.source.lat];
+      const lineCoords: [number, number][] = [srcCoord];
+      JOURNEY_STEPS.forEach((step) => {
+        lineCoords.push(getStepPosition(srcCoord, step.fraction));
+      });
+      stepLineFeatures.push({
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'LineString', coordinates: lineCoords },
+      });
+    });
+
+    // Step connection lines
+    map.addSource('journey-steps-lines', {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: stepLineFeatures },
+    });
+    map.addLayer({
+      id: 'journey-steps-line',
+      type: 'line',
+      source: 'journey-steps-lines',
+      paint: {
+        'line-color': '#6366f1',
+        'line-width': 2,
+        'line-opacity': 0.5,
+        'line-dasharray': [4, 3],
+      },
+    });
+
     // Single GeoJSON source for all arcs
     map.addSource('journey-arcs', {
       type: 'geojson',
       data: { type: 'FeatureCollection', features: arcFeatures },
     });
 
-    // Background layer
+    // Background layer — always visible for context
     map.addLayer({
       id: 'journey-arcs-bg',
       type: 'line',
       source: 'journey-arcs',
-      layout: { visibility: 'none' },
+      layout: { visibility: 'visible' },
       paint: {
         'line-color': '#93c5fd',
         'line-width': 2,
