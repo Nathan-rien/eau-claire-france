@@ -9,10 +9,10 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell, Legend,
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Legend,
 } from 'recharts';
 import {
-  TrendingUp, Droplets, FlaskConical, Truck, Zap, Scale, Wrench, Shield, Thermometer, ArrowUpRight, ArrowDownRight, Minus, Clock, BarChart3, LineChart as LineChartIcon,
+  TrendingUp, Droplets, FlaskConical, Truck, Zap, Scale, Wrench, Shield, Thermometer, ArrowUpRight, ArrowDownRight, Minus, Clock,
 } from 'lucide-react';
 import {
   bottlePriceHistory, tapPriceHistory,
