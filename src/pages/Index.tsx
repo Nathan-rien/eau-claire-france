@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import { Search, MapPin, Droplets, AlertTriangle, TrendingUp, Leaf, Award, Users } from 'lucide-react';
+import { Search, MapPin, Droplets, AlertTriangle, TrendingUp, Leaf, Award, Users, Zap, ClipboardList, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import SearchBar from '@/components/SearchBar';
 import Layout from '@/components/Layout';
 import NavigationCTA from '@/components/NavigationCTA';
@@ -26,16 +27,16 @@ const Index = () => {
         schemaData={seoData.home.schemaData}
       />
       
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50">
         {/* Hero Section */}
         <section className="py-8 md:py-12 lg:py-16 px-4" role="banner">
           <div className="container mx-auto text-center">
             <div className="max-w-4xl mx-auto">
-              <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight px-2">
+              <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-foreground mb-4 md:mb-6 leading-tight px-2">
                 {t('home.title')} 
-                <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent"> {t('home.titleHighlight')}</span> ?
+                <span className="bg-gradient-to-r from-primary to-green-600 bg-clip-text text-transparent"> {t('home.titleHighlight')}</span> ?
               </h1>
-              <p className="text-base md:text-lg lg:text-xl text-gray-600 mb-6 md:mb-8 leading-relaxed px-2">
+              <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 leading-relaxed px-2">
                 {t('home.subtitle')}
               </p>
               
@@ -51,7 +52,7 @@ const Index = () => {
                       <div className="mt-2">
                         <Link 
                           to={`/diagnostic?city=${encodeURIComponent(selectedCity)}`}
-                          className="text-blue-600 hover:text-blue-800 font-medium underline text-sm md:text-base"
+                          className="text-primary hover:text-primary/80 font-medium underline text-sm md:text-base"
                         >
                           {t('home.seeFullDiagnostic')}
                         </Link>
@@ -61,72 +62,25 @@ const Index = () => {
                 )}
               </div>
 
-              {/* Quick Access Buttons - Cliquables */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">{t('home.quickAccess.title')}</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-2">
-                  <Link to="/carte" className="group cursor-pointer">
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-3 md:p-4 lg:p-6 border-2 border-blue-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1 h-32 md:h-36 lg:h-40 flex flex-col justify-between">
-                      <MapPin className="w-6 h-6 md:w-7 md:h-7 lg:w-9 lg:h-9 text-blue-600 mx-auto mb-2" />
-                      <div className="flex-1 flex flex-col justify-center">
-                        <div className="text-sm md:text-base lg:text-lg font-bold text-blue-700">{t('home.quickAccess.map')}</div>
-                        <div className="text-xs md:text-sm text-blue-600 mt-1 min-h-[1rem]">{t('home.quickAccess.mapSub')}</div>
-                      </div>
-                      <div className="text-xs text-blue-500 mt-2 opacity-75 group-hover:opacity-100 transition-opacity">→ {t('home.quickAccess.clickHere')}</div>
-                    </div>
-                  </Link>
-                  <Link to="/diagnostic" className="group cursor-pointer">
-                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-3 md:p-4 lg:p-6 border-2 border-green-200 hover:border-green-300 hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1 h-32 md:h-36 lg:h-40 flex flex-col justify-between">
-                      <Search className="w-6 h-6 md:w-7 md:h-7 lg:w-9 lg:h-9 text-green-600 mx-auto mb-2" />
-                      <div className="flex-1 flex flex-col justify-center">
-                        <div className="text-sm md:text-base lg:text-lg font-bold text-green-700">{t('home.quickAccess.diagnostic')}</div>
-                        <div className="text-xs md:text-sm text-green-600 mt-1 min-h-[1rem]">{t('home.quickAccess.diagnosticSub')}</div>
-                      </div>
-                      <div className="text-xs text-green-500 mt-2 opacity-75 group-hover:opacity-100 transition-opacity">→ {t('home.quickAccess.clickHere')}</div>
-                    </div>
-                  </Link>
-                  <Link to="/quelle-eau-boire" className="group cursor-pointer">
-                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-3 md:p-4 lg:p-6 border-2 border-orange-200 hover:border-orange-300 hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1 h-32 md:h-36 lg:h-40 flex flex-col justify-between">
-                      <TrendingUp className="w-6 h-6 md:w-7 md:h-7 lg:w-9 lg:h-9 text-orange-600 mx-auto mb-2" />
-                      <div className="flex-1 flex flex-col justify-center">
-                        <div className="text-sm md:text-base lg:text-lg font-bold text-orange-700">{t('home.quickAccess.bottles')}</div>
-                        <div className="text-xs md:text-sm text-orange-600 mt-1 min-h-[1rem]">{t('home.quickAccess.bottlesSub')}</div>
-                      </div>
-                      <div className="text-xs text-orange-500 mt-2 opacity-75 group-hover:opacity-100 transition-opacity">→ {t('home.quickAccess.clickHere')}</div>
-                    </div>
-                  </Link>
-                  <Link to="/polluants" className="group cursor-pointer">
-                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-3 md:p-4 lg:p-6 border-2 border-purple-200 hover:border-purple-300 hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-1 h-32 md:h-36 lg:h-40 flex flex-col justify-between">
-                      <AlertTriangle className="w-6 h-6 md:w-7 md:h-7 lg:w-9 lg:h-9 text-purple-600 mx-auto mb-2" />
-                      <div className="flex-1 flex flex-col justify-center">
-                        <div className="text-sm md:text-base lg:text-lg font-bold text-purple-700">{t('home.quickAccess.pollutants')}</div>
-                        <div className="text-xs md:text-sm text-purple-600 mt-1 min-h-[1rem]">{t('home.quickAccess.pollutantsSub')}</div>
-                      </div>
-                      <div className="text-xs text-purple-500 mt-2 opacity-75 group-hover:opacity-100 transition-opacity">→ {t('home.quickAccess.clickHere')}</div>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-
-              {/* Stats - Non cliquables */}
+              {/* Stats */}
               <div className="mb-6 md:mb-8 lg:mb-12">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">{t('home.stats.title')}</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4 text-center">{t('home.stats.title')}</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-2">
-                  <div className="bg-white/90 rounded-lg p-3 md:p-4 border border-gray-200 shadow-sm">
-                    <div className="text-lg md:text-xl lg:text-2xl font-bold text-blue-600">35,000+</div>
-                    <div className="text-xs md:text-sm text-gray-600">{t('home.stats.communes')}</div>
+                  <div className="bg-card rounded-lg p-3 md:p-4 border border-border shadow-sm">
+                    <div className="text-lg md:text-xl lg:text-2xl font-bold text-primary">35,000+</div>
+                    <div className="text-xs md:text-sm text-muted-foreground">{t('home.stats.communes')}</div>
                   </div>
-                  <div className="bg-white/90 rounded-lg p-3 md:p-4 border border-gray-200 shadow-sm">
+                  <div className="bg-card rounded-lg p-3 md:p-4 border border-border shadow-sm">
                     <div className="text-lg md:text-xl lg:text-2xl font-bold text-green-600">50+</div>
-                    <div className="text-xs md:text-sm text-gray-600">{t('home.stats.pollutants')}</div>
+                    <div className="text-xs md:text-sm text-muted-foreground">{t('home.stats.pollutants')}</div>
                   </div>
-                  <div className="bg-white/90 rounded-lg p-3 md:p-4 border border-gray-200 shadow-sm">
+                  <div className="bg-card rounded-lg p-3 md:p-4 border border-border shadow-sm">
                     <div className="text-lg md:text-xl lg:text-2xl font-bold text-orange-600">98%</div>
-                    <div className="text-xs md:text-sm text-gray-600">{t('home.stats.compliance')}</div>
+                    <div className="text-xs md:text-sm text-muted-foreground">{t('home.stats.compliance')}</div>
                   </div>
-                  <div className="bg-white/90 rounded-lg p-3 md:p-4 border border-gray-200 shadow-sm">
+                  <div className="bg-card rounded-lg p-3 md:p-4 border border-border shadow-sm">
                     <div className="text-lg md:text-xl lg:text-2xl font-bold text-purple-600">24h</div>
-                    <div className="text-xs md:text-sm text-gray-600">{t('home.stats.update')}</div>
+                    <div className="text-xs md:text-sm text-muted-foreground">{t('home.stats.update')}</div>
                   </div>
                 </div>
               </div>
@@ -134,60 +88,123 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Features Section */}
-        <section className="py-8 md:py-12 lg:py-16 px-4 bg-white" role="region" aria-labelledby="features-title">
-          <div className="container mx-auto">
-            <div className="text-center mb-6 md:mb-8 lg:mb-12">
-              <h2 id="features-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
-                {t('home.features.title')}
+        {/* Section 1 — Quelle eau boire ? */}
+        <section className="py-8 md:py-12 lg:py-16 px-4 bg-card" role="region" aria-labelledby="diagnostic-title">
+          <div className="container mx-auto max-w-4xl">
+            <div className="text-center mb-6 md:mb-8">
+              <h2 id="diagnostic-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3">
+                Quelle eau boire ?
               </h2>
-              <p className="text-sm md:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto px-4">
-                {t('home.features.subtitle')}
+              <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
+                Trouvez l'eau idéale pour votre santé grâce à nos outils de diagnostic personnalisé.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 lg:gap-8 px-4">
-              <Card className="border-blue-100 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3 md:mb-4">
-                    <Award className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
-                  </div>
-                  <CardTitle className="text-base md:text-lg lg:text-xl">{t('home.features.trust.title')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 text-sm md:text-base">
-                    {t('home.features.trust.description')}
-                  </p>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <Link to="/quelle-eau-boire" className="group">
+                <Card className="h-full border-2 border-primary/20 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
+                  <CardHeader className="text-center pb-2">
+                    <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                      <Zap className="w-7 h-7 text-primary" />
+                    </div>
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <CardTitle className="text-lg md:text-xl">Diagnostic rapide</CardTitle>
+                      <Badge variant="secondary" className="text-xs">Rapide</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <p className="text-muted-foreground text-sm md:text-base">
+                      3 questions, résultat en 30 secondes. Obtenez une recommandation immédiate.
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
 
-              <Card className="border-green-100 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3 md:mb-4">
-                    <Leaf className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
-                  </div>
-                  <CardTitle className="text-base md:text-lg lg:text-xl">{t('home.features.environment.title')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 text-sm md:text-base">
-                    {t('home.features.environment.description')}
-                  </p>
-                </CardContent>
-              </Card>
+              <Link to="/quelle-eau-boire" className="group">
+                <Card className="h-full border-2 border-primary/20 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
+                  <CardHeader className="text-center pb-2">
+                    <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                      <ClipboardList className="w-7 h-7 text-green-600" />
+                    </div>
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <CardTitle className="text-lg md:text-xl">Diagnostic complet</CardTitle>
+                      <Badge variant="secondary" className="text-xs">4 étapes</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <p className="text-muted-foreground text-sm md:text-base">
+                      Analyse détaillée avec profils, intolérances et préférences pour un résultat sur-mesure.
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            </div>
+          </div>
+        </section>
 
-              <Card className="border-orange-100 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-3 md:mb-4">
-                    <Users className="w-5 h-5 md:w-6 md:h-6 text-orange-600" />
+        {/* Section 2 — Classement des eaux */}
+        <section className="py-8 md:py-12 lg:py-16 px-4" role="region" aria-labelledby="ranking-title">
+          <div className="container mx-auto max-w-4xl">
+            <Link to="/classement" className="group block">
+              <Card className="overflow-hidden border-2 border-primary/20 hover:border-primary/50 hover:shadow-xl transition-all duration-300">
+                <div className="bg-gradient-to-r from-primary/10 via-blue-50 to-green-50 p-6 md:p-8 lg:p-10">
+                  <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+                    <div className="w-16 h-16 bg-primary/15 rounded-2xl flex items-center justify-center shrink-0">
+                      <Award className="w-8 h-8 text-primary" />
+                    </div>
+                    <div className="text-center md:text-left flex-1">
+                      <h2 id="ranking-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
+                        Classement des eaux en bouteille
+                      </h2>
+                      <p className="text-muted-foreground text-sm md:text-base mb-4">
+                        Découvrez le top des eaux minérales et de source classées par composition minérale, prix et qualité.
+                      </p>
+                      <Button className="group-hover:shadow-md transition-shadow">
+                        Voir le classement →
+                      </Button>
+                    </div>
                   </div>
-                  <CardTitle className="text-base md:text-lg lg:text-xl">{t('home.features.citizen.title')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 text-sm md:text-base">
-                    {t('home.features.citizen.description')}
-                  </p>
-                </CardContent>
+                </div>
               </Card>
+            </Link>
+          </div>
+        </section>
+
+        {/* Section 3 — Cartes & Infographies */}
+        <section className="py-8 md:py-12 lg:py-16 px-4 bg-card" role="region" aria-labelledby="maps-title">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-6 md:mb-8">
+              <h2 id="maps-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3">
+                Cartes & Infographies
+              </h2>
+              <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
+                Explorez nos cartes interactives et visualisations pour tout comprendre sur l'eau en France et en Europe.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {[
+                { to: '/carte', icon: MapPin, color: 'text-primary', bg: 'bg-primary/10', title: 'Carte qualité de l\'eau', desc: 'Qualité de l\'eau potable par commune en France' },
+                { to: '/carte-polluants', icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-100', title: 'Carte des polluants', desc: 'Polluants détectés dans l\'eau en France' },
+                { to: '/carte-parcours-eau', icon: Droplets, color: 'text-blue-500', bg: 'bg-blue-100', title: 'Parcours eau en bouteille', desc: 'De la source au magasin, suivez le trajet' },
+                { to: '/carte-parcours-robinet', icon: Search, color: 'text-green-600', bg: 'bg-green-100', title: 'Parcours eau du robinet', desc: 'Du captage au robinet, le traitement expliqué' },
+                { to: '/sources-eau', icon: Leaf, color: 'text-emerald-600', bg: 'bg-emerald-100', title: 'Sources d\'eau', desc: 'Carte des sources d\'eau en France' },
+                { to: '/carte-europe', icon: Globe, color: 'text-purple-600', bg: 'bg-purple-100', title: 'Carte Europe', desc: 'Qualité de l\'eau potable en Europe' },
+              ].map(({ to, icon: Icon, color, bg, title, desc }) => (
+                <Link key={to} to={to} className="group">
+                  <Card className="h-full border border-border hover:border-primary/40 hover:shadow-lg transition-all duration-300 group-hover:scale-[1.02]">
+                    <CardHeader className="pb-2">
+                      <div className={`w-10 h-10 ${bg} rounded-xl flex items-center justify-center mb-2`}>
+                        <Icon className={`w-5 h-5 ${color}`} />
+                      </div>
+                      <CardTitle className="text-base md:text-lg">{title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground text-sm">{desc}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
             </div>
           </div>
         </section>
