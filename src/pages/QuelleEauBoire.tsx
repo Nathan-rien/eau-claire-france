@@ -102,7 +102,11 @@ const QuelleEauBoire: React.FC = () => {
     if (!composition.length || !catalog.length || !quickProfile) return;
     
     const profiles = userProfiles.filter(p => p.id === quickProfile);
-    let results = waterRecommendationService.calculateRecommendations(profiles, [], []);
+    const selectedObjective = quickObjectives.find(o => o.id === quickObjective);
+    const preferencesData = selectedObjective 
+      ? userPreferences.filter(p => p.id === selectedObjective.preferenceId)
+      : [];
+    let results = waterRecommendationService.calculateRecommendations(profiles, [], preferencesData);
     results = filterByWaterType(results, quickWaterType);
     
     setRecommendations(results);
@@ -120,6 +124,7 @@ const QuelleEauBoire: React.FC = () => {
     setRecommendations([]);
     setQuickWaterType('all');
     setQuickProfile(null);
+    setQuickObjective(null);
     setMode(null);
   };
 
@@ -127,6 +132,7 @@ const QuelleEauBoire: React.FC = () => {
     setMode(null);
     setQuickWaterType('all');
     setQuickProfile(null);
+    setQuickObjective(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
