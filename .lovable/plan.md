@@ -1,52 +1,50 @@
 
 
-## Ecran de choix diagnostic rapide / complet sur /quelle-eau-boire
+## Enrichir la page /quelle-eau-boire avec du contenu SEO et une question supplementaire
 
-### Concept
+### 1. Contenu editorial sur l'ecran d'accueil (mode = null)
 
-Ajouter un nouvel etat `mode` au composant QuelleEauBoire : `null` (ecran de choix), `'quick'` (diagnostic rapide), `'full'` (diagnostic complet = comportement actuel).
+Ajouter sous les deux cartes de choix diagnostic, trois sections de texte riche :
 
-A l'arrivee sur la page, l'utilisateur voit un ecran de selection avec deux cartes cliquables. Une fois le mode choisi, il bascule vers le formulaire correspondant.
+**Section "Pourquoi choisir la bonne eau ?"** : Paragraphe expliquant que chaque eau a une composition minerale unique, que les besoins varient selon l'age, l'activite, la sante. Mots-cles SEO : eau minerale, eau de source, composition, mineraux, sante.
 
-### Ecran d'accueil (mode = null)
+**Section "Comment fonctionne notre diagnostic ?"** : Explication du systeme de score (criteres mineraux vs profil, ponderation par priorite, score sur 100). Transparence sur la methode = confiance utilisateur + contenu indexable.
 
-Deux cartes cote a cote (desktop) ou empilees (mobile) :
+**Section "Les risques d'une eau non adaptee"** : Liste des risques concrets (exces de sodium et hypertension, nitrates et nourrissons, manque de calcium et osteoporose, exces de mineralisation et calculs renaux). Avec icone AlertTriangle, fond orange/rouge leger.
 
-- **Diagnostic rapide** (icone Zap) : "3 questions, resultat en 30 secondes". Pose uniquement : type d'eau (plate/gazeuse/toutes) + profil (un seul choix parmi les plus courants : sportif, grossesse, nourrisson, senior, quotidien) + eau plate/gazeuse. Bouton "Voir mes recommandations" directement.
-- **Diagnostic complet** (icone ClipboardList) : "Analyse detaillee avec profils, intolerances et preferences". C'est le formulaire actuel en 4 etapes.
+Chaque section utilise des balises h2 pour le SEO, avec des paragraphes informatifs de 3-5 lignes.
 
-Design mobile-first : cartes pleine largeur, touch targets 48px min, padding genereux, transitions fluides entre les ecrans.
+### 2. Nouvelle question dans le diagnostic rapide
 
-### Diagnostic rapide (mode = 'quick')
+Ajouter une troisieme question : **"Votre objectif principal"** entre le profil et le CTA.
 
-Un seul ecran compact avec :
-1. Choix du type d'eau (3 boutons radio style pill, pas des cards)
-2. Choix du profil principal (grille de boutons icon+label, un seul selectionnable, les 5-6 profils les plus courants)
-3. Bouton CTA "Voir mes recommandations"
+Options : "Sante au quotidien", "Performance sportive", "Digestion & transit", "Os & articulations", "Eau la plus pure possible".
 
-Sur mobile : layout vertical, boutons larges, scroll minimal. Transition animee depuis l'ecran d'accueil.
+Cela mappe vers une preference utilisateur qui s'ajoute aux criteres du profil selectionne, rendant le diagnostic rapide plus pertinent (3 questions au lieu de 2, comme prevu dans le plan initial).
 
-### Diagnostic complet (mode = 'full')
-
-Le formulaire actuel (4 etapes) sans changement, avec juste un bouton retour vers l'ecran de choix.
+Le `handleQuickRecommendations` passera cette preference en plus du profil.
 
 ### Modifications techniques
 
 **Fichier : `src/pages/QuelleEauBoire.tsx`**
 
-- Ajouter state `mode: 'quick' | 'full' | null` initialise a `null`
-- Quand `mode === null` : rendre l'ecran de choix avec les 2 cartes
-- Quand `mode === 'quick'` : rendre le formulaire rapide (nouveau composant inline ou extrait)
-- Quand `mode === 'full'` : rendre le formulaire actuel (code existant)
-- Le diagnostic rapide reutilise `handleGetRecommendations` avec un seul profil selectionne et le type d'eau
-- Ajouter un bouton "Retour" en haut des deux modes pour revenir a l'ecran de choix
-- Transitions CSS avec `transition-all` pour un passage fluide entre ecrans
+- Ecran `mode === null` : ajouter 3 sections h2 apres la grille de cartes (Pourquoi, Comment, Risques)
+- Ecran `mode === 'quick'` : ajouter un state `quickObjective` et une grille de boutons objectif apres le profil
+- `handleQuickRecommendations` : mapper l'objectif vers une preference de `userPreferences` et l'inclure dans le calcul
+- Imports supplementaires : `ShieldAlert`, `Info`, `Target` depuis lucide-react
 
-### Optimisation mobile
+### Structure du contenu SEO
 
-- Ecran d'accueil : `grid grid-cols-1 md:grid-cols-2 gap-4`, cartes avec min-height 160px pour une bonne zone tactile
-- Diagnostic rapide : boutons profil en grille `grid-cols-2` sur mobile, `grid-cols-3` sur desktop
-- Type d'eau en diagnostic rapide : boutons horizontaux `flex gap-2` avec `flex-1` pour occuper toute la largeur
-- Padding adaptatif `px-4 md:px-6`, textes `text-base md:text-lg`
-- Scroll fluide vers le haut lors du changement de mode
+```text
+[Cartes diagnostic rapide / complet]
+
+── h2: Pourquoi choisir une eau adaptee a vos besoins ?
+   Paragraphe explicatif (composition, mineraux, profils)
+
+── h2: Comment fonctionne notre diagnostic ?
+   Explication score/100, criteres, ponderation
+
+── h2: Les risques d'une eau non adaptee
+   4-5 risques avec icones (sodium/HTA, nitrates/bebe, etc.)
+```
 
