@@ -316,6 +316,21 @@ export const seoData = {
     }
   },
 
+  coursEau: {
+    title: "Cours de l'eau - Évolution des prix eau bouteille & robinet",
+    description: "Suivez l'évolution historique des prix de l'eau en bouteille et du robinet en France depuis 2010. Graphiques interactifs, facteurs explicatifs et statistiques clés.",
+    keywords: "cours eau prix évolution, prix eau bouteille historique, prix eau robinet France, inflation eau potable, tendance prix eau",
+    canonical: "/cours-eau",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Cours de l'eau - Évolution des prix en France",
+      "description": "Évolution historique des prix de l'eau en bouteille et du robinet en France",
+      "url": "https://infoeau.fr/cours-eau",
+      "isPartOf": { "@type": "WebSite", "url": "https://infoeau.fr" }
+    }
+  },
+
   // === Pages Europe ===
 
   carteEurope: {

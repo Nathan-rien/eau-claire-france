@@ -55,6 +55,7 @@ const PrixEauxEurope = React.lazy(() => import("./pages/PrixEauxEurope"));
 const CompositionEurope = React.lazy(() => import("./pages/CompositionEurope"));
 const ParcoursEau = React.lazy(() => import("./pages/ParcoursEau"));
 const ParcoursEauBouteille = React.lazy(() => import("./pages/ParcoursEauBouteille"));
+const CoursEau = React.lazy(() => import("./pages/CoursEau"));
 const CarteParcoursEau = React.lazy(() => import("./pages/CarteParcoursEau"));
 const CarteParcoursRobinet = React.lazy(() => import("./pages/CarteParcoursRobinet"));
 
@@ -137,6 +138,7 @@ const App = () => {
                 <Route path="/prix-eaux-europe" element={<PrixEauxEurope />} />
                 <Route path="/composition-europe" element={<CompositionEurope />} />
                 <Route path="/parcours-eau" element={<ParcoursEau />} />
+                <Route path="/cours-eau" element={<CoursEau />} />
                 <Route path="/parcours-eau-bouteille" element={<ParcoursEauBouteille />} />
                 <Route path="/carte-parcours-eau" element={<CarteParcoursEau />} />
                 <Route path="/carte-parcours-robinet" element={<CarteParcoursRobinet />} />

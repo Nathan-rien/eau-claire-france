@@ -48,6 +48,7 @@ const Navigation = () => {
         { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
         { href: '/prix-eaux', label: t('nav.prices') },
+        { href: '/cours-eau', label: 'Cours de l\'eau' },
         { href: '/classement', label: t('nav.ranking') },
         { href: '/polluants', label: t('nav.pollutants') },
         { href: '/alertes', label: t('nav.alerts') },
