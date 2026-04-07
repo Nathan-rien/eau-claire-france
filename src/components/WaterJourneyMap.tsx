@@ -274,6 +274,8 @@ const WaterJourneyMap: React.FC = () => {
           });
 
           stepMarkersRef.current.push(stepMarker);
+        });
+      }
 
       // Collect arc geometries (no markers yet — lazy)
       route.communes.forEach((commune) => {
