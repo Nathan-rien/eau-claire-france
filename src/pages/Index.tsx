@@ -90,8 +90,8 @@ const Index = () => {
               <Link to="/quelle-eau-boire" className="group">
                 <Card className="h-full border-2 border-primary/20 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
                   <CardHeader className="text-center pb-2">
-                    <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                      <Zap className="w-7 h-7 text-primary" />
+                    <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                      <Zap className="w-7 h-7 text-green-600" />
                     </div>
                     <div className="flex items-center justify-center gap-2 mb-1">
                       <CardTitle className="text-lg md:text-xl">Diagnostic rapide</CardTitle>
@@ -109,8 +109,8 @@ const Index = () => {
               <Link to="/quelle-eau-boire" className="group">
                 <Card className="h-full border-2 border-primary/20 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
                   <CardHeader className="text-center pb-2">
-                    <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                      <ClipboardList className="w-7 h-7 text-green-600" />
+                    <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                      <ClipboardList className="w-7 h-7 text-primary" />
                     </div>
                     <div className="flex items-center justify-center gap-2 mb-1">
                       <CardTitle className="text-lg md:text-xl">Diagnostic complet</CardTitle>
