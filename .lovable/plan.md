@@ -1,29 +1,34 @@
 
 
-## Plan: Ajouter un filtre par distributeur sur le graphique "Prix par marque"
+## Plan: Ajouter une courbe "Moyenne" dans le filtre distributeur
 
-### Modification dans `src/pages/CoursEau.tsx`
+### Objectif
+Ajouter une entrée virtuelle "Moyenne" dans le sélecteur de distributeurs, sélectionnée par défaut (seule). L'utilisateur pourra ensuite cocher individuellement les enseignes.
 
-1. **Ajouter un état** `selectedRetailers` (type `string[]`, défaut = tous sélectionnés) dérivé des retailers présents dans `brandTimeseries`
+### Modifications dans `src/pages/CoursEau.tsx`
 
-2. **Ajouter un sélecteur multi-choix** à côté du sélecteur de marque, permettant de cocher/décocher les enseignes. Utiliser un `Popover` + `Command` (pattern combobox multi-select) avec des `Checkbox` pour chaque enseigne disponible, plus un bouton "Tout / Aucun"
+1. **Calculer la série "Moyenne"** : dans le `useMemo` qui construit `timeseriesChartData`, ajouter pour chaque date une clé `__moyenne__` = moyenne arithmétique de tous les retailers disponibles ce jour-là (pas seulement les visibles, tous les `brandTimeseries`).
 
-3. **Filtrer les données du graphique** : ne rendre les `<Area>` que pour les retailers sélectionnés, et filtrer les gradients en conséquence. Le `timeseriesChartData` reste complet, seules les `Area` rendues changent.
+2. **Modifier le défaut de `selectedRetailers`** : au lieu des 5 premiers slugs, initialiser à `['__moyenne__']` quand `brandTimeseries` change.
 
-4. **Layout** : placer les deux Select côte à côte dans un `flex gap-3 flex-wrap`
+3. **Modifier `allRetailerSlugs`** : préfixer le tableau avec `'__moyenne__'` pour qu'il apparaisse dans le compteur et le toggle "tout".
 
+4. **Modifier le sélecteur Popover** : afficher "Moyenne" en premier dans la liste (avant les enseignes), avec un style légèrement différencié (icône `TrendingUp` ou texte en gras) pour le distinguer visuellement.
+
+5. **Modifier `visibleSeries` et le rendu `<Area>`** : 
+   - Si `__moyenne__` est sélectionné, ajouter une `<Area>` dédiée avec un style distinctif (trait plus épais, couleur neutre type gris foncé, gradient plus prononcé)
+   - Le gradient et la couleur de la moyenne utilisent une constante dédiée (ex: `#374151`)
+
+6. **Tooltip et Legend** : afficher "Moyenne" comme nom pour la clé `__moyenne__`
+
+### Résultat visuel
 ```text
 ┌──────────────────────────────────────────────┐
 │ 📈 Prix par marque — évolution               │
-│ [Evian ▼]  [Distributeurs (3/24) ▼]          │
+│ [Evian ▼]  [Distributeurs (1/25) ▼]          │
 │                                               │
-│  AreaChart avec seulement les lignes cochées  │
+│  AreaChart: courbe "Moyenne" seule            │
+│  L'utilisateur coche ensuite Carrefour, etc.  │
 └──────────────────────────────────────────────┘
 ```
-
-### Détails techniques
-- `selectedRetailers` se réinitialise quand `brandTimeseries` change (nouvelle marque)
-- Par défaut, les 5 premiers retailers sont sélectionnés pour éviter le bruit visuel
-- Le compteur `(3/24)` dans le trigger indique combien sont actifs
-- Les gradients SVG ne sont générés que pour les retailers visibles
 
