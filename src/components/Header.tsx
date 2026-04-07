@@ -31,11 +31,19 @@ const Header = () => {
         { href: '/carte-parcours-robinet', label: t('nav.maps.tapJourney') },
       ];
 
+  const pricesItems = isEurope
+    ? [
+        { href: '/prix-eaux-europe', label: t('nav.prices') },
+      ]
+    : [
+        { href: '/prix-eaux', label: 'Comparateur de prix' },
+        { href: '/cours-eau', label: "Cours de l'eau" },
+      ];
+
   const navigationItems = isEurope
     ? [
         { href: '/diagnostic-europe', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
-        { href: '/prix-eaux-europe', label: t('nav.prices') },
         { href: '/classement-europe', label: t('nav.ranking') },
         { href: '/polluants-europe', label: t('nav.pollutants') },
         { href: '/alertes-europe', label: t('nav.alerts') },
@@ -43,8 +51,6 @@ const Header = () => {
     : [
         { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
-        { href: '/prix-eaux', label: t('nav.prices') },
-        { href: '/cours-eau', label: 'Cours de l\'eau' },
         { href: '/classement', label: t('nav.ranking') },
         { href: '/polluants', label: t('nav.pollutants') },
         { href: '/alertes', label: t('nav.alerts') },
@@ -58,11 +64,14 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
   const isActiveJourneySection = journeyItems.some(item => location.pathname === item.href);
+  const isActivePricesSection = pricesItems.some(item => location.pathname === item.href);
 
   const [mapsMenuOpen, setMapsMenuOpen] = useState(false);
   const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
+  const [pricesMenuOpen, setPricesMenuOpen] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const journeyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pricesTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -78,11 +87,19 @@ const Header = () => {
   const handleJourneyMouseLeave = () => {
     journeyTimeoutRef.current = setTimeout(() => setJourneyMenuOpen(false), 150);
   };
+  const handlePricesMouseEnter = () => {
+    if (pricesTimeoutRef.current) clearTimeout(pricesTimeoutRef.current);
+    setPricesMenuOpen(true);
+  };
+  const handlePricesMouseLeave = () => {
+    pricesTimeoutRef.current = setTimeout(() => setPricesMenuOpen(false), 150);
+  };
 
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       if (journeyTimeoutRef.current) clearTimeout(journeyTimeoutRef.current);
+      if (pricesTimeoutRef.current) clearTimeout(pricesTimeoutRef.current);
     };
   }, []);
 
@@ -158,6 +175,41 @@ const Header = () => {
                   onMouseLeave={handleJourneyMouseLeave}
                 >
                   {journeyItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      className={`block px-4 py-3 text-sm hover:bg-accent hover:text-accent-foreground transition-colors ${
+                        isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Prix des eaux dropdown */}
+            <div
+              className="relative group"
+              onMouseEnter={handlePricesMouseEnter}
+              onMouseLeave={handlePricesMouseLeave}
+            >
+              <button
+                className={`h-9 px-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap inline-flex items-center gap-1 ${
+                  isActivePricesSection ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {t('nav.prices')}
+                <ChevronDown className="h-3 w-3" />
+              </button>
+              {pricesMenuOpen && (
+                <div
+                  className="absolute left-0 top-full w-64 bg-background border border-border shadow-lg rounded-md z-50 mt-0"
+                  onMouseEnter={handlePricesMouseEnter}
+                  onMouseLeave={handlePricesMouseLeave}
+                >
+                  {pricesItems.map((item) => (
                     <Link
                       key={item.href}
                       to={item.href}
@@ -267,6 +319,25 @@ const Header = () => {
                         {t('nav.journey')}
                       </div>
                       {journeyItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          to={item.href}
+                          onClick={() => setIsOpen(false)}
+                          className={`block px-3 py-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground ml-3 ${
+                            isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+
+                    {/* Section prix */}
+                    <div className="mb-4">
+                      <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
+                        {t('nav.prices')}
+                      </div>
+                      {pricesItems.map((item) => (
                         <Link
                           key={item.href}
                           to={item.href}

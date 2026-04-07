@@ -34,11 +34,19 @@ const Navigation = () => {
         { href: '/carte-parcours-robinet', label: t('nav.maps.tapJourney') },
       ];
 
+  const pricesItems = isEurope
+    ? [
+        { href: '/prix-eaux-europe', label: t('nav.prices') },
+      ]
+    : [
+        { href: '/prix-eaux', label: 'Comparateur de prix' },
+        { href: '/cours-eau', label: "Cours de l'eau" },
+      ];
+
   const directNavigationItems = isEurope
     ? [
         { href: '/diagnostic-europe', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
-        { href: '/prix-eaux-europe', label: t('nav.prices') },
         { href: '/classement-europe', label: t('nav.ranking') },
         { href: '/polluants-europe', label: t('nav.pollutants') },
         { href: '/alertes-europe', label: t('nav.alerts') },
@@ -47,8 +55,6 @@ const Navigation = () => {
     : [
         { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
-        { href: '/prix-eaux', label: t('nav.prices') },
-        { href: '/cours-eau', label: 'Cours de l\'eau' },
         { href: '/classement', label: t('nav.ranking') },
         { href: '/polluants', label: t('nav.pollutants') },
         { href: '/alertes', label: t('nav.alerts') },
@@ -56,6 +62,7 @@ const Navigation = () => {
       ];
 
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
+  const isActivePricesSection = pricesItems.some(item => location.pathname === item.href);
 
   return (
     <div className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -96,6 +103,41 @@ const Navigation = () => {
                   >
                     <div className="w-64 p-2">
                       {mapsItems.map((item) => (
+                        <NavigationMenuLink
+                          key={item.href}
+                          asChild
+                          className={cn(
+                            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground text-sm",
+                            location.pathname === item.href && "bg-accent text-accent-foreground"
+                          )}
+                        >
+                          <Link to={item.href}>
+                            {item.label}
+                          </Link>
+                        </NavigationMenuLink>
+                      ))}
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                {/* Prix des eaux dropdown */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger
+                    className={cn(
+                      "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-2 py-2 text-xs md:text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none",
+                      isActivePricesSection && "bg-accent text-accent-foreground"
+                    )}
+                  >
+                    <span className="flex items-center gap-1">
+                      {t('nav.prices')}
+                      <ChevronDown className="h-3 w-3" />
+                    </span>
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent
+                    className="absolute left-0 top-0 w-full data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out md:w-auto z-50 bg-popover border border-border shadow-md rounded-md"
+                  >
+                    <div className="w-64 p-2">
+                      {pricesItems.map((item) => (
                         <NavigationMenuLink
                           key={item.href}
                           asChild
