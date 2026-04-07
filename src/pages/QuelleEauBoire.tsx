@@ -53,7 +53,7 @@ const QuelleEauBoire: React.FC = () => {
   // Quick diagnostic state
   const [quickWaterType, setQuickWaterType] = useState<string>('all');
   const [quickProfile, setQuickProfile] = useState<string | null>(null);
-  
+  const [quickObjective, setQuickObjective] = useState<string | null>(null);
   const { composition, catalog, mdd: mddData, loading, error } = useBottleData();
 
   const handleProfileToggle = (profileId: string) => {
