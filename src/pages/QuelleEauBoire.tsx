@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Zap, ClipboardList, ArrowLeft, Droplets, Sparkles, GlassWater, Baby, Heart, Dumbbell, User, Sun } from 'lucide-react';
+import { AlertTriangle, Zap, ClipboardList, ArrowLeft, Droplets, Sparkles, GlassWater, Baby, Heart, Dumbbell, User, Sun, ShieldAlert, Info, Target, Activity, Bone, Leaf, Search } from 'lucide-react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
