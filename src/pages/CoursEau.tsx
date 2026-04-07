@@ -219,9 +219,9 @@ const CoursEau = () => {
 
   // Merge timeseries data into a single dataset for the line chart
   const timeseriesChartData = React.useMemo(() => {
-    if (!brandTimeseries.length) return [];
+    if (!visibleSeries.length) return [];
     const dateMap: Record<string, Record<string, number>> = {};
-    for (const series of brandTimeseries) {
+    for (const series of visibleSeries) {
       for (const pt of series.points) {
         if (!dateMap[pt.date]) dateMap[pt.date] = {};
         dateMap[pt.date][series.retailer_slug || 'unknown'] = pt.median_price_per_l;
@@ -230,7 +230,7 @@ const CoursEau = () => {
     return Object.entries(dateMap)
       .map(([date, retailers]) => ({ date, ...retailers }))
       .sort((a, b) => a.date.localeCompare(b.date));
-  }, [brandTimeseries]);
+  }, [visibleSeries]);
 
   const bottleData = filterByPeriod(bottlePriceHistory, period);
   const tapData = filterByPeriod(tapPriceHistory, period);
@@ -538,6 +538,7 @@ const CoursEau = () => {
                           strokeWidth={2}
                           fill={`url(#gradBrand-${series.retailer_slug})`}
                           activeDot={{ r: 4 }}
+                          connectNulls={true}
                           animationDuration={1500}
                           animationEasing="ease-out"
                         />
