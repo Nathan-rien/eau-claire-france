@@ -476,12 +476,15 @@ const CoursEau = () => {
                 <ResponsiveContainer width="100%" height={360}>
                   <AreaChart data={timeseriesChartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                     <defs>
-                      {brandTimeseries.map((series, i) => (
-                        <linearGradient key={series.retailer_slug} id={`gradBrand-${series.retailer_slug}`} x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor={CHART_COLORS[i % CHART_COLORS.length]} stopOpacity={0.25} />
-                          <stop offset="100%" stopColor={CHART_COLORS[i % CHART_COLORS.length]} stopOpacity={0.02} />
-                        </linearGradient>
-                      ))}
+                      {visibleSeries.map((series, i) => {
+                        const globalIdx = brandTimeseries.indexOf(series);
+                        return (
+                          <linearGradient key={series.retailer_slug} id={`gradBrand-${series.retailer_slug}`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor={CHART_COLORS[globalIdx % CHART_COLORS.length]} stopOpacity={0.25} />
+                            <stop offset="100%" stopColor={CHART_COLORS[globalIdx % CHART_COLORS.length]} stopOpacity={0.02} />
+                          </linearGradient>
+                        );
+                      })}
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis
@@ -524,19 +527,22 @@ const CoursEau = () => {
                         return retailer?.retailer_name || value;
                       }}
                     />
-                    {brandTimeseries.map((series, i) => (
-                      <Area
-                        key={series.retailer_slug}
-                        type="monotone"
-                        dataKey={series.retailer_slug || 'unknown'}
-                        stroke={CHART_COLORS[i % CHART_COLORS.length]}
-                        strokeWidth={2}
-                        fill={`url(#gradBrand-${series.retailer_slug})`}
-                        activeDot={{ r: 4 }}
-                        animationDuration={1500}
-                        animationEasing="ease-out"
-                      />
-                    ))}
+                    {visibleSeries.map((series) => {
+                      const globalIdx = brandTimeseries.indexOf(series);
+                      return (
+                        <Area
+                          key={series.retailer_slug}
+                          type="monotone"
+                          dataKey={series.retailer_slug || 'unknown'}
+                          stroke={CHART_COLORS[globalIdx % CHART_COLORS.length]}
+                          strokeWidth={2}
+                          fill={`url(#gradBrand-${series.retailer_slug})`}
+                          activeDot={{ r: 4 }}
+                          animationDuration={1500}
+                          animationEasing="ease-out"
+                        />
+                      );
+                    })}
                   </AreaChart>
                 </ResponsiveContainer>
               )}
