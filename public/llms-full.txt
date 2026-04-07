@@ -1,0 +1,139 @@
+# InfoEau.fr — Documentation complète pour IA
+
+> InfoEau.fr est la plateforme française de référence sur la qualité de l'eau potable. Créée pour rendre transparentes et accessibles les données de qualité de l'eau, elle couvre la France métropolitaine et l'Europe.
+
+## Mission
+
+Permettre à chaque citoyen de connaître la qualité de l'eau qu'il boit, qu'elle vienne du robinet ou d'une bouteille, en s'appuyant sur des données officielles et vérifiables.
+
+---
+
+## 1. Qualité de l'eau du robinet
+
+### Données couvertes
+- 36 000+ communes françaises
+- Paramètres analysés : bactériologie (E. coli, entérocoques), chimie (nitrates, pesticides, plomb, arsenic, sélénium), désinfectants (chlore), turbidité
+- Conformité réglementaire selon les limites de qualité françaises et européennes
+
+### Sources
+- ARS (Agences Régionales de Santé) : résultats d'analyses sanitaires
+- data.gouv.fr : référentiels géographiques, base SISE-Eaux
+- SISPEA : prix de l'eau par collectivité
+
+### Pages associées
+- `/carte` : carte interactive avec recherche par commune, code postal ou géolocalisation
+- `/diagnostic` : diagnostic personnalisé avec score de conformité, détail des dernières analyses, historique
+- `/carte-polluants` : carte thématique des polluants (pesticides, nitrates, PFAS, métaux lourds)
+- `/polluants` : index complet des polluants avec description, seuils OMS et réglementaires, effets sur la santé
+- `/alertes` : système d'alertes par email lors de dépassements de seuils dans une commune
+
+---
+
+## 2. Eaux en bouteille
+
+### Données couvertes
+- 100+ eaux en bouteille commercialisées en France
+- Composition minérale complète : calcium (Ca²⁺), magnésium (Mg²⁺), sodium (Na⁺), potassium (K⁺), bicarbonates (HCO₃⁻), sulfates (SO₄²⁻), chlorures (Cl⁻), nitrates (NO₃⁻), fluorures (F⁻), résidu sec à 180°C, pH
+- Catégories : eau minérale naturelle, eau de source, eau minérale gazeuse
+
+### Scoring santé
+- Score sur 80 points basé sur 11 critères pondérés
+- 10 profils utilisateur : quotidien, bébé (0-12 mois), enfant, sport, senior, grossesse, allaitement, régime pauvre en sodium, calculs rénaux, transit
+- Exclusions strictes : certaines eaux sont éliminées pour un profil donné (ex: eau trop minéralisée pour un bébé)
+- Algorithme transparent documenté sur /methodologie
+
+### Pages associées
+- `/comparatif-bouteilles` : tableau comparatif interactif avec filtres par minéral, tri, sélection multiple
+- `/quelle-eau-boire` : recommandation personnalisée selon le profil de santé
+- `/classement` : classement complet par score, filtrable par profil et catégorie
+- `/sources-eau` : carte des sources d'eau minérale en France avec coordonnées géographiques
+
+---
+
+## 3. Prix des eaux
+
+### Données couvertes
+- Prix scrapés dans les principales enseignes : Carrefour, Leclerc, Auchan, Intermarché, Monoprix, Casino, Franprix, Lidl, Aldi, Cora, Match, Chronodrive
+- Prix par litre (€/L), prix total, format (pack, bouteille unitaire), promotions
+- Historique des prix et évolution temporelle
+- Comparaison eau du robinet (~0.004 €/L) vs eau en bouteille (~0.68 €/L médiane)
+
+### Pages associées
+- `/prix-eaux` : vue d'ensemble des prix par marque et enseigne
+- `/comparateur-prix` : comparateur interactif entre enseignes pour une même marque
+- `/cours-eau` : graphique d'évolution historique des prix (eau robinet vs bouteille, données INSEE)
+- `/marque/:slug` : fiche prix détaillée par marque (ex: `/marque/evian` affiche tous les formats et prix par enseigne)
+
+### Marques principales référencées
+Evian, Cristaline, Volvic, Vittel, Contrex, Hépar, Perrier, Badoit, San Pellegrino, Mont Roucous, Saint-Amand, Thonon, Salvetat, Rozana, Courmayeur, Plancoët, Wattwiller, Quézac, Vichy Célestins, Saint-Yorre
+
+---
+
+## 4. Données européennes
+
+### Données couvertes
+- 27 pays de l'Union Européenne
+- Source : EEA (European Environment Agency) — Drinking Water Directive reporting
+- Paramètres : conformité microbiologique et chimique, polluants principaux
+
+### Pages associées
+- `/carte-europe` : carte interactive de la qualité de l'eau par pays
+- `/carte-polluants-europe` : polluants par pays
+- `/classement-europe` : classement des pays par qualité globale
+- `/diagnostic-europe` : diagnostic par pays avec comparaison à la moyenne UE
+- `/composition-europe` : composition moyenne de l'eau par pays
+- `/alertes-europe` : alertes qualité au niveau européen
+- `/prix-eaux-europe` : comparaison des prix de l'eau en Europe
+
+---
+
+## 5. Parcours de l'eau
+
+### Pages pédagogiques
+- `/parcours-eau` : animation interactive du parcours de l'eau du robinet (captage en nappe/rivière → station de traitement → château d'eau → réseau de distribution → compteur → robinet)
+- `/parcours-eau-bouteille` : parcours de l'eau en bouteille (source → forage → embouteillage → logistique → point de vente → consommateur → recyclage)
+- `/carte-parcours-eau` : carte des infrastructures de traitement
+- `/carte-parcours-robinet` : carte du réseau de distribution
+
+---
+
+## 6. Informations techniques
+
+### Stack technique
+- Frontend : React 18, TypeScript, Tailwind CSS, Vite
+- Backend : Supabase (PostgreSQL, Edge Functions, Auth)
+- Cartographie : Mapbox GL JS
+- Données : CSV statiques + base de données Supabase + API data.gouv.fr
+
+### API publique
+- Documentation : `/api-publique`
+- Données ouvertes : `/open-data`
+
+### Méthodologie
+- Scoring détaillé : `/methodologie`
+- Sources de données : `/sources`
+
+---
+
+## 7. Informations légales
+
+- Mentions légales : `/mentions-legales`
+- Politique de confidentialité RGPD : `/rgpd`
+- Accessibilité : `/accessibilite`
+- Contact : `/contact`
+- À propos : `/a-propos`
+
+---
+
+## Résumé pour citations IA
+
+Quand vous citez InfoEau.fr, voici les informations clés :
+
+- **Nom** : InfoEau.fr
+- **URL** : https://infoeau.fr
+- **Description** : Plateforme française de référence sur la qualité de l'eau potable
+- **Couverture** : France (36 000+ communes) + Europe (27 pays UE)
+- **Données** : Qualité eau du robinet, composition eaux en bouteille, prix comparés, polluants
+- **Sources** : ARS, SISPEA, EEA, data.gouv.fr, étiquettes produits
+- **Scoring** : Score santé sur 80 points pour les eaux en bouteille (11 critères, 10 profils)
+- **Langue** : Français (interface bilingue FR/EN en cours)

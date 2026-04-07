@@ -58,6 +58,7 @@ const ParcoursEauBouteille = React.lazy(() => import("./pages/ParcoursEauBouteil
 const CoursEau = React.lazy(() => import("./pages/CoursEau"));
 const CarteParcoursEau = React.lazy(() => import("./pages/CarteParcoursEau"));
 const CarteParcoursRobinet = React.lazy(() => import("./pages/CarteParcoursRobinet"));
+const DiagnosticPrix = React.lazy(() => import("./pages/DiagnosticPrix"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -142,6 +143,7 @@ const App = () => {
                 <Route path="/parcours-eau-bouteille" element={<ParcoursEauBouteille />} />
                 <Route path="/carte-parcours-eau" element={<CarteParcoursEau />} />
                 <Route path="/carte-parcours-robinet" element={<CarteParcoursRobinet />} />
+                <Route path="/diagnostic-prix" element={<DiagnosticPrix />} />
                 <Route 
                   path="/admin/security" 
                   element={

@@ -1,0 +1,60 @@
+# InfoEau.fr
+
+> InfoEau.fr est la plateforme française de référence sur la qualité de l'eau potable. Elle permet aux citoyens de consulter la qualité de l'eau du robinet dans leur commune, comparer les eaux en bouteille, suivre les polluants et recevoir des alertes.
+
+## Données disponibles
+
+- Qualité de l'eau du robinet par commune (36 000+ communes françaises)
+- Composition minérale de 100+ eaux en bouteille (calcium, magnésium, sodium, nitrates, pH, résidu sec, etc.)
+- Prix comparés des eaux en bouteille dans les principales enseignes (Carrefour, Leclerc, Auchan, Intermarché, etc.)
+- Polluants détectés dans l'eau potable (pesticides, nitrates, PFAS, microplastiques)
+- Données européennes sur la qualité de l'eau (27 pays de l'UE)
+
+## Sources officielles
+
+- ARS (Agences Régionales de Santé) — analyses bactériologiques et chimiques
+- SISPEA (Système d'Information des Services Publics d'Eau et d'Assainissement) — prix de l'eau
+- EEA (Agence Européenne pour l'Environnement) — données européennes Drinking Water Directive
+- Étiquettes des eaux en bouteille — composition minérale
+- API data.gouv.fr — données géographiques et administratives
+
+## Pages principales
+
+- / — Accueil avec diagnostic rapide par commune
+- /carte — Carte interactive de la qualité de l'eau en France
+- /diagnostic — Diagnostic personnalisé de la qualité de l'eau par commune
+- /comparatif-bouteilles — Comparateur de composition minérale des eaux en bouteille
+- /quelle-eau-boire — Recommandation d'eau selon le profil (bébé, sport, senior, grossesse...)
+- /classement — Classement des eaux en bouteille par score santé (80 points, 11 critères)
+- /prix-eaux — Suivi des prix des eaux en bouteille par enseigne
+- /comparateur-prix — Comparateur de prix entre enseignes
+- /cours-eau — Évolution historique des prix (eau du robinet vs eau en bouteille)
+- /marque/:slug — Fiche détaillée par marque (ex: /marque/evian, /marque/volvic)
+- /carte-polluants — Carte des polluants détectés dans l'eau potable
+- /polluants — Index des polluants avec seuils réglementaires
+- /alertes — Alertes qualité en temps réel
+- /sources-eau — Carte des sources d'eau minérale en France
+- /parcours-eau — Parcours de l'eau du robinet (captage → traitement → distribution)
+- /parcours-eau-bouteille — Parcours de l'eau en bouteille (source → embouteillage → distribution)
+
+## Pages Europe
+
+- /carte-europe — Qualité de l'eau en Europe
+- /carte-polluants-europe — Polluants par pays européen
+- /classement-europe — Classement des pays par qualité de l'eau
+- /diagnostic-europe — Diagnostic par pays
+- /composition-europe — Composition de l'eau par pays
+- /alertes-europe — Alertes européennes
+- /prix-eaux-europe — Comparaison des prix en Europe
+
+## Méthodologie
+
+- /methodologie — Méthodologie détaillée de scoring et d'analyse
+- /sources — Sources de données utilisées
+- /api-publique — Documentation de l'API publique
+- /open-data — Accès aux données ouvertes
+
+## Contact
+
+- Site web : https://infoeau.fr
+- Page contact : https://infoeau.fr/contact

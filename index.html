@@ -43,6 +43,55 @@
     }
     </script>
 
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "InfoEau.fr",
+      "url": "https://infoeau.fr",
+      "logo": "https://infoeau.fr/favicon.svg",
+      "description": "Plateforme française de référence sur la qualité de l'eau potable. Cartes interactives, diagnostics par commune, comparateur d'eaux en bouteille et alertes en temps réel.",
+      "areaServed": {
+        "@type": "Country",
+        "name": "France"
+      },
+      "knowsAbout": ["qualité de l'eau potable", "eau minérale", "composition minérale", "polluants eau", "prix eau en bouteille"]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Accueil",
+          "item": "https://infoeau.fr/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Carte qualité de l'eau",
+          "item": "https://infoeau.fr/carte"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Diagnostic",
+          "item": "https://infoeau.fr/diagnostic"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Comparatif bouteilles",
+          "item": "https://infoeau.fr/comparatif-bouteilles"
+        }
+      ]
+    }
+    </script>
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.svg" />
