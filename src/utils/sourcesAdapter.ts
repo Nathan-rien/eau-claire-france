@@ -82,15 +82,9 @@ export async function buildSources(): Promise<SourceItem[]> {
   };
 
   const compIndex = new Map<string, CompositionData>();
+  // Build index with multiple keys for flexible matching
   for (const row of comp.rows) {
-    const k =
-      key(row["source_name"], row["brand"], row["commune"]) ||
-      key(row["source_name"], undefined, row["commune"]) ||
-      key(undefined, row["brand"], row["commune"]) ||
-      key(row["source_name"]) ||
-      key(undefined, row["brand"]);
-    if (!k) continue;
-    compIndex.set(k, {
+    const data: CompositionData = {
       residue: toNumber(row["residu_sec_180_mg_L"]) ?? toNumber(row["residu"]) ?? undefined,
       flow_rate: toNumber(row["flow_rate"]),
       depth: toNumber(row["depth"]),
@@ -107,7 +101,20 @@ export async function buildSources(): Promise<SourceItem[]> {
       SiO2_mg_L: toNumber(row["SiO2_mg_L"]),
       Na_mg_L: toNumber(row["Na_mg_L"]),
       SO4_mg_L: toNumber(row["SO4_mg_L"]),
-    });
+    };
+
+    // Index by multiple key variants for best matching
+    const commune = row["commune"] || row["location"] || "";
+    const keys = [
+      key(row["source_name"], row["brand"], commune),
+      key(row["source_name"], undefined, commune),
+      key(undefined, row["brand"], commune),
+      key(row["source_name"]),
+      key(undefined, row["brand"]),
+    ];
+    for (const k of keys) {
+      if (k && !compIndex.has(k)) compIndex.set(k, data);
+    }
   }
   log("compIndex", compIndex.size);
 
