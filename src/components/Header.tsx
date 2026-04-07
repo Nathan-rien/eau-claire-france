@@ -31,11 +31,19 @@ const Header = () => {
         { href: '/carte-parcours-robinet', label: t('nav.maps.tapJourney') },
       ];
 
+  const pricesItems = isEurope
+    ? [
+        { href: '/prix-eaux-europe', label: t('nav.prices') },
+      ]
+    : [
+        { href: '/prix-eaux', label: 'Comparateur de prix' },
+        { href: '/cours-eau', label: "Cours de l'eau" },
+      ];
+
   const navigationItems = isEurope
     ? [
         { href: '/diagnostic-europe', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
-        { href: '/prix-eaux-europe', label: t('nav.prices') },
         { href: '/classement-europe', label: t('nav.ranking') },
         { href: '/polluants-europe', label: t('nav.pollutants') },
         { href: '/alertes-europe', label: t('nav.alerts') },
@@ -43,8 +51,6 @@ const Header = () => {
     : [
         { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
-        { href: '/prix-eaux', label: t('nav.prices') },
-        { href: '/cours-eau', label: 'Cours de l\'eau' },
         { href: '/classement', label: t('nav.ranking') },
         { href: '/polluants', label: t('nav.pollutants') },
         { href: '/alertes', label: t('nav.alerts') },

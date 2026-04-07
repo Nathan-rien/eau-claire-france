@@ -34,11 +34,19 @@ const Navigation = () => {
         { href: '/carte-parcours-robinet', label: t('nav.maps.tapJourney') },
       ];
 
+  const pricesItems = isEurope
+    ? [
+        { href: '/prix-eaux-europe', label: t('nav.prices') },
+      ]
+    : [
+        { href: '/prix-eaux', label: 'Comparateur de prix' },
+        { href: '/cours-eau', label: "Cours de l'eau" },
+      ];
+
   const directNavigationItems = isEurope
     ? [
         { href: '/diagnostic-europe', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
-        { href: '/prix-eaux-europe', label: t('nav.prices') },
         { href: '/classement-europe', label: t('nav.ranking') },
         { href: '/polluants-europe', label: t('nav.pollutants') },
         { href: '/alertes-europe', label: t('nav.alerts') },
@@ -47,8 +55,6 @@ const Navigation = () => {
     : [
         { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
-        { href: '/prix-eaux', label: t('nav.prices') },
-        { href: '/cours-eau', label: 'Cours de l\'eau' },
         { href: '/classement', label: t('nav.ranking') },
         { href: '/polluants', label: t('nav.pollutants') },
         { href: '/alertes', label: t('nav.alerts') },
@@ -56,6 +62,7 @@ const Navigation = () => {
       ];
 
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
+  const isActivePricesSection = pricesItems.some(item => location.pathname === item.href);
 
   return (
     <div className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
