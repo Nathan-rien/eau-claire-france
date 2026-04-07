@@ -171,6 +171,9 @@ const CHART_COLORS = [
   'hsl(50, 80%, 50%)', 'hsl(0, 70%, 55%)', 'hsl(120, 50%, 45%)',
 ];
 
+const MOYENNE_KEY = '__moyenne__';
+const MOYENNE_COLOR = 'hsl(220, 13%, 30%)';
+
 const CoursEau = () => {
   const [period, setPeriod] = useState<Period>('max');
   const [selectedBrand, setSelectedBrand] = useState<string>('');
