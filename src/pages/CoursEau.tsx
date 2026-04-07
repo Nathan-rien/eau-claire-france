@@ -402,16 +402,63 @@ const CoursEau = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-                <SelectTrigger className="w-full max-w-xs">
-                  <SelectValue placeholder="Choisir une marque…" />
-                </SelectTrigger>
-                <SelectContent>
-                  {brands.map(b => (
-                    <SelectItem key={b} value={b}>{b}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex flex-wrap gap-3">
+                <Select value={selectedBrand} onValueChange={setSelectedBrand}>
+                  <SelectTrigger className="w-full max-w-xs">
+                    <SelectValue placeholder="Choisir une marque…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {brands.map(b => (
+                      <SelectItem key={b} value={b}>{b}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {allRetailerSlugs.length > 0 && (
+                  <Popover open={retailerPopoverOpen} onOpenChange={setRetailerPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="max-w-xs justify-between gap-2">
+                        Distributeurs ({selectedRetailers.length}/{allRetailerSlugs.length})
+                        <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-0" align="start">
+                      <Command>
+                        <CommandList>
+                          <CommandGroup>
+                            <CommandItem
+                              onSelect={() => {
+                                if (selectedRetailers.length === allRetailerSlugs.length) {
+                                  setSelectedRetailers([]);
+                                } else {
+                                  setSelectedRetailers([...allRetailerSlugs]);
+                                }
+                              }}
+                              className="font-semibold"
+                            >
+                              <Checkbox
+                                checked={selectedRetailers.length === allRetailerSlugs.length}
+                                className="mr-2"
+                              />
+                              {selectedRetailers.length === allRetailerSlugs.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+                            </CommandItem>
+                            {brandTimeseries.map((series) => {
+                              const slug = series.retailer_slug || 'unknown';
+                              const isSelected = selectedRetailers.includes(slug);
+                              return (
+                                <CommandItem key={slug} onSelect={() => toggleRetailer(slug)}>
+                                  <Checkbox checked={isSelected} className="mr-2" />
+                                  {series.retailer_name || slug}
+                                </CommandItem>
+                              );
+                            })}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                )}
+              </div>
 
               {!selectedBrand && (
                 <p className="text-sm text-muted-foreground">Sélectionnez une marque pour visualiser l'évolution de ses prix par enseigne.</p>
