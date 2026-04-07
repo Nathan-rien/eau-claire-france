@@ -194,8 +194,28 @@ const CoursEau = () => {
       .finally(() => setTimeseriesLoading(false));
   }, [selectedBrand]);
 
-  // Merge timeseries data into a single dataset for the line chart
-  const timeseriesChartData = React.useMemo(() => {
+  // Reset selected retailers when brand data changes — default to first 5
+  useEffect(() => {
+    const slugs = brandTimeseries.map(s => s.retailer_slug || 'unknown');
+    setSelectedRetailers(slugs.slice(0, 5));
+  }, [brandTimeseries]);
+
+  // Filtered series based on selected retailers
+  const visibleSeries = React.useMemo(
+    () => brandTimeseries.filter(s => selectedRetailers.includes(s.retailer_slug || 'unknown')),
+    [brandTimeseries, selectedRetailers]
+  );
+
+  const allRetailerSlugs = React.useMemo(
+    () => brandTimeseries.map(s => s.retailer_slug || 'unknown'),
+    [brandTimeseries]
+  );
+
+  const toggleRetailer = (slug: string) => {
+    setSelectedRetailers(prev =>
+      prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]
+    );
+  };
     if (!brandTimeseries.length) return [];
     const dateMap: Record<string, Record<string, number>> = {};
     for (const series of brandTimeseries) {
