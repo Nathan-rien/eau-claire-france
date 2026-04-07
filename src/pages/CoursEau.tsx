@@ -476,7 +476,92 @@ const CoursEau = () => {
           </Card>
         </section>
 
-        {/* Timeline */}
+        {/* ─── BRAND TIMESERIES SECTION ─── */}
+        {selectedBrand && (
+          <section
+            ref={timeseriesRef.ref}
+            className={`transition-all duration-700 ${timeseriesRef.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <LineChartIcon className="w-5 h-5 text-primary" />
+                  Évolution du prix — {selectedBrand} (90 derniers jours)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {timeseriesLoading && <Skeleton className="h-[320px] w-full" />}
+
+                {!timeseriesLoading && timeseriesChartData.length === 0 && (
+                  <p className="text-sm text-muted-foreground py-8 text-center">
+                    Aucune donnée historique disponible pour {selectedBrand} sur les 90 derniers jours.
+                  </p>
+                )}
+
+                {!timeseriesLoading && timeseriesChartData.length > 0 && (
+                  <ResponsiveContainer width="100%" height={360}>
+                    <LineChart data={timeseriesChartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                      <XAxis
+                        dataKey="date"
+                        tick={{ fontSize: 11 }}
+                        className="fill-muted-foreground"
+                        tickFormatter={(d: string) => {
+                          const [, m, day] = d.split('-');
+                          return `${day}/${m}`;
+                        }}
+                      />
+                      <YAxis
+                        tick={{ fontSize: 12 }}
+                        className="fill-muted-foreground"
+                        tickFormatter={(v: number) => `${v.toFixed(2)}€`}
+                        domain={['auto', 'auto']}
+                      />
+                      <Tooltip
+                        content={({ active, payload, label }) => {
+                          if (!active || !payload?.length) return null;
+                          return (
+                            <div className="bg-popover border border-border rounded-lg p-3 shadow-lg text-sm">
+                              <p className="font-semibold text-foreground mb-1">{label}</p>
+                              {payload.map((entry: any) => {
+                                const retailer = brandTimeseries.find(s => s.retailer_slug === entry.dataKey);
+                                return (
+                                  <p key={entry.dataKey} style={{ color: entry.color }} className="font-medium">
+                                    {retailer?.retailer_name || entry.dataKey} : {Number(entry.value).toFixed(3)} €/L
+                                  </p>
+                                );
+                              })}
+                            </div>
+                          );
+                        }}
+                      />
+                      <Legend
+                        formatter={(value: string) => {
+                          const retailer = brandTimeseries.find(s => s.retailer_slug === value);
+                          return retailer?.retailer_name || value;
+                        }}
+                      />
+                      {brandTimeseries.map((series, i) => (
+                        <Line
+                          key={series.retailer_slug}
+                          type="monotone"
+                          dataKey={series.retailer_slug || 'unknown'}
+                          stroke={CHART_COLORS[i % CHART_COLORS.length]}
+                          strokeWidth={2}
+                          dot={false}
+                          activeDot={{ r: 4 }}
+                          animationDuration={1500}
+                        />
+                      ))}
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
+              </CardContent>
+            </Card>
+          </section>
+        )}
+
+
         <section>
           <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
             <Clock className="w-6 h-6 text-primary" />
