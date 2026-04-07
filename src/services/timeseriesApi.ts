@@ -14,79 +14,76 @@ export interface BrandTimeseries {
   points: TimeseriesPoint[];
 }
 
-/**
- * Get price timeseries for a brand across all retailers or specific retailer
- */
+async function fetchRetailersMap(): Promise<Record<string, { slug: string; name: string }>> {
+  const { data, error } = await supabase
+    .from('retailers')
+    .select('id, slug, name');
+  if (error) throw error;
+  const map: Record<string, { slug: string; name: string }> = {};
+  for (const r of data || []) {
+    map[r.id] = { slug: r.slug, name: r.name };
+  }
+  return map;
+}
+
 export async function getBrandTimeseries(
-  brand: string, 
+  brand: string,
   days: number = 30,
   retailerSlug?: string
 ): Promise<BrandTimeseries[]> {
-  let query = supabase
-    .from('prices_history')
-    .select(`
-      scraped_at,
-      price_per_l_eur,
-      retailer_id,
-      retailers!inner(slug, name)
-    `)
-    .eq('brand', brand)
-    .gte('scraped_at', new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString())
-    .not('price_per_l_eur', 'is', null)
-    .order('scraped_at', { ascending: true });
+  const [retailersMap, pricesResult] = await Promise.all([
+    fetchRetailersMap(),
+    supabase
+      .from('prices_history')
+      .select('scraped_at, price_per_l_eur, retailer_id')
+      .eq('brand', brand)
+      .gte('scraped_at', new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString())
+      .not('price_per_l_eur', 'is', null)
+      .order('scraped_at', { ascending: true })
+  ]);
 
-  if (retailerSlug) {
-    query = query.eq('retailers.slug', retailerSlug);
-  }
+  if (pricesResult.error) throw pricesResult.error;
+  const prices = pricesResult.data || [];
 
-  const { data: prices, error } = await query;
-  
-  if (error) throw error;
-  if (!prices) return [];
+  // Filter by retailer slug if specified
+  const filtered = retailerSlug
+    ? prices.filter(p => retailersMap[p.retailer_id]?.slug === retailerSlug)
+    : prices;
 
-  // Group by retailer and date (daily aggregation)
+  // Group by retailer and date
   const retailerGroups: Record<string, Record<string, number[]>> = {};
-  
-  for (const price of prices) {
-    const retailer = (price as any).retailers;
+
+  for (const price of filtered) {
+    const retailer = retailersMap[price.retailer_id];
+    if (!retailer) continue;
     const date = new Date(price.scraped_at).toISOString().split('T')[0];
-    const priceValue = price.price_per_l_eur;
-    
+
     if (!retailerGroups[retailer.slug]) {
       retailerGroups[retailer.slug] = {};
     }
-    
     if (!retailerGroups[retailer.slug][date]) {
       retailerGroups[retailer.slug][date] = [];
     }
-    
-    retailerGroups[retailer.slug][date].push(priceValue);
+    retailerGroups[retailer.slug][date].push(price.price_per_l_eur!);
   }
 
-  // Calculate daily medians for each retailer
   const results: BrandTimeseries[] = [];
-  
-  for (const [retailerSlug, dateGroups] of Object.entries(retailerGroups)) {
-    const retailer = prices.find(p => (p as any).retailers.slug === retailerSlug);
+
+  for (const [slug, dateGroups] of Object.entries(retailerGroups)) {
+    const retailer = Object.values(retailersMap).find(r => r.slug === slug);
     if (!retailer) continue;
 
     const points: TimeseriesPoint[] = [];
-    
     for (const [date, pricesArray] of Object.entries(dateGroups)) {
-      const sortedPrices = pricesArray.sort((a, b) => a - b);
-      const median = sortedPrices[Math.floor(sortedPrices.length / 2)];
-      
-      points.push({
-        date,
-        median_price_per_l: median,
-        sample_size: pricesArray.length
-      });
+      const sorted = pricesArray.sort((a, b) => a - b);
+      const median = sorted[Math.floor(sorted.length / 2)];
+      points.push({ date, median_price_per_l: median, sample_size: pricesArray.length });
     }
-    
+
     results.push({
       brand,
-      retailer_slug: retailerSlug,
-      retailer_name: (retailer as any).retailers.name,
+      retailer_slug: slug,
+      retailer_name: retailer.name,
       period_days: days,
       points: points.sort((a, b) => a.date.localeCompare(b.date))
     });
@@ -95,9 +92,6 @@ export async function getBrandTimeseries(
   return results;
 }
 
-/**
- * Get latest median prices by retailer for a brand
- */
 export async function getLatestRetailerMedians(brand: string): Promise<Array<{
   retailer_slug: string;
   retailer_name: string;
@@ -105,48 +99,38 @@ export async function getLatestRetailerMedians(brand: string): Promise<Array<{
   last_updated: string;
   sample_size: number;
 }>> {
-  const { data: prices, error } = await supabase
-    .from('prices')
-    .select(`
-      price_per_l_eur,
-      scraped_at,
-      retailer_id,
-      retailers!inner(slug, name)
-    `)
-    .eq('brand', brand)
-    .not('price_per_l_eur', 'is', null)
-    .gte('scraped_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
-    .order('scraped_at', { ascending: false });
+  const [retailersMap, pricesResult] = await Promise.all([
+    fetchRetailersMap(),
+    supabase
+      .from('prices')
+      .select('price_per_l_eur, scraped_at, retailer_id')
+      .eq('brand', brand)
+      .not('price_per_l_eur', 'is', null)
+      .gte('scraped_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+      .order('scraped_at', { ascending: false })
+  ]);
 
-  if (error) throw error;
-  if (!prices) return [];
+  if (pricesResult.error) throw pricesResult.error;
+  const prices = pricesResult.data || [];
 
-  // Group by retailer
-  const retailerGroups: Record<string, { prices: number[], lastUpdate: string, name: string }> = {};
-  
+  const retailerGroups: Record<string, { prices: number[]; lastUpdate: string; name: string }> = {};
+
   for (const price of prices) {
-    const retailer = (price as any).retailers;
-    
+    const retailer = retailersMap[price.retailer_id];
+    if (!retailer) continue;
+
     if (!retailerGroups[retailer.slug]) {
-      retailerGroups[retailer.slug] = {
-        prices: [],
-        lastUpdate: price.scraped_at,
-        name: retailer.name
-      };
+      retailerGroups[retailer.slug] = { prices: [], lastUpdate: price.scraped_at, name: retailer.name };
     }
-    
-    retailerGroups[retailer.slug].prices.push(price.price_per_l_eur);
-    
-    // Keep the most recent date
+    retailerGroups[retailer.slug].prices.push(price.price_per_l_eur!);
     if (price.scraped_at > retailerGroups[retailer.slug].lastUpdate) {
       retailerGroups[retailer.slug].lastUpdate = price.scraped_at;
     }
   }
 
   return Object.entries(retailerGroups).map(([slug, data]) => {
-    const sortedPrices = data.prices.sort((a, b) => a - b);
-    const median = sortedPrices[Math.floor(sortedPrices.length / 2)];
-    
+    const sorted = data.prices.sort((a, b) => a - b);
+    const median = sorted[Math.floor(sorted.length / 2)];
     return {
       retailer_slug: slug,
       retailer_name: data.name,
