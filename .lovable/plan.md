@@ -1,28 +1,72 @@
 
 
-## Fix: marqueurs d'etapes cliquables et liens visuels source → etapes → magasins
+## Audit SEO complet — Plan de corrections
 
 ### Problemes identifies
 
-1. **Popups ne s'ouvrent pas** : ligne 256 fait `e.stopPropagation()` sur le click du marqueur, ce qui empeche Mapbox d'ouvrir le popup. Il faut appeler `marker.togglePopup()` manuellement dans le handler.
+**1. Pages publiques sans SEOHead (4 pages)**
+- `/classement` (Classement.tsx) — pas de SEOHead, pas de meta
+- `/comparatif-bouteilles` (ComparatifBouteilles.tsx) — pas de SEOHead
+- `/polluants` (Polluants.tsx) — pas de SEOHead
+- `/diagnostic-prix` (DiagnosticPrix.tsx) — pas de SEOHead (page publique d'audit)
 
-2. **Pas de lien visuel** : les marqueurs d'etapes flottent dans le vide sans connexion visuelle avec la source ni les communes. Il faut tracer une ligne reliant source → etapes → direction distribution.
+**2. seoData.ts — entrees manquantes**
+- `classement` (FR) : absent — seul `classementEurope` existe
+- `comparatifBouteilles` : existe mais sans `schemaData`
+- `polluants` : existe mais sans `schemaData`
+- `diagnosticPrix` : absent
+- `parcoursEauBouteille` : absent (page utilise des meta en dur)
+- `carteParcoursEau` : absent (meta en dur)
+- `carteParcoursRobinet` : absent (meta en dur)
+- `sourcesEau` : absent
 
-### Corrections
+**3. Sitemap incomplet — pages manquantes**
+- `/composition-europe` — route existe, absente du sitemap
 
-**Fichier : `src/components/WaterJourneyMap.tsx`**
+**4. SEOHead — canonical fragile**
+- Quand `canonical` n'est pas fourni, fallback sur `window.location.href` qui inclut les query params et ne fonctionne pas en SSR/prerendering. Devrait utiliser `window.location.origin + window.location.pathname`.
 
-**Fix 1 — Rendre les popups cliquables** :
-- Dans la boucle `JOURNEY_STEPS.forEach`, remplacer le `addEventListener('click', e => e.stopPropagation())` par un handler qui appelle `stepMarker.togglePopup()` apres creation du marqueur.
+**5. Web Core Vitals — optimisations**
+- Images : pas de `width`/`height` sur les images (CLS). Ajouter des dimensions explicites dans les composants critiques (Header, Index hero).
+- Lazy loading : deja en place via `React.lazy` — OK.
+- Font : pas de `font-display: swap` dans les imports CSS eventuels.
+- LCP : le hero de la page d'accueil charge des icones Lucide mais pas d'image hero large — OK.
 
-**Fix 2 — Tracer une ligne source → etapes** :
-- Pour chaque source unique, generer une LineString passant par la source puis les 5 positions d'etapes (via `getStepPosition`).
-- Ajouter une source GeoJSON `journey-steps-lines` et un layer `journey-steps-line` (ligne pointillee, toujours visible, couleur gradient bleu→vert, largeur 2px, opacite 0.5).
-- Ce trait connecte visuellement la source aux etapes du processus.
+---
 
-**Fix 3 — Montrer les arcs source→communes par defaut (fond leger)** :
-- Changer la visibilite initiale de `journey-arcs-bg` de `'none'` a `'visible'` pour qu'on voie toujours les lignes fines vers les communes.
-- Garder le toggle "Communes desservies" pour afficher/masquer les marqueurs de communes ET la couche animee `journey-arcs-anim`.
+### Modifications prevues
 
-Cela cree un flux visuel complet : source (bleu) → etapes (marqueurs colores relies par un trait) → communes (arcs legers toujours visibles, marqueurs verts au toggle).
+**Fichier : `src/utils/seoData.ts`**
+- Ajouter les entrees manquantes : `classement`, `diagnosticPrix`, `parcoursEauBouteille`, `carteParcoursEau`, `carteParcoursRobinet`, `sourcesEau`
+- Ajouter `schemaData` a `comparatifBouteilles` et `polluants`
+
+**Fichier : `src/pages/Classement.tsx`**
+- Importer et ajouter `SEOHead` avec `seoData.classement`
+
+**Fichier : `src/pages/ComparatifBouteilles.tsx`**
+- Importer et ajouter `SEOHead` avec `seoData.comparatifBouteilles`
+
+**Fichier : `src/pages/Polluants.tsx`**
+- Importer et ajouter `SEOHead` avec `seoData.polluants`
+
+**Fichier : `src/pages/DiagnosticPrix.tsx`**
+- Importer et ajouter `SEOHead` avec `seoData.diagnosticPrix`
+
+**Fichier : `src/pages/ParcoursEauBouteille.tsx`**
+- Remplacer les meta en dur par `SEOHead` + `seoData.parcoursEauBouteille`
+
+**Fichier : `src/pages/CarteParcoursEau.tsx`**
+- Remplacer les meta en dur par `SEOHead` + `seoData.carteParcoursEau`
+
+**Fichier : `src/pages/CarteParcoursRobinet.tsx`**
+- Remplacer les meta en dur par `SEOHead` + `seoData.carteParcoursRobinet`
+
+**Fichier : `src/components/SEOHead.tsx`**
+- Fix canonical fallback : `window.location.origin + window.location.pathname` au lieu de `window.location.href`
+
+**Fichier : `public/sitemap.xml`**
+- Ajouter `/composition-europe`
+
+**Fichier : `public/robots.txt`**
+- Ajouter `Disallow: /diagnostic-prix` (page technique d'audit, pas utile pour les moteurs)
 
