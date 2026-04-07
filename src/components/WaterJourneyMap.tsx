@@ -86,6 +86,7 @@ const WaterJourneyMap: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const sourceMarkersRef = useRef<mapboxgl.Marker[]>([]);
+  const stepMarkersRef = useRef<mapboxgl.Marker[]>([]);
   const communeMarkersRef = useRef<mapboxgl.Marker[]>([]);
   const communesInitRef = useRef(false);
   const animFrameRef = useRef<number>(0);
@@ -192,6 +193,8 @@ const WaterJourneyMap: React.FC = () => {
     // Clear previous markers
     sourceMarkersRef.current.forEach(m => m.remove());
     sourceMarkersRef.current = [];
+    stepMarkersRef.current.forEach(m => m.remove());
+    stepMarkersRef.current = [];
     communeMarkersRef.current.forEach(m => m.remove());
     communeMarkersRef.current = [];
     communesInitRef.current = false;
@@ -239,6 +242,32 @@ const WaterJourneyMap: React.FC = () => {
           .setPopup(popup)
           .addTo(map);
         sourceMarkersRef.current.push(marker);
+
+        // Add journey step markers for this source
+        const srcCoord: [number, number] = [route.source.lng, route.source.lat];
+        JOURNEY_STEPS.forEach((step) => {
+          const pos = getStepPosition(srcCoord, step.fraction);
+          const stepEl = document.createElement('div');
+          stepEl.className = 'flex items-center justify-center w-7 h-7 rounded-full border-2 border-white shadow-md cursor-pointer';
+          stepEl.style.backgroundColor = step.color;
+          stepEl.innerHTML = step.icon;
+          stepEl.title = step.name;
+          stepEl.addEventListener('click', (e) => e.stopPropagation());
+
+          const stepPopup = new mapboxgl.Popup({ offset: 20 }).setHTML(
+            `<div class="p-2 min-w-[180px]">
+              <h3 class="font-bold text-sm">${step.name}</h3>
+              <p class="text-xs text-gray-500 mt-1">${step.description}</p>
+              <span class="inline-block mt-2 px-2 py-0.5 rounded-full text-xs font-medium text-white" style="background-color:${step.color}">${step.duration}</span>
+            </div>`
+          );
+
+          const stepMarker = new mapboxgl.Marker({ element: stepEl })
+            .setLngLat(pos)
+            .setPopup(stepPopup)
+            .addTo(map);
+          stepMarkersRef.current.push(stepMarker);
+        });
       }
 
       // Collect arc geometries (no markers yet — lazy)
@@ -351,11 +380,17 @@ const WaterJourneyMap: React.FC = () => {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-6 text-xs text-muted-foreground">
+      <div className="flex items-center gap-4 flex-wrap text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-full bg-blue-600 inline-block" />
           {t('bottleJourney.legendSource')}
         </span>
+        {JOURNEY_STEPS.map((step) => (
+          <span key={step.name} className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: step.color }} />
+            {step.name}
+          </span>
+        ))}
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block" />
           {t('bottleJourney.legendStore')}
