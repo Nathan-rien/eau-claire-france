@@ -427,12 +427,30 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
                 <Badge className={getTypeColor(getWaterType(selectedSource))}>
                   {getWaterType(selectedSource)}
                 </Badge>
+                {(() => {
+                  const residue = selectedSource.residu_sec_180_mg_L ?? selectedSource.residue;
+                  const mLevel = getMineralizationLevel(residue);
+                  return mLevel ? (
+                    <Badge className={mLevel.color}>{mLevel.label}</Badge>
+                  ) : null;
+                })()}
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Localisation</p>
                   <p className="font-medium">{selectedSource.location || 'Non spécifiée'}</p>
                 </div>
+
+                {/* Dureté de l'eau */}
+                {(() => {
+                  const th = computeHardness(selectedSource.Ca_mg_L, selectedSource.Mg_mg_L);
+                  return th !== null ? (
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Dureté de l'eau</p>
+                      <p className="font-medium">{th.toFixed(1)} °f — {getHardnessLabel(th)}</p>
+                    </div>
+                  ) : null;
+                })()}
 
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Marques ({selectedSource.count_brands})</p>
@@ -444,6 +462,24 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
                     ))}
                   </div>
                 </div>
+
+                {/* Recommandations d'usage */}
+                {(() => {
+                  const recs = getUsageRecommendations(selectedSource);
+                  return recs.length > 0 ? (
+                    <div className="space-y-2">
+                      <h4 className="font-semibold text-sm">Recommandations</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {recs.map((rec, i) => (
+                          <Badge key={i} className={`${rec.color} text-xs gap-1`}>
+                            {rec.icon}
+                            {rec.label}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
 
                 {/* Composition minérale */}
                 {(selectedSource.Ca_mg_L || selectedSource.Mg_mg_L || selectedSource.Na_mg_L || 
@@ -559,18 +595,40 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
                   </div>
                 </div>
 
-                {/* Informations sur la qualité */}
+                {/* Contrôle qualité enrichi */}
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-sm">Contrôle qualité</h4>
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-green-800">Source contrôlée</span>
-                    </div>
-                    <p className="text-xs text-green-700">
-                      Cette source fait l'objet de contrôles sanitaires réguliers selon la réglementation française.
-                    </p>
-                  </div>
+                  <h4 className="font-semibold text-sm flex items-center gap-1">
+                    <ShieldCheck className="h-4 w-4" />
+                    Contrôle qualité
+                  </h4>
+                  {(() => {
+                    const checks = getComplianceChecks(selectedSource);
+                    return checks.length > 0 ? (
+                      <div className="space-y-2">
+                        {checks.map((c, i) => (
+                          <div key={i} className={`flex items-center justify-between p-2 rounded-lg border ${c.ok ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                            <div className="flex items-center gap-2">
+                              {c.ok ? <CheckCircle className="h-4 w-4 text-green-600" /> : <AlertTriangle className="h-4 w-4 text-red-600" />}
+                              <span className="text-sm font-medium">{c.param}</span>
+                            </div>
+                            <span className="text-xs text-muted-foreground">
+                              {c.value} / {c.limit} {c.unit}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span className="text-sm font-medium text-green-800">Source contrôlée</span>
+                        </div>
+                        <p className="text-xs text-green-700">
+                          Cette source fait l'objet de contrôles sanitaires réguliers selon la réglementation française.
+                        </p>
+                      </div>
+                    );
+                  })()}
                   
                   {getWaterType(selectedSource) === 'Eau minérale naturelle gazeuse' && (
                     <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
