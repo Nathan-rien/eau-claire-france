@@ -211,6 +211,7 @@ const WaterJourneyMap: React.FC = () => {
       cancelAnimationFrame(animFrameRef.current);
       sourceMarkersRef.current.forEach(m => m.remove());
       communeMarkersRef.current.forEach(m => m.remove());
+      industrialMarkersRef.current.forEach(m => m.remove());
       map.remove();
       mapRef.current = null;
     };
