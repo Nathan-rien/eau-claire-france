@@ -150,6 +150,7 @@ const WaterJourneyMap: React.FC = () => {
   const animFrameRef = useRef<number>(0);
   const lastFrameRef = useRef<number>(0);
   const showCommunesRef = useRef(false);
+  const showIndustrialRef = useRef(false);
   const animTimeoutRefs = useRef<number[]>([]);
 
   const [selectedRetailer, setSelectedRetailer] = useState<string>('all');
@@ -256,6 +257,10 @@ const WaterJourneyMap: React.FC = () => {
     showCommunesRef.current = showCommunes;
   }, [showCommunes]);
 
+  useEffect(() => {
+    showIndustrialRef.current = showIndustrial;
+  }, [showIndustrial]);
+
   // Cancel animation when toggling industrial off or changing retailer
   useEffect(() => {
     cancelAnimation();
@@ -350,8 +355,6 @@ const WaterJourneyMap: React.FC = () => {
     sourceMarkersRef.current = [];
     communeMarkersRef.current.forEach(m => m.remove());
     communeMarkersRef.current = [];
-    industrialMarkersRef.current.forEach(m => m.remove());
-    industrialMarkersRef.current = [];
     communesInitRef.current = false;
     cancelAnimationFrame(animFrameRef.current);
 
@@ -397,7 +400,7 @@ const WaterJourneyMap: React.FC = () => {
             retailers: retailersAtSource,
           });
           // Trigger industrial animation if toggle is active
-          if (showIndustrial) {
+          if (showIndustrialRef.current) {
             startIndustrialAnimation(capturedSrcKey);
           }
         });
@@ -459,7 +462,7 @@ const WaterJourneyMap: React.FC = () => {
       animFrameRef.current = requestAnimationFrame(animateDash);
     }
     animFrameRef.current = requestAnimationFrame(animateDash);
-  }, [selectedRetailer, mapLoaded, showCommunes, showIndustrial, startIndustrialAnimation]);
+  }, [selectedRetailer, mapLoaded, showCommunes, startIndustrialAnimation]);
 
   useEffect(() => {
     renderRoutes();
