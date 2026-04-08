@@ -196,42 +196,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Section A — Les risques liés à l'eau du robinet */}
-        <section className="py-6 md:py-10 lg:py-12 px-4 bg-orange-50/50" role="region" aria-labelledby="risks-title">
-          <div className="container mx-auto max-w-5xl">
-            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
-              <div className="flex-1 order-2 md:order-1">
-                <div className="border-l-4 border-orange-400 pl-5">
-                  <h2 id="risks-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-                    Les risques liés à l'eau du robinet
-                  </h2>
-                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
-                    L'eau du robinet en France est globalement de bonne qualité, mais elle peut contenir des traces de <strong className="text-foreground">pesticides</strong>, <strong className="text-foreground">microplastiques</strong> ou <strong className="text-foreground">résidus médicamenteux</strong> selon les régions.
-                  </p>
-                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
-                    Les canalisations anciennes peuvent libérer du <strong className="text-foreground">plomb</strong>, tandis que le traitement au chlore génère des sous-produits potentiellement indésirables. Connaître la qualité de votre eau est essentiel.
-                  </p>
-                  <Link to="/polluants">
-                    <Button variant="outline" className="mt-4 border-orange-300 text-orange-700 hover:bg-orange-100">
-                      Découvrir les polluants →
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-              <div className="flex-shrink-0 order-1 md:order-2 relative">
-                {/* Outer spinning ring */}
-                <div className="absolute inset-0 w-44 h-44 md:w-52 md:h-52 -m-6 rounded-full border-2 border-dashed border-orange-200 animate-[spin_20s_linear_infinite]" />
-                <div className="w-32 h-32 md:w-40 md:h-40 bg-orange-100 rounded-full flex items-center justify-center relative ring-4 ring-orange-200/50 animate-[pulse_4s_ease-in-out_infinite]">
-                  <AlertTriangle className="w-16 h-16 md:w-20 md:h-20 text-orange-500 animate-[pulse_3s_ease-in-out_infinite]" />
-                  <Droplets className="w-8 h-8 text-orange-300 absolute -top-2 -right-2 animate-fade-in" />
-                  <Skull className="w-7 h-7 text-orange-400 absolute -bottom-3 -right-1 animate-fade-in [animation-delay:0.3s]" />
-                  <FlaskConical className="w-7 h-7 text-orange-400 absolute -left-3 top-1/2 -translate-y-1/2 animate-fade-in [animation-delay:0.6s]" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Section B — Bien choisir son eau en bouteille */}
         <section className="py-6 md:py-10 lg:py-12 px-4 bg-sky-50" role="region" aria-labelledby="choose-title">
           <div className="container mx-auto max-w-5xl">
