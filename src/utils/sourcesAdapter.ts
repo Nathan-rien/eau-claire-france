@@ -28,11 +28,11 @@ export type SourceItem = {
   SO4_mg_L?: number;
 };
 
-const mapCategory = (raw?: string): SourceItem["water_category"] => {
+const mapCategory = (raw?: string, isGaseous?: boolean): SourceItem["water_category"] => {
   const v = (raw ?? "").toLowerCase();
-  if (v === "emn" || (v.includes("minérale") && !v.includes("gazeuse"))) return "Eau minérale naturelle";
   if (v.includes("gazeuse") || v === "emng") return "Eau minérale naturelle gazeuse";
   if (v.includes("source") || v === "es") return "Eau de source";
+  if (isGaseous) return "Eau minérale naturelle gazeuse";
   return "Eau minérale naturelle";
 };
 
@@ -51,15 +51,27 @@ const key = (a?: string, b?: string, c?: string) =>
 export async function buildSources(): Promise<SourceItem[]> {
   const log = (...a: any[]) => console.log("[buildSources]", ...a);
 
-  const [coordsTxt, compTxt] = await Promise.all([
+  const [coordsTxt, compTxt, catalogTxt] = await Promise.all([
     fetch("/data/water_sources_coordinates.csv").then(r => r.text()),
-    fetch("/data/infoeau_emn_composition_v2_partial.csv").then(r => r.text()).catch(() => "")
+    fetch("/data/infoeau_emn_composition_v2_partial.csv").then(r => r.text()).catch(() => ""),
+    fetch("/data/infoeau_catalog_eaux_v3.csv").then(r => r.text()).catch(() => "")
   ]);
 
   const coords = parseCSV(coordsTxt);
   const comp = compTxt ? parseCSV(compTxt) : { headers: [], rows: [] };
 
-  log("rows", { coords: coords.rows.length, comp: comp.rows.length });
+  const catalog = catalogTxt ? parseCSV(catalogTxt) : { headers: [], rows: [] };
+
+  // Index de gazéité par marque normalisée
+  const gasIndex = new Map<string, boolean>();
+  for (const row of catalog.rows) {
+    const brand = norm(row["brand"]);
+    if (brand && (row["is_gaseous"] === "True" || (row["variant"] ?? "").toLowerCase() === "gazeuse")) {
+      gasIndex.set(brand, true);
+    }
+  }
+
+  log("rows", { coords: coords.rows.length, comp: comp.rows.length, catalog: catalog.rows.length, gasBrands: gasIndex.size });
 
   // Index composition par clé souple
   type CompositionData = {
@@ -155,7 +167,7 @@ export async function buildSources(): Promise<SourceItem[]> {
       count_brands: brand ? 1 : 0,
       latitude: lng !== undefined && lat !== undefined ? lat : 0, // lat
       longitude: lng !== undefined ? lng : 0, // lng
-      water_category: mapCategory(rawCategory),
+      water_category: mapCategory(rawCategory, gasIndex.has(norm(brand))),
       residue: meta.residue,
       flow_rate: meta.flow_rate,
       depth: meta.depth,
