@@ -60,7 +60,18 @@ export async function buildSources(): Promise<SourceItem[]> {
   const coords = parseCSV(coordsTxt);
   const comp = compTxt ? parseCSV(compTxt) : { headers: [], rows: [] };
 
-  log("rows", { coords: coords.rows.length, comp: comp.rows.length });
+  const catalog = catalogTxt ? parseCSV(catalogTxt) : { headers: [], rows: [] };
+
+  // Index de gazéité par marque normalisée
+  const gasIndex = new Map<string, boolean>();
+  for (const row of catalog.rows) {
+    const brand = norm(row["brand"]);
+    if (brand && (row["is_gaseous"] === "True" || (row["variant"] ?? "").toLowerCase() === "gazeuse")) {
+      gasIndex.set(brand, true);
+    }
+  }
+
+  log("rows", { coords: coords.rows.length, comp: comp.rows.length, catalog: catalog.rows.length, gasBrands: gasIndex.size });
 
   // Index composition par clé souple
   type CompositionData = {
