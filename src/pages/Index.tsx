@@ -274,7 +274,7 @@ const Index = () => {
         </section>
 
         {/* Section C — Surveiller la qualité de votre eau */}
-        <section className="py-6 md:py-10 lg:py-12 px-4 <section className="relative overflow-hidden bg-sky-50 py-6 md:py-10 lg:py-12 px-4" role="region" aria-labelledby="monitor-title">" role="region" aria-labelledby="monitor-title">
+        <section className="relative overflow-hidden bg-sky-50 py-6 md:py-10 lg:py-12 px-4" role="region" aria-labelledby="monitor-title">
           {/* Decorative background particles */}
           <div className="absolute top-10 left-[10%] w-6 h-6 bg-primary/5 rounded-full animate-[bounce_5s_ease-in-out_infinite]" />
           <div className="absolute top-1/3 right-[15%] w-4 h-4 bg-primary/10 rounded-full animate-[bounce_4s_ease-in-out_infinite_1s]" />
