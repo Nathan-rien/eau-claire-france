@@ -28,7 +28,7 @@ const Index = () => {
       
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50">
         {/* Hero Section */}
-        <section className="py-6 md:py-10 lg:py-12 px-4 bg-[sidebar-primary-foreground] bg-sky-50" role="banner">
+        <section className="pt-6 pb-3 md:pt-10 md:pb-4 lg:pt-12 lg:pb-6 px-4 bg-[sidebar-primary-foreground] bg-sky-50" role="banner">
           <div className="container mx-auto text-center">
             <div className="max-w-4xl mx-auto">
               <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-foreground mb-3 md:mb-4 leading-tight px-2">
@@ -74,7 +74,7 @@ const Index = () => {
         </section>
 
         {/* Section 1 — Quelle eau boire ? */}
-        <section className="relative py-6 md:py-10 lg:py-12 px-4 bg-cover bg-center" style={{ backgroundImage: `url(${waterBg})` }} role="region" aria-labelledby="diagnostic-title">
+        <section className="relative pt-3 pb-6 md:pt-4 md:pb-10 lg:pt-6 lg:pb-12 px-4 bg-cover bg-center" style={{ backgroundImage: `url(${waterBg})` }} role="region" aria-labelledby="diagnostic-title">
           <div className="absolute inset-0 backdrop-blur-sm bg-sky-50" />
           <div className="relative container mx-auto max-w-4xl">
             <div className="text-center mb-4">
