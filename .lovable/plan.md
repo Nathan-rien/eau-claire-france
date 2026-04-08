@@ -1,23 +1,30 @@
 
 
-## Plan : Appliquer le dégradé bleu→vert de la charte aux chiffres clés
+## Probleme
 
-### Référence
-L'image montre les 4 chiffres (35,000+ / 50+ / 98% / 24h) chacun avec une couleur différente. La charte InfoEau utilise le dégradé `from-[#3b82f6] to-[#22c55e]`. On applique ce dégradé en texte (`bg-gradient-to-r bg-clip-text text-transparent`) aux 4 valeurs pour un rendu cohérent avec le logo.
+La section "Surveillez la qualite de votre eau" (ligne 277) a deux backgrounds en conflit :
 
-### Fichier modifié
-`src/pages/Index.tsx` — lignes 55, 59, 63, 67
+```
+bg-gradient-to-br from-primary/10 via-blue-50 to-primary/5 ... bg-sky-50
+```
 
-### Changements
-Remplacer les classes de couleur de chaque chiffre par le dégradé :
+Le `bg-sky-50` est ecrase par le gradient (`bg-gradient-to-br`), qui applique un filtre bleu avec des opacites (`primary/10`, `blue-50`, `primary/5`). Le resultat n'est pas un fond `sky-50` uniforme comme attendu dans la capture d'ecran.
 
-| Chiffre | Avant | Après |
-|---------|-------|-------|
-| 35,000+ | `text-primary` | `bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent` |
-| 50+ | `text-muted-foreground` | `bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent` |
-| 98% | `text-orange-600` | `bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent` |
-| 24h | `text-purple-600` | `bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent` |
+## Solution
 
-### Résultat attendu
-Les 4 chiffres clés affichent le même dégradé bleu→vert conforme à la charte graphique du logo InfoEau.
+Supprimer le gradient et ne garder que `bg-sky-50` pour un fond uniforme et conforme a la charte.
+
+### Modification — `src/pages/Index.tsx`, ligne 277
+
+**Avant :**
+```
+bg-gradient-to-br from-primary/10 via-blue-50 to-primary/5 relative overflow-hidden bg-sky-50
+```
+
+**Apres :**
+```
+relative overflow-hidden bg-sky-50
+```
+
+Les particules decoratives (lignes 279-282) utilisent `bg-primary/5` et `bg-primary/10` qui resteront subtiles sur le fond `sky-50`.
 
