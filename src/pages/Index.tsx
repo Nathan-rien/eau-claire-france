@@ -109,7 +109,7 @@ const Index = () => {
               <Link to="/quelle-eau-boire" className="group">
                 <Card className="h-full border-2 border-primary/20 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
                   <CardHeader className="text-center pb-2">
-                    <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 bg-cyan-100 text-primary">
                       <ClipboardList className="w-7 h-7 text-primary" />
                     </div>
                     <div className="flex items-center justify-center gap-2 mb-1">
@@ -136,7 +136,7 @@ const Index = () => {
               <Card className="overflow-hidden border-2 border-white/60 bg-white/70 backdrop-blur-md hover:border-primary/50 hover:shadow-xl transition-all duration-300">
                 <div className="p-6 md:p-8 lg:p-10">
                   <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
-                    <div className="w-16 h-16 bg-primary/15 rounded-2xl flex items-center justify-center shrink-0">
+                    <div className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 bg-sky-100">
                       <Award className="w-8 h-8 text-primary" />
                     </div>
                     <div className="text-center md:text-left flex-1">
@@ -158,7 +158,7 @@ const Index = () => {
         </section>
 
         {/* Section 3 — Cartes & Infographies */}
-        <section className="py-6 md:py-10 lg:py-12 px-4 bg-sky-100" role="region" aria-labelledby="maps-title">
+        <section className="py-6 md:py-10 lg:py-12 px-4 bg-sky-50" role="region" aria-labelledby="maps-title">
           <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-4">
               <h2 id="maps-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
@@ -233,7 +233,7 @@ const Index = () => {
         </section>
 
         {/* Section B — Bien choisir son eau en bouteille */}
-        <section className="py-6 md:py-10 lg:py-12 px-4 bg-sky-100" role="region" aria-labelledby="choose-title">
+        <section className="py-6 md:py-10 lg:py-12 px-4 bg-cyan-50" role="region" aria-labelledby="choose-title">
           <div className="container mx-auto max-w-5xl">
             <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
               <div className="flex-shrink-0 relative">
