@@ -483,7 +483,18 @@ const WaterJourneyMap: React.FC = () => {
       if (map.getSource(id)) map.removeSource(id);
     });
 
-    if (!showIndustrial) return;
+    if (!showIndustrial) {
+      // Restore source markers z-index
+      sourceMarkersRef.current.forEach(m => {
+        m.getElement().style.zIndex = '10';
+      });
+      return;
+    }
+
+    // Lower source markers z-index so industrial markers are visible
+    sourceMarkersRef.current.forEach(m => {
+      m.getElement().style.zIndex = '3';
+    });
 
     const routes = getRoutesByRetailer(selectedRetailer);
     const processedSources = new Set<string>();
@@ -511,6 +522,7 @@ const WaterJourneyMap: React.FC = () => {
 
         const el = document.createElement('div');
         el.className = 'industrial-marker flex items-center justify-center w-6 h-6';
+        el.style.zIndex = '5';
         el.dataset.stepType = step.type;
         el.dataset.sourceKey = srcKey;
         el.title = step.name;

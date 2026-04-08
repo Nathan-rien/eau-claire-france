@@ -379,25 +379,25 @@ function getIndustrialStepsForSource(
     {
       type: 'analyse',
       name: `Laboratoire – ${sourceName}`,
-      coordinates: [sourceLng + 0.012, sourceLat + 0.008],
+      coordinates: [sourceLng + 0.06, sourceLat + 0.04],
       description: 'Analyses bactériologiques et physico-chimiques en continu',
     },
     {
       type: 'traitement',
       name: `Station de traitement – ${sourceName}`,
-      coordinates: [sourceLng - 0.008, sourceLat + 0.015],
+      coordinates: [sourceLng - 0.05, sourceLat + 0.07],
       description: 'Filtration, ozonation et traitement UV selon la source',
     },
     {
       type: 'embouteillage',
       name: `Usine d'embouteillage – ${sourceName}`,
-      coordinates: [sourceLng + 0.02, sourceLat - 0.01],
+      coordinates: [sourceLng + 0.08, sourceLat - 0.05],
       description: 'Remplissage, bouchage, étiquetage et mise en pack',
     },
     {
       type: 'stockage',
       name: `Entrepôt – ${sourceName}`,
-      coordinates: [sourceLng - 0.015, sourceLat - 0.02],
+      coordinates: [sourceLng - 0.07, sourceLat - 0.08],
       description: 'Palettisation, contrôle qualité des lots, stockage tampon',
     },
     {
