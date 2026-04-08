@@ -369,11 +369,14 @@ const WaterJourneyMap: React.FC = () => {
         if (!icon) return;
 
         const el = document.createElement('div');
-        el.className = 'industrial-marker flex items-center justify-center w-6 h-6 rounded-full border border-white/80 shadow-md cursor-pointer transition-all duration-200 hover:scale-125 hover:shadow-lg';
-        el.style.backgroundColor = icon.color;
+        el.className = 'industrial-marker';
         el.dataset.stepType = step.type;
-        el.innerHTML = icon.svg;
         el.title = step.name;
+        const inner = document.createElement('div');
+        inner.className = 'industrial-inner flex items-center justify-center w-6 h-6 rounded-full border border-white/80 shadow-md cursor-pointer transition-all duration-200 hover:scale-125 hover:shadow-lg';
+        inner.style.backgroundColor = icon.color;
+        inner.innerHTML = icon.svg;
+        el.appendChild(inner);
 
         const popup = new mapboxgl.Popup({ offset: 12, maxWidth: '220px' }).setHTML(
           `<div class="p-2">
@@ -390,11 +393,15 @@ const WaterJourneyMap: React.FC = () => {
         industrialMarkersRef.current.push(marker);
       });
 
-      lineFeatures.push({
-        type: 'Feature',
-        properties: {},
-        geometry: { type: 'LineString', coordinates: lineCoords },
-      });
+      // Build individual colored segments between consecutive steps
+      const SEGMENT_COLORS = ['#60a5fa', '#3b82f6', '#8b5cf6', '#f59e0b', '#22c55e'];
+      for (let i = 0; i < lineCoords.length - 1; i++) {
+        lineFeatures.push({
+          type: 'Feature',
+          properties: { color: SEGMENT_COLORS[i] || '#a78bfa' },
+          geometry: { type: 'LineString', coordinates: [lineCoords[i], lineCoords[i + 1]] },
+        });
+      }
     });
 
     // Industrial connection lines
@@ -408,7 +415,7 @@ const WaterJourneyMap: React.FC = () => {
         type: 'line',
         source: 'industrial-lines',
         paint: {
-          'line-color': '#a78bfa',
+          'line-color': ['get', 'color'],
           'line-width': 1.5,
           'line-opacity': 0.5,
           'line-dasharray': [4, 4],
@@ -433,16 +440,17 @@ const WaterJourneyMap: React.FC = () => {
   useEffect(() => {
     industrialMarkersRef.current.forEach(m => {
       const el = m.getElement();
+      const inner = el.querySelector('.industrial-inner') as HTMLElement | null;
       const type = el.dataset.stepType;
       if (!highlightedStepType) {
         el.style.opacity = '1';
-        el.style.transform = '';
+        if (inner) inner.style.transform = '';
       } else if (type === highlightedStepType) {
         el.style.opacity = '1';
-        el.style.transform = 'scale(1.3)';
+        if (inner) inner.style.transform = 'scale(1.3)';
       } else {
         el.style.opacity = '0.3';
-        el.style.transform = '';
+        if (inner) inner.style.transform = '';
       }
     });
   }, [highlightedStepType]);
