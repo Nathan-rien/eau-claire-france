@@ -330,6 +330,123 @@ const WaterJourneyMap: React.FC = () => {
     renderRoutes();
   }, [renderRoutes]);
 
+  // ── Industrial markers effect ──
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+
+    // Clean previous industrial markers + layers
+    industrialMarkersRef.current.forEach(m => m.remove());
+    industrialMarkersRef.current = [];
+    ['industrial-lines-bg'].forEach(id => {
+      if (map.getLayer(id)) map.removeLayer(id);
+    });
+    ['industrial-lines'].forEach(id => {
+      if (map.getSource(id)) map.removeSource(id);
+    });
+
+    if (!showIndustrial) return;
+
+    const routes = getRoutesByRetailer(selectedRetailer);
+    const processedSources = new Set<string>();
+    const lineFeatures: GeoJSON.Feature<GeoJSON.LineString>[] = [];
+
+    routes.forEach((route) => {
+      const srcKey = `${route.source.name}-${route.retailer}`;
+      if (processedSources.has(srcKey)) return;
+      processedSources.add(srcKey);
+
+      const steps = getIndustrialSteps(route.source.name, route.retailer);
+      if (steps.length === 0) return;
+
+      // Build line: source → analyse → traitement → embouteillage → stockage → logistique
+      const lineCoords: [number, number][] = [[route.source.lng, route.source.lat]];
+
+      steps.forEach((step) => {
+        lineCoords.push(step.coordinates);
+
+        const icon = STEP_ICONS[step.type];
+        if (!icon) return;
+
+        const el = document.createElement('div');
+        el.className = 'industrial-marker flex items-center justify-center w-6 h-6 rounded-full border border-white/80 shadow-md cursor-pointer transition-all duration-200 hover:scale-125 hover:shadow-lg';
+        el.style.backgroundColor = icon.color;
+        el.dataset.stepType = step.type;
+        el.innerHTML = icon.svg;
+        el.title = step.name;
+
+        const popup = new mapboxgl.Popup({ offset: 12, maxWidth: '220px' }).setHTML(
+          `<div class="p-2">
+            <h3 class="font-bold text-sm">${step.name}</h3>
+            <p class="text-xs text-gray-500 mt-1">${step.description}</p>
+            <p class="text-xs mt-1 font-medium" style="color:${icon.color}">${route.retailer} — ${route.mddBrand}</p>
+          </div>`
+        );
+
+        const marker = new mapboxgl.Marker({ element: el })
+          .setLngLat(step.coordinates)
+          .setPopup(popup)
+          .addTo(map);
+        industrialMarkersRef.current.push(marker);
+      });
+
+      lineFeatures.push({
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'LineString', coordinates: lineCoords },
+      });
+    });
+
+    // Industrial connection lines
+    if (lineFeatures.length > 0) {
+      map.addSource('industrial-lines', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: lineFeatures },
+      });
+      map.addLayer({
+        id: 'industrial-lines-bg',
+        type: 'line',
+        source: 'industrial-lines',
+        paint: {
+          'line-color': '#a78bfa',
+          'line-width': 1.5,
+          'line-opacity': 0.5,
+          'line-dasharray': [4, 4],
+        },
+      });
+    }
+  }, [showIndustrial, selectedRetailer, mapLoaded]);
+
+  // ── Highlight industrial markers when hovering timeline ──
+  useEffect(() => {
+    const stepTypeMap: Record<number, string> = {
+      1: 'analyse',
+      2: 'traitement',
+      3: 'embouteillage',
+      4: 'stockage',
+      5: 'logistique',
+    };
+    const newType = activeStep !== null ? stepTypeMap[activeStep] || null : null;
+    setHighlightedStepType(newType);
+  }, [activeStep]);
+
+  useEffect(() => {
+    industrialMarkersRef.current.forEach(m => {
+      const el = m.getElement();
+      const type = el.dataset.stepType;
+      if (!highlightedStepType) {
+        el.style.opacity = '1';
+        el.style.transform = '';
+      } else if (type === highlightedStepType) {
+        el.style.opacity = '1';
+        el.style.transform = 'scale(1.3)';
+      } else {
+        el.style.opacity = '0.3';
+        el.style.transform = '';
+      }
+    });
+  }, [highlightedStepType]);
+
   return (
     <div className="space-y-6">
       {/* Controls */}
@@ -350,12 +467,21 @@ const WaterJourneyMap: React.FC = () => {
           </SelectContent>
         </Select>
 
-        <div className="flex items-center gap-2 ml-auto">
-          <MapPin className="w-4 h-4 text-muted-foreground" />
-          <label htmlFor="toggle-communes" className="text-sm font-medium cursor-pointer">
-            Communes desservies
-          </label>
-          <Switch id="toggle-communes" checked={showCommunes} onCheckedChange={setShowCommunes} />
+        <div className="flex items-center gap-4 ml-auto flex-wrap">
+          <div className="flex items-center gap-2">
+            <Factory className="w-4 h-4 text-muted-foreground" />
+            <label htmlFor="toggle-industrial" className="text-sm font-medium cursor-pointer">
+              Étapes industrielles
+            </label>
+            <Switch id="toggle-industrial" checked={showIndustrial} onCheckedChange={setShowIndustrial} />
+          </div>
+          <div className="flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-muted-foreground" />
+            <label htmlFor="toggle-communes" className="text-sm font-medium cursor-pointer">
+              Communes desservies
+            </label>
+            <Switch id="toggle-communes" checked={showCommunes} onCheckedChange={setShowCommunes} />
+          </div>
         </div>
       </div>
 
@@ -373,6 +499,30 @@ const WaterJourneyMap: React.FC = () => {
           <span className="w-6 h-0.5 bg-blue-500 inline-block" />
           {t('bottleJourney.legendRoute')}
         </span>
+        {showIndustrial && (
+          <>
+            <span className="border-l border-border pl-4 flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: '#60a5fa' }} />
+              Analyse
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: '#3b82f6' }} />
+              Traitement
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: '#8b5cf6' }} />
+              Embouteillage
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: '#f59e0b' }} />
+              Stockage
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: '#22c55e' }} />
+              Logistique
+            </span>
+          </>
+        )}
       </div>
 
       {/* Map */}
@@ -417,6 +567,11 @@ const WaterJourneyMap: React.FC = () => {
           <h3 className="text-sm font-semibold text-foreground mb-5 flex items-center gap-2">
             <Package className="w-4 h-4 text-muted-foreground" />
             Parcours de l'eau en bouteille
+            {showIndustrial && (
+              <span className="text-[10px] font-normal text-muted-foreground ml-2">
+                — survolez une étape pour la mettre en surbrillance sur la carte
+              </span>
+            )}
           </h3>
           <div className="relative flex items-center justify-between">
             {/* Connecting line */}
