@@ -257,6 +257,10 @@ const WaterJourneyMap: React.FC = () => {
     showCommunesRef.current = showCommunes;
   }, [showCommunes]);
 
+  useEffect(() => {
+    showIndustrialRef.current = showIndustrial;
+  }, [showIndustrial]);
+
   // Cancel animation when toggling industrial off or changing retailer
   useEffect(() => {
     cancelAnimation();
