@@ -1,50 +1,59 @@
 
 
-## Plan : Refonte UX de la carte parcours bouteille
+## Plan : Toggle des étapes industrielles sur la carte avec positions réelles
 
-### Problème actuel
+### Concept
 
-La fonction `getStepPosition()` place les 5 étapes industrielles (Analyse, Traitement, Embouteillage, Stockage, Transport) en offset mécanique depuis chaque source — toujours dans la même direction, avec des carrés colorés identiques. Cela produit des grappes de carrés répétitifs qui encombrent la carte sans refléter la réalité géographique.
+Ajouter un bouton toggle "Étapes industrielles" dans les contrôles de la carte. Quand activé, il affiche pour chaque source les 5 marqueurs d'étapes (Analyse, Traitement, Embouteillage, Stockage, Plateforme logistique) à leurs positions réelles en France.
 
-### Nouvelle approche
+**Réalité géographique** : pour les eaux minérales naturelles, la réglementation impose l'embouteillage à la source. Les étapes Analyse/Traitement/Embouteillage/Stockage sont donc proches de la source (souvent sur le même site industriel). Seule la plateforme logistique est géographiquement distincte (entrepôt régional du distributeur).
 
-Séparer la carte (géographie réelle) de la timeline du processus industriel (pédagogie) :
+### Modifications
 
-**1. Retirer les step markers de la carte**
+**1. `src/data/waterDistributors.ts` — Ajouter les coordonnées des sites industriels**
 
-Supprimer les 5 marqueurs carrés par source. La carte ne garde que :
-- Les **sources de captage** (cercles bleus) — positions réelles
-- Les **magasins/communes** (cercles verts) — positions réelles
-- Les **arcs de distribution** entre source et communes
+Ajouter une structure `INDUSTRIAL_SITES` indexée par source, contenant pour chaque source les coordonnées réelles ou estimées des 5 étapes :
+- **Analyse** : laboratoire sur site ou laboratoire agréé le plus proche (ex: Laboratoire départemental)
+- **Traitement/Filtration** : usine de traitement, généralement sur site source
+- **Embouteillage** : usine d'embouteillage (toujours à la source pour EMN)
+- **Stockage** : entrepôt/plateforme de palettisation (sur site ou zone industrielle voisine)
+- **Plateforme logistique** : entrepôt régional du distributeur (position distincte, ex: plateforme Leclerc de Clermont pour Laqueuille)
 
-**2. Ajouter une timeline horizontale interactive sous la carte**
+Environ 15-20 sources × 5 étapes = ~75-100 points avec coordonnées GPS réalistes basées sur les localisations connues des usines d'embouteillage et plateformes logistiques des distributeurs.
 
-Une barre horizontale avec les 6 étapes du processus (Captage → Analyse → Traitement → Embouteillage → Stockage/Expédition → Magasin) :
-- Chaque étape = un cercle coloré avec icône, reliés par une ligne pointillée
-- Au clic/hover sur une étape : affichage d'un tooltip avec description et durée
-- L'étape "Captage" et "Magasin" sont synchronisées avec la carte (highlight de la source / des communes)
+**2. `src/data/waterDistributors.ts` — Exporter une fonction `getIndustrialSteps()`**
 
-**3. Panneau détail au clic sur une source**
+```ts
+interface IndustrialStep {
+  type: 'analyse' | 'traitement' | 'embouteillage' | 'stockage' | 'logistique';
+  name: string;
+  coordinates: [number, number];
+  description: string;
+}
 
-Quand l'utilisateur clique sur un marqueur source sur la carte :
-- Un petit panneau latéral ou popup enrichi affiche le parcours spécifique de cette source
-- Nom de la source, distributeurs associés, et la timeline des étapes avec les durées
+function getIndustrialSteps(sourceName: string, retailer?: string): IndustrialStep[]
+```
 
-**4. Meilleurs marqueurs sur la carte**
+**3. `src/components/WaterJourneyMap.tsx` — Ajouter le toggle et le rendu des marqueurs**
 
-- Sources : cercles avec icône goutte (déjà OK)
-- Communes : cercles plus petits, verts, avec effet pulse subtil au hover
-- Supprimer le styling carré brut des anciens step markers
+- Nouveau state `showIndustrial` + toggle Switch dans la barre de contrôles (à côté du toggle Communes)
+- Quand activé : pour chaque source visible, placer les 5 marqueurs industriels avec les icônes correspondantes (FlaskConical, Filter, Package, Warehouse, Truck) et les couleurs de la timeline
+- Les marqueurs sont des cercles colorés (pas carrés) avec l'icône SVG, plus petits que les sources (w-6 h-6)
+- Au clic sur un marqueur industriel : popup avec nom du site, description, et lien vers la source associée
+- Des lignes fines relient source → analyse → traitement → embouteillage → stockage → plateforme logistique pour visualiser le parcours réel
+- Ajouter l'entrée dans la légende
+
+**4. Interaction avec la timeline**
+
+Quand l'utilisateur survole une étape de la timeline ET que le toggle industriel est actif :
+- Mettre en surbrillance tous les marqueurs de ce type sur la carte (ex: tous les sites d'embouteillage)
+- Atténuer les autres marqueurs industriels
 
 ### Fichiers modifiés
-
-- `src/components/WaterJourneyMap.tsx` — retirer la logique `getStepPosition` et les step markers, ajouter la timeline horizontale en dessous de la carte, panneau détail au clic source
-- Supprimer `JOURNEY_STEPS` de la logique de marqueurs cartographiques, les garder comme données pour la timeline
+- `src/data/waterDistributors.ts` — données des sites industriels + export
+- `src/components/WaterJourneyMap.tsx` — toggle, marqueurs, lignes de liaison, interaction timeline
 
 ### Résultat attendu
-
-- Carte épurée avec uniquement sources + communes + arcs
-- Timeline pédagogique lisible sous la carte
-- Interaction : clic source → détail du parcours
-- Plus de carrés identiques répétés partout
+- Toggle désactivé par défaut → carte épurée (sources + communes)
+- Toggle activé → apparition des étapes industrielles avec positions réalistes, reliées entre elles, et synchronisées avec la timeline
 
