@@ -1,48 +1,44 @@
 
 
-## Plan : Enrichir les données de la page `/sources-eau`
+## Plan : Corriger les données manquantes et les faux zéros sur `/sources-eau`
 
-### Constat
-Le panneau de détail affiche déjà la composition minérale et les caractéristiques techniques, mais il manque des indicateurs dérivés et des informations contextuelles que les données permettent de calculer. La page manque aussi de statistiques synthétiques.
+### Diagnostic
+
+Le problème principal est un **bug dans `toNumber()`** dans `src/utils/csv.ts` : quand une cellule CSV est vide (`""`), `Number("")` retourne `0` au lieu de `undefined`. Cela provoque :
+- Des "0 m³/jour", "0 mètres", "0 °C" dans les caractéristiques techniques (valeurs fantômes)
+- Des "0 mg/L" pour des minéraux non mesurés
+- La section "Caractéristiques techniques" s'affiche alors qu'il n'y a pas de données réelles
 
 ### Modifications
 
-**Fichier : `src/components/WaterSourcesMap.tsx`**
+**1. `src/utils/csv.ts` — Corriger `toNumber`**
 
-1. **Indicateur de minéralisation** — Ajouter un badge coloré sous le type d'eau, calculé à partir du résidu sec :
-   - Très faiblement minéralisée (< 50 mg/L) — bleu clair
-   - Faiblement minéralisée (50-500 mg/L) — vert
-   - Moyennement minéralisée (500-1500 mg/L) — orange
-   - Fortement minéralisée (> 1500 mg/L) — rouge
-   
-2. **Dureté de l'eau (°f)** — Calculer et afficher la dureté française à partir de Ca et Mg : `((Ca/40.08) + (Mg/24.31)) * 5.0`, avec un label qualitatif (Très douce / Douce / Moyennement dure / Dure / Très dure).
+Ajouter un garde pour les chaînes vides : si `v` est vide ou whitespace, retourner `undefined` au lieu de `0`.
 
-3. **Indicateurs d'usage** — Section "Recommandations" avec des badges basés sur la composition :
-   - "Convient aux nourrissons" si résidu sec < 500 et nitrates < 10 et fluor < 0.5
-   - "Pauvre en sodium" si Na < 20 mg/L
-   - "Riche en calcium" si Ca > 150 mg/L
-   - "Riche en magnésium" si Mg > 50 mg/L
-   - "Riche en bicarbonates" si HCO3 > 600 mg/L
+```typescript
+export const toNumber = (v?: string) => {
+  if (!v || !v.trim()) return undefined;  // ← ajout
+  const n = Number(v.replace(",", "."));
+  return Number.isFinite(n) ? n : undefined;
+};
+```
 
-4. **Section "Contrôle qualité" enrichie** — Remplacer le message générique par des informations contextuelles basées sur les données réelles : conformité aux limites réglementaires (nitrates < 50 mg/L, fluor < 1.5 mg/L, sodium < 200 mg/L), avec un indicateur vert/orange/rouge pour chaque paramètre vérifié.
+**2. `src/components/WaterSourcesMap.tsx` — Masquer la section technique vide**
 
-**Fichier : `src/pages/SourcesEau.tsx`**
+Conditionner l'affichage de la section "Caractéristiques techniques" (lignes 568-596) : ne l'afficher que si au moins un des 3 champs (`flow_rate`, `depth`, `temperature`) est défini et non nul. Actuellement elle s'affiche toujours avec les coordonnées, ce qui crée un bloc semi-vide.
 
-5. **Cartes statistiques synthétiques** — Ajouter entre le titre et la carte une grille de 4 mini-cards :
-   - Nombre total de sources
-   - Répartition par type (Eau de source / Minérale / Gazeuse) avec compteurs
-   - Nombre de sources avec composition connue
-   - Résidu sec moyen (calculé à partir des données disponibles)
+Déplacer la ligne "Coordonnées" hors de cette section conditionnelle pour qu'elle reste toujours visible.
+
+**3. `src/components/WaterSourcesMap.tsx` — Afficher un message quand la composition est absente**
+
+Pour les sources sans données de composition (eaux de source génériques comme Cristaline), afficher un message informatif "Données de composition non disponibles pour cette source" au lieu de simplement ne rien montrer.
 
 ### Ce qui ne change pas
-- La carte Mapbox, les marqueurs, les couleurs, le zoom/clic
-- La structure du panneau latéral (on ajoute des sections, on n'en supprime pas)
-- Le chargement des données CSV via `buildSources()`
-- Les sections éducatives en bas de page
+- La carte, les marqueurs, le zoom, les couleurs
+- La logique de jointure multi-clés dans `sourcesAdapter.ts`
+- Les sections éducatives et statistiques
+- Les indicateurs enrichis (minéralisation, dureté, recommandations) — ils s'afficheront correctement une fois le bug `toNumber` corrigé
 
-### Fichiers touchés
-| Fichier | Action |
-|---------|--------|
-| `src/components/WaterSourcesMap.tsx` | Enrichir le panneau de détails (minéralisation, dureté, usages, contrôle qualité) |
-| `src/pages/SourcesEau.tsx` | Ajouter les cartes statistiques synthétiques |
+### Impact
+Après ce fix, les sources avec composition réelle (Évian, Vittel, Hépar, Badoit…) afficheront les bonnes valeurs minérales et les indicateurs dérivés. Les sources sans composition afficheront un message clair. Plus aucun faux "0" ne polluera l'affichage.
 
