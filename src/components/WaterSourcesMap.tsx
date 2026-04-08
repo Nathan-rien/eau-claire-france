@@ -483,8 +483,8 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
 
                 {/* Composition minérale */}
                 {(selectedSource.Ca_mg_L || selectedSource.Mg_mg_L || selectedSource.Na_mg_L || 
-                  selectedSource.NO3_mg_L !== undefined || selectedSource.pH || selectedSource.HCO3_mg_L ||
-                  selectedSource.SO4_mg_L || selectedSource.Cl_mg_L || selectedSource.residu_sec_180_mg_L) && (
+                  (selectedSource.NO3_mg_L !== undefined && selectedSource.NO3_mg_L !== 0) || selectedSource.pH || selectedSource.HCO3_mg_L ||
+                  selectedSource.SO4_mg_L || selectedSource.Cl_mg_L || selectedSource.residu_sec_180_mg_L) ? (
                   <div className="space-y-3">
                     <h4 className="font-semibold text-sm">Composition minérale</h4>
                     <div className="grid grid-cols-1 gap-2">
@@ -562,38 +562,50 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
                       )}
                     </div>
                   </div>
+                ) : (
+                  <div className="bg-muted/50 border border-border rounded-lg p-3">
+                    <p className="text-sm text-muted-foreground">
+                      Données de composition non disponibles pour cette source.
+                    </p>
+                  </div>
                 )}
 
-                {/* Informations techniques détaillées */}
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-sm">Caractéristiques techniques</h4>
-                  <div className="grid grid-cols-1 gap-2">
-                    {typeof selectedSource.flow_rate === 'number' && (
-                      <div className="flex justify-between py-2 border-b">
-                        <span className="text-sm text-muted-foreground">Débit autorisé</span>
-                        <span className="font-medium">{selectedSource.flow_rate} m³/jour</span>
-                      </div>
-                    )}
-                    {typeof selectedSource.depth === 'number' && (
-                      <div className="flex justify-between py-2 border-b">
-                        <span className="text-sm text-muted-foreground">Profondeur captage</span>
-                        <span className="font-medium">{selectedSource.depth} mètres</span>
-                      </div>
-                    )}
-                    {typeof selectedSource.temperature === 'number' && (
-                      <div className="flex justify-between py-2 border-b">
-                        <span className="text-sm text-muted-foreground">Température émergence</span>
-                        <span className="font-medium">{selectedSource.temperature} °C</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between py-2 border-b">
-                      <span className="text-sm text-muted-foreground">Coordonnées</span>
-                      <span className="font-medium text-xs">
-                        {selectedSource.latitude?.toFixed(4)}°N, {selectedSource.longitude?.toFixed(4)}°E
-                      </span>
+                {/* Coordonnées — toujours visibles */}
+                <div className="flex justify-between py-2 border-b">
+                  <span className="text-sm text-muted-foreground">Coordonnées</span>
+                  <span className="font-medium text-xs">
+                    {selectedSource.latitude?.toFixed(4)}°N, {selectedSource.longitude?.toFixed(4)}°E
+                  </span>
+                </div>
+
+                {/* Informations techniques détaillées — seulement si données réelles */}
+                {(typeof selectedSource.flow_rate === 'number' && selectedSource.flow_rate > 0) ||
+                 (typeof selectedSource.depth === 'number' && selectedSource.depth > 0) ||
+                 (typeof selectedSource.temperature === 'number' && selectedSource.temperature > 0) ? (
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-sm">Caractéristiques techniques</h4>
+                    <div className="grid grid-cols-1 gap-2">
+                      {typeof selectedSource.flow_rate === 'number' && selectedSource.flow_rate > 0 && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">Débit autorisé</span>
+                          <span className="font-medium">{selectedSource.flow_rate} m³/jour</span>
+                        </div>
+                      )}
+                      {typeof selectedSource.depth === 'number' && selectedSource.depth > 0 && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">Profondeur captage</span>
+                          <span className="font-medium">{selectedSource.depth} mètres</span>
+                        </div>
+                      )}
+                      {typeof selectedSource.temperature === 'number' && selectedSource.temperature > 0 && (
+                        <div className="flex justify-between py-2 border-b">
+                          <span className="text-sm text-muted-foreground">Température émergence</span>
+                          <span className="font-medium">{selectedSource.temperature} °C</span>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
+                ) : null}
 
                 {/* Contrôle qualité enrichi */}
                 <div className="space-y-3">

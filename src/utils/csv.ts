@@ -21,6 +21,7 @@ export function parseCSV(input: string) {
 }
 
 export const toNumber = (v?: string) => {
-  const n = Number(String(v ?? "").replace(",", "."));
+  if (!v || !String(v).trim()) return undefined;
+  const n = Number(String(v).replace(",", "."));
   return Number.isFinite(n) ? n : undefined;
 };
