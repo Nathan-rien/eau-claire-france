@@ -1,18 +1,30 @@
 
 
-## Plan : Déplacer "Les risques liés à l'eau" après "Surveillez la qualité"
+## Plan : Mettre en miroir le bandeau "Surveillez la qualité" comme "Bien choisir son eau"
 
-### Ordre actuel des sections (lignes 199-312)
-1. **Section A** — Les risques liés à l'eau du robinet (lignes 199-233)
-2. **Section B** — Bien choisir son eau en bouteille (lignes 235-274)
-3. **Section C** — Surveillez la qualité de votre eau (lignes 276-312)
+### Objectif
+Transformer la section "Surveillez la qualité de votre eau" (actuellement centrée) en une disposition flex row identique à "Bien choisir son eau en bouteille", mais en miroir : texte à gauche justifié à droite avec un `border-right`, picto/icône à droite.
 
-### Nouvel ordre souhaité
-1. **Section B** — Bien choisir son eau en bouteille
-2. **Section C** — Surveillez la qualité de votre eau
-3. **Section A** — Les risques liés à l'eau du robinet
+### Modification — `src/pages/Index.tsx`, lignes 240-276
 
-### Modification — `src/pages/Index.tsx`
+Remplacer le layout centré actuel par un layout flex row miroir :
 
-Réorganiser les trois blocs de code (copier-coller) dans le fichier pour refléter le nouvel ordre. Aucun changement de contenu ou de style, uniquement l'ordre des sections.
+- **Structure flex** : `flex-col md:flex-row items-center gap-6 md:gap-8` (comme section B)
+- **Texte à gauche** (order 1) : `text-right` avec `border-r-4 border-primary pr-5` (miroir du `border-l-4 pl-5`)
+- **Picto à droite** (order 2) : le cercle avec Shield + icônes satellites, réutilisant le même style de cercle animé (dashed ring, bubbles) que les autres sections
+- **Bouton** : aligné à droite (`flex justify-end`)
+- Conserver le `max-w-5xl` au lieu de `max-w-3xl` pour être cohérent avec les autres sections
+- Supprimer les particules décoratives de fond (lignes 243-246) qui appartenaient au layout centré
+- Conserver les anneaux concentriques autour de l'icône Shield
+
+### Résultat visuel attendu
+```text
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│   Texte justifié à droite  │   ◯ Shield + icônes   │
+│   border-right bleu        │   anneaux concentriques│
+│   [Bouton aligné droite]   │   dashed ring          │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+```
 
