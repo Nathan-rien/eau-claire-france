@@ -239,39 +239,39 @@ const Index = () => {
 
         {/* Section C — Surveiller la qualité de votre eau */}
         <section className="relative overflow-hidden bg-sky-50 py-6 md:py-10 lg:py-12 px-4" role="region" aria-labelledby="monitor-title">
-          {/* Decorative background particles */}
-          <div className="absolute top-10 left-[10%] w-6 h-6 bg-primary/5 rounded-full animate-[bounce_5s_ease-in-out_infinite]" />
-          <div className="absolute top-1/3 right-[15%] w-4 h-4 bg-primary/10 rounded-full animate-[bounce_4s_ease-in-out_infinite_1s]" />
-          <div className="absolute bottom-16 left-[20%] w-5 h-5 bg-primary/5 rounded-full animate-[bounce_6s_ease-in-out_infinite_2s]" />
-          <div className="absolute bottom-10 right-[25%] w-3 h-3 bg-primary/10 rounded-full animate-[bounce_3s_ease-in-out_infinite_0.5s]" />
-
-          <div className="container mx-auto max-w-3xl text-center relative z-10">
-            <div className="relative w-20 h-20 mx-auto mb-6">
-              {/* Concentric rings */}
-              <div className="absolute inset-0 w-28 h-28 -m-4 rounded-full border border-primary/10 animate-scale-in [animation-delay:0.1s]" />
-              <div className="absolute inset-0 w-36 h-36 -m-8 rounded-full border border-primary/5 animate-scale-in [animation-delay:0.3s]" />
-              <div className="absolute inset-0 w-44 h-44 -m-12 rounded-full border border-primary/[0.03] animate-scale-in [animation-delay:0.5s]" />
-              <div className="w-20 h-20 bg-primary/15 rounded-full flex items-center justify-center animate-scale-in relative">
-                <Shield className="w-10 h-10 text-primary" />
-                <Search className="w-6 h-6 text-primary/60 absolute -top-3 -right-5 animate-fade-in [animation-delay:0.4s]" />
-                <Bell className="w-6 h-6 text-primary/60 absolute -bottom-3 -right-4 animate-fade-in [animation-delay:0.6s]" />
-                <Activity className="w-6 h-6 text-primary/60 absolute -left-5 top-1/2 -translate-y-1/2 animate-fade-in [animation-delay:0.8s]" />
+          <div className="container mx-auto max-w-5xl relative z-10">
+            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
+              {/* Texte à gauche, justifié à droite */}
+              <div className="flex-1 text-right border-r-4 border-primary pr-5">
+                <h2 id="monitor-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
+                  Surveillez la qualité de votre eau
+                </h2>
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
+                  Les données de qualité de l'eau sont publiques et accessibles à tous. Grâce à notre outil de diagnostic, retrouvez en quelques clics les <strong className="text-foreground">analyses officielles</strong> de votre commune.
+                </p>
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-4">
+                  Restez informé des dépassements de seuils, comprenez les résultats et recevez des <strong className="text-foreground">alertes en temps réel</strong> pour protéger votre santé et celle de vos proches.
+                </p>
+                <div className="flex justify-end mt-4">
+                  <Link to="/diagnostic">
+                    <Button size="lg" className="shadow-lg hover:shadow-xl transition-shadow">
+                      Lancer un diagnostic gratuit →
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+              {/* Picto à droite */}
+              <div className="relative shrink-0 w-28 h-28 md:w-32 md:h-32 order-first md:order-last">
+                <div className="absolute inset-0 w-36 h-36 -m-2 rounded-full border border-dashed border-primary/15 animate-[spin_25s_linear_infinite]" />
+                <div className="absolute inset-0 w-44 h-44 -m-6 rounded-full border border-primary/5 animate-scale-in [animation-delay:0.3s]" />
+                <div className="w-full h-full bg-primary/15 rounded-full flex items-center justify-center animate-scale-in relative">
+                  <Shield className="w-12 h-12 text-primary" />
+                  <Search className="w-6 h-6 text-primary/60 absolute -top-3 -right-3 animate-fade-in [animation-delay:0.4s]" />
+                  <Bell className="w-6 h-6 text-primary/60 absolute -bottom-3 -right-2 animate-fade-in [animation-delay:0.6s]" />
+                  <Activity className="w-6 h-6 text-primary/60 absolute -left-4 top-1/2 -translate-y-1/2 animate-fade-in [animation-delay:0.8s]" />
+                </div>
               </div>
             </div>
-            <h2 id="monitor-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-              Surveillez la qualité de votre eau
-            </h2>
-            <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3 max-w-2xl mx-auto">
-              Les données de qualité de l'eau sont publiques et accessibles à tous. Grâce à notre outil de diagnostic, retrouvez en quelques clics les <strong className="text-foreground">analyses officielles</strong> de votre commune.
-            </p>
-            <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-6 max-w-2xl mx-auto">
-              Restez informé des dépassements de seuils, comprenez les résultats et recevez des <strong className="text-foreground">alertes en temps réel</strong> pour protéger votre santé et celle de vos proches.
-            </p>
-            <Link to="/diagnostic">
-              <Button size="lg" className="shadow-lg hover:shadow-xl transition-shadow">
-                Lancer un diagnostic gratuit →
-              </Button>
-            </Link>
           </div>
         </section>
 
