@@ -233,7 +233,7 @@ const Index = () => {
         </section>
 
         {/* Section B — Bien choisir son eau en bouteille */}
-        <section className="py-6 md:py-10 lg:py-12 px-4 bg-cyan-50" role="region" aria-labelledby="choose-title">
+        <section className="py-6 md:py-10 lg:py-12 px-4 bg-sky-50" role="region" aria-labelledby="choose-title">
           <div className="container mx-auto max-w-5xl">
             <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
               <div className="flex-shrink-0 relative">
