@@ -1,33 +1,26 @@
 
-Plan : supprimer les “0” orphelins dans le panneau `/sources-eau`
 
-Diagnostic
-- Le problème ne vient plus du parsing CSV mais du rendu JSX dans `src/components/WaterSourcesMap.tsx`.
-- Des conditions comme `{selectedSource.Na_mg_L && (...)}` ou `{selectedSource.SO4_mg_L && (...)}` affichent un `0` brut quand la valeur vaut exactement `0`, car React rend le résultat numérique du `&&`.
-- C’est cohérent avec votre capture : le `0` entre Magnésium et Nitrates correspond très probablement au sodium, et le second au sulfate.
+## Plan : Corriger la détection des eaux gazeuses dans les statistiques
 
-Modifications
-1. `src/components/WaterSourcesMap.tsx` — remplacer tous les tests “truthy” sur les valeurs numériques par des tests explicites :
-   - de `value && (...)`
-   - vers `value !== undefined && value !== null`
-- Champs concernés dans la composition : `pH`, `residu_sec_180_mg_L`, `Ca_mg_L`, `Mg_mg_L`, `Na_mg_L`, `NO3_mg_L`, `HCO3_mg_L`, `SO4_mg_L`, `Cl_mg_L`, `K_mg_L`, `F_mg_L`, `SiO2_mg_L`.
+### Problème
+Le CSV des coordonnées (`water_sources_coordinates.csv`) classe toutes les eaux minérales comme "EMN" sans distinguer plates et gazeuses. Le catalogue (`infoeau_catalog_eaux_v3.csv`) contient les colonnes `variant` (plate/gazeuse) et `is_gaseous` (True/False), mais `buildSources()` ne charge pas ce fichier. Résultat : 0 gazeuses dans les stats alors qu'il y en a 31 dans le catalogue.
 
-2. Refactor léger de la section “Composition minérale”
-- Construire une liste de lignes de composition puis la filtrer avec une règle unique.
-- Cela évite d’avoir des conditions incohérentes entre les champs et garantit qu’une vraie valeur `0` s’affiche proprement sous forme :
-  - `Sodium (Na) — 0 mg/L`
-  - au lieu d’un `0` isolé.
+### Solution
 
-3. Corriger aussi la condition d’ouverture de la section
-- La section “Composition minérale” utilise aujourd’hui un mélange de tests truthy et de cas particuliers.
-- Je la baserai sur “au moins une valeur numérique définie” pour que :
-  - une composition réelle avec des zéros soit bien reconnue,
-  - le message “Données de composition non disponibles” ne s’affiche que si aucune donnée n’existe.
+**1. `src/utils/sourcesAdapter.ts` — Charger le catalogue et construire un index de gazéité**
 
-Résultat attendu
-- Plus aucun `0` orphelin entre deux lignes.
-- Si un minéral vaut réellement `0`, il apparaîtra avec son libellé et son unité.
-- Si le champ est absent, rien ne sera affiché.
+- Ajouter un 3e `fetch` pour `/data/infoeau_catalog_eaux_v3.csv`
+- Construire un index `Map<string, boolean>` basé sur la marque (normalisée) → `is_gaseous === "True"` ou `variant === "gazeuse"`
+- Dans la boucle de construction des items, après avoir déterminé `rawCategory`, consulter cet index : si la marque est gazeuse et la catégorie est "EMN", passer la catégorie à "Eau minérale naturelle gazeuse"
 
-Fichier touché
-- `src/components/WaterSourcesMap.tsx`
+**2. `src/utils/sourcesAdapter.ts` — Modifier `mapCategory` ou le point d'appel**
+
+- Ajouter un second paramètre optionnel `isGaseous?: boolean` à la logique de catégorisation
+- Si `isGaseous` est `true` et la catégorie brute est "EMN", retourner "Eau minérale naturelle gazeuse"
+
+### Fichier touché
+- `src/utils/sourcesAdapter.ts` uniquement
+
+### Résultat attendu
+Les stats afficheront le bon nombre d'eaux gazeuses (orange sur la carte) au lieu de "0 gazeuse".
+
