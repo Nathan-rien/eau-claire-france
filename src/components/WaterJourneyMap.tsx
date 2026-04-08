@@ -511,6 +511,7 @@ const WaterJourneyMap: React.FC = () => {
 
         const el = document.createElement('div');
         el.className = 'industrial-marker flex items-center justify-center w-6 h-6';
+        el.style.zIndex = '5';
         el.dataset.stepType = step.type;
         el.dataset.sourceKey = srcKey;
         el.title = step.name;
