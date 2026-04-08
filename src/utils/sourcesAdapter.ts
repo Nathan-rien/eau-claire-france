@@ -51,9 +51,10 @@ const key = (a?: string, b?: string, c?: string) =>
 export async function buildSources(): Promise<SourceItem[]> {
   const log = (...a: any[]) => console.log("[buildSources]", ...a);
 
-  const [coordsTxt, compTxt] = await Promise.all([
+  const [coordsTxt, compTxt, catalogTxt] = await Promise.all([
     fetch("/data/water_sources_coordinates.csv").then(r => r.text()),
-    fetch("/data/infoeau_emn_composition_v2_partial.csv").then(r => r.text()).catch(() => "")
+    fetch("/data/infoeau_emn_composition_v2_partial.csv").then(r => r.text()).catch(() => ""),
+    fetch("/data/infoeau_catalog_eaux_v3.csv").then(r => r.text()).catch(() => "")
   ]);
 
   const coords = parseCSV(coordsTxt);
