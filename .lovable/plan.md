@@ -1,34 +1,23 @@
 
 
-## Plan : Harmoniser les espacements de la page d'accueil
+## Plan : Appliquer le dégradé bleu→vert de la charte aux chiffres clés
 
-### Problème
-Les sections de la page d'accueil utilisent des paddings et marges incohérents :
-- La plupart des sections : `py-8 md:py-12 lg:py-16`
-- Section C (Surveiller) : `py-10 md:py-14 lg:py-20` — plus grand
-- Les marges internes (titres, sous-titres, CTA) varient entre `mb-3`, `mb-4`, `mb-6`, `mb-8`, `mb-12`
+### Référence
+L'image montre les 4 chiffres (35,000+ / 50+ / 98% / 24h) chacun avec une couleur différente. La charte InfoEau utilise le dégradé `from-[#3b82f6] to-[#22c55e]`. On applique ce dégradé en texte (`bg-gradient-to-r bg-clip-text text-transparent`) aux 4 valeurs pour un rendu cohérent avec le logo.
 
 ### Fichier modifié
-`src/pages/Index.tsx`
+`src/pages/Index.tsx` — lignes 55, 59, 63, 67
 
 ### Changements
+Remplacer les classes de couleur de chaque chiffre par le dégradé :
 
-**1. Uniformiser le padding vertical de toutes les sections**
-Toutes les sections passent à `py-6 md:py-10 lg:py-12` (légèrement réduit pour un rendu plus compact).
-
-**2. Standardiser les espacements internes**
-- Titre `h2` → `mb-2`
-- Sous-titre / description → `mb-4`
-- Bloc CTA (bouton) → `mt-4`
-- Bloc stats dans le Hero → `mb-4 md:mb-6`
-- Grilles de cartes → gap uniforme `gap-4`
-- Sections éditoriales (A, B, C) : gap entre colonnes `gap-6 md:gap-8`
-
-**3. Hero : réduire les marges internes**
-- Titre principal : `mb-3 md:mb-4`
-- Sous-titre : `mb-4 md:mb-6`
-- Bouton CTA : `mb-4 md:mb-6`
+| Chiffre | Avant | Après |
+|---------|-------|-------|
+| 35,000+ | `text-primary` | `bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent` |
+| 50+ | `text-muted-foreground` | `bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent` |
+| 98% | `text-orange-600` | `bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent` |
+| 24h | `text-purple-600` | `bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent` |
 
 ### Résultat attendu
-Espacement visuel homogène entre toutes les sections, titres, et boutons CTA sur toute la page.
+Les 4 chiffres clés affichent le même dégradé bleu→vert conforme à la charte graphique du logo InfoEau.
 
