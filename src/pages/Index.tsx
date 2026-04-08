@@ -28,12 +28,12 @@ const Index = () => {
       
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50">
         {/* Hero Section */}
-        <section className="py-6 md:py-10 lg:py-12 px-4 bg-[sidebar-primary-foreground] bg-primary-foreground" role="banner">
+        <section className="py-6 md:py-10 lg:py-12 px-4 bg-[sidebar-primary-foreground] bg-sky-50" role="banner">
           <div className="container mx-auto text-center">
             <div className="max-w-4xl mx-auto">
               <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-foreground mb-3 md:mb-4 leading-tight px-2">
                 {t('home.title')} 
-                <span className="bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent"> {t('home.titleHighlight')}</span> ?
+                <span className="bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-primary"> {t('home.titleHighlight')}</span> ?
               </h1>
               <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-4 md:mb-6 leading-relaxed px-2">
                 {t('home.subtitle')}
@@ -56,7 +56,7 @@ const Index = () => {
                     <div className="text-xs md:text-sm text-muted-foreground">{t('home.stats.communes')}</div>
                   </div>
                   <div className="bg-card rounded-lg p-3 md:p-4 border border-border shadow-sm">
-                    <div className="text-lg md:text-xl lg:text-2xl font-bold text-green-600">50+</div>
+                    <div className="text-lg md:text-xl lg:text-2xl font-bold text-muted-foreground">50+</div>
                     <div className="text-xs md:text-sm text-muted-foreground">{t('home.stats.pollutants')}</div>
                   </div>
                   <div className="bg-card rounded-lg p-3 md:p-4 border border-border shadow-sm">
@@ -75,7 +75,7 @@ const Index = () => {
 
         {/* Section 1 — Quelle eau boire ? */}
         <section className="relative py-6 md:py-10 lg:py-12 px-4 bg-cover bg-center" style={{ backgroundImage: `url(${waterBg})` }} role="region" aria-labelledby="diagnostic-title">
-          <div className="absolute inset-0 backdrop-blur-sm bg-sky-100" />
+          <div className="absolute inset-0 backdrop-blur-sm bg-sky-50" />
           <div className="relative container mx-auto max-w-4xl">
             <div className="text-center mb-4">
               <h2 id="diagnostic-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
