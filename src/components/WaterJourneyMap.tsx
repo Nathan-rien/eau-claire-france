@@ -273,7 +273,11 @@ const WaterJourneyMap: React.FC = () => {
       routes.forEach((route) => {
         route.communes.forEach((commune) => {
           const el = document.createElement('div');
-          el.className = 'w-4 h-4 rounded-full bg-emerald-500 border-2 border-white shadow-md cursor-pointer transition-shadow hover:shadow-lg hover:shadow-emerald-500/30';
+          el.className = 'flex items-center justify-center w-4 h-4';
+          const communeInner = document.createElement('div');
+          communeInner.className = 'w-4 h-4 rounded-full bg-emerald-500 border-2 border-white shadow-md cursor-pointer transition-shadow hover:shadow-lg hover:shadow-emerald-500/30';
+          communeInner.style.transformOrigin = 'center center';
+          el.appendChild(communeInner);
           el.title = commune.name;
 
           const popup = new mapboxgl.Popup({ offset: 15 }).setHTML(
@@ -368,11 +372,15 @@ const WaterJourneyMap: React.FC = () => {
       if (!addedSources.has(srcKey)) {
         addedSources.add(srcKey);
 
-        // Source marker — circle with droplet
+        // Source marker — stable root + animated inner
         const el = document.createElement('div');
-        el.className = 'flex items-center justify-center w-8 h-8 rounded-full bg-primary border-2 border-white shadow-lg cursor-pointer transition-all hover:scale-110 hover:shadow-primary/40 hover:shadow-xl';
+        el.className = 'flex items-center justify-center w-8 h-8';
         el.style.zIndex = '10';
-        el.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>';
+        const sourceInner = document.createElement('div');
+        sourceInner.className = 'flex items-center justify-center w-8 h-8 rounded-full bg-primary border-2 border-white shadow-lg cursor-pointer transition-all duration-200 hover:scale-110 hover:shadow-xl hover:shadow-primary/40';
+        sourceInner.style.transformOrigin = 'center center';
+        sourceInner.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>';
+        el.appendChild(sourceInner);
         el.title = route.source.name;
 
         const retailersAtSource = routes
@@ -499,13 +507,14 @@ const WaterJourneyMap: React.FC = () => {
         if (!icon) return;
 
         const el = document.createElement('div');
-        el.className = 'industrial-marker';
+        el.className = 'industrial-marker flex items-center justify-center w-6 h-6';
         el.dataset.stepType = step.type;
         el.dataset.sourceKey = srcKey;
         el.title = step.name;
         const inner = document.createElement('div');
         inner.className = 'industrial-inner flex items-center justify-center w-6 h-6 rounded-full border border-white/80 shadow-md cursor-pointer transition-all duration-200 hover:scale-125 hover:shadow-lg';
         inner.style.backgroundColor = icon.color;
+        inner.style.transformOrigin = 'center center';
         inner.innerHTML = icon.svg;
         el.appendChild(inner);
 
