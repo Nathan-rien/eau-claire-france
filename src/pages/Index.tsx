@@ -28,7 +28,7 @@ const Index = () => {
       
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50">
         {/* Hero Section */}
-        <section className="py-6 md:py-10 lg:py-12 px-4 bg-[sidebar-primary-foreground] bg-sky-200" role="banner">
+        <section className="py-6 md:py-10 lg:py-12 px-4 bg-[sidebar-primary-foreground] bg-primary-foreground" role="banner">
           <div className="container mx-auto text-center">
             <div className="max-w-4xl mx-auto">
               <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-foreground mb-3 md:mb-4 leading-tight px-2">
@@ -75,7 +75,7 @@ const Index = () => {
 
         {/* Section 1 — Quelle eau boire ? */}
         <section className="relative py-6 md:py-10 lg:py-12 px-4 bg-cover bg-center" style={{ backgroundImage: `url(${waterBg})` }} role="region" aria-labelledby="diagnostic-title">
-          <div className="absolute inset-0 backdrop-blur-sm bg-primary-foreground" />
+          <div className="absolute inset-0 backdrop-blur-sm bg-sky-100" />
           <div className="relative container mx-auto max-w-4xl">
             <div className="text-center mb-4">
               <h2 id="diagnostic-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
@@ -158,7 +158,7 @@ const Index = () => {
         </section>
 
         {/* Section 3 — Cartes & Infographies */}
-        <section className="py-6 md:py-10 lg:py-12 px-4 bg-sky-200" role="region" aria-labelledby="maps-title">
+        <section className="py-6 md:py-10 lg:py-12 px-4 bg-sky-100" role="region" aria-labelledby="maps-title">
           <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-4">
               <h2 id="maps-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
@@ -233,7 +233,7 @@ const Index = () => {
         </section>
 
         {/* Section B — Bien choisir son eau en bouteille */}
-        <section className="py-6 md:py-10 lg:py-12 px-4 bg-card" role="region" aria-labelledby="choose-title">
+        <section className="py-6 md:py-10 lg:py-12 px-4 bg-sky-100" role="region" aria-labelledby="choose-title">
           <div className="container mx-auto max-w-5xl">
             <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
               <div className="flex-shrink-0 relative">
@@ -274,7 +274,7 @@ const Index = () => {
         </section>
 
         {/* Section C — Surveiller la qualité de votre eau */}
-        <section className="py-6 md:py-10 lg:py-12 px-4 bg-gradient-to-br from-primary/10 via-blue-50 to-primary/5 relative overflow-hidden" role="region" aria-labelledby="monitor-title">
+        <section className="py-6 md:py-10 lg:py-12 px-4 bg-gradient-to-br from-primary/10 via-blue-50 to-primary/5 relative overflow-hidden bg-orange-50" role="region" aria-labelledby="monitor-title">
           {/* Decorative background particles */}
           <div className="absolute top-10 left-[10%] w-6 h-6 bg-primary/5 rounded-full animate-[bounce_5s_ease-in-out_infinite]" />
           <div className="absolute top-1/3 right-[15%] w-4 h-4 bg-primary/10 rounded-full animate-[bounce_4s_ease-in-out_infinite_1s]" />
