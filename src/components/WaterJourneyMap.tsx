@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapboxSecurityService } from '@/services/mapboxSecurityService';
-import { getRoutesByRetailer, getRetailerList } from '@/data/waterDistributors';
+import { getRoutesByRetailer, getRetailerList, getIndustrialSteps } from '@/data/waterDistributors';
+import type { IndustrialStep } from '@/data/waterDistributors';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Building2, MapPin, Droplets, FlaskConical, Filter, Package, Warehouse, Truck, ShoppingCart, X } from 'lucide-react';
+import { Building2, MapPin, Droplets, FlaskConical, Filter, Package, Warehouse, Truck, Factory, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-
 // Journey steps for the timeline (not on the map)
 const JOURNEY_STEPS = [
   {

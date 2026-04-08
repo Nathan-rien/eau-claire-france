@@ -339,6 +339,82 @@ const RAW_DISTRIBUTORS = [
   { retailer: 'Franprix', mddBrand: 'Franprix – Eau de source Montclar', source: 'Montclar', category: 'Eau de source' },
 ];
 
+// ── Industrial sites with real/estimated GPS coordinates ──
+export interface IndustrialStep {
+  type: 'analyse' | 'traitement' | 'embouteillage' | 'stockage' | 'logistique';
+  name: string;
+  coordinates: [number, number]; // [lng, lat]
+  description: string;
+}
+
+// For EMN: analysis/treatment/bottling/storage are at or very near the source (regulatory requirement).
+// Logistics platforms are the retailer's regional warehouse — geographically distinct.
+const LOGISTICS_PLATFORMS: Record<string, { coordinates: [number, number]; name: string }> = {
+  'E.Leclerc': { coordinates: [3.13, 45.73], name: 'Plateforme Leclerc Cournon-d\'Auvergne' },
+  'Carrefour': { coordinates: [4.95, 45.69], name: 'Entrepôt Carrefour Vénissieux' },
+  'Intermarché': { coordinates: [-0.42, 46.38], name: 'Base ITM Niort' },
+  'Système U': { coordinates: [1.65, 47.65], name: 'Centrale U Vendôme' },
+  'Auchan': { coordinates: [3.15, 50.62], name: 'Entrepôt Auchan Lesquin' },
+  'Casino': { coordinates: [4.42, 45.46], name: 'Easydis Saint-Étienne' },
+  'Cora': { coordinates: [6.22, 48.72], name: 'Entrepôt Cora Ludres' },
+  'Lidl': { coordinates: [7.75, 48.58], name: 'Plateforme Lidl Strasbourg' },
+  'Aldi': { coordinates: [2.95, 49.85], name: 'Plateforme Aldi Laon' },
+  'Monoprix': { coordinates: [2.35, 48.93], name: 'Entrepôt Monoprix Gennevilliers' },
+  'Franprix': { coordinates: [2.42, 48.88], name: 'Plateforme Franprix Paris Est' },
+};
+
+// Small offsets from source to simulate distinct on-site facilities
+function getIndustrialStepsForSource(
+  sourceName: string,
+  sourceLng: number,
+  sourceLat: number,
+  retailer: string,
+): IndustrialStep[] {
+  const logistics = LOGISTICS_PLATFORMS[retailer] || {
+    coordinates: [2.35, 48.86] as [number, number],
+    name: `Plateforme logistique ${retailer}`,
+  };
+
+  return [
+    {
+      type: 'analyse',
+      name: `Laboratoire – ${sourceName}`,
+      coordinates: [sourceLng + 0.012, sourceLat + 0.008],
+      description: 'Analyses bactériologiques et physico-chimiques en continu',
+    },
+    {
+      type: 'traitement',
+      name: `Station de traitement – ${sourceName}`,
+      coordinates: [sourceLng - 0.008, sourceLat + 0.015],
+      description: 'Filtration, ozonation et traitement UV selon la source',
+    },
+    {
+      type: 'embouteillage',
+      name: `Usine d'embouteillage – ${sourceName}`,
+      coordinates: [sourceLng + 0.02, sourceLat - 0.01],
+      description: 'Remplissage, bouchage, étiquetage et mise en pack',
+    },
+    {
+      type: 'stockage',
+      name: `Entrepôt – ${sourceName}`,
+      coordinates: [sourceLng - 0.015, sourceLat - 0.02],
+      description: 'Palettisation, contrôle qualité des lots, stockage tampon',
+    },
+    {
+      type: 'logistique',
+      name: logistics.name,
+      coordinates: logistics.coordinates,
+      description: `Plateforme régionale ${retailer} — réception, éclatement et expédition vers magasins`,
+    },
+  ];
+}
+
+export function getIndustrialSteps(sourceName: string, retailer: string): IndustrialStep[] {
+  const coords = SOURCE_COORDS[sourceName];
+  if (!coords) return [];
+  return getIndustrialStepsForSource(sourceName, coords.lng, coords.lat, retailer);
+}
+
 function getCommunesForSource(sourceName: string): CommuneData[] {
   return COMMUNES[sourceName] || COMMUNES['Multi-sources'] || [];
 }
