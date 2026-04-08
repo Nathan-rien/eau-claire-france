@@ -400,7 +400,7 @@ const WaterJourneyMap: React.FC = () => {
             retailers: retailersAtSource,
           });
           // Trigger industrial animation if toggle is active
-          if (showIndustrial) {
+          if (showIndustrialRef.current) {
             startIndustrialAnimation(capturedSrcKey);
           }
         });
