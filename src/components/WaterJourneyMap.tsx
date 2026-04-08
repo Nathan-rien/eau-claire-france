@@ -150,6 +150,7 @@ const WaterJourneyMap: React.FC = () => {
   const animFrameRef = useRef<number>(0);
   const lastFrameRef = useRef<number>(0);
   const showCommunesRef = useRef(false);
+  const showIndustrialRef = useRef(false);
   const animTimeoutRefs = useRef<number[]>([]);
 
   const [selectedRetailer, setSelectedRetailer] = useState<string>('all');
