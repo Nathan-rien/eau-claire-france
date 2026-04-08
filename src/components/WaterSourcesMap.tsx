@@ -482,93 +482,42 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
                 })()}
 
                 {/* Composition minérale */}
-                {(selectedSource.Ca_mg_L || selectedSource.Mg_mg_L || selectedSource.Na_mg_L || 
-                  (selectedSource.NO3_mg_L !== undefined && selectedSource.NO3_mg_L !== 0) || selectedSource.pH || selectedSource.HCO3_mg_L ||
-                  selectedSource.SO4_mg_L || selectedSource.Cl_mg_L || selectedSource.residu_sec_180_mg_L) ? (
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-sm">Composition minérale</h4>
-                    <div className="grid grid-cols-1 gap-2">
-                      {selectedSource.pH && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-sm text-muted-foreground">pH</span>
-                          <span className="font-medium">{selectedSource.pH}</span>
-                        </div>
-                      )}
-                      {selectedSource.residu_sec_180_mg_L && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-sm text-muted-foreground">Résidu sec</span>
-                          <span className="font-medium">{selectedSource.residu_sec_180_mg_L} mg/L</span>
-                        </div>
-                      )}
-                      {selectedSource.Ca_mg_L && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-sm text-muted-foreground">Calcium (Ca)</span>
-                          <span className="font-medium">{selectedSource.Ca_mg_L} mg/L</span>
-                        </div>
-                      )}
-                      {selectedSource.Mg_mg_L && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-sm text-muted-foreground">Magnésium (Mg)</span>
-                          <span className="font-medium">{selectedSource.Mg_mg_L} mg/L</span>
-                        </div>
-                      )}
-                      {selectedSource.Na_mg_L && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-sm text-muted-foreground">Sodium (Na)</span>
-                          <span className="font-medium">{selectedSource.Na_mg_L} mg/L</span>
-                        </div>
-                      )}
-                      {selectedSource.NO3_mg_L !== undefined && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-sm text-muted-foreground">Nitrates (NO₃)</span>
-                          <span className="font-medium">{selectedSource.NO3_mg_L} mg/L</span>
-                        </div>
-                      )}
-                      {selectedSource.HCO3_mg_L && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-sm text-muted-foreground">Bicarbonates (HCO₃)</span>
-                          <span className="font-medium">{selectedSource.HCO3_mg_L} mg/L</span>
-                        </div>
-                      )}
-                      {selectedSource.SO4_mg_L && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-sm text-muted-foreground">Sulfates (SO₄)</span>
-                          <span className="font-medium">{selectedSource.SO4_mg_L} mg/L</span>
-                        </div>
-                      )}
-                      {selectedSource.Cl_mg_L && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-sm text-muted-foreground">Chlorures (Cl)</span>
-                          <span className="font-medium">{selectedSource.Cl_mg_L} mg/L</span>
-                        </div>
-                      )}
-                      {selectedSource.K_mg_L && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-sm text-muted-foreground">Potassium (K)</span>
-                          <span className="font-medium">{selectedSource.K_mg_L} mg/L</span>
-                        </div>
-                      )}
-                      {selectedSource.F_mg_L && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-sm text-muted-foreground">Fluor (F)</span>
-                          <span className="font-medium">{selectedSource.F_mg_L} mg/L</span>
-                        </div>
-                      )}
-                      {selectedSource.SiO2_mg_L && (
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-sm text-muted-foreground">Silice (SiO₂)</span>
-                          <span className="font-medium">{selectedSource.SiO2_mg_L} mg/L</span>
-                        </div>
-                      )}
+                {(() => {
+                  const mineralRows = [
+                    { label: 'pH', value: selectedSource.pH, unit: '' },
+                    { label: 'Résidu sec', value: selectedSource.residu_sec_180_mg_L, unit: 'mg/L' },
+                    { label: 'Calcium (Ca)', value: selectedSource.Ca_mg_L, unit: 'mg/L' },
+                    { label: 'Magnésium (Mg)', value: selectedSource.Mg_mg_L, unit: 'mg/L' },
+                    { label: 'Sodium (Na)', value: selectedSource.Na_mg_L, unit: 'mg/L' },
+                    { label: 'Nitrates (NO₃)', value: selectedSource.NO3_mg_L, unit: 'mg/L' },
+                    { label: 'Bicarbonates (HCO₃)', value: selectedSource.HCO3_mg_L, unit: 'mg/L' },
+                    { label: 'Sulfates (SO₄)', value: selectedSource.SO4_mg_L, unit: 'mg/L' },
+                    { label: 'Chlorures (Cl)', value: selectedSource.Cl_mg_L, unit: 'mg/L' },
+                    { label: 'Potassium (K)', value: selectedSource.K_mg_L, unit: 'mg/L' },
+                    { label: 'Fluor (F)', value: selectedSource.F_mg_L, unit: 'mg/L' },
+                    { label: 'Silice (SiO₂)', value: selectedSource.SiO2_mg_L, unit: 'mg/L' },
+                  ].filter(row => row.value !== undefined && row.value !== null);
+
+                  return mineralRows.length > 0 ? (
+                    <div className="space-y-3">
+                      <h4 className="font-semibold text-sm">Composition minérale</h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        {mineralRows.map((row) => (
+                          <div key={row.label} className="flex justify-between py-2 border-b">
+                            <span className="text-sm text-muted-foreground">{row.label}</span>
+                            <span className="font-medium">{row.value}{row.unit ? ` ${row.unit}` : ''}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="bg-muted/50 border border-border rounded-lg p-3">
-                    <p className="text-sm text-muted-foreground">
-                      Données de composition non disponibles pour cette source.
-                    </p>
-                  </div>
-                )}
+                  ) : (
+                    <div className="bg-muted/50 border border-border rounded-lg p-3">
+                      <p className="text-sm text-muted-foreground">
+                        Données de composition non disponibles pour cette source.
+                      </p>
+                    </div>
+                  );
+                })()}
 
                 {/* Coordonnées — toujours visibles */}
                 <div className="flex justify-between py-2 border-b">
