@@ -371,6 +371,7 @@ const WaterJourneyMap: React.FC = () => {
         // Source marker — circle with droplet
         const el = document.createElement('div');
         el.className = 'flex items-center justify-center w-8 h-8 rounded-full bg-primary border-2 border-white shadow-lg cursor-pointer transition-all hover:scale-110 hover:shadow-primary/40 hover:shadow-xl';
+        el.style.zIndex = '10';
         el.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>';
         el.title = route.source.name;
 
