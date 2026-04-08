@@ -462,7 +462,7 @@ const WaterJourneyMap: React.FC = () => {
       animFrameRef.current = requestAnimationFrame(animateDash);
     }
     animFrameRef.current = requestAnimationFrame(animateDash);
-  }, [selectedRetailer, mapLoaded, showCommunes, showIndustrial, startIndustrialAnimation]);
+  }, [selectedRetailer, mapLoaded, showCommunes, startIndustrialAnimation]);
 
   useEffect(() => {
     renderRoutes();
