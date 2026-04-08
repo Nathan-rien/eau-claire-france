@@ -52,19 +52,19 @@ const Index = () => {
                 <h3 className="text-lg font-semibold text-foreground mb-4 text-center">{t('home.stats.title')}</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-2">
                   <div className="bg-card rounded-lg p-3 md:p-4 border border-border shadow-sm">
-                    <div className="text-lg md:text-xl lg:text-2xl font-bold text-primary">35,000+</div>
+                    <div className="text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent">35,000+</div>
                     <div className="text-xs md:text-sm text-muted-foreground">{t('home.stats.communes')}</div>
                   </div>
                   <div className="bg-card rounded-lg p-3 md:p-4 border border-border shadow-sm">
-                    <div className="text-lg md:text-xl lg:text-2xl font-bold text-muted-foreground">50+</div>
+                    <div className="text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent">50+</div>
                     <div className="text-xs md:text-sm text-muted-foreground">{t('home.stats.pollutants')}</div>
                   </div>
                   <div className="bg-card rounded-lg p-3 md:p-4 border border-border shadow-sm">
-                    <div className="text-lg md:text-xl lg:text-2xl font-bold text-orange-600">98%</div>
+                    <div className="text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent">98%</div>
                     <div className="text-xs md:text-sm text-muted-foreground">{t('home.stats.compliance')}</div>
                   </div>
                   <div className="bg-card rounded-lg p-3 md:p-4 border border-border shadow-sm">
-                    <div className="text-lg md:text-xl lg:text-2xl font-bold text-purple-600">24h</div>
+                    <div className="text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent">24h</div>
                     <div className="text-xs md:text-sm text-muted-foreground">{t('home.stats.update')}</div>
                   </div>
                 </div>
