@@ -1,26 +1,50 @@
 
 
-## Plan : Corriger la détection des eaux gazeuses dans les statistiques
+## Plan : Refonte UX de la carte parcours bouteille
 
-### Problème
-Le CSV des coordonnées (`water_sources_coordinates.csv`) classe toutes les eaux minérales comme "EMN" sans distinguer plates et gazeuses. Le catalogue (`infoeau_catalog_eaux_v3.csv`) contient les colonnes `variant` (plate/gazeuse) et `is_gaseous` (True/False), mais `buildSources()` ne charge pas ce fichier. Résultat : 0 gazeuses dans les stats alors qu'il y en a 31 dans le catalogue.
+### Problème actuel
 
-### Solution
+La fonction `getStepPosition()` place les 5 étapes industrielles (Analyse, Traitement, Embouteillage, Stockage, Transport) en offset mécanique depuis chaque source — toujours dans la même direction, avec des carrés colorés identiques. Cela produit des grappes de carrés répétitifs qui encombrent la carte sans refléter la réalité géographique.
 
-**1. `src/utils/sourcesAdapter.ts` — Charger le catalogue et construire un index de gazéité**
+### Nouvelle approche
 
-- Ajouter un 3e `fetch` pour `/data/infoeau_catalog_eaux_v3.csv`
-- Construire un index `Map<string, boolean>` basé sur la marque (normalisée) → `is_gaseous === "True"` ou `variant === "gazeuse"`
-- Dans la boucle de construction des items, après avoir déterminé `rawCategory`, consulter cet index : si la marque est gazeuse et la catégorie est "EMN", passer la catégorie à "Eau minérale naturelle gazeuse"
+Séparer la carte (géographie réelle) de la timeline du processus industriel (pédagogie) :
 
-**2. `src/utils/sourcesAdapter.ts` — Modifier `mapCategory` ou le point d'appel**
+**1. Retirer les step markers de la carte**
 
-- Ajouter un second paramètre optionnel `isGaseous?: boolean` à la logique de catégorisation
-- Si `isGaseous` est `true` et la catégorie brute est "EMN", retourner "Eau minérale naturelle gazeuse"
+Supprimer les 5 marqueurs carrés par source. La carte ne garde que :
+- Les **sources de captage** (cercles bleus) — positions réelles
+- Les **magasins/communes** (cercles verts) — positions réelles
+- Les **arcs de distribution** entre source et communes
 
-### Fichier touché
-- `src/utils/sourcesAdapter.ts` uniquement
+**2. Ajouter une timeline horizontale interactive sous la carte**
+
+Une barre horizontale avec les 6 étapes du processus (Captage → Analyse → Traitement → Embouteillage → Stockage/Expédition → Magasin) :
+- Chaque étape = un cercle coloré avec icône, reliés par une ligne pointillée
+- Au clic/hover sur une étape : affichage d'un tooltip avec description et durée
+- L'étape "Captage" et "Magasin" sont synchronisées avec la carte (highlight de la source / des communes)
+
+**3. Panneau détail au clic sur une source**
+
+Quand l'utilisateur clique sur un marqueur source sur la carte :
+- Un petit panneau latéral ou popup enrichi affiche le parcours spécifique de cette source
+- Nom de la source, distributeurs associés, et la timeline des étapes avec les durées
+
+**4. Meilleurs marqueurs sur la carte**
+
+- Sources : cercles avec icône goutte (déjà OK)
+- Communes : cercles plus petits, verts, avec effet pulse subtil au hover
+- Supprimer le styling carré brut des anciens step markers
+
+### Fichiers modifiés
+
+- `src/components/WaterJourneyMap.tsx` — retirer la logique `getStepPosition` et les step markers, ajouter la timeline horizontale en dessous de la carte, panneau détail au clic source
+- Supprimer `JOURNEY_STEPS` de la logique de marqueurs cartographiques, les garder comme données pour la timeline
 
 ### Résultat attendu
-Les stats afficheront le bon nombre d'eaux gazeuses (orange sur la carte) au lieu de "0 gazeuse".
+
+- Carte épurée avec uniquement sources + communes + arcs
+- Timeline pédagogique lisible sous la carte
+- Interaction : clic source → détail du parcours
+- Plus de carrés identiques répétés partout
 
