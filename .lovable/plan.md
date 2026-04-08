@@ -1,30 +1,19 @@
 
 
-## Probleme
+## Plan : Réduire l'espacement entre le Hero et la section "Quelle eau boire ?"
 
-La section "Surveillez la qualite de votre eau" (ligne 277) a deux backgrounds en conflit :
+### Problème
+L'espace vertical entre la section Hero (chiffres clés) et le titre "Quelle eau boire ?" est trop important, causé par le padding cumulé des deux sections.
 
-```
-bg-gradient-to-br from-primary/10 via-blue-50 to-primary/5 ... bg-sky-50
-```
+### Modification — `src/pages/Index.tsx`
 
-Le `bg-sky-50` est ecrase par le gradient (`bg-gradient-to-br`), qui applique un filtre bleu avec des opacites (`primary/10`, `blue-50`, `primary/5`). Le resultat n'est pas un fond `sky-50` uniforme comme attendu dans la capture d'ecran.
+**Ligne 31 (Hero section)** — Réduire le padding bottom :
+- Avant : `py-6 md:py-10 lg:py-12`
+- Après : `pt-6 pb-3 md:pt-10 md:pb-4 lg:pt-12 lg:pb-6`
 
-## Solution
+**Ligne 77 (Section "Quelle eau boire ?")** — Réduire le padding top :
+- Avant : `py-6 md:py-10 lg:py-12`
+- Après : `pt-3 pb-6 md:pt-4 md:pb-10 lg:pt-6 lg:pb-12`
 
-Supprimer le gradient et ne garder que `bg-sky-50` pour un fond uniforme et conforme a la charte.
-
-### Modification — `src/pages/Index.tsx`, ligne 277
-
-**Avant :**
-```
-bg-gradient-to-br from-primary/10 via-blue-50 to-primary/5 relative overflow-hidden bg-sky-50
-```
-
-**Apres :**
-```
-relative overflow-hidden bg-sky-50
-```
-
-Les particules decoratives (lignes 279-282) utilisent `bg-primary/5` et `bg-primary/10` qui resteront subtiles sur le fond `sky-50`.
+Cela divise par deux l'espace entre les deux sections tout en conservant le rythme vertical ailleurs.
 
