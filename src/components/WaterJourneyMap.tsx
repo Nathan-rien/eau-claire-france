@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Building2, MapPin, Droplets, FlaskConical, Filter, Package, Warehouse, Truck, Factory, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
 // Journey steps for the timeline (not on the map)
 const JOURNEY_STEPS = [
   {
@@ -67,6 +68,9 @@ const JOURNEY_STEPS = [
   },
 ];
 
+// Industrial step types in order, matching JOURNEY_STEPS indices 1-5
+const INDUSTRIAL_STEP_TYPES = ['analyse', 'traitement', 'embouteillage', 'stockage', 'logistique'];
+
 // Optimised arc — 15 points for commune arcs
 function createArc(start: [number, number], end: [number, number], steps = 15): [number, number][] {
   const coords: [number, number][] = [];
@@ -118,6 +122,24 @@ const STEP_ICONS: Record<string, { svg: string; color: string }> = {
   },
 };
 
+// Inject pulse keyframes once
+const PULSE_STYLE_ID = 'industrial-pulse-style';
+if (typeof document !== 'undefined' && !document.getElementById(PULSE_STYLE_ID)) {
+  const style = document.createElement('style');
+  style.id = PULSE_STYLE_ID;
+  style.textContent = `
+    @keyframes industrialPulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 currentColor; }
+      50% { transform: scale(1.4); box-shadow: 0 0 0 8px transparent; }
+      100% { transform: scale(1.2); box-shadow: 0 0 0 0 transparent; }
+    }
+    .industrial-pulse .industrial-inner {
+      animation: industrialPulse 0.6s ease-out forwards;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 const WaterJourneyMap: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -128,6 +150,8 @@ const WaterJourneyMap: React.FC = () => {
   const animFrameRef = useRef<number>(0);
   const lastFrameRef = useRef<number>(0);
   const showCommunesRef = useRef(false);
+  const animTimeoutRefs = useRef<number[]>([]);
+
   const [selectedRetailer, setSelectedRetailer] = useState<string>('all');
   const [showCommunes, setShowCommunes] = useState(false);
   const [showIndustrial, setShowIndustrial] = useState(false);
@@ -135,13 +159,108 @@ const WaterJourneyMap: React.FC = () => {
   const [activeStep, setActiveStep] = useState<number | null>(null);
   const [highlightedStepType, setHighlightedStepType] = useState<string | null>(null);
   const [selectedSource, setSelectedSource] = useState<SelectedSource | null>(null);
+  const [animatingSource, setAnimatingSource] = useState<string | null>(null);
   const { t } = useLanguage();
 
   const retailers = getRetailerList();
 
+  // Cancel any running animation sequence
+  const cancelAnimation = useCallback(() => {
+    animTimeoutRefs.current.forEach(id => clearTimeout(id));
+    animTimeoutRefs.current = [];
+    setAnimatingSource(null);
+  }, []);
+
+  // Start sequential animation for a given source key
+  const startIndustrialAnimation = useCallback((srcKey: string) => {
+    cancelAnimation();
+    setAnimatingSource(srcKey);
+
+    // Dim all markers for this source initially
+    industrialMarkersRef.current.forEach(m => {
+      const el = m.getElement();
+      if (el.dataset.sourceKey === srcKey) {
+        el.style.opacity = '0.3';
+        el.classList.remove('industrial-pulse');
+        const inner = el.querySelector('.industrial-inner') as HTMLElement | null;
+        if (inner) inner.style.transform = '';
+      }
+    });
+
+    // Animate the source marker (step 0 = Captage)
+    setActiveStep(0);
+
+    // Then animate each industrial step sequentially
+    INDUSTRIAL_STEP_TYPES.forEach((stepType, i) => {
+      const timeoutId = window.setTimeout(() => {
+        // Update timeline
+        setActiveStep(i + 1);
+
+        // Find and pulse the matching marker
+        industrialMarkersRef.current.forEach(m => {
+          const el = m.getElement();
+          if (el.dataset.sourceKey === srcKey && el.dataset.stepType === stepType) {
+            el.style.opacity = '1';
+            el.classList.remove('industrial-pulse');
+            // Force reflow to restart animation
+            void el.offsetWidth;
+            el.classList.add('industrial-pulse');
+          }
+        });
+
+        // Animate line segment: add to the anim GeoJSON source
+        const map = mapRef.current;
+        if (map) {
+          const animSrc = map.getSource('industrial-anim-lines') as mapboxgl.GeoJSONSource | undefined;
+          if (animSrc) {
+            // Get current features and add the next segment
+            const currentData = (animSrc as any)._data as GeoJSON.FeatureCollection;
+            const allSegments = (map.getSource('industrial-lines-data') as any)?._segments?.[srcKey];
+            if (allSegments && allSegments[i]) {
+              const updated: GeoJSON.FeatureCollection = {
+                type: 'FeatureCollection',
+                features: [...(currentData?.features || []), allSegments[i]],
+              };
+              animSrc.setData(updated);
+            }
+          }
+        }
+      }, (i + 1) * 600);
+      animTimeoutRefs.current.push(timeoutId);
+    });
+
+    // End animation after all steps
+    const endTimeout = window.setTimeout(() => {
+      // Clean up: remove anim layer, reset markers to normal
+      const map = mapRef.current;
+      if (map) {
+        const animSrc = map.getSource('industrial-anim-lines') as mapboxgl.GeoJSONSource | undefined;
+        if (animSrc) {
+          animSrc.setData({ type: 'FeatureCollection', features: [] });
+        }
+      }
+      industrialMarkersRef.current.forEach(m => {
+        const el = m.getElement();
+        if (el.dataset.sourceKey === srcKey) {
+          el.style.opacity = '1';
+          el.classList.remove('industrial-pulse');
+        }
+      });
+      setActiveStep(null);
+      setAnimatingSource(null);
+    }, (INDUSTRIAL_STEP_TYPES.length + 1) * 600 + 400);
+    animTimeoutRefs.current.push(endTimeout);
+  }, [cancelAnimation]);
+
   useEffect(() => {
     showCommunesRef.current = showCommunes;
   }, [showCommunes]);
+
+  // Cancel animation when toggling industrial off or changing retailer
+  useEffect(() => {
+    cancelAnimation();
+    setActiveStep(null);
+  }, [showIndustrial, selectedRetailer, cancelAnimation]);
 
   // Toggle commune markers + arc layers visibility
   useEffect(() => {
@@ -209,6 +328,7 @@ const WaterJourneyMap: React.FC = () => {
 
     return () => {
       cancelAnimationFrame(animFrameRef.current);
+      cancelAnimation();
       sourceMarkersRef.current.forEach(m => m.remove());
       communeMarkersRef.current.forEach(m => m.remove());
       industrialMarkersRef.current.forEach(m => m.remove());
@@ -258,6 +378,8 @@ const WaterJourneyMap: React.FC = () => {
           .filter(r => `${r.source.name}-${r.source.lat}` === srcKey)
           .map(r => ({ retailer: r.retailer, brand: r.mddBrand, communeCount: r.communes.length }));
 
+        // Capture srcKey for animation
+        const capturedSrcKey = srcKey;
         el.addEventListener('click', (e) => {
           e.stopPropagation();
           setSelectedSource({
@@ -265,6 +387,10 @@ const WaterJourneyMap: React.FC = () => {
             category: route.source.category,
             retailers: retailersAtSource,
           });
+          // Trigger industrial animation if toggle is active
+          if (showIndustrial) {
+            startIndustrialAnimation(capturedSrcKey);
+          }
         });
 
         const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
@@ -324,7 +450,7 @@ const WaterJourneyMap: React.FC = () => {
       animFrameRef.current = requestAnimationFrame(animateDash);
     }
     animFrameRef.current = requestAnimationFrame(animateDash);
-  }, [selectedRetailer, mapLoaded, showCommunes]);
+  }, [selectedRetailer, mapLoaded, showCommunes, showIndustrial, startIndustrialAnimation]);
 
   useEffect(() => {
     renderRoutes();
@@ -338,10 +464,10 @@ const WaterJourneyMap: React.FC = () => {
     // Clean previous industrial markers + layers
     industrialMarkersRef.current.forEach(m => m.remove());
     industrialMarkersRef.current = [];
-    ['industrial-lines-bg'].forEach(id => {
+    ['industrial-lines-bg', 'industrial-anim-line'].forEach(id => {
       if (map.getLayer(id)) map.removeLayer(id);
     });
-    ['industrial-lines'].forEach(id => {
+    ['industrial-lines', 'industrial-anim-lines'].forEach(id => {
       if (map.getSource(id)) map.removeSource(id);
     });
 
@@ -350,19 +476,22 @@ const WaterJourneyMap: React.FC = () => {
     const routes = getRoutesByRetailer(selectedRetailer);
     const processedSources = new Set<string>();
     const lineFeatures: GeoJSON.Feature<GeoJSON.LineString>[] = [];
+    // Store segments per source key for animation
+    const segmentsBySource: Record<string, GeoJSON.Feature<GeoJSON.LineString>[]> = {};
+    const SEGMENT_COLORS = ['#60a5fa', '#3b82f6', '#8b5cf6', '#f59e0b', '#22c55e'];
 
     routes.forEach((route) => {
-      const srcKey = `${route.source.name}-${route.retailer}`;
+      const srcKey = `${route.source.name}-${route.source.lat}`;
       if (processedSources.has(srcKey)) return;
       processedSources.add(srcKey);
 
       const steps = getIndustrialSteps(route.source.name, route.retailer);
       if (steps.length === 0) return;
 
-      // Build line: source → analyse → traitement → embouteillage → stockage → logistique
       const lineCoords: [number, number][] = [[route.source.lng, route.source.lat]];
+      const sourceSegments: GeoJSON.Feature<GeoJSON.LineString>[] = [];
 
-      steps.forEach((step) => {
+      steps.forEach((step, stepIdx) => {
         lineCoords.push(step.coordinates);
 
         const icon = STEP_ICONS[step.type];
@@ -371,6 +500,7 @@ const WaterJourneyMap: React.FC = () => {
         const el = document.createElement('div');
         el.className = 'industrial-marker';
         el.dataset.stepType = step.type;
+        el.dataset.sourceKey = srcKey;
         el.title = step.name;
         const inner = document.createElement('div');
         inner.className = 'industrial-inner flex items-center justify-center w-6 h-6 rounded-full border border-white/80 shadow-md cursor-pointer transition-all duration-200 hover:scale-125 hover:shadow-lg';
@@ -393,23 +523,28 @@ const WaterJourneyMap: React.FC = () => {
         industrialMarkersRef.current.push(marker);
       });
 
-      // Build individual colored segments between consecutive steps
-      const SEGMENT_COLORS = ['#60a5fa', '#3b82f6', '#8b5cf6', '#f59e0b', '#22c55e'];
+      // Build individual colored segments
       for (let i = 0; i < lineCoords.length - 1; i++) {
-        lineFeatures.push({
+        const feature: GeoJSON.Feature<GeoJSON.LineString> = {
           type: 'Feature',
-          properties: { color: SEGMENT_COLORS[i] || '#a78bfa' },
+          properties: { color: SEGMENT_COLORS[i] || '#a78bfa', sourceKey: srcKey },
           geometry: { type: 'LineString', coordinates: [lineCoords[i], lineCoords[i + 1]] },
-        });
+        };
+        lineFeatures.push(feature);
+        sourceSegments.push(feature);
       }
+      segmentsBySource[srcKey] = sourceSegments;
     });
 
-    // Industrial connection lines
+    // Industrial connection lines (static dashed)
     if (lineFeatures.length > 0) {
       map.addSource('industrial-lines', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: lineFeatures },
       });
+      // Store segments for animation access
+      (map.getSource('industrial-lines') as any)._segments = segmentsBySource;
+
       map.addLayer({
         id: 'industrial-lines-bg',
         type: 'line',
@@ -422,10 +557,30 @@ const WaterJourneyMap: React.FC = () => {
         },
       });
     }
+
+    // Animation overlay source + layer (initially empty)
+    map.addSource('industrial-anim-lines', {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] },
+    });
+    // Store ref for segment lookup
+    (map.getSource('industrial-anim-lines') as any)._data = { type: 'FeatureCollection', features: [] };
+
+    map.addLayer({
+      id: 'industrial-anim-line',
+      type: 'line',
+      source: 'industrial-anim-lines',
+      paint: {
+        'line-color': ['get', 'color'],
+        'line-width': 3,
+        'line-opacity': 0.8,
+      },
+    });
   }, [showIndustrial, selectedRetailer, mapLoaded]);
 
-  // ── Highlight industrial markers when hovering timeline ──
+  // ── Highlight industrial markers when hovering timeline (only when not animating) ──
   useEffect(() => {
+    if (animatingSource) return; // Don't override animation highlights
     const stepTypeMap: Record<number, string> = {
       1: 'analyse',
       2: 'traitement',
@@ -435,9 +590,10 @@ const WaterJourneyMap: React.FC = () => {
     };
     const newType = activeStep !== null ? stepTypeMap[activeStep] || null : null;
     setHighlightedStepType(newType);
-  }, [activeStep]);
+  }, [activeStep, animatingSource]);
 
   useEffect(() => {
+    if (animatingSource) return; // Animation manages its own marker styles
     industrialMarkersRef.current.forEach(m => {
       const el = m.getElement();
       const inner = el.querySelector('.industrial-inner') as HTMLElement | null;
@@ -453,7 +609,7 @@ const WaterJourneyMap: React.FC = () => {
         if (inner) inner.style.transform = '';
       }
     });
-  }, [highlightedStepType]);
+  }, [highlightedStepType, animatingSource]);
 
   return (
     <div className="space-y-6">
@@ -575,9 +731,14 @@ const WaterJourneyMap: React.FC = () => {
           <h3 className="text-sm font-semibold text-foreground mb-5 flex items-center gap-2">
             <Package className="w-4 h-4 text-muted-foreground" />
             Parcours de l'eau en bouteille
-            {showIndustrial && (
+            {showIndustrial && !animatingSource && (
               <span className="text-[10px] font-normal text-muted-foreground ml-2">
                 — survolez une étape pour la mettre en surbrillance sur la carte
+              </span>
+            )}
+            {animatingSource && (
+              <span className="text-[10px] font-normal text-primary ml-2 animate-pulse">
+                — animation en cours…
               </span>
             )}
           </h3>
@@ -594,9 +755,9 @@ const WaterJourneyMap: React.FC = () => {
                   <TooltipTrigger asChild>
                     <button
                       className="relative z-10 flex flex-col items-center gap-2 group focus:outline-none"
-                      onMouseEnter={() => setActiveStep(index)}
-                      onMouseLeave={() => setActiveStep(null)}
-                      onClick={() => setActiveStep(isActive ? null : index)}
+                      onMouseEnter={() => { if (!animatingSource) setActiveStep(index); }}
+                      onMouseLeave={() => { if (!animatingSource) setActiveStep(null); }}
+                      onClick={() => { if (!animatingSource) setActiveStep(isActive ? null : index); }}
                     >
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-200 ${
