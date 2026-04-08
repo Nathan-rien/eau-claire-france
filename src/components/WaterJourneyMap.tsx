@@ -166,7 +166,7 @@ const WaterJourneyMap: React.FC = () => {
             </div>`
           );
 
-          const marker = new mapboxgl.Marker({ element: el })
+         const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
             .setLngLat(commune.coordinates)
             .setPopup(popup)
             .addTo(map);
@@ -267,7 +267,7 @@ const WaterJourneyMap: React.FC = () => {
           });
         });
 
-        const marker = new mapboxgl.Marker({ element: el })
+        const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
           .setLngLat([route.source.lng, route.source.lat])
           .addTo(map);
         sourceMarkersRef.current.push(marker);
@@ -386,7 +386,7 @@ const WaterJourneyMap: React.FC = () => {
           </div>`
         );
 
-        const marker = new mapboxgl.Marker({ element: el })
+        const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
           .setLngLat(step.coordinates)
           .setPopup(popup)
           .addTo(map);
