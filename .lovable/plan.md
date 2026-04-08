@@ -1,71 +1,63 @@
 
+Plan : Stabiliser complètement les icônes sur la carte /carte-parcours-eau
 
-## Plan : Animation séquentielle du parcours industriel au clic sur une source
+Problème identifié
+- `anchor: 'center'` est déjà en place sur les marqueurs.
+- Le glissement visuel restant vient très probablement des transformations CSS appliquées aux éléments de marqueur eux-mêmes ou à des éléments internes sans cadre fixe :
+  - le marqueur source utilise `hover:scale-110` directement sur l’élément racine du marker
+  - les marqueurs industriels utilisent des `scale(...)` dynamiques sur `.industrial-inner`, mais sans normalisation explicite de la boîte et du point d’origine
+- Sur une carte Mapbox, les marqueurs sont plus stables si l’élément racine reste “neutre” et que tous les effets visuels sont appliqués à un wrapper interne centré.
 
-### Concept
-
-Quand l'utilisateur clique sur un marqueur source (avec le toggle industriel actif), une animation séquentielle se déclenche : les marqueurs industriels de cette source s'allument un par un (source → analyse → traitement → embouteillage → stockage → logistique), avec un "pulse" lumineux qui progresse le long des segments de liaison. La timeline en bas se synchronise.
-
-### Fichier modifié
+Fichier à modifier
 - `src/components/WaterJourneyMap.tsx`
 
-### Modifications
+Approche
+1. Neutraliser les transformations sur les racines des marqueurs
+- Retirer les classes de scale/hover du conteneur racine des marqueurs source.
+- Garder le root marker uniquement pour le positionnement Mapbox, sans animation visuelle.
 
-**1. Nouvel état `animatingSource`**
+2. Introduire un wrapper interne pour les sources
+- Reprendre le même principe déjà utilisé pour les marqueurs industriels :
+  - root `div` = ancrage/position
+  - inner `div` = cercle + icône + hover + pulse éventuel
+- Appliquer `hover:scale-*`, ombres et transitions uniquement sur ce wrapper interne.
 
-```ts
-const [animatingSource, setAnimatingSource] = useState<string | null>(null);
-const animTimeoutRefs = useRef<number[]>([]);
+3. Normaliser la géométrie des marqueurs industriels
+- Donner au root marker industriel une boîte explicite et stable (largeur/hauteur minimales, display flex/center si nécessaire).
+- Forcer `transform-origin: center center` sur `.industrial-inner`.
+- Garder les effets `scale` et pulse uniquement sur `.industrial-inner`.
+
+4. Vérifier la logique de highlight
+- Conserver l’opacité sur le root si besoin.
+- Conserver les `inner.style.transform = 'scale(...)'` seulement sur l’inner, jamais sur le root.
+- Si nécessaire, remplacer le `transform` inline par des classes CSS dédiées pour éviter les conflits hover/animation.
+
+5. Harmoniser tous les types de marqueurs
+- Source marker
+- Industrial marker
+- Commune marker si un effet visuel lui est appliqué plus tard
+- Objectif : même convention partout pour éviter les décalages pendant pan/zoom.
+
+Résultat attendu
+- Les icônes restent visuellement collées à leur point GPS pendant le déplacement de la carte.
+- Les hover, pulses et mises en surbrillance restent fluides.
+- Plus d’effet de “flottement” ou de léger décentrage lors du pan/zoom.
+
+Détails techniques
+```text
+Structure cible
+
+<Mapbox marker root>
+  <div class="marker-root">      ← pas de scale ici
+    <div class="marker-inner">   ← hover/pulse/scale ici
+      icon
+    </div>
+  </div>
+</Mapbox marker root>
 ```
 
-**2. Modifier le handler de clic sur les marqueurs source (ligne ~261)**
-
-Quand le toggle industriel est actif et qu'on clique sur une source :
-- Stocker le `srcKey` dans `animatingSource`
-- Lancer une séquence de `setTimeout` espacés de ~600ms
-- À chaque étape : mettre en surbrillance le marqueur industriel correspondant (scale + pulse CSS), mettre à jour `activeStep` sur la timeline, et animer le segment de ligne entre l'étape précédente et l'étape courante
-- À la fin de la séquence (après ~3.6s), revenir à l'état normal
-
-**3. Animation des marqueurs industriels**
-
-Chaque marqueur industriel reçoit un `data-source-key` en plus du `data-step-type` existant. Pendant l'animation :
-- Les marqueurs de la source animée sont initialement en opacity 0.3
-- Chaque étape fait passer le marqueur correspondant à opacity 1 + scale(1.4) + un ring animé (box-shadow pulse) via une classe CSS `.industrial-pulse`
-- Les marqueurs des étapes précédentes restent à opacity 1 (état "déjà visité")
-
-**4. Animation des lignes de liaison**
-
-Ajouter un layer Mapbox supplémentaire `industrial-anim-line` qui dessine progressivement les segments au fur et à mesure de l'animation :
-- À chaque étape de la séquence, ajouter le segment courant au GeoJSON source `industrial-anim-lines`
-- Le layer utilise une ligne pleine (pas pointillée), plus épaisse (width 3), avec la couleur du segment et une opacity de 0.8
-- À la fin de l'animation, supprimer ce layer et revenir aux pointillés normaux
-
-**5. Synchronisation timeline**
-
-Pendant l'animation, `activeStep` est mis à jour automatiquement (0→1→2→3→4→5) à chaque intervalle, ce qui met en surbrillance l'étape correspondante dans la frise chronologique en bas.
-
-**6. Classe CSS `.industrial-pulse`**
-
-Ajouter dans le style inline ou via le DOM :
-```css
-.industrial-pulse .industrial-inner {
-  animation: industrialPulse 0.6s ease-out;
-}
-@keyframes industrialPulse {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 currentColor; }
-  50% { transform: scale(1.4); box-shadow: 0 0 0 8px transparent; }
-  100% { transform: scale(1.2); box-shadow: 0 0 0 0 transparent; }
-}
-```
-
-**7. Nettoyage**
-
-- Un nouveau clic sur une autre source relance l'animation (annule les timeouts précédents via `animTimeoutRefs`)
-- Cliquer ailleurs ou désactiver le toggle annule l'animation en cours
-- Changer de distributeur annule aussi l'animation
-
-### Résultat attendu
-- Clic sur une source → les étapes s'illuminent une à une avec un effet pulse, les lignes se dessinent progressivement, la timeline se synchronise
-- Animation fluide de ~3.6s (6 étapes × 600ms)
-- Pas d'interférence avec le survol de la timeline (qui reste fonctionnel après l'animation)
-
+Points clés
+- `anchor: 'center'` conservé
+- aucun `transform` sur l’élément racine du marker
+- `transform-origin: center center` sur les éléments internes animés
+- tailles fixes pour éviter les micro-variations visuelles
