@@ -1,63 +1,35 @@
 
-Plan : Stabiliser complètement les icônes sur la carte /carte-parcours-eau
 
-Problème identifié
-- `anchor: 'center'` est déjà en place sur les marqueurs.
-- Le glissement visuel restant vient très probablement des transformations CSS appliquées aux éléments de marqueur eux-mêmes ou à des éléments internes sans cadre fixe :
-  - le marqueur source utilise `hover:scale-110` directement sur l’élément racine du marker
-  - les marqueurs industriels utilisent des `scale(...)` dynamiques sur `.industrial-inner`, mais sans normalisation explicite de la boîte et du point d’origine
-- Sur une carte Mapbox, les marqueurs sont plus stables si l’élément racine reste “neutre” et que tous les effets visuels sont appliqués à un wrapper interne centré.
+## Plan : Rendre les marqueurs industriels visibles sur la carte
 
-Fichier à modifier
+### Problème
+Les marqueurs industriels (Analyse, Traitement, Embouteillage, Stockage) sont positionnés très près de la source (offsets de 0.01-0.02°). Le marqueur source a un `z-index: 10` et une taille de 32px, ce qui masque complètement les marqueurs industriels (24px, sans z-index) aux niveaux de zoom habituels. Seuls les marqueurs "Logistique" sont visibles car ils sont géographiquement éloignés (entrepôts régionaux).
+
+### Fichier modifié
 - `src/components/WaterJourneyMap.tsx`
 
-Approche
-1. Neutraliser les transformations sur les racines des marqueurs
-- Retirer les classes de scale/hover du conteneur racine des marqueurs source.
-- Garder le root marker uniquement pour le positionnement Mapbox, sans animation visuelle.
+### Corrections
 
-2. Introduire un wrapper interne pour les sources
-- Reprendre le même principe déjà utilisé pour les marqueurs industriels :
-  - root `div` = ancrage/position
-  - inner `div` = cercle + icône + hover + pulse éventuel
-- Appliquer `hover:scale-*`, ombres et transitions uniquement sur ce wrapper interne.
+**1. Augmenter les offsets des marqueurs industriels dans `waterDistributors.ts`**
 
-3. Normaliser la géométrie des marqueurs industriels
-- Donner au root marker industriel une boîte explicite et stable (largeur/hauteur minimales, display flex/center si nécessaire).
-- Forcer `transform-origin: center center` sur `.industrial-inner`.
-- Garder les effets `scale` et pulse uniquement sur `.industrial-inner`.
+Les offsets actuels (0.008-0.02°) sont trop petits pour être distingués du marqueur source à zoom 5-8. Augmenter à ~0.05-0.08° pour que les étapes soient visuellement distinctes même au zoom France.
 
-4. Vérifier la logique de highlight
-- Conserver l’opacité sur le root si besoin.
-- Conserver les `inner.style.transform = 'scale(...)'` seulement sur l’inner, jamais sur le root.
-- Si nécessaire, remplacer le `transform` inline par des classes CSS dédiées pour éviter les conflits hover/animation.
+Fichier : `src/data/waterDistributors.ts`, fonction `getIndustrialStepsForSource` :
+- analyse : offset de `[+0.012, +0.008]` → `[+0.06, +0.04]`
+- traitement : `[-0.008, +0.015]` → `[-0.05, +0.07]`
+- embouteillage : `[+0.02, -0.01]` → `[+0.08, -0.05]`
+- stockage : `[-0.015, -0.02]` → `[-0.07, -0.08]`
 
-5. Harmoniser tous les types de marqueurs
-- Source marker
-- Industrial marker
-- Commune marker si un effet visuel lui est appliqué plus tard
-- Objectif : même convention partout pour éviter les décalages pendant pan/zoom.
+**2. Donner un z-index aux marqueurs industriels**
 
-Résultat attendu
-- Les icônes restent visuellement collées à leur point GPS pendant le déplacement de la carte.
-- Les hover, pulses et mises en surbrillance restent fluides.
-- Plus d’effet de “flottement” ou de léger décentrage lors du pan/zoom.
+Dans `WaterJourneyMap.tsx`, ajouter `el.style.zIndex = '5'` aux marqueurs industriels pour qu'ils passent au-dessus de la carte mais sous les marqueurs source (z-index 10).
 
-Détails techniques
-```text
-Structure cible
+**3. Réduire le z-index source quand industriel est actif**
 
-<Mapbox marker root>
-  <div class="marker-root">      ← pas de scale ici
-    <div class="marker-inner">   ← hover/pulse/scale ici
-      icon
-    </div>
-  </div>
-</Mapbox marker root>
-```
+Quand le toggle industriel est actif, passer les source markers à `z-index: 3` pour que les industriels (z-index 5) soient visibles au-dessus. Rétablir à 10 quand le toggle est désactivé.
 
-Points clés
-- `anchor: 'center'` conservé
-- aucun `transform` sur l’élément racine du marker
-- `transform-origin: center center` sur les éléments internes animés
-- tailles fixes pour éviter les micro-variations visuelles
+### Résultat attendu
+- Les 4 marqueurs proches de la source (Analyse, Traitement, Embouteillage, Stockage) sont clairement visibles et séparés visuellement, même au zoom France
+- Le marqueur Logistique reste éloigné comme avant
+- Les dashed lines connectent bien tous les points
+
