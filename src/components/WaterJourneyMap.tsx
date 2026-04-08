@@ -94,19 +94,46 @@ interface SelectedSource {
   retailers: { retailer: string; brand: string; communeCount: number }[];
 }
 
+// SVG icons for industrial markers
+const STEP_ICONS: Record<string, { svg: string; color: string }> = {
+  analyse: {
+    color: '#60a5fa',
+    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/></svg>',
+  },
+  traitement: {
+    color: '#3b82f6',
+    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>',
+  },
+  embouteillage: {
+    color: '#8b5cf6',
+    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>',
+  },
+  stockage: {
+    color: '#f59e0b',
+    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/><path d="M6 18h12"/><path d="M6 14h12"/></svg>',
+  },
+  logistique: {
+    color: '#22c55e',
+    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>',
+  },
+};
+
 const WaterJourneyMap: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const sourceMarkersRef = useRef<mapboxgl.Marker[]>([]);
   const communeMarkersRef = useRef<mapboxgl.Marker[]>([]);
+  const industrialMarkersRef = useRef<mapboxgl.Marker[]>([]);
   const communesInitRef = useRef(false);
   const animFrameRef = useRef<number>(0);
   const lastFrameRef = useRef<number>(0);
   const showCommunesRef = useRef(false);
   const [selectedRetailer, setSelectedRetailer] = useState<string>('all');
   const [showCommunes, setShowCommunes] = useState(false);
+  const [showIndustrial, setShowIndustrial] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [activeStep, setActiveStep] = useState<number | null>(null);
+  const [highlightedStepType, setHighlightedStepType] = useState<string | null>(null);
   const [selectedSource, setSelectedSource] = useState<SelectedSource | null>(null);
   const { t } = useLanguage();
 
