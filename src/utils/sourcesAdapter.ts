@@ -28,11 +28,11 @@ export type SourceItem = {
   SO4_mg_L?: number;
 };
 
-const mapCategory = (raw?: string): SourceItem["water_category"] => {
+const mapCategory = (raw?: string, isGaseous?: boolean): SourceItem["water_category"] => {
   const v = (raw ?? "").toLowerCase();
-  if (v === "emn" || (v.includes("minérale") && !v.includes("gazeuse"))) return "Eau minérale naturelle";
   if (v.includes("gazeuse") || v === "emng") return "Eau minérale naturelle gazeuse";
   if (v.includes("source") || v === "es") return "Eau de source";
+  if (isGaseous) return "Eau minérale naturelle gazeuse";
   return "Eau minérale naturelle";
 };
 
