@@ -167,7 +167,7 @@ export async function buildSources(): Promise<SourceItem[]> {
       count_brands: brand ? 1 : 0,
       latitude: lng !== undefined && lat !== undefined ? lat : 0, // lat
       longitude: lng !== undefined ? lng : 0, // lng
-      water_category: mapCategory(rawCategory),
+      water_category: mapCategory(rawCategory, gasIndex.has(norm(brand))),
       residue: meta.residue,
       flow_rate: meta.flow_rate,
       depth: meta.depth,
