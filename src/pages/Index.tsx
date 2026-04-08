@@ -28,18 +28,18 @@ const Index = () => {
       
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50">
         {/* Hero Section */}
-        <section className="py-8 md:py-12 lg:py-16 px-4 bg-[sidebar-primary-foreground] bg-sky-200" role="banner">
+        <section className="py-6 md:py-10 lg:py-12 px-4 bg-[sidebar-primary-foreground] bg-sky-200" role="banner">
           <div className="container mx-auto text-center">
             <div className="max-w-4xl mx-auto">
-              <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-foreground mb-4 md:mb-6 leading-tight px-2">
+              <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-foreground mb-3 md:mb-4 leading-tight px-2">
                 {t('home.title')} 
                 <span className="bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent"> {t('home.titleHighlight')}</span> ?
               </h1>
-              <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 leading-relaxed px-2">
+              <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-4 md:mb-6 leading-relaxed px-2">
                 {t('home.subtitle')}
               </p>
               
-              <div className="mb-6 md:mb-8 lg:mb-12">
+              <div className="mb-4 md:mb-6">
                 <Link to="/diagnostic">
                   <Button size="lg" className="bg-gradient-to-r from-[#3b82f6] to-[#22c55e] hover:from-[#2563eb] hover:to-[#16a34a] text-white text-base md:text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                     Lancer un diagnostic →
@@ -48,7 +48,7 @@ const Index = () => {
               </div>
 
               {/* Stats */}
-              <div className="mb-6 md:mb-8 lg:mb-12">
+              <div className="mb-4 md:mb-6">
                 <h3 className="text-lg font-semibold text-foreground mb-4 text-center">{t('home.stats.title')}</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-2">
                   <div className="bg-card rounded-lg p-3 md:p-4 border border-border shadow-sm">
@@ -74,11 +74,11 @@ const Index = () => {
         </section>
 
         {/* Section 1 — Quelle eau boire ? */}
-        <section className="relative py-8 md:py-12 lg:py-16 px-4 bg-cover bg-center" style={{ backgroundImage: `url(${waterBg})` }} role="region" aria-labelledby="diagnostic-title">
+        <section className="relative py-6 md:py-10 lg:py-12 px-4 bg-cover bg-center" style={{ backgroundImage: `url(${waterBg})` }} role="region" aria-labelledby="diagnostic-title">
           <div className="absolute inset-0 backdrop-blur-sm bg-primary-foreground" />
           <div className="relative container mx-auto max-w-4xl">
-            <div className="text-center mb-6 md:mb-8">
-              <h2 id="diagnostic-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3">
+            <div className="text-center mb-4">
+              <h2 id="diagnostic-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
                 Quelle eau boire ?
               </h2>
               <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
@@ -86,7 +86,7 @@ const Index = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Link to="/quelle-eau-boire" className="group">
                 <Card className="h-full border-2 border-primary/20 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
                   <CardHeader className="text-center pb-2">
@@ -129,7 +129,7 @@ const Index = () => {
         </section>
 
         {/* Section 2 — Classement des eaux */}
-        <section className="relative py-8 md:py-12 lg:py-16 px-4 bg-cover bg-center" style={{ backgroundImage: `url(${rankingWaterBg})` }} role="region" aria-labelledby="ranking-title">
+        <section className="relative py-6 md:py-10 lg:py-12 px-4 bg-cover bg-center" style={{ backgroundImage: `url(${rankingWaterBg})` }} role="region" aria-labelledby="ranking-title">
           <div className="absolute inset-0 bg-white/40" />
           <div className="relative z-10 container mx-auto max-w-4xl">
             <Link to="/classement" className="group block">
@@ -158,10 +158,10 @@ const Index = () => {
         </section>
 
         {/* Section 3 — Cartes & Infographies */}
-        <section className="py-8 md:py-12 lg:py-16 px-4 bg-sky-200" role="region" aria-labelledby="maps-title">
+        <section className="py-6 md:py-10 lg:py-12 px-4 bg-sky-200" role="region" aria-labelledby="maps-title">
           <div className="container mx-auto max-w-5xl">
-            <div className="text-center mb-6 md:mb-8">
-              <h2 id="maps-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3">
+            <div className="text-center mb-4">
+              <h2 id="maps-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
                 Cartes & Infographies
               </h2>
               <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
@@ -169,7 +169,7 @@ const Index = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
                 { to: '/carte', icon: MapPin, color: 'text-primary', bg: 'bg-primary/10', title: 'Carte qualité de l\'eau', desc: 'Qualité de l\'eau potable par commune en France' },
                 { to: '/carte-polluants', icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-100', title: 'Carte des polluants', desc: 'Polluants détectés dans l\'eau en France' },
@@ -197,12 +197,12 @@ const Index = () => {
         </section>
 
         {/* Section A — Les risques liés à l'eau du robinet */}
-        <section className="py-8 md:py-12 lg:py-16 px-4 bg-orange-50/50" role="region" aria-labelledby="risks-title">
+        <section className="py-6 md:py-10 lg:py-12 px-4 bg-orange-50/50" role="region" aria-labelledby="risks-title">
           <div className="container mx-auto max-w-5xl">
-            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
               <div className="flex-1 order-2 md:order-1">
                 <div className="border-l-4 border-orange-400 pl-5">
-                  <h2 id="risks-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-4">
+                  <h2 id="risks-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
                     Les risques liés à l'eau du robinet
                   </h2>
                   <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
@@ -212,7 +212,7 @@ const Index = () => {
                     Les canalisations anciennes peuvent libérer du <strong className="text-foreground">plomb</strong>, tandis que le traitement au chlore génère des sous-produits potentiellement indésirables. Connaître la qualité de votre eau est essentiel.
                   </p>
                   <Link to="/polluants">
-                    <Button variant="outline" className="mt-2 border-orange-300 text-orange-700 hover:bg-orange-100">
+                    <Button variant="outline" className="mt-4 border-orange-300 text-orange-700 hover:bg-orange-100">
                       Découvrir les polluants →
                     </Button>
                   </Link>
@@ -233,9 +233,9 @@ const Index = () => {
         </section>
 
         {/* Section B — Bien choisir son eau en bouteille */}
-        <section className="py-8 md:py-12 lg:py-16 px-4 bg-card" role="region" aria-labelledby="choose-title">
+        <section className="py-6 md:py-10 lg:py-12 px-4 bg-card" role="region" aria-labelledby="choose-title">
           <div className="container mx-auto max-w-5xl">
-            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
               <div className="flex-shrink-0 relative">
                 {/* Outer dashed ring reverse spin */}
                 <div className="absolute inset-0 w-44 h-44 md:w-52 md:h-52 -m-6 rounded-full border-2 border-dashed border-primary/20 animate-[spin_25s_linear_infinite_reverse]" />
@@ -253,7 +253,7 @@ const Index = () => {
               </div>
               <div className="flex-1">
                 <div className="border-l-4 border-primary pl-5">
-                  <h2 id="choose-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-4">
+                  <h2 id="choose-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
                     Bien choisir son eau en bouteille
                   </h2>
                   <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
@@ -263,7 +263,7 @@ const Index = () => {
                     Le <strong className="text-foreground">pH</strong> et le <strong className="text-foreground">résidu sec</strong> sont des indicateurs clés. Une eau faiblement minéralisée convient au quotidien, tandis qu'une eau riche en magnésium aide à combattre la fatigue.
                   </p>
                   <Link to="/classement">
-                    <Button className="mt-2">
+                    <Button className="mt-4">
                       Voir le classement des eaux →
                     </Button>
                   </Link>
@@ -274,7 +274,7 @@ const Index = () => {
         </section>
 
         {/* Section C — Surveiller la qualité de votre eau */}
-        <section className="py-10 md:py-14 lg:py-20 px-4 bg-gradient-to-br from-primary/10 via-blue-50 to-primary/5 relative overflow-hidden" role="region" aria-labelledby="monitor-title">
+        <section className="py-6 md:py-10 lg:py-12 px-4 bg-gradient-to-br from-primary/10 via-blue-50 to-primary/5 relative overflow-hidden" role="region" aria-labelledby="monitor-title">
           {/* Decorative background particles */}
           <div className="absolute top-10 left-[10%] w-6 h-6 bg-primary/5 rounded-full animate-[bounce_5s_ease-in-out_infinite]" />
           <div className="absolute top-1/3 right-[15%] w-4 h-4 bg-primary/10 rounded-full animate-[bounce_4s_ease-in-out_infinite_1s]" />
@@ -294,7 +294,7 @@ const Index = () => {
                 <Activity className="w-6 h-6 text-primary/60 absolute -left-5 top-1/2 -translate-y-1/2 animate-fade-in [animation-delay:0.8s]" />
               </div>
             </div>
-            <h2 id="monitor-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-4">
+            <h2 id="monitor-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
               Surveillez la qualité de votre eau
             </h2>
             <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3 max-w-2xl mx-auto">
