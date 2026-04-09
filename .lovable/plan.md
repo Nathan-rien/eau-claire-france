@@ -1,30 +1,45 @@
 
 
-## Plan : Mettre en miroir le bandeau "Surveillez la qualité" comme "Bien choisir son eau"
+## Plan : Enrichir les données de la page /carte-polluants
 
-### Objectif
-Transformer la section "Surveillez la qualité de votre eau" (actuellement centrée) en une disposition flex row identique à "Bien choisir son eau en bouteille", mais en miroir : texte à gauche justifié à droite avec un `border-right`, picto/icône à droite.
+### Constat actuel
+Le composant `PollutantMap.tsx` contient des données très limitées :
+- **10 villes** avec seulement 3 champs : nom, liste de polluants (texte), niveau de risque
+- **6 régions** avec : nom, polluants principaux, niveau de risque, nombre de communes
+- Les popups de la carte n'affichent qu'une liste à puces basique
+- Aucune donnée chiffrée (valeurs mesurées, seuils, taux de conformité)
 
-### Modification — `src/pages/Index.tsx`, lignes 240-276
+### Enrichissements proposés
 
-Remplacer le layout centré actuel par un layout flex row miroir :
+#### 1. Données des villes (marqueurs carte) — plus de villes et plus de détails
+Passer de 10 à **20+ villes** couvrant toutes les régions, et ajouter pour chaque ville :
+- `population` (nombre d'habitants desservis)
+- `conformityRate` (taux de conformité en %)
+- `lastAnalysis` (date du dernier contrôle, ex: "Mars 2024")
+- `waterSource` (type de captage : nappe souterraine / eau de surface)
 
-- **Structure flex** : `flex-col md:flex-row items-center gap-6 md:gap-8` (comme section B)
-- **Texte à gauche** (order 1) : `text-right` avec `border-r-4 border-primary pr-5` (miroir du `border-l-4 pl-5`)
-- **Picto à droite** (order 2) : le cercle avec Shield + icônes satellites, réutilisant le même style de cercle animé (dashed ring, bubbles) que les autres sections
-- **Bouton** : aligné à droite (`flex justify-end`)
-- Conserver le `max-w-5xl` au lieu de `max-w-3xl` pour être cohérent avec les autres sections
-- Supprimer les particules décoratives de fond (lignes 243-246) qui appartenaient au layout centré
-- Conserver les anneaux concentriques autour de l'icône Shield
+Les popups Mapbox afficheront ces informations supplémentaires.
 
-### Résultat visuel attendu
-```text
-┌─────────────────────────────────────────────────────┐
-│                                                     │
-│   Texte justifié à droite  │   ◯ Shield + icônes   │
-│   border-right bleu        │   anneaux concentriques│
-│   [Bouton aligné droite]   │   dashed ring          │
-│                                                     │
-└─────────────────────────────────────────────────────┘
-```
+#### 2. Données régionales — compléter les 13 régions métropolitaines
+Passer de 6 à **13 régions** et ajouter pour chaque région :
+- `conformityRate` (taux de conformité %)
+- `population` (population desservie)
+- `supplyZones` (nombre de zones d'approvisionnement)
+- `topPollutantValues` : objet avec les valeurs moyennes des polluants principaux (ex: `{ Nitrates: "22 mg/L", Pesticides: "0.08 µg/L" }`)
+
+#### 3. Popups carte enrichis
+Refondre le HTML des popups pour afficher :
+- Taux de conformité avec indicateur couleur
+- Population desservie
+- Type de captage
+- Date du dernier contrôle
+- Valeurs mesurées par polluant (pas juste le nom)
+
+### Fichier modifié
+- `src/components/PollutantMap.tsx` — seul fichier concerné
+
+### Ce qui ne change pas
+- Aucune fonctionnalité modifiée (carte, filtres, navigation, légende)
+- Même structure de composant, mêmes interactions
+- Mêmes couleurs et styles visuels
 
