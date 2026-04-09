@@ -165,7 +165,7 @@ const Header = () => {
                   isActiveJourneySection ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                {t('nav.journey')}
+                {t('nav.journeyTab')}
                 <ChevronDown className="h-3 w-3" />
               </button>
               {journeyMenuOpen && (
@@ -316,7 +316,7 @@ const Header = () => {
                     {/* Section parcours */}
                     <div className="mb-4">
                       <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
-                        {t('nav.journey')}
+                        {t('nav.journeyTab')}
                       </div>
                       {journeyItems.map((item) => (
                         <Link
