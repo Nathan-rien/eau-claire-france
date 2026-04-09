@@ -1,17 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapboxSecurityService } from '@/services/mapboxSecurityService';
-import { buildSources, SourceItem } from '@/utils/sourcesAdapter';
-import {
-  getMineralizationLevel, computeHardness, getHardnessLabel,
-  getUsageRecommendations, getComplianceChecks, getTypeColor,
-  getMineralRows, isPointInZone
-} from '@/utils/waterSourceAnalysis';
-import { Droplets, MapPin, ShieldCheck, Baby, Sparkles, AlertTriangle, CheckCircle, X } from 'lucide-react';
+import { isPointInZone } from '@/utils/waterSourceAnalysis';
+import { Droplets, MapPin, AlertTriangle, CheckCircle, X, Users } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
 interface CityData {
   name: string;
@@ -100,11 +96,6 @@ const getPollutantStatus = (value: number, limit: number) => {
   return { color: '#ef4444', label: '✗' };
 };
 
-const iconMap = {
-  Baby: <Baby className="h-3 w-3" />,
-  Sparkles: <Sparkles className="h-3 w-3" />,
-};
-
 const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -112,33 +103,22 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
   const [lat, setLat] = useState(46.6034);
   const [zoom, setZoom] = useState(4);
   const [selectedZone, setSelectedZone] = useState<{ name: string; color: string } | null>(null);
-  const [allSources, setAllSources] = useState<SourceItem[]>([]);
-  const [zoneSources, setZoneSources] = useState<SourceItem[]>([]);
+  const [zoneCities, setZoneCities] = useState<CityData[]>([]);
 
-  // Load sources data
-  useEffect(() => {
-    buildSources().then(sources => {
-      console.log('[InteractiveMap] Loaded sources:', sources.length);
-      setAllSources(sources);
-    }).catch(err => console.error('[InteractiveMap] Failed to load sources:', err));
-  }, []);
-
-  // When a zone is selected, find matching sources
+  // When a zone is selected, find matching cities
   useEffect(() => {
     if (!selectedZone) {
-      setZoneSources([]);
+      setZoneCities([]);
       return;
     }
     const zone = waterSourceZones.find(z => z.name === selectedZone.name);
     if (!zone) return;
 
-    const matched = allSources.filter(s =>
-      Number.isFinite(s.latitude) && Number.isFinite(s.longitude) &&
-      isPointInZone(s.longitude, s.latitude, zone.coordinates as number[][][])
+    const matched = waterQualityData.filter(city =>
+      isPointInZone(city.coords[0], city.coords[1], zone.coordinates as number[][][])
     );
-    console.log(`[InteractiveMap] Zone "${selectedZone.name}": ${matched.length} sources found`);
-    setZoneSources(matched);
-  }, [selectedZone, allSources]);
+    setZoneCities(matched);
+  }, [selectedZone]);
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -334,7 +314,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
             </div>
           </div>
 
-          {/* Detail panel */}
+          {/* Detail panel — tap water by city */}
           {selectedZone && (
             <div className="lg:col-span-1 border-l overflow-y-auto max-h-[70vh] p-4 space-y-4">
               <div className="flex items-center justify-between">
@@ -347,18 +327,30 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
                 </Button>
               </div>
 
-              {zoneSources.length === 0 ? (
+              {zoneCities.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <MapPin className="h-10 w-10 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Aucune source référencée dans cette zone</p>
+                  <p className="text-sm">Aucune ville référencée dans cette zone</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    {zoneSources.length} source{zoneSources.length > 1 ? 's' : ''} dans cette zone
-                  </p>
-                  {zoneSources.map(source => (
-                    <SourceCard key={source.source_id} source={source} />
+                  {/* Zone summary */}
+                  <div className="rounded-lg border p-3 space-y-2 bg-muted/30">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">{zoneCities.length} ville{zoneCities.length > 1 ? 's' : ''}</span>
+                      <Badge variant="outline">
+                        Score moyen : {Math.round(zoneCities.reduce((s, c) => s + c.score, 0) / zoneCities.length)}/100
+                      </Badge>
+                    </div>
+                    <div className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Users className="h-3 w-3" />
+                      {zoneCities.reduce((s, c) => s + c.population, 0).toLocaleString('fr-FR')} habitants desservis
+                    </div>
+                  </div>
+
+                  {/* City cards */}
+                  {zoneCities.map(city => (
+                    <TapWaterCityCard key={city.name} city={city} />
                   ))}
                 </div>
               )}
@@ -370,91 +362,118 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
   );
 };
 
-/** Compact card for a source in the zone detail panel */
-const SourceCard: React.FC<{ source: SourceItem }> = ({ source }) => {
+/** Compact card showing tap water quality for a city */
+const TapWaterCityCard: React.FC<{ city: CityData }> = ({ city }) => {
   const [expanded, setExpanded] = useState(false);
-  const residue = source.residu_sec_180_mg_L ?? source.residue;
-  const mLevel = getMineralizationLevel(residue);
-  const th = computeHardness(source.Ca_mg_L, source.Mg_mg_L);
-  const recs = getUsageRecommendations(source);
-  const checks = getComplianceChecks(source);
-  const mineralRows = getMineralRows(source);
+  const nitrateStatus = getPollutantStatus(city.nitrates, 50);
+  const pesticideStatus = getPollutantStatus(city.pesticides, 0.1);
+  const leadStatus = getPollutantStatus(city.lead, 10);
 
   return (
     <Card className="border">
       <CardContent className="p-3 space-y-2">
         <div className="flex items-start justify-between">
-          <div>
-            <p className="font-semibold text-sm">{source.source_name}</p>
-            <p className="text-xs text-muted-foreground">{source.location || 'Localisation non spécifiée'}</p>
+          <div className="flex items-center gap-2">
+            <div
+              className="w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0"
+              style={{ backgroundColor: getMarkerColor(city.quality) }}
+            >
+              {city.quality}
+            </div>
+            <div>
+              <p className="font-semibold text-sm">{city.name}</p>
+              <p className="text-xs text-muted-foreground">{city.waterSource}</p>
+            </div>
           </div>
           <Button variant="ghost" size="sm" className="text-xs" onClick={() => setExpanded(!expanded)}>
             {expanded ? 'Réduire' : 'Détails'}
           </Button>
         </div>
 
-        <div className="flex flex-wrap gap-1">
-          <Badge className={getTypeColor(source.water_category)} variant="outline">{source.water_category}</Badge>
-          {mLevel && <Badge className={mLevel.color} variant="outline">{mLevel.label}</Badge>}
+        {/* Conformity bar */}
+        <div className="space-y-1">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Conformité</span>
+            <span className="font-semibold" style={{ color: getConformityColor(city.conformityRate) }}>
+              {city.conformityRate} %
+            </span>
+          </div>
+          <Progress value={city.conformityRate} className="h-1.5" />
         </div>
 
-        {source.brands.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {source.brands.map((b, i) => (
-              <Badge key={i} variant="secondary" className="text-xs">{b}</Badge>
-            ))}
-          </div>
-        )}
-
-        {th !== null && (
-          <p className="text-xs text-muted-foreground">Dureté : {th.toFixed(1)} °f — {getHardnessLabel(th)}</p>
-        )}
-
-        {recs.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {recs.map((rec, i) => (
-              <Badge key={i} className={`${rec.color} text-xs gap-1`}>
-                {iconMap[rec.iconName]}
-                {rec.label}
-              </Badge>
-            ))}
-          </div>
-        )}
+        {/* Quick pollutant indicators */}
+        <div className="flex gap-2 text-xs">
+          {[
+            { label: 'NO₃', value: city.nitrates, limit: 50, unit: 'mg/L', status: nitrateStatus },
+            { label: 'Pest.', value: city.pesticides, limit: 0.1, unit: 'µg/L', status: pesticideStatus },
+            { label: 'Pb', value: city.lead, limit: 10, unit: 'µg/L', status: leadStatus },
+          ].map(p => (
+            <div key={p.label} className="flex items-center gap-1">
+              {p.status.color === '#10b981' ? (
+                <CheckCircle className="h-3 w-3 text-green-600" />
+              ) : p.status.color === '#f59e0b' ? (
+                <AlertTriangle className="h-3 w-3 text-yellow-500" />
+              ) : (
+                <AlertTriangle className="h-3 w-3 text-red-500" />
+              )}
+              <span className="text-muted-foreground">{p.label}</span>
+            </div>
+          ))}
+        </div>
 
         {expanded && (
           <div className="space-y-3 pt-2 border-t">
-            {/* Mineral composition */}
-            {mineralRows.length > 0 ? (
-              <div className="space-y-1">
-                <h4 className="font-semibold text-xs">Composition minérale</h4>
-                {mineralRows.map(row => (
-                  <div key={row.label} className="flex justify-between text-xs py-1 border-b">
-                    <span className="text-muted-foreground">{row.label}</span>
-                    <span className="font-medium">{row.value}{row.unit ? ` ${row.unit}` : ''}</span>
-                  </div>
-                ))}
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span className="text-muted-foreground">Population</span>
+                <p className="font-medium">{city.population.toLocaleString('fr-FR')}</p>
               </div>
-            ) : (
-              <p className="text-xs text-muted-foreground">Données de composition non disponibles.</p>
-            )}
+              <div>
+                <span className="text-muted-foreground">Dernier contrôle</span>
+                <p className="font-medium">{city.lastAnalysis}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Score</span>
+                <p className="font-medium">{city.score}/100</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Source</span>
+                <p className="font-medium">{city.source}</p>
+              </div>
+            </div>
 
-            {/* Compliance */}
-            {checks.length > 0 && (
-              <div className="space-y-1">
-                <h4 className="font-semibold text-xs flex items-center gap-1">
-                  <ShieldCheck className="h-3 w-3" /> Conformité
-                </h4>
-                {checks.map((c, i) => (
-                  <div key={i} className={`flex items-center justify-between p-1.5 rounded text-xs border ${c.ok ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                    <div className="flex items-center gap-1">
-                      {c.ok ? <CheckCircle className="h-3 w-3 text-green-600" /> : <AlertTriangle className="h-3 w-3 text-red-600" />}
-                      <span>{c.param}</span>
-                    </div>
-                    <span className="text-muted-foreground">{c.value} / {c.limit} {c.unit}</span>
+            {/* Pollutant detail table */}
+            <div className="space-y-1">
+              <h4 className="font-semibold text-xs flex items-center gap-1">
+                <Droplets className="h-3 w-3" /> Polluants mesurés
+              </h4>
+              {[
+                { param: 'Nitrates', value: city.nitrates, limit: 50, unit: 'mg/L', status: nitrateStatus },
+                { param: 'Pesticides', value: city.pesticides, limit: 0.1, unit: 'µg/L', status: pesticideStatus },
+                { param: 'Plomb', value: city.lead, limit: 10, unit: 'µg/L', status: leadStatus },
+              ].map(p => (
+                <div
+                  key={p.param}
+                  className={`flex items-center justify-between p-1.5 rounded text-xs border ${
+                    p.status.color === '#10b981'
+                      ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800'
+                      : p.status.color === '#f59e0b'
+                      ? 'bg-yellow-50 border-yellow-200 dark:bg-yellow-950 dark:border-yellow-800'
+                      : 'bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800'
+                  }`}
+                >
+                  <div className="flex items-center gap-1">
+                    {p.status.color === '#10b981' ? (
+                      <CheckCircle className="h-3 w-3 text-green-600" />
+                    ) : (
+                      <AlertTriangle className="h-3 w-3 text-yellow-600" />
+                    )}
+                    <span>{p.param}</span>
                   </div>
-                ))}
-              </div>
-            )}
+                  <span className="text-muted-foreground">{p.value} / {p.limit} {p.unit}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </CardContent>
