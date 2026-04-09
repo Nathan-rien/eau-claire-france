@@ -279,7 +279,7 @@ const Index = () => {
         <section className="py-6 md:py-10 lg:py-12 px-4 bg-orange-50/50" role="region" aria-labelledby="risks-title">
           <div className="container mx-auto max-w-5xl">
             <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
-              <div className="flex-1 order-2 md:order-1">
+              <div className="flex-1 order-2 md:order-2">
                 <div className="border-l-4 border-orange-400 pl-5">
                   <h2 id="risks-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
                     Les risques liés à l'eau du robinet
@@ -297,7 +297,7 @@ const Index = () => {
                   </Link>
                 </div>
               </div>
-              <div className="flex-shrink-0 order-1 md:order-2 relative">
+              <div className="flex-shrink-0 order-1 md:order-1 relative">
                 {/* Outer spinning ring */}
                 <div className="absolute inset-0 w-44 h-44 md:w-52 md:h-52 -m-6 rounded-full border-2 border-dashed border-orange-200 animate-[spin_20s_linear_infinite]" />
                 <div className="w-32 h-32 md:w-40 md:h-40 bg-orange-100 rounded-full flex items-center justify-center relative ring-4 ring-orange-200/50 animate-[pulse_4s_ease-in-out_infinite]">
