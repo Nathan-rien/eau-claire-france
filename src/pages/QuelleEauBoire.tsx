@@ -3,12 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Zap, ClipboardList, ArrowLeft, Droplets, Sparkles, GlassWater, Baby, Heart, Dumbbell, User, Sun, ShieldAlert, Info, Target, Activity, Bone, Leaf, Search } from 'lucide-react';
+import { AlertTriangle, Zap, ClipboardList, ArrowLeft, Droplets, Sparkles, GlassWater, Baby, Heart, Dumbbell, User, Sun, ShieldAlert, Info, Target, Activity, Bone, Leaf, Search, Users, Calendar, GlassWater as Cup } from 'lucide-react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
 import { seoData, generateFAQSchema } from '@/utils/seoData';
-import { userProfiles, userIntolerances, userPreferences, UserProfile } from '@/data/waterProfiles';
+import { userProfiles, userIntolerances, userPreferences, UserProfile, profileCategories, ProfileCategory, ageGroups, genders, dailyConsumptions, AgeGroup, Gender, DailyConsumption, DiagnosticContext } from '@/data/waterProfiles';
 import { waterRecommendationService, WaterRecommendation } from '@/services/waterRecommendationService';
 import { useBottleData } from '@/hooks/useBottleData';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -50,6 +50,11 @@ const QuelleEauBoire: React.FC = () => {
   const [showResults, setShowResults] = useState(false);
   const [recommendations, setRecommendations] = useState<WaterRecommendation[]>([]);
   
+  // New context state
+  const [selectedAge, setSelectedAge] = useState<AgeGroup | undefined>();
+  const [selectedGender, setSelectedGender] = useState<Gender | undefined>();
+  const [selectedConsumption, setSelectedConsumption] = useState<DailyConsumption | undefined>();
+  
   // Quick diagnostic state
   const [quickWaterType, setQuickWaterType] = useState<string>('all');
   const [quickProfile, setQuickProfile] = useState<string | null>(null);
@@ -90,7 +95,13 @@ const QuelleEauBoire: React.FC = () => {
     const intolerancesData = userIntolerances.filter(i => selectedIntolerances.includes(i.id));
     const preferencesData = userPreferences.filter(p => selectedPreferences.includes(p.id));
     
-    let results = waterRecommendationService.calculateRecommendations(profiles, intolerancesData, preferencesData);
+    const context: DiagnosticContext = {
+      age: selectedAge,
+      gender: selectedGender,
+      dailyConsumption: selectedConsumption,
+    };
+    
+    let results = waterRecommendationService.calculateRecommendations(profiles, intolerancesData, preferencesData, context);
     results = filterByWaterType(results, selectedWaterType);
     
     setRecommendations(results);
@@ -120,6 +131,9 @@ const QuelleEauBoire: React.FC = () => {
     setSelectedProfiles([]);
     setSelectedIntolerances([]);
     setSelectedPreferences([]);
+    setSelectedAge(undefined);
+    setSelectedGender(undefined);
+    setSelectedConsumption(undefined);
     setShowResults(false);
     setRecommendations([]);
     setQuickWaterType('all');
@@ -136,7 +150,7 @@ const QuelleEauBoire: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const hasSelections = selectedWaterType !== 'all' || selectedProfiles.length > 0 || selectedIntolerances.length > 0 || selectedPreferences.length > 0;
+  const hasSelections = selectedWaterType !== 'all' || selectedProfiles.length > 0 || selectedIntolerances.length > 0 || selectedPreferences.length > 0 || selectedAge !== undefined || selectedGender !== undefined || selectedConsumption !== undefined;
 
   const seoProps = {
     title: seoData.quelleEauBoire.title,
@@ -313,7 +327,7 @@ const QuelleEauBoire: React.FC = () => {
                         Analyse détaillée avec profils, intolérances et préférences
                       </p>
                     </div>
-                    <Badge variant="outline" className="mt-auto">📋 4 étapes</Badge>
+                    <Badge variant="outline" className="mt-auto">📋 6 étapes</Badge>
                   </CardContent>
                 </Card>
               </button>
@@ -609,7 +623,7 @@ const QuelleEauBoire: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* 2. Profils */}
+            {/* 2. Profils — catégorisés */}
             <Card>
               <CardHeader className="p-4 md:p-6">
                 <CardTitle className="flex items-center gap-3 text-lg md:text-2xl">
@@ -618,26 +632,116 @@ const QuelleEauBoire: React.FC = () => {
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">Sélectionnez un ou plusieurs profils qui vous correspondent</p>
               </CardHeader>
-              <CardContent className="p-4 md:p-6 pt-0">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-                  {userProfiles.map((profile) => (
-                    <div key={profile.id} className="flex items-start space-x-3 p-3 md:p-4 rounded-lg border min-h-[56px]">
-                      <Checkbox id={profile.id} checked={selectedProfiles.includes(profile.id)} onCheckedChange={() => handleProfileToggle(profile.id)} />
-                      <div className="flex-1">
-                        <label htmlFor={profile.id} className="font-medium cursor-pointer text-sm md:text-base">{profile.name}</label>
-                        <p className="text-xs md:text-sm text-muted-foreground">{profile.description}</p>
+              <CardContent className="p-4 md:p-6 pt-0 space-y-5">
+                {(Object.keys(profileCategories) as ProfileCategory[]).map(catKey => {
+                  const cat = profileCategories[catKey];
+                  const catProfiles = userProfiles.filter(p => p.category === catKey);
+                  if (catProfiles.length === 0) return null;
+                  return (
+                    <div key={catKey}>
+                      <h4 className="font-semibold text-sm md:text-base mb-2 flex items-center gap-2">
+                        <span>{cat.icon}</span> {cat.label}
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {catProfiles.map((profile) => (
+                          <div key={profile.id} className="flex items-start space-x-3 p-3 md:p-4 rounded-lg border min-h-[56px]">
+                            <Checkbox id={profile.id} checked={selectedProfiles.includes(profile.id)} onCheckedChange={() => handleProfileToggle(profile.id)} />
+                            <div className="flex-1">
+                              <label htmlFor={profile.id} className="font-medium cursor-pointer text-sm md:text-base">{profile.name}</label>
+                              <p className="text-xs md:text-sm text-muted-foreground">{profile.description}</p>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+
+            {/* 3. Âge et sexe */}
+            <Card>
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="flex items-center gap-3 text-lg md:text-2xl">
+                  <span className="bg-indigo-500 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold">3</span>
+                  Votre âge et sexe
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">Ces informations permettent d'affiner les recommandations</p>
+              </CardHeader>
+              <CardContent className="p-4 md:p-6 pt-0 space-y-4">
+                <div>
+                  <h4 className="font-semibold text-sm mb-2">Tranche d'âge</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {ageGroups.map(ag => (
+                      <button
+                        key={ag.id}
+                        onClick={() => setSelectedAge(selectedAge === ag.id ? undefined : ag.id)}
+                        className={`px-4 py-2 rounded-full border text-sm font-medium transition-all min-h-[40px]
+                          ${selectedAge === ag.id
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'bg-card border-border hover:border-primary/40 text-foreground'
+                          }`}
+                      >
+                        {ag.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm mb-2">Sexe</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {genders.map(g => (
+                      <button
+                        key={g.id}
+                        onClick={() => setSelectedGender(selectedGender === g.id ? undefined : g.id)}
+                        className={`px-4 py-2 rounded-full border text-sm font-medium transition-all min-h-[40px]
+                          ${selectedGender === g.id
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'bg-card border-border hover:border-primary/40 text-foreground'
+                          }`}
+                      >
+                        {g.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 4. Consommation quotidienne */}
+            <Card>
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="flex items-center gap-3 text-lg md:text-2xl">
+                  <span className="bg-cyan-500 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold">4</span>
+                  Consommation quotidienne
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">Combien d'eau buvez-vous par jour ?</p>
+              </CardHeader>
+              <CardContent className="p-4 md:p-6 pt-0">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                  {dailyConsumptions.map(dc => (
+                    <button
+                      key={dc.id}
+                      onClick={() => setSelectedConsumption(selectedConsumption === dc.id ? undefined : dc.id)}
+                      className={`flex flex-col items-center gap-1 p-3 md:p-4 rounded-xl border text-sm font-medium transition-all min-h-[70px]
+                        ${selectedConsumption === dc.id
+                          ? 'bg-primary/10 border-primary text-primary shadow-sm'
+                          : 'bg-card border-border hover:border-primary/40 text-foreground'
+                        }`}
+                    >
+                      <span className="font-bold">{dc.label}</span>
+                      <span className="text-xs text-muted-foreground">{dc.desc}</span>
+                    </button>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* 3. Intolérances */}
+            {/* 5. Intolérances */}
             <Card>
               <CardHeader className="p-4 md:p-6">
                 <CardTitle className="flex items-center gap-3 text-lg md:text-2xl">
-                  <span className="bg-red-500 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold">3</span>
+                  <span className="bg-red-500 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold">5</span>
                   Intolérances et restrictions
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">Sélectionnez les substances que vous souhaitez éviter</p>
@@ -657,11 +761,11 @@ const QuelleEauBoire: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* 4. Préférences */}
+            {/* 6. Préférences */}
             <Card>
               <CardHeader className="p-4 md:p-6">
                 <CardTitle className="flex items-center gap-3 text-lg md:text-2xl">
-                  <span className="bg-green-500 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold">4</span>
+                  <span className="bg-green-500 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold">6</span>
                   Préférences personnelles
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">Indiquez vos préférences pour le type d'eau</p>
