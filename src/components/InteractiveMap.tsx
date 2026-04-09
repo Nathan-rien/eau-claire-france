@@ -54,12 +54,28 @@ const waterQualityData: CityData[] = [
 ];
 
 const waterSourceZones = [
-  { name: 'Seine et Marne', coordinates: [[[1.5, 48.2], [3.5, 48.2], [3.5, 49.2], [1.5, 49.2], [1.5, 48.2]]], color: '#3b82f6' },
-  { name: 'Sources montagne', coordinates: [[[4.0, 44.5], [8.0, 44.5], [8.0, 47.0], [4.0, 47.0], [4.0, 44.5]]], color: '#10b981' },
-  { name: 'Nappes phréatiques', coordinates: [[[-2.0, 43.0], [2.0, 43.0], [2.0, 47.5], [-2.0, 47.5], [-2.0, 43.0]]], color: '#f59e0b' },
-  { name: 'Eaux souterraines', coordinates: [[[0.5, 42.0], [4.5, 42.0], [4.5, 45.0], [0.5, 45.0], [0.5, 42.0]]], color: '#8b5cf6' },
-  { name: 'Nappes de craie', coordinates: [[[1.5, 49.2], [5.0, 49.2], [5.0, 51.5], [1.5, 51.5], [1.5, 49.2]]], color: '#06b6d4' },
-  { name: 'Eaux de surface', coordinates: [[[5.0, 47.0], [8.5, 47.0], [8.5, 50.0], [5.0, 50.0], [5.0, 47.0]]], color: '#ec4899' },
+  // 1. Bassin parisien — Paris, Orléans, Rouen
+  { name: 'Bassin parisien', coordinates: [[[0.8, 47.7], [3.2, 47.7], [3.2, 49.6], [0.8, 49.6], [0.8, 47.7]]], color: '#3b82f6' },
+  // 2. Nappe rhénane — Strasbourg, Metz
+  { name: 'Nappe rhénane', coordinates: [[[5.8, 48.0], [8.0, 48.0], [8.0, 49.4], [5.8, 49.4], [5.8, 48.0]]], color: '#10b981' },
+  // 3. Alpes & vallée du Rhône — Lyon, Grenoble, Dijon
+  { name: 'Alpes & vallée du Rhône', coordinates: [[[4.5, 44.8], [6.2, 44.8], [6.2, 47.5], [4.5, 47.5], [4.5, 44.8]]], color: '#059669' },
+  // 4. Massif Central volcanique — Clermont-Ferrand, Limoges
+  { name: 'Massif Central volcanique', coordinates: [[[1.0, 45.2], [3.5, 45.2], [3.5, 46.2], [1.0, 46.2], [1.0, 45.2]]], color: '#8b5cf6' },
+  // 5. Nappes de craie Nord — Lille, Amiens, Reims
+  { name: 'Nappes de craie Nord', coordinates: [[[1.8, 49.0], [4.2, 49.0], [4.2, 50.8], [1.8, 50.8], [1.8, 49.0]]], color: '#06b6d4' },
+  // 6. Bretagne — Rennes, Brest
+  { name: 'Bretagne', coordinates: [[[-4.8, 47.8], [-1.2, 47.8], [-1.2, 48.6], [-4.8, 48.6], [-4.8, 47.8]]], color: '#ec4899' },
+  // 7. Val de Loire — Nantes, Angers
+  { name: 'Val de Loire', coordinates: [[[-1.8, 47.0], [0.0, 47.0], [0.0, 47.7], [-1.8, 47.7], [-1.8, 47.0]]], color: '#f59e0b' },
+  // 8. Aquitaine — Bordeaux, Pau
+  { name: 'Aquitaine', coordinates: [[[-1.0, 43.0], [0.2, 43.0], [0.2, 45.0], [-1.0, 45.0], [-1.0, 43.0]]], color: '#6366f1' },
+  // 9. Garonne & Méditerranée Ouest — Toulouse, Montpellier
+  { name: 'Garonne & Méditerranée Ouest', coordinates: [[[1.0, 43.2], [4.2, 43.2], [4.2, 44.0], [1.0, 44.0], [1.0, 43.2]]], color: '#a855f7' },
+  // 10. Provence & Alpes du Sud — Marseille, Nice, Toulon
+  { name: 'Provence & Alpes du Sud', coordinates: [[[5.0, 43.0], [7.5, 43.0], [7.5, 44.0], [5.0, 44.0], [5.0, 43.0]]], color: '#0ea5e9' },
+  // 11. Corse — Ajaccio
+  { name: 'Corse', coordinates: [[[8.5, 41.3], [9.6, 41.3], [9.6, 43.0], [8.5, 43.0], [8.5, 41.3]]], color: '#166534' },
 ];
 
 const getMarkerColor = (quality: string) => {
