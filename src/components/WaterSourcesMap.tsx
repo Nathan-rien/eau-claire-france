@@ -416,7 +416,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
                       <div className="flex flex-wrap gap-1">
                         {recs.map((rec, i) => (
                           <Badge key={i} className={`${rec.color} text-xs gap-1`}>
-                            {rec.icon}
+                            {rec.iconName === 'Baby' ? <Baby className="h-3 w-3" /> : <Sparkles className="h-3 w-3" />}
                             {rec.label}
                           </Badge>
                         ))}
