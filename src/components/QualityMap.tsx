@@ -218,8 +218,32 @@ const getExceedanceColor = (rate: number) =>
 const QualityMap = () => {
   const [showWaterSources, setShowWaterSources] = useState<boolean>(true);
 
+  // Compute national stats from regions
+  const totalCities = regions.reduce((s, r) => s + r.cities, 0);
+  const avgConformity = (regions.reduce((s, r) => s + r.complianceRate, 0) / regions.length).toFixed(1);
+  const totalAlerts = regions.reduce((s, r) => s + r.alerts, 0);
+  const totalPopulation = regions.reduce((s, r) => s + r.population, 0).toFixed(1);
+
   return (
     <div className="space-y-6">
+      {/* National Stats Banner */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: 'Communes surveillées', value: totalCities.toLocaleString('fr-FR'), icon: '🏘️' },
+          { label: 'Conformité nationale', value: `${avgConformity} %`, icon: '✅' },
+          { label: 'Alertes actives', value: totalAlerts.toString(), icon: '⚠️' },
+          { label: 'Population desservie', value: `${totalPopulation} M`, icon: '👥' },
+        ].map(stat => (
+          <Card key={stat.label}>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl mb-1">{stat.icon}</div>
+              <div className="text-xl md:text-2xl font-bold">{stat.value}</div>
+              <div className="text-xs text-muted-foreground">{stat.label}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
       {/* Quality Grade Legend */}
       <Card>
         <CardHeader>
