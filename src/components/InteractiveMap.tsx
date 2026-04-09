@@ -271,7 +271,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
     <Card>
       <CardContent className="p-0">
         <div className="relative">
-          <div ref={mapContainer} className="h-96 w-full rounded-lg" />
+          <div ref={mapContainer} className="h-[50vh] md:h-[70vh] w-full rounded-lg" />
           <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
             <div className="text-sm font-medium text-gray-700">
               Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
