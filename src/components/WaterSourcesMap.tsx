@@ -221,15 +221,21 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
 
     // Événements de clic
     map.current.on('click', 'sources-circles', (e) => {
-      if (e.features && e.features[0]) {
-        const feature = e.features[0];
-        const sourceId = feature.properties?.id;
-        const source = sources.find(s => s.source_id === sourceId);
+      if (!map.current || !e.point) return;
+      
+      // Query ALL features at the clicked pixel
+      const features = map.current.queryRenderedFeatures(e.point, { layers: ['sources-circles'] });
+      
+      if (features.length > 0) {
+        const matchedSources = features
+          .map(f => sources.find(s => s.source_id === f.properties?.id))
+          .filter((s): s is SourceItem => !!s);
         
-        if (source) {
-          setSelectedSource(source);
+        if (matchedSources.length > 0) {
+          setSelectedSource(matchedSources[0]);
+          setOverlappingSources(matchedSources.length > 1 ? matchedSources : []);
           
-          const coords = getCoordinatesForSource(source);
+          const coords = getCoordinatesForSource(matchedSources[0]);
           if (coords) {
             map.current?.flyTo({
               center: coords,
@@ -355,7 +361,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
               </div>
             </CardHeader>
             <CardContent className="p-0">
-              <div ref={mapContainer} className="w-full h-96 rounded-b-lg" />
+              <div ref={mapContainer} className="w-full h-[600px] rounded-b-lg" />
             </CardContent>
           </Card>
         </div>
