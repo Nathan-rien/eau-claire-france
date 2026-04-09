@@ -1,17 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapboxSecurityService } from '@/services/mapboxSecurityService';
-import { buildSources, SourceItem } from '@/utils/sourcesAdapter';
-import {
-  getMineralizationLevel, computeHardness, getHardnessLabel,
-  getUsageRecommendations, getComplianceChecks, getTypeColor,
-  getMineralRows, isPointInZone
-} from '@/utils/waterSourceAnalysis';
-import { Droplets, MapPin, ShieldCheck, Baby, Sparkles, AlertTriangle, CheckCircle, X } from 'lucide-react';
+import { isPointInZone } from '@/utils/waterSourceAnalysis';
+import { Droplets, MapPin, AlertTriangle, CheckCircle, X, Users } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
 interface CityData {
   name: string;
