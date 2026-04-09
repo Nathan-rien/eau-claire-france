@@ -1,51 +1,45 @@
 
 
-## Plan : Afficher les données eau du robinet (pas eau en bouteille) au clic sur les zones
+## Plan : Corriger les clics sur sources superposées et agrandir la carte
 
-### Problème
+### Problème 1 — Clic sur Cristaline affiche Ophélie
+6 sources partagent les mêmes coordonnées (46.2276, 2.2137) : Cristaline, Grand Barbier, Fiée des Lois, Sainte-Sophie, Louise, Ophélie. Mapbox affiche la dernière feature rendue en haut de la pile. Au clic, seule Ophélie est captée.
 
-Le panneau latéral au clic sur une zone charge `buildSources()` qui contient les **sources d'eau en bouteille** (Évian, Volvic, Alizée, Montfras, etc.). Or la page `/carte` traite de la **qualité de l'eau du robinet** par ville. Les zones représentent des bassins d'alimentation en eau potable, pas des zones de captage d'eau minérale.
+### Problème 2 — Carte trop petite
+La carte utilise `h-96` (384px). Insuffisant pour naviguer confortablement.
 
-Alizée et Montfras ne sont pas des sources d'eau du robinet — ce sont des eaux minérales naturelles embouteillées à Chambon-la-Forêt qui tombent géographiquement dans le polygone "Bassin parisien".
+### Problème 3 — Données génériques
+Plusieurs "Eau de source" ont "France, France" comme localisation et des coordonnées identiques au centre de la France — aucune valeur informative.
+
+---
 
 ### Solution
 
-Remplacer le contenu du panneau latéral : au lieu d'afficher les sources d'eau en bouteille (`buildSources`), afficher les **villes** situées dans la zone cliquée avec leurs données de qualité d'eau du robinet déjà présentes dans `waterQualityData`.
+#### 1. Gérer les sources superposées (`WaterSourcesMap.tsx`)
 
-### Modifications — `src/components/InteractiveMap.tsx`
+Au clic sur un point, au lieu de prendre `e.features[0]`, **interroger toutes les features au même pixel** via `map.queryRenderedFeatures(e.point, { layers: ['sources-circles'] })`. Si plusieurs sources sont trouvées :
+- Afficher dans le panneau droit un **sélecteur** (liste des sources à cette position) permettant de naviguer entre elles
+- Afficher la première source par défaut, avec des boutons/badges pour basculer vers les autres
 
-**1. Supprimer les imports et états liés aux sources en bouteille**
-- Retirer `buildSources`, `SourceItem`, les helpers d'analyse (`getMineralizationLevel`, `computeHardness`, etc.)
-- Retirer les états `allSources` et `zoneSources`
-- Retirer le `useEffect` qui charge `buildSources()`
-- Retirer le composant `SourceCard`
+État ajouté : `overlappingSources: SourceItem[]` — liste de toutes les sources au point cliqué.
 
-**2. Ajouter un état `zoneCities`** de type `CityData[]`
-- Au clic sur une zone, filtrer `waterQualityData` pour ne garder que les villes dont les coordonnées tombent dans le polygone de la zone (via `isPointInZone` — conserver cette seule fonction utilitaire)
+#### 2. Agrandir la carte (`WaterSourcesMap.tsx`)
 
-**3. Remplacer le panneau latéral par un panneau "Eau du robinet"**
-Pour chaque ville dans la zone, afficher une carte compacte avec :
-- Nom de la ville + note qualité (badge A/B/C coloré)
-- Source d'alimentation (`waterSource` — ex: "Eaux de surface + souterraines")
-- Taux de conformité (barre de progression colorée)
-- Tableau compact des polluants mesurés :
-  - Nitrates : valeur / 50 mg/L (seuil réglementaire)
-  - Pesticides : valeur / 0.1 µg/L
-  - Plomb : valeur / 10 µg/L
-  - Chaque ligne avec icône vert/orange/rouge selon ratio
-- Population desservie
-- Date de dernière analyse
+Remplacer `h-96` par `h-[600px]` pour la div du conteneur carte, offrant ~600px de hauteur.
 
-**4. En-tête du panneau** : afficher un résumé de zone
-- Nombre de villes dans la zone
-- Type de captage dominant (déduit des `waterSource` des villes)
-- Score moyen de la zone
+#### 3. Enrichir les coordonnées des sources génériques (`water_sources_coordinates.csv`)
 
-### Résultat attendu
+Mettre à jour les coordonnées des sources "Eau de source" qui pointent actuellement vers le centre de la France (46.2276, 2.2137) avec des positions plus précises :
+- **Cristaline** → garder au centre (multi-sources, pas de lieu unique)
+- **Grand Barbier** → Douvres (Ain) : 46.06, 5.37
+- **Fiée des Lois** → Prahecq (Deux-Sèvres) : 46.28, -0.33
+- **Sainte-Sophie** → La Chapelle-en-Vercors (Drôme) : 44.97, 5.41
+- **Louise** → Andrézieux-Bouthéon (Loire) : 45.53, 4.26
+- **Ophélie** → Saint-Cyr-en-Val (Loiret) : 47.83, 1.95
 
-Cliquer sur "Bassin parisien" affichera Paris, Orléans et Rouen avec leurs données de qualité d'eau du robinet (nitrates, pesticides, plomb, taux de conformité), au lieu d'Alizée et Montfras qui sont des eaux en bouteille sans rapport.
+Cela résoudra la superposition et ajoutera de la valeur aux données affichées.
 
-### Fichier modifié
-- `src/components/InteractiveMap.tsx` — refonte du panneau latéral
-- `src/utils/waterSourceAnalysis.ts` — inchangé (toujours utilisé par `/sources-eau`)
+### Fichiers modifiés
+- **`public/data/water_sources_coordinates.csv`** — coordonnées corrigées pour 5 sources
+- **`src/components/WaterSourcesMap.tsx`** — hauteur carte + gestion multi-sources au clic
 
