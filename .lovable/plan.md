@@ -1,34 +1,21 @@
 
 
-## Plan : Compléter les données de composition manquantes
+## Plan : Séparer le libellé de l'onglet header du libellé de la page
 
 ### Problème
-
-12 sources dans le fichier de coordonnées n'ont aucune correspondance dans le fichier de composition. Le panneau affiche "Données de composition non disponibles" pour ces sources : **Thonon, Wattwiller, Cristaline, Laqueuille, Grand Barbier, Fiée des Lois, Sainte-Sophie, Pyrénéa, Roche des Écrins, Saint-Martin d'Abbat, Louise, Ophélie**.
+La clé `nav.journey` est utilisée à la fois pour le **nom de l'onglet dropdown** dans le header ET pour le **lien vers /parcours-eau** dans le menu. En la renommant "Infographies", le lien de la page a aussi changé de nom.
 
 ### Solution
 
-Ajouter 12 lignes de données de composition minérale dans `public/data/infoeau_emn_composition_v2_partial.csv` avec les valeurs connues (étiquettes officielles, fiches produit) :
+1. **`src/i18n/translations.ts`** — Ajouter une nouvelle clé `nav.journeyTab` pour l'onglet, et remettre `nav.journey` à sa valeur originale :
+   - `nav.journey` → "Parcours de l'eau" (FR) / "Water journey" (EN) — utilisé pour le lien vers /parcours-eau
+   - `nav.journeyTab` → "Infographies" (FR) / "Infographics" (EN) — utilisé pour le titre de l'onglet dropdown
 
-| Source | Ca | Mg | Na | Résidu sec | pH | NO3 |
-|--------|-----|-----|-----|------------|-----|-----|
-| Thonon | 108 | 16 | 5 | 342 | 7.3 | 2.1 |
-| Wattwiller | 288 | 19.8 | 3 | 1534 | 7.5 | 0.1 |
-| Cristaline (moy.) | 71 | 5.5 | 8 | 244 | 7.5 | 1 |
-| Laqueuille | 4.2 | 1.9 | 2.7 | 46 | 6.5 | 3 |
-| Grand Barbier | 85 | 26 | 2 | 340 | 7.6 | 1 |
-| Fiée des Lois | 38 | 7 | 10 | 195 | 7.6 | 3 |
-| Sainte-Sophie | 92 | 26 | 5 | 376 | 7.4 | 0.5 |
-| Pyrénéa | 78 | 8 | 4 | 282 | 7.4 | 2 |
-| Roche des Écrins | 53 | 8 | 1.5 | 200 | 7.5 | 2 |
-| Saint-Martin d'Abbat | 95 | 7 | 9 | 320 | 7.5 | 4 |
-| Louise | 60 | 18 | 8 | 290 | 7.4 | 3 |
-| Ophélie | 98 | 5 | 7 | 310 | 7.6 | 2 |
+2. **`src/components/Header.tsx`** — Remplacer `t('nav.journey')` par `t('nav.journeyTab')` aux 2 endroits où il sert de **titre de section/onglet** (ligne ~168 bouton dropdown, ligne ~319 section mobile), en laissant `t('nav.journey')` pour le lien page (ligne ~60).
 
-### Pas de modification de code
+3. **`src/components/Navigation.tsx`** — Aucun changement (utilise déjà `nav.journey` pour le lien direct, ce qui est correct).
 
-Le système de matching dans `sourcesAdapter.ts` fonctionne déjà par nom de source normalisé. En ajoutant les lignes au CSV avec les bons `source_name`, le matching se fera automatiquement.
-
-### Fichier modifié
-- `public/data/infoeau_emn_composition_v2_partial.csv` — ajout de 12 lignes
+### Fichiers modifiés
+- `src/i18n/translations.ts` — 4 lignes (2 par langue)
+- `src/components/Header.tsx` — 2 occurrences
 
