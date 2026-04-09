@@ -1,48 +1,37 @@
 
 
-## Plan : Enrichir les données de la carte /carte
+## Plan : Agrandir la hauteur de la carte sur /carte
 
-### Constat actuel
+### Problème
+La carte Mapbox dans `InteractiveMap.tsx` utilise la classe Tailwind `h-96` (384px), ce qui est trop petit sur desktop. Le `MapLoader` dans `QualityMap.tsx` utilise `minHeight="60vh"` mais la carte interne reste limitée à 384px.
 
-La page `/carte` repose sur deux composants :
+### Modification
 
-1. **`InteractiveMap.tsx`** — carte Mapbox avec seulement **10 villes** (Paris, Lyon, Marseille, Toulouse, Nice, Nantes, Strasbourg, Montpellier, Bordeaux, Lille) et des champs limités : nom, coords, quality (A-E), score, source, region. Les popups n'affichent que 4 lignes basiques.
+**Fichier : `src/components/InteractiveMap.tsx` — ligne 274**
 
-2. **`QualityMap.tsx`** — cartes régionales déjà bien enrichies (13 régions, polluants détaillés, conformité, population, zones). Cette partie est déjà complète.
+Remplacer `h-96` par `h-[70vh]` pour que la carte occupe 70% de la hauteur de l'écran, avec un minimum raisonnable sur mobile.
 
-L'enrichissement doit donc porter sur **`InteractiveMap.tsx`** : plus de villes et des popups plus informatifs.
+```
+// Avant
+<div ref={mapContainer} className="h-96 w-full rounded-lg" />
 
-### Modifications prévues
+// Après
+<div ref={mapContainer} className="h-[50vh] md:h-[70vh] w-full rounded-lg" />
+```
 
-#### 1. Passer de 10 à 25+ villes sur la carte Mapbox
-Ajouter des villes pour couvrir toutes les régions : Rennes, Rouen, Dijon, Clermont-Ferrand, Grenoble, Toulon, Metz, Reims, Orléans, Angers, Brest, Limoges, Ajaccio, Amiens, Pau.
+**Fichier : `src/components/QualityMap.tsx` — ligne 320**
 
-Chaque ville aura des champs supplémentaires :
-- `population` (habitants desservis)
-- `conformityRate` (% conformité)
-- `lastAnalysis` (date dernier contrôle)
-- `waterSource` (type de captage)
-- `nitrates` (mg/L), `pesticides` (µg/L), `lead` (µg/L) — valeurs clés mesurées
+Aligner le `minHeight` du `MapLoader` sur la même valeur :
 
-#### 2. Popups Mapbox enrichis
-Refondre le HTML des popups pour afficher :
-- Score avec barre visuelle colorée
-- Population desservie
-- Taux de conformité avec couleur
-- Date du dernier contrôle
-- Tableau compact des 3 polluants clés (nitrates, pesticides, plomb) avec valeurs et limites
+```
+// Avant
+<MapLoader loadOnInteraction={true} minHeight="60vh">
 
-#### 3. Bandeau statistique national
-Ajouter au-dessus de la carte (dans `QualityMap.tsx`) un résumé avec 4 chiffres clés calculés dynamiquement depuis les régions :
-- Villes surveillées (somme des communes)
-- Conformité moyenne nationale
-- Régions avec alertes
-- Population totale desservie
+// Après
+<MapLoader loadOnInteraction={true} minHeight="70vh">
+```
 
-### Fichiers modifiés
-- `src/components/InteractiveMap.tsx` — données villes + popups
-- `src/components/QualityMap.tsx` — bandeau statistique national
-
-### Ce qui ne change pas
-Aucune fonctionnalité, filtre, toggle zones, légende ou navigation modifié.
+### Résultat
+- Mobile : carte à 50vh (~moitié de l'écran)
+- Desktop : carte à 70vh (~deux tiers de l'écran, ~850px sur 1213px)
 
