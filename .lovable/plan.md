@@ -1,54 +1,51 @@
 
 
-## Plan : Rendre les zones de sources cliquables sur /carte avec panneau de détail
+## Plan : Afficher les données eau du robinet (pas eau en bouteille) au clic sur les zones
 
-### Objectif
-Permettre de cliquer sur les 11 zones de provenance affichées sur la carte interactive de `/carte` et afficher les données détaillées des sources associées, similaire au panneau latéral de `/sources-eau`.
+### Problème
 
-### Approche
+Le panneau latéral au clic sur une zone charge `buildSources()` qui contient les **sources d'eau en bouteille** (Évian, Volvic, Alizée, Montfras, etc.). Or la page `/carte` traite de la **qualité de l'eau du robinet** par ville. Les zones représentent des bassins d'alimentation en eau potable, pas des zones de captage d'eau minérale.
 
-Intégrer les données de sources (via `buildSources()` de `sourcesAdapter.ts`) dans `InteractiveMap.tsx` et ajouter un panneau d'information latéral qui s'affiche au clic sur une zone.
+Alizée et Montfras ne sont pas des sources d'eau du robinet — ce sont des eaux minérales naturelles embouteillées à Chambon-la-Forêt qui tombent géographiquement dans le polygone "Bassin parisien".
 
-### Modifications
+### Solution
 
-#### 1. `src/components/InteractiveMap.tsx` — Ajout interactivité zones + panneau détail
+Remplacer le contenu du panneau latéral : au lieu d'afficher les sources d'eau en bouteille (`buildSources`), afficher les **villes** situées dans la zone cliquée avec leurs données de qualité d'eau du robinet déjà présentes dans `waterQualityData`.
 
-- **Importer `buildSources` et `SourceItem`** depuis `@/utils/sourcesAdapter`
-- **Charger les sources au mount** via `useEffect` + `useState<SourceItem[]>`
-- **Mapper chaque zone à ses sources** : associer les sources à leur zone géographique via un test de coordonnées (point dans le rectangle de la zone) ou un mapping manuel zone → source_id/source_name
-- **Rendre les zones cliquables** : ajouter un `map.on('click', 'water-zone-fill-*')` qui identifie la zone cliquée et affiche les sources correspondantes
-- **Ajouter un état `selectedZone`** avec le nom de la zone et la liste de sources filtrées
-- **Panneau de détail** : afficher à droite (ou en dessous sur mobile) une carte avec :
-  - Nom de la zone
-  - Liste des sources dans la zone avec pour chacune :
-    - Nom de la source, type d'eau (badge coloré)
-    - Marques associées
-    - Minéralisation (badge résidu sec via `getMineralizationLevel`)
-    - Dureté (°f via `computeHardness`)
-    - Composition minérale (tableau compact)
-    - Recommandations d'usage (nourrissons, pauvre en sodium, etc.)
-    - Conformité réglementaire (nitrates, fluor, sodium)
-  - Bouton "Fermer" pour revenir à la vue normale
+### Modifications — `src/components/InteractiveMap.tsx`
 
-- **Réorganiser le layout** : passer de `Card > div` simple à un grid `lg:grid-cols-3` (carte 2/3 + panneau 1/3) comme sur `/sources-eau`, le panneau n'apparaissant qu'au clic sur une zone
+**1. Supprimer les imports et états liés aux sources en bouteille**
+- Retirer `buildSources`, `SourceItem`, les helpers d'analyse (`getMineralizationLevel`, `computeHardness`, etc.)
+- Retirer les états `allSources` et `zoneSources`
+- Retirer le `useEffect` qui charge `buildSources()`
+- Retirer le composant `SourceCard`
 
-- **Curseur pointer** sur les zones au survol (`mouseenter`/`mouseleave` sur les layers fill)
+**2. Ajouter un état `zoneCities`** de type `CityData[]`
+- Au clic sur une zone, filtrer `waterQualityData` pour ne garder que les villes dont les coordonnées tombent dans le polygone de la zone (via `isPointInZone` — conserver cette seule fonction utilitaire)
 
-#### 2. Réutilisation des fonctions existantes de `WaterSourcesMap.tsx`
+**3. Remplacer le panneau latéral par un panneau "Eau du robinet"**
+Pour chaque ville dans la zone, afficher une carte compacte avec :
+- Nom de la ville + note qualité (badge A/B/C coloré)
+- Source d'alimentation (`waterSource` — ex: "Eaux de surface + souterraines")
+- Taux de conformité (barre de progression colorée)
+- Tableau compact des polluants mesurés :
+  - Nitrates : valeur / 50 mg/L (seuil réglementaire)
+  - Pesticides : valeur / 0.1 µg/L
+  - Plomb : valeur / 10 µg/L
+  - Chaque ligne avec icône vert/orange/rouge selon ratio
+- Population desservie
+- Date de dernière analyse
 
-Extraire dans un fichier utilitaire partagé ou dupliquer les helpers déjà existants :
-- `getMineralizationLevel`, `computeHardness`, `getHardnessLabel`
-- `getUsageRecommendations`, `getComplianceChecks`
+**4. En-tête du panneau** : afficher un résumé de zone
+- Nombre de villes dans la zone
+- Type de captage dominant (déduit des `waterSource` des villes)
+- Score moyen de la zone
 
-Comme ces fonctions sont déjà définies dans `WaterSourcesMap.tsx`, les **extraire dans `src/utils/waterSourceAnalysis.ts`** pour les partager entre les deux composants.
+### Résultat attendu
 
-### Fichiers modifiés
-- **`src/utils/waterSourceAnalysis.ts`** (nouveau) — helpers partagés extraits de WaterSourcesMap
-- **`src/components/InteractiveMap.tsx`** — layout grid, chargement sources, clic zones, panneau détail
-- **`src/components/WaterSourcesMap.tsx`** — imports depuis le nouveau fichier utilitaire (refactoring léger)
+Cliquer sur "Bassin parisien" affichera Paris, Orléans et Rouen avec leurs données de qualité d'eau du robinet (nitrates, pesticides, plomb, taux de conformité), au lieu d'Alizée et Montfras qui sont des eaux en bouteille sans rapport.
 
-### Ce qui ne change pas
-- Les villes et leurs popups restent inchangés
-- Le toggle zones dans QualityMap reste identique
-- La page /sources-eau garde son comportement actuel
+### Fichier modifié
+- `src/components/InteractiveMap.tsx` — refonte du panneau latéral
+- `src/utils/waterSourceAnalysis.ts` — inchangé (toujours utilisé par `/sources-eau`)
 
