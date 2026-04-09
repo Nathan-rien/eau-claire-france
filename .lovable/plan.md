@@ -1,41 +1,54 @@
 
 
-## Plan : Mettre à jour les zones de sources d'eau sur la carte
+## Plan : Rendre les zones de sources cliquables sur /carte avec panneau de détail
 
-### Problème
+### Objectif
+Permettre de cliquer sur les 11 zones de provenance affichées sur la carte interactive de `/carte` et afficher les données détaillées des sources associées, similaire au panneau latéral de `/sources-eau`.
 
-Les 6 zones actuelles (`waterSourceZones`) datent de l'époque où la carte ne comptait que 10 villes. Plusieurs villes ajoutées (Brest, Rennes, Rouen, Pau, Ajaccio, Limoges, Clermont-Ferrand...) tombent en dehors de toute zone. Les types de sources ne correspondent plus non plus (ex: "Sources volcaniques", "Barrages", "Sources pyrénéennes" n'ont aucune zone).
+### Approche
 
-### Zones actuelles (6)
-- Seine et Marne — couvre Paris/Orléans
-- Sources montagne — couvre Lyon/Grenoble/Dijon
-- Nappes phréatiques — couvre Bordeaux/Nantes/Angers
-- Eaux souterraines — couvre Toulouse/Montpellier/Pau
-- Nappes de craie — couvre Lille/Amiens/Reims
-- Eaux de surface — couvre Strasbourg/Metz
+Intégrer les données de sources (via `buildSources()` de `sourcesAdapter.ts`) dans `InteractiveMap.tsx` et ajouter un panneau d'information latéral qui s'affiche au clic sur une zone.
 
-### Nouvelles zones (11)
-Remplacer les 6 zones par 11 zones plus précises et géographiquement correctes :
+### Modifications
 
-1. **Bassin parisien** (bleu) — Paris, Orléans, Rouen — eaux de surface + nappes calcaires
-2. **Nappe rhénane** (vert) — Strasbourg, Metz — nappe phréatique rhénane
-3. **Alpes & vallée du Rhône** (émeraude) — Lyon, Grenoble — nappes alluviales glaciaires
-4. **Massif Central volcanique** (violet) — Clermont-Ferrand, Limoges — sources volcaniques et barrages
-5. **Nappes de craie Nord** (cyan) — Lille, Amiens, Reims — nappes de craie
-6. **Bretagne** (rose) — Rennes, Brest — eaux de surface, retenues
-7. **Val de Loire** (ambre) — Nantes, Angers — Loire + nappes alluviales
-8. **Aquitaine** (indigo) — Bordeaux, Pau — nappes profondes + sources pyrénéennes
-9. **Garonne & Méditerranée Ouest** (mauve) — Toulouse, Montpellier — eaux souterraines
-10. **Provence & Alpes du Sud** (bleu ciel) — Marseille, Nice, Toulon — Durance, sources karstiques
-11. **Corse** (vert foncé) — Ajaccio — sources montagneuses
+#### 1. `src/components/InteractiveMap.tsx` — Ajout interactivité zones + panneau détail
 
-Chaque zone aura des coordonnées polygonales ajustées pour englober les villes concernées, avec un nom descriptif du type de captage.
+- **Importer `buildSources` et `SourceItem`** depuis `@/utils/sourcesAdapter`
+- **Charger les sources au mount** via `useEffect` + `useState<SourceItem[]>`
+- **Mapper chaque zone à ses sources** : associer les sources à leur zone géographique via un test de coordonnées (point dans le rectangle de la zone) ou un mapping manuel zone → source_id/source_name
+- **Rendre les zones cliquables** : ajouter un `map.on('click', 'water-zone-fill-*')` qui identifie la zone cliquée et affiche les sources correspondantes
+- **Ajouter un état `selectedZone`** avec le nom de la zone et la liste de sources filtrées
+- **Panneau de détail** : afficher à droite (ou en dessous sur mobile) une carte avec :
+  - Nom de la zone
+  - Liste des sources dans la zone avec pour chacune :
+    - Nom de la source, type d'eau (badge coloré)
+    - Marques associées
+    - Minéralisation (badge résidu sec via `getMineralizationLevel`)
+    - Dureté (°f via `computeHardness`)
+    - Composition minérale (tableau compact)
+    - Recommandations d'usage (nourrissons, pauvre en sodium, etc.)
+    - Conformité réglementaire (nitrates, fluor, sodium)
+  - Bouton "Fermer" pour revenir à la vue normale
 
-Ajout de Dijon dans la zone Bourgogne (rattaché à Alpes/Rhône ou zone propre selon proximité).
+- **Réorganiser le layout** : passer de `Card > div` simple à un grid `lg:grid-cols-3` (carte 2/3 + panneau 1/3) comme sur `/sources-eau`, le panneau n'apparaissant qu'au clic sur une zone
 
-### Fichier modifié
-- `src/components/InteractiveMap.tsx` — remplacement du tableau `waterSourceZones`
+- **Curseur pointer** sur les zones au survol (`mouseenter`/`mouseleave` sur les layers fill)
+
+#### 2. Réutilisation des fonctions existantes de `WaterSourcesMap.tsx`
+
+Extraire dans un fichier utilitaire partagé ou dupliquer les helpers déjà existants :
+- `getMineralizationLevel`, `computeHardness`, `getHardnessLabel`
+- `getUsageRecommendations`, `getComplianceChecks`
+
+Comme ces fonctions sont déjà définies dans `WaterSourcesMap.tsx`, les **extraire dans `src/utils/waterSourceAnalysis.ts`** pour les partager entre les deux composants.
+
+### Fichiers modifiés
+- **`src/utils/waterSourceAnalysis.ts`** (nouveau) — helpers partagés extraits de WaterSourcesMap
+- **`src/components/InteractiveMap.tsx`** — layout grid, chargement sources, clic zones, panneau détail
+- **`src/components/WaterSourcesMap.tsx`** — imports depuis le nouveau fichier utilitaire (refactoring léger)
 
 ### Ce qui ne change pas
-Villes, popups, légende, logique d'affichage des zones — seules les données de `waterSourceZones` changent.
+- Les villes et leurs popups restent inchangés
+- Le toggle zones dans QualityMap reste identique
+- La page /sources-eau garde son comportement actuel
 
