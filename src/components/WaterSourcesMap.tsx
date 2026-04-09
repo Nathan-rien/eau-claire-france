@@ -21,6 +21,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [selectedSource, setSelectedSource] = useState<SourceItem | null>(null);
+  const [overlappingSources, setOverlappingSources] = useState<SourceItem[]>([]);
 
   console.log('🗺️ WaterSourcesMap received:', sources.length, 'sources');
 
