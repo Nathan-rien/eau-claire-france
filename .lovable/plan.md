@@ -1,35 +1,40 @@
 
 
-## Plan : Étendre l'historique et afficher les années sur le graphique par marque
+## Plan : Remonter le plus loin possible dans l'historique des prix
 
-### Problèmes
-1. **Données limitées à 90 jours** : `getBrandTimeseries(selectedBrand, 90)` ne remonte qu'à 3 mois, alors que la base contient ~6 mois de données (depuis sept. 2025).
-2. **Pas d'année sur l'axe X** : le `tickFormatter` n'affiche que `jour/mois` (ex: `25/02`), sans année.
-3. **Tooltip sans année** : même problème dans le tooltip.
+### Problème racine
+
+La **politique RLS** sur `prices_history` limite les SELECT aux 90 derniers jours :
+```sql
+Policy: prices_history_public_select_90d
+Using: (scraped_at > (now() - '90 days'::interval))
+```
+
+Même avec `getBrandTimeseries(brand, 365)`, la base ne retourne que 90 jours. C'est le vrai bloqueur.
 
 ### Changements
 
-#### 1. `src/pages/CoursEau.tsx` — Passer à 365 jours au lieu de 90
-- Ligne 194 : `getBrandTimeseries(selectedBrand, 90)` → `getBrandTimeseries(selectedBrand, 365)`
-- Ligne 497 : Mettre à jour le message "Aucune donnée" pour refléter la nouvelle période
+#### 1. Migration SQL — Étendre la politique RLS à tout l'historique
+Remplacer la politique `prices_history_public_select_90d` par une politique sans restriction temporelle (les données restent en lecture seule pour le public) :
 
-#### 2. `src/pages/CoursEau.tsx` — Afficher les années sur l'axe X
-- Ligne 526-529 : Modifier le `tickFormatter` du XAxis pour inclure l'année quand les données couvrent plus de 3 mois, ou au minimum afficher `mois/année` :
-  ```tsx
-  tickFormatter={(d: string) => {
-    const [y, m] = d.split('-');
-    return `${m}/${y.slice(2)}`;
-  }}
-  ```
-- Réduire le nombre de ticks avec `interval="preserveStartEnd"` ou `minTickGap={40}` pour éviter le chevauchement
+```sql
+DROP POLICY "prices_history_public_select_90d" ON public.prices_history;
+CREATE POLICY "prices_history_public_select"
+  ON public.prices_history FOR SELECT TO public
+  USING (true);
+```
 
-#### 3. `src/pages/CoursEau.tsx` — Afficher l'année dans le tooltip
-- Ligne 540-543 : Inclure l'année dans le formatage de la date du tooltip :
-  ```tsx
-  const [y, m, day] = (label as string).split('-');
-  <p>{day}/{m}/{y}</p>
-  ```
+#### 2. `src/services/timeseriesApi.ts` — Supporter `days = 0` (tout l'historique)
+Si `days === 0`, ne pas appliquer le filtre `.gte('scraped_at', ...)` pour récupérer toutes les données disponibles.
+
+#### 3. `src/pages/CoursEau.tsx` — Ajouter un sélecteur de période + passer à "Tout" par défaut
+- Ajouter un état `brandPeriod` avec options : `"6m"` (180j), `"1y"` (365j), `"all"` (0j, défaut)
+- Ajouter un `Select` à côté du sélecteur de marque
+- Passer `brandPeriod` converti en jours à `getBrandTimeseries`
+- Ajouter `brandPeriod` aux dépendances du `useEffect`
 
 ### Fichiers modifiés
-- `src/pages/CoursEau.tsx` — 4 modifications mineures
+- **Migration SQL** — 1 politique RLS (drop + create)
+- `src/services/timeseriesApi.ts` — condition sur `days === 0` (~3 lignes)
+- `src/pages/CoursEau.tsx` — état + sélecteur + dépendance (~15 lignes)
 
