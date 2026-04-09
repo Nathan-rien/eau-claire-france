@@ -181,6 +181,7 @@ const CoursEau = () => {
   const [retailerPopoverOpen, setRetailerPopoverOpen] = useState(false);
   const [brandTimeseries, setBrandTimeseries] = useState<BrandTimeseries[]>([]);
   const [timeseriesLoading, setTimeseriesLoading] = useState(false);
+  const [brandPeriod, setBrandPeriod] = useState<string>('all');
   const heroRef = useInView(0.3);
   const statsRef = useInView(0.2);
   const brandRef = useInView(0.2);
@@ -188,14 +189,16 @@ const CoursEau = () => {
 
   const { brands } = useBrands();
 
+  const periodToDays = (p: string) => p === '6m' ? 180 : p === '1y' ? 365 : 0;
+
   useEffect(() => {
     if (!selectedBrand) return;
     setTimeseriesLoading(true);
-    getBrandTimeseries(selectedBrand, 365)
+    getBrandTimeseries(selectedBrand, periodToDays(brandPeriod))
       .then(setBrandTimeseries)
       .catch(() => setBrandTimeseries([]))
       .finally(() => setTimeseriesLoading(false));
-  }, [selectedBrand]);
+  }, [selectedBrand, brandPeriod]);
 
   // Reset selected retailers when brand data changes — default to Moyenne only
   useEffect(() => {
@@ -432,6 +435,17 @@ const CoursEau = () => {
                     {brands.map(b => (
                       <SelectItem key={b} value={b}>{b}</SelectItem>
                     ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={brandPeriod} onValueChange={setBrandPeriod}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="6m">6 mois</SelectItem>
+                    <SelectItem value="1y">1 an</SelectItem>
+                    <SelectItem value="all">Tout</SelectItem>
                   </SelectContent>
                 </Select>
 

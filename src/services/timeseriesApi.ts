@@ -31,15 +31,22 @@ export async function getBrandTimeseries(
   days: number = 30,
   retailerSlug?: string
 ): Promise<BrandTimeseries[]> {
+  const retailersMapPromise = fetchRetailersMap();
+
+  let query = supabase
+    .from('prices_history')
+    .select('scraped_at, price_per_l_eur, retailer_id')
+    .eq('brand', brand)
+    .not('price_per_l_eur', 'is', null)
+    .order('scraped_at', { ascending: true });
+
+  if (days > 0) {
+    query = query.gte('scraped_at', new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString());
+  }
+
   const [retailersMap, pricesResult] = await Promise.all([
-    fetchRetailersMap(),
-    supabase
-      .from('prices_history')
-      .select('scraped_at, price_per_l_eur, retailer_id')
-      .eq('brand', brand)
-      .gte('scraped_at', new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString())
-      .not('price_per_l_eur', 'is', null)
-      .order('scraped_at', { ascending: true })
+    retailersMapPromise,
+    query
   ]);
 
   if (pricesResult.error) throw pricesResult.error;
