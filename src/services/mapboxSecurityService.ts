@@ -4,21 +4,7 @@ export class MapboxSecurityService {
 
   // Get Mapbox token securely
   static getMapboxToken(): string {
-    // In production, this should come from environment variables or secure storage
-    // For now, we'll use the existing token but log its usage for monitoring
-    const token = this.FALLBACK_TOKEN;
-    
-    // Log token usage for security monitoring
-    import('./auditService').then(({ AuditService }) => {
-      AuditService.logEvent({
-        type: 'security',
-        action: 'mapbox_token_access',
-        details: { tokenPrefix: token.substring(0, 10) },
-        severity: 'low'
-      });
-    });
-
-    return token;
+    return this.FALLBACK_TOKEN;
   }
 
   // Validate Mapbox token format

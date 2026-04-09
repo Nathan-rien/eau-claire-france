@@ -25,30 +25,34 @@ class AnalyticsService {
   }
 
   private initializeTracking() {
-    // Track page view on initialization
-    this.trackPageView();
+    const setup = () => {
+      this.trackPageView();
 
-    // Track clicks on buttons
-    document.addEventListener('click', (event) => {
-      const target = event.target as HTMLElement;
-      if (target.tagName === 'BUTTON' || target.closest('button')) {
-        this.trackButtonClick();
-      }
-    });
+      document.addEventListener('click', (event) => {
+        const target = event.target as HTMLElement;
+        if (target.tagName === 'BUTTON' || target.closest('button')) {
+          this.trackButtonClick();
+        }
+      });
 
-    // Track page duration when leaving
-    window.addEventListener('beforeunload', () => {
-      this.trackPageDuration();
-    });
-
-    // Track visibility changes
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
+      window.addEventListener('beforeunload', () => {
         this.trackPageDuration();
-      } else {
-        this.pageStartTime = Date.now();
-      }
-    });
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          this.trackPageDuration();
+        } else {
+          this.pageStartTime = Date.now();
+        }
+      });
+    };
+
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(setup);
+    } else {
+      setTimeout(setup, 200);
+    }
   }
 
   trackPageView() {
@@ -79,7 +83,7 @@ class AnalyticsService {
     // Store updated data
     this.storeData(data);
 
-    console.log(`Page view tracked: ${this.currentPage}`);
+    
   }
 
   trackPageDuration() {
@@ -100,7 +104,7 @@ class AnalyticsService {
     const data = this.getStoredData();
     data.totalClicks++;
     this.storeData(data);
-    console.log('Button click tracked');
+    
   }
 
   private getPageName(path: string): string {

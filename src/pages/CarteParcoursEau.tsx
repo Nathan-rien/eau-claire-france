@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Droplets } from 'lucide-react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
-import WaterJourneyMap from '@/components/WaterJourneyMap';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { seoData } from '@/utils/seoData';
+import { MapLoader, MapLoadingPlaceholder } from '@/components/ui/map-loader';
+
+const WaterJourneyMap = lazy(() => import('@/components/WaterJourneyMap'));
 
 const CarteParcoursEau = () => {
   const { t } = useLanguage();
@@ -34,7 +36,11 @@ const CarteParcoursEau = () => {
               </p>
             </div>
 
-            <WaterJourneyMap />
+            <MapLoader>
+              <Suspense fallback={<MapLoadingPlaceholder />}>
+                <WaterJourneyMap />
+              </Suspense>
+            </MapLoader>
           </div>
         </section>
       </div>
