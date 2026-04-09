@@ -191,7 +191,7 @@ const CoursEau = () => {
   useEffect(() => {
     if (!selectedBrand) return;
     setTimeseriesLoading(true);
-    getBrandTimeseries(selectedBrand, 90)
+    getBrandTimeseries(selectedBrand, 365)
       .then(setBrandTimeseries)
       .catch(() => setBrandTimeseries([]))
       .finally(() => setTimeseriesLoading(false));
@@ -494,7 +494,7 @@ const CoursEau = () => {
 
               {selectedBrand && !timeseriesLoading && timeseriesChartData.length === 0 && (
                 <p className="text-sm text-muted-foreground py-8 text-center">
-                  Aucune donnée historique disponible pour {selectedBrand} sur les 90 derniers jours.
+                  Aucune donnée historique disponible pour {selectedBrand} sur les 12 derniers mois.
                 </p>
               )}
 
@@ -523,9 +523,10 @@ const CoursEau = () => {
                       dataKey="date"
                       tick={{ fontSize: 11 }}
                       className="fill-muted-foreground"
+                      minTickGap={40}
                       tickFormatter={(d: string) => {
-                        const [, m, day] = d.split('-');
-                        return `${day}/${m}`;
+                        const [y, m, day] = d.split('-');
+                        return `${day}/${m}/${y.slice(2)}`;
                       }}
                     />
                     <YAxis
@@ -537,10 +538,10 @@ const CoursEau = () => {
                     <Tooltip
                       content={({ active, payload, label }) => {
                         if (!active || !payload?.length) return null;
-                        const [, m, day] = (label as string).split('-');
+                        const [y, m, day] = (label as string).split('-');
                         return (
                           <div className="bg-popover border border-border rounded-lg p-3 shadow-lg text-sm">
-                            <p className="font-semibold text-foreground mb-1">{day}/{m}</p>
+                            <p className="font-semibold text-foreground mb-1">{day}/{m}/{y}</p>
                             {payload.map((entry: any) => {
                               const name = entry.dataKey === MOYENNE_KEY
                                 ? 'Moyenne'
