@@ -181,6 +181,7 @@ const CoursEau = () => {
   const [retailerPopoverOpen, setRetailerPopoverOpen] = useState(false);
   const [brandTimeseries, setBrandTimeseries] = useState<BrandTimeseries[]>([]);
   const [timeseriesLoading, setTimeseriesLoading] = useState(false);
+  const [brandPeriod, setBrandPeriod] = useState<string>('all');
   const heroRef = useInView(0.3);
   const statsRef = useInView(0.2);
   const brandRef = useInView(0.2);
@@ -188,14 +189,16 @@ const CoursEau = () => {
 
   const { brands } = useBrands();
 
+  const periodToDays = (p: string) => p === '6m' ? 180 : p === '1y' ? 365 : 0;
+
   useEffect(() => {
     if (!selectedBrand) return;
     setTimeseriesLoading(true);
-    getBrandTimeseries(selectedBrand, 365)
+    getBrandTimeseries(selectedBrand, periodToDays(brandPeriod))
       .then(setBrandTimeseries)
       .catch(() => setBrandTimeseries([]))
       .finally(() => setTimeseriesLoading(false));
-  }, [selectedBrand]);
+  }, [selectedBrand, brandPeriod]);
 
   // Reset selected retailers when brand data changes — default to Moyenne only
   useEffect(() => {
@@ -435,6 +438,17 @@ const CoursEau = () => {
                   </SelectContent>
                 </Select>
 
+                <Select value={brandPeriod} onValueChange={setBrandPeriod}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="6m">6 mois</SelectItem>
+                    <SelectItem value="1y">1 an</SelectItem>
+                    <SelectItem value="all">Tout</SelectItem>
+                  </SelectContent>
+                </Select>
+
                 {allRetailerSlugs.length > 0 && (
                   <Popover open={retailerPopoverOpen} onOpenChange={setRetailerPopoverOpen}>
                     <PopoverTrigger asChild>
@@ -494,7 +508,7 @@ const CoursEau = () => {
 
               {selectedBrand && !timeseriesLoading && timeseriesChartData.length === 0 && (
                 <p className="text-sm text-muted-foreground py-8 text-center">
-                  Aucune donnée historique disponible pour {selectedBrand} sur les 12 derniers mois.
+                  Aucune donnée historique disponible pour {selectedBrand}{brandPeriod !== 'all' ? ` sur ${brandPeriod === '6m' ? 'les 6 derniers mois' : 'les 12 derniers mois'}` : ''}.
                 </p>
               )}
 
