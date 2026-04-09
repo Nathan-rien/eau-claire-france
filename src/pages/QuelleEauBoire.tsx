@@ -737,11 +737,11 @@ const QuelleEauBoire: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* 3. Intolérances */}
+            {/* 5. Intolérances */}
             <Card>
               <CardHeader className="p-4 md:p-6">
                 <CardTitle className="flex items-center gap-3 text-lg md:text-2xl">
-                  <span className="bg-red-500 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold">3</span>
+                  <span className="bg-red-500 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold">5</span>
                   Intolérances et restrictions
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">Sélectionnez les substances que vous souhaitez éviter</p>
@@ -761,11 +761,11 @@ const QuelleEauBoire: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* 4. Préférences */}
+            {/* 6. Préférences */}
             <Card>
               <CardHeader className="p-4 md:p-6">
                 <CardTitle className="flex items-center gap-3 text-lg md:text-2xl">
-                  <span className="bg-green-500 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold">4</span>
+                  <span className="bg-green-500 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-bold">6</span>
                   Préférences personnelles
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">Indiquez vos préférences pour le type d'eau</p>
