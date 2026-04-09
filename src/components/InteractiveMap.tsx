@@ -1,8 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { MapboxSecurityService } from '@/services/mapboxSecurityService';
+import { buildSources, SourceItem } from '@/utils/sourcesAdapter';
+import {
+  getMineralizationLevel, computeHardness, getHardnessLabel,
+  getUsageRecommendations, getComplianceChecks, getTypeColor,
+  getMineralRows, isPointInZone
+} from '@/utils/waterSourceAnalysis';
+import { Droplets, MapPin, ShieldCheck, Baby, Sparkles, AlertTriangle, CheckCircle, X } from 'lucide-react';
 
 interface CityData {
   name: string;
@@ -35,7 +44,6 @@ const waterQualityData: CityData[] = [
   { name: 'Montpellier', coords: [3.8767, 43.6108], quality: 'C', score: 75, source: 'Eaux souterraines', region: 'occitanie', population: 295542, conformityRate: 97.0, lastAnalysis: 'Janvier 2025', waterSource: 'Source du Lez', nitrates: 38, pesticides: 0.08, lead: 3.5 },
   { name: 'Bordeaux', coords: [-0.5792, 44.8378], quality: 'A', score: 88, source: 'Nappes profondes', region: 'nouvelle-aquitaine', population: 260958, conformityRate: 98.9, lastAnalysis: 'Mars 2025', waterSource: 'Nappes profondes Éocène', nitrates: 8, pesticides: 0.02, lead: 1.4 },
   { name: 'Lille', coords: [3.0573, 50.6292], quality: 'B', score: 83, source: 'Nappes de craie', region: 'hauts-de-france', population: 236234, conformityRate: 97.9, lastAnalysis: 'Février 2025', waterSource: 'Nappes de craie', nitrates: 38, pesticides: 0.06, lead: 3.8 },
-  // 15 villes supplémentaires
   { name: 'Rennes', coords: [-1.6777, 48.1173], quality: 'B', score: 82, source: 'Eaux de surface', region: 'bretagne', population: 222485, conformityRate: 97.5, lastAnalysis: 'Mars 2025', waterSource: 'Vilaine + retenues', nitrates: 36, pesticides: 0.07, lead: 2.8 },
   { name: 'Rouen', coords: [1.0993, 49.4432], quality: 'B', score: 80, source: 'Nappes calcaires', region: 'normandie', population: 113368, conformityRate: 97.6, lastAnalysis: 'Février 2025', waterSource: 'Nappes de craie Seine', nitrates: 33, pesticides: 0.07, lead: 3.0 },
   { name: 'Dijon', coords: [5.0415, 47.3220], quality: 'A', score: 91, source: 'Sources karstiques', region: 'bourgogne-franche-comte', population: 159346, conformityRate: 99.2, lastAnalysis: 'Mars 2025', waterSource: 'Sources karstiques Suzon', nitrates: 14, pesticides: 0.03, lead: 1.3 },
@@ -54,27 +62,16 @@ const waterQualityData: CityData[] = [
 ];
 
 const waterSourceZones = [
-  // 1. Bassin parisien — Paris, Orléans, Rouen
   { name: 'Bassin parisien', coordinates: [[[0.8, 47.7], [3.2, 47.7], [3.2, 49.6], [0.8, 49.6], [0.8, 47.7]]], color: '#3b82f6' },
-  // 2. Nappe rhénane — Strasbourg, Metz
   { name: 'Nappe rhénane', coordinates: [[[5.8, 48.0], [8.0, 48.0], [8.0, 49.4], [5.8, 49.4], [5.8, 48.0]]], color: '#10b981' },
-  // 3. Alpes & vallée du Rhône — Lyon, Grenoble, Dijon
   { name: 'Alpes & vallée du Rhône', coordinates: [[[4.5, 44.8], [6.2, 44.8], [6.2, 47.5], [4.5, 47.5], [4.5, 44.8]]], color: '#059669' },
-  // 4. Massif Central volcanique — Clermont-Ferrand, Limoges
   { name: 'Massif Central volcanique', coordinates: [[[1.0, 45.2], [3.5, 45.2], [3.5, 46.2], [1.0, 46.2], [1.0, 45.2]]], color: '#8b5cf6' },
-  // 5. Nappes de craie Nord — Lille, Amiens, Reims
   { name: 'Nappes de craie Nord', coordinates: [[[1.8, 49.0], [4.2, 49.0], [4.2, 50.8], [1.8, 50.8], [1.8, 49.0]]], color: '#06b6d4' },
-  // 6. Bretagne — Rennes, Brest
   { name: 'Bretagne', coordinates: [[[-4.8, 47.8], [-1.2, 47.8], [-1.2, 48.6], [-4.8, 48.6], [-4.8, 47.8]]], color: '#ec4899' },
-  // 7. Val de Loire — Nantes, Angers
   { name: 'Val de Loire', coordinates: [[[-1.8, 47.0], [0.0, 47.0], [0.0, 47.7], [-1.8, 47.7], [-1.8, 47.0]]], color: '#f59e0b' },
-  // 8. Aquitaine — Bordeaux, Pau
   { name: 'Aquitaine', coordinates: [[[-1.0, 43.0], [0.2, 43.0], [0.2, 45.0], [-1.0, 45.0], [-1.0, 43.0]]], color: '#6366f1' },
-  // 9. Garonne & Méditerranée Ouest — Toulouse, Montpellier
   { name: 'Garonne & Méditerranée Ouest', coordinates: [[[1.0, 43.2], [4.2, 43.2], [4.2, 44.0], [1.0, 44.0], [1.0, 43.2]]], color: '#a855f7' },
-  // 10. Provence & Alpes du Sud — Marseille, Nice, Toulon
   { name: 'Provence & Alpes du Sud', coordinates: [[[5.0, 43.0], [7.5, 43.0], [7.5, 44.0], [5.0, 44.0], [5.0, 43.0]]], color: '#0ea5e9' },
-  // 11. Corse — Ajaccio
   { name: 'Corse', coordinates: [[[8.5, 41.3], [9.6, 41.3], [9.6, 43.0], [8.5, 43.0], [8.5, 41.3]]], color: '#166534' },
 ];
 
@@ -103,12 +100,45 @@ const getPollutantStatus = (value: number, limit: number) => {
   return { color: '#ef4444', label: '✗' };
 };
 
+const iconMap = {
+  Baby: <Baby className="h-3 w-3" />,
+  Sparkles: <Sparkles className="h-3 w-3" />,
+};
+
 const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [lng, setLng] = useState(2.3488);
   const [lat, setLat] = useState(46.6034);
   const [zoom, setZoom] = useState(4);
+  const [selectedZone, setSelectedZone] = useState<{ name: string; color: string } | null>(null);
+  const [allSources, setAllSources] = useState<SourceItem[]>([]);
+  const [zoneSources, setZoneSources] = useState<SourceItem[]>([]);
+
+  // Load sources data
+  useEffect(() => {
+    buildSources().then(sources => {
+      console.log('[InteractiveMap] Loaded sources:', sources.length);
+      setAllSources(sources);
+    }).catch(err => console.error('[InteractiveMap] Failed to load sources:', err));
+  }, []);
+
+  // When a zone is selected, find matching sources
+  useEffect(() => {
+    if (!selectedZone) {
+      setZoneSources([]);
+      return;
+    }
+    const zone = waterSourceZones.find(z => z.name === selectedZone.name);
+    if (!zone) return;
+
+    const matched = allSources.filter(s =>
+      Number.isFinite(s.latitude) && Number.isFinite(s.longitude) &&
+      isPointInZone(s.longitude, s.latitude, zone.coordinates as number[][][])
+    );
+    console.log(`[InteractiveMap] Zone "${selectedZone.name}": ${matched.length} sources found`);
+    setZoneSources(matched);
+  }, [selectedZone, allSources]);
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -147,34 +177,48 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
             paint: { 'line-color': zone.color, 'line-width': 2, 'line-opacity': 0.8 }
           });
 
+          // Click on zone fill
+          map.current!.on('click', `water-zone-fill-${index}`, (e) => {
+            e.preventDefault();
+            setSelectedZone({ name: zone.name, color: zone.color });
+            // Fly to zone center
+            const bounds = new mapboxgl.LngLatBounds();
+            zone.coordinates[0].forEach((coord: number[]) => bounds.extend(coord as [number, number]));
+            map.current?.flyTo({ center: bounds.getCenter(), zoom: 7, duration: 1500 });
+          });
+
+          // Cursor pointer on hover
+          map.current!.on('mouseenter', `water-zone-fill-${index}`, () => {
+            if (map.current) map.current.getCanvas().style.cursor = 'pointer';
+          });
+          map.current!.on('mouseleave', `water-zone-fill-${index}`, () => {
+            if (map.current) map.current.getCanvas().style.cursor = '';
+          });
+
           const bounds = new mapboxgl.LngLatBounds();
           zone.coordinates[0].forEach((coord: number[]) => {
             bounds.extend(coord as [number, number]);
           });
           const center = bounds.getCenter();
 
-          new mapboxgl.Marker({
-            element: (() => {
-              const el = document.createElement('div');
-              el.className = 'zone-label';
-              el.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
-              el.style.padding = '4px 8px';
-              el.style.borderRadius = '4px';
-              el.style.fontSize = '12px';
-              el.style.fontWeight = 'bold';
-              el.style.color = zone.color;
-              el.style.border = `1px solid ${zone.color}`;
-              el.textContent = zone.name;
-              return el;
-            })()
-          })
-          .setLngLat([center.lng, center.lat])
-          .addTo(map.current!);
+          const labelEl = document.createElement('div');
+          labelEl.className = 'zone-label';
+          labelEl.style.cssText = `background:rgba(255,255,255,0.9);padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold;color:${zone.color};border:1px solid ${zone.color};cursor:pointer;`;
+          labelEl.textContent = zone.name;
+          labelEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setSelectedZone({ name: zone.name, color: zone.color });
+            map.current?.flyTo({ center: [center.lng, center.lat], zoom: 7, duration: 1500 });
+          });
+
+          new mapboxgl.Marker({ element: labelEl })
+            .setLngLat([center.lng, center.lat])
+            .addTo(map.current!);
         });
       }
     });
 
-    // Add markers for all cities
+    // Add city markers
     waterQualityData.forEach(city => {
       const el = document.createElement('div');
       el.className = 'marker';
@@ -191,10 +235,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
       el.setAttribute('tabindex', '0');
       
       el.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          el.click();
-        }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
       });
 
       const nitrateStatus = getPollutantStatus(city.nitrates, 50);
@@ -211,7 +252,6 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
               <div style="font-size: 11px; color: #6b7280;">${city.waterSource}</div>
             </div>
           </div>
-
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; font-size: 12px; margin-bottom: 8px;">
             <div style="color: #6b7280;">Score</div>
             <div style="font-weight: 600; text-align: right;">
@@ -227,37 +267,14 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
             <div style="color: #6b7280;">Dernier contrôle</div>
             <div style="font-weight: 600; text-align: right;">${city.lastAnalysis}</div>
           </div>
-
           <div style="border-top: 1px solid #e5e7eb; padding-top: 6px;">
             <div style="font-weight: 600; font-size: 11px; color: #374151; margin-bottom: 4px;">Polluants clés</div>
             <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
-              <thead>
-                <tr style="color: #9ca3af;">
-                  <th style="text-align: left; padding: 2px 0; font-weight: 500;">Param.</th>
-                  <th style="text-align: right; padding: 2px 0; font-weight: 500;">Mesuré</th>
-                  <th style="text-align: right; padding: 2px 0; font-weight: 500;">Limite</th>
-                  <th style="text-align: center; padding: 2px 0; font-weight: 500;"></th>
-                </tr>
-              </thead>
+              <thead><tr style="color: #9ca3af;"><th style="text-align: left; padding: 2px 0; font-weight: 500;">Param.</th><th style="text-align: right; padding: 2px 0; font-weight: 500;">Mesuré</th><th style="text-align: right; padding: 2px 0; font-weight: 500;">Limite</th><th style="text-align: center; padding: 2px 0; font-weight: 500;"></th></tr></thead>
               <tbody>
-                <tr>
-                  <td style="padding: 2px 0;">Nitrates</td>
-                  <td style="text-align: right; padding: 2px 0; font-weight: 600;">${city.nitrates} mg/L</td>
-                  <td style="text-align: right; padding: 2px 0; color: #9ca3af;">50</td>
-                  <td style="text-align: center; padding: 2px 0; color: ${nitrateStatus.color};">${nitrateStatus.label}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 2px 0;">Pesticides</td>
-                  <td style="text-align: right; padding: 2px 0; font-weight: 600;">${city.pesticides} µg/L</td>
-                  <td style="text-align: right; padding: 2px 0; color: #9ca3af;">0.1</td>
-                  <td style="text-align: center; padding: 2px 0; color: ${pesticideStatus.color};">${pesticideStatus.label}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 2px 0;">Plomb</td>
-                  <td style="text-align: right; padding: 2px 0; font-weight: 600;">${city.lead} µg/L</td>
-                  <td style="text-align: right; padding: 2px 0; color: #9ca3af;">10</td>
-                  <td style="text-align: center; padding: 2px 0; color: ${leadStatus.color};">${leadStatus.label}</td>
-                </tr>
+                <tr><td style="padding: 2px 0;">Nitrates</td><td style="text-align: right; padding: 2px 0; font-weight: 600;">${city.nitrates} mg/L</td><td style="text-align: right; padding: 2px 0; color: #9ca3af;">50</td><td style="text-align: center; padding: 2px 0; color: ${nitrateStatus.color};">${nitrateStatus.label}</td></tr>
+                <tr><td style="padding: 2px 0;">Pesticides</td><td style="text-align: right; padding: 2px 0; font-weight: 600;">${city.pesticides} µg/L</td><td style="text-align: right; padding: 2px 0; color: #9ca3af;">0.1</td><td style="text-align: center; padding: 2px 0; color: ${pesticideStatus.color};">${pesticideStatus.label}</td></tr>
+                <tr><td style="padding: 2px 0;">Plomb</td><td style="text-align: right; padding: 2px 0; font-weight: 600;">${city.lead} µg/L</td><td style="text-align: right; padding: 2px 0; color: #9ca3af;">10</td><td style="text-align: center; padding: 2px 0; color: ${leadStatus.color};">${leadStatus.label}</td></tr>
               </tbody>
             </table>
           </div>
@@ -283,25 +300,163 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
     };
   }, [showWaterSources]);
 
+  const resetView = () => {
+    setSelectedZone(null);
+    map.current?.flyTo({ center: [2.3488, 46.6034], zoom: 4, duration: 1500 });
+  };
+
   return (
     <Card>
       <CardContent className="p-0">
-        <div className="relative">
-          <div ref={mapContainer} className="h-[50vh] md:h-[70vh] w-full rounded-lg" />
-          <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-            <div className="text-sm font-medium text-gray-700">
-              Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
+        <div className={`grid grid-cols-1 ${selectedZone ? 'lg:grid-cols-3' : ''}`}>
+          {/* Map */}
+          <div className={selectedZone ? 'lg:col-span-2' : ''}>
+            <div className="relative">
+              <div ref={mapContainer} className="h-[50vh] md:h-[70vh] w-full rounded-lg" />
+              <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+                <div className="text-sm font-medium text-gray-700">
+                  Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
+                </div>
+              </div>
+              <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg">
+                <div className="text-xs font-medium text-gray-700">{waterQualityData.length} villes surveillées</div>
+              </div>
+              {showWaterSources && (
+                <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg">
+                  <div className="text-xs font-medium text-gray-700">Cliquez sur une zone colorée pour voir ses sources</div>
+                </div>
+              )}
+              {!showWaterSources && (
+                <div className="absolute bottom-4 right-4 bg-gray-600/90 backdrop-blur-sm rounded-lg p-2 shadow-lg text-white">
+                  <div className="text-xs">Zones masquées</div>
+                </div>
+              )}
             </div>
           </div>
-          <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg">
-            <div className="text-xs font-medium text-gray-700">{waterQualityData.length} villes surveillées</div>
-          </div>
-          {!showWaterSources && (
-            <div className="absolute bottom-4 right-4 bg-gray-600/90 backdrop-blur-sm rounded-lg p-2 shadow-lg text-white">
-              <div className="text-xs">Zones masquées</div>
+
+          {/* Detail panel */}
+          {selectedZone && (
+            <div className="lg:col-span-1 border-l overflow-y-auto max-h-[70vh] p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: selectedZone.color }} />
+                  <h3 className="text-lg font-bold">{selectedZone.name}</h3>
+                </div>
+                <Button variant="ghost" size="icon" onClick={() => setSelectedZone(null)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {zoneSources.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <MapPin className="h-10 w-10 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">Aucune source référencée dans cette zone</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    {zoneSources.length} source{zoneSources.length > 1 ? 's' : ''} dans cette zone
+                  </p>
+                  {zoneSources.map(source => (
+                    <SourceCard key={source.source_id} source={source} />
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+/** Compact card for a source in the zone detail panel */
+const SourceCard: React.FC<{ source: SourceItem }> = ({ source }) => {
+  const [expanded, setExpanded] = useState(false);
+  const residue = source.residu_sec_180_mg_L ?? source.residue;
+  const mLevel = getMineralizationLevel(residue);
+  const th = computeHardness(source.Ca_mg_L, source.Mg_mg_L);
+  const recs = getUsageRecommendations(source);
+  const checks = getComplianceChecks(source);
+  const mineralRows = getMineralRows(source);
+
+  return (
+    <Card className="border">
+      <CardContent className="p-3 space-y-2">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="font-semibold text-sm">{source.source_name}</p>
+            <p className="text-xs text-muted-foreground">{source.location || 'Localisation non spécifiée'}</p>
+          </div>
+          <Button variant="ghost" size="sm" className="text-xs" onClick={() => setExpanded(!expanded)}>
+            {expanded ? 'Réduire' : 'Détails'}
+          </Button>
+        </div>
+
+        <div className="flex flex-wrap gap-1">
+          <Badge className={getTypeColor(source.water_category)} variant="outline">{source.water_category}</Badge>
+          {mLevel && <Badge className={mLevel.color} variant="outline">{mLevel.label}</Badge>}
+        </div>
+
+        {source.brands.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {source.brands.map((b, i) => (
+              <Badge key={i} variant="secondary" className="text-xs">{b}</Badge>
+            ))}
+          </div>
+        )}
+
+        {th !== null && (
+          <p className="text-xs text-muted-foreground">Dureté : {th.toFixed(1)} °f — {getHardnessLabel(th)}</p>
+        )}
+
+        {recs.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {recs.map((rec, i) => (
+              <Badge key={i} className={`${rec.color} text-xs gap-1`}>
+                {iconMap[rec.iconName]}
+                {rec.label}
+              </Badge>
+            ))}
+          </div>
+        )}
+
+        {expanded && (
+          <div className="space-y-3 pt-2 border-t">
+            {/* Mineral composition */}
+            {mineralRows.length > 0 ? (
+              <div className="space-y-1">
+                <h4 className="font-semibold text-xs">Composition minérale</h4>
+                {mineralRows.map(row => (
+                  <div key={row.label} className="flex justify-between text-xs py-1 border-b">
+                    <span className="text-muted-foreground">{row.label}</span>
+                    <span className="font-medium">{row.value}{row.unit ? ` ${row.unit}` : ''}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">Données de composition non disponibles.</p>
+            )}
+
+            {/* Compliance */}
+            {checks.length > 0 && (
+              <div className="space-y-1">
+                <h4 className="font-semibold text-xs flex items-center gap-1">
+                  <ShieldCheck className="h-3 w-3" /> Conformité
+                </h4>
+                {checks.map((c, i) => (
+                  <div key={i} className={`flex items-center justify-between p-1.5 rounded text-xs border ${c.ok ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                    <div className="flex items-center gap-1">
+                      {c.ok ? <CheckCircle className="h-3 w-3 text-green-600" /> : <AlertTriangle className="h-3 w-3 text-red-600" />}
+                      <span>{c.param}</span>
+                    </div>
+                    <span className="text-muted-foreground">{c.value} / {c.limit} {c.unit}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
