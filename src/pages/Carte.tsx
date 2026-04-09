@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { MapPin } from 'lucide-react';
-import LazyQualityMap from '@/components/LazyQualityMap';
+import QualityMap from '@/components/QualityMap';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
@@ -41,7 +41,7 @@ const Carte = () => {
               </p>
             </div>
             
-            <LazyQualityMap />
+            <QualityMap />
           </div>
         </section>
       </div>

@@ -1,11 +1,13 @@
 
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { MapPin, AlertTriangle } from 'lucide-react';
-import PollutantMap from '@/components/PollutantMap';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { MapLoader, MapLoadingPlaceholder } from '@/components/ui/map-loader';
+
+const PollutantMap = lazy(() => import('@/components/PollutantMap'));
 
 const CartePolluants = () => {
   const { t } = useLanguage();
@@ -26,7 +28,11 @@ const CartePolluants = () => {
               </p>
             </div>
             
-            <PollutantMap />
+            <MapLoader>
+              <Suspense fallback={<MapLoadingPlaceholder />}>
+                <PollutantMap />
+              </Suspense>
+            </MapLoader>
             
             <div className="mt-8 text-center">
               <div className="bg-white rounded-lg p-6 shadow-lg max-w-2xl mx-auto">
