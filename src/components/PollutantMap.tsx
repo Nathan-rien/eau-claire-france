@@ -7,6 +7,73 @@ import { Badge } from '@/components/ui/badge';
 import { AlertTriangle } from 'lucide-react';
 import { MapboxSecurityService } from '@/services/mapboxSecurityService';
 
+interface CityPollutantData {
+  name: string;
+  coords: [number, number];
+  pollutants: { name: string; value: string; limit: string; unit: string }[];
+  riskLevel: 'low' | 'medium' | 'high';
+  population: number;
+  conformityRate: number;
+  lastAnalysis: string;
+  waterSource: string;
+}
+
+interface RegionData {
+  id: string;
+  name: string;
+  mainPollutants: string[];
+  riskLevel: 'low' | 'medium' | 'high';
+  cities: number;
+  conformityRate: number;
+  population: number;
+  supplyZones: number;
+  topPollutantValues: Record<string, string>;
+}
+
+const pollutantCities: CityPollutantData[] = [
+  { name: 'Paris', coords: [2.3522, 48.8566], pollutants: [{ name: 'Nitrates', value: '28', limit: '50', unit: 'mg/L' }, { name: 'Chlore résiduel', value: '0.15', limit: '0.3', unit: 'mg/L' }, { name: 'THM', value: '18', limit: '100', unit: 'µg/L' }], riskLevel: 'medium', population: 2161000, conformityRate: 98.2, lastAnalysis: 'Février 2024', waterSource: 'Eau de surface (Seine, Marne)' },
+  { name: 'Lyon', coords: [4.8357, 45.764], pollutants: [{ name: 'Nitrates', value: '12', limit: '50', unit: 'mg/L' }, { name: 'Pesticides', value: '0.04', limit: '0.1', unit: 'µg/L' }], riskLevel: 'low', population: 516092, conformityRate: 99.4, lastAnalysis: 'Mars 2024', waterSource: 'Nappe alluviale du Rhône' },
+  { name: 'Marseille', coords: [5.3698, 43.2965], pollutants: [{ name: 'Nitrates', value: '35', limit: '50', unit: 'mg/L' }, { name: 'Arsenic', value: '8.5', limit: '10', unit: 'µg/L' }, { name: 'Fluorures', value: '1.2', limit: '1.5', unit: 'mg/L' }], riskLevel: 'high', population: 870018, conformityRate: 96.1, lastAnalysis: 'Janvier 2024', waterSource: 'Canal de Marseille (Durance)' },
+  { name: 'Toulouse', coords: [1.4442, 43.6047], pollutants: [{ name: 'Pesticides', value: '0.09', limit: '0.1', unit: 'µg/L' }, { name: 'Nitrates', value: '31', limit: '50', unit: 'mg/L' }, { name: 'Plomb', value: '8.2', limit: '10', unit: 'µg/L' }], riskLevel: 'high', population: 493465, conformityRate: 95.8, lastAnalysis: 'Mars 2024', waterSource: 'Eau de surface (Garonne)' },
+  { name: 'Nice', coords: [7.2619, 43.7102], pollutants: [{ name: 'Nitrates', value: '14', limit: '50', unit: 'mg/L' }, { name: 'Chlore résiduel', value: '0.1', limit: '0.3', unit: 'mg/L' }], riskLevel: 'low', population: 342669, conformityRate: 99.1, lastAnalysis: 'Février 2024', waterSource: 'Nappe souterraine (Vésubie)' },
+  { name: 'Nantes', coords: [-1.5534, 47.2184], pollutants: [{ name: 'Pesticides', value: '0.07', limit: '0.1', unit: 'µg/L' }, { name: 'Nitrates', value: '25', limit: '50', unit: 'mg/L' }], riskLevel: 'medium', population: 320732, conformityRate: 97.8, lastAnalysis: 'Mars 2024', waterSource: 'Eau de surface (Loire)' },
+  { name: 'Strasbourg', coords: [7.7521, 48.5734], pollutants: [{ name: 'Nitrates', value: '15', limit: '50', unit: 'mg/L' }], riskLevel: 'low', population: 287228, conformityRate: 99.5, lastAnalysis: 'Mars 2024', waterSource: 'Nappe phréatique rhénane' },
+  { name: 'Montpellier', coords: [3.8767, 43.6108], pollutants: [{ name: 'Pesticides', value: '0.11', limit: '0.1', unit: 'µg/L' }, { name: 'Arsenic', value: '7.8', limit: '10', unit: 'µg/L' }, { name: 'Nitrates', value: '29', limit: '50', unit: 'mg/L' }, { name: 'Fluorures', value: '1.1', limit: '1.5', unit: 'mg/L' }], riskLevel: 'high', population: 295542, conformityRate: 95.3, lastAnalysis: 'Janvier 2024', waterSource: 'Source du Lez' },
+  { name: 'Bordeaux', coords: [-0.5792, 44.8378], pollutants: [{ name: 'Pesticides', value: '0.06', limit: '0.1', unit: 'µg/L' }, { name: 'Nitrates', value: '22', limit: '50', unit: 'mg/L' }], riskLevel: 'medium', population: 260958, conformityRate: 98.0, lastAnalysis: 'Février 2024', waterSource: 'Nappe de l\'Éocène' },
+  { name: 'Lille', coords: [3.0573, 50.6292], pollutants: [{ name: 'Nitrates', value: '32', limit: '50', unit: 'mg/L' }, { name: 'Chlore résiduel', value: '0.18', limit: '0.3', unit: 'mg/L' }, { name: 'THM', value: '22', limit: '100', unit: 'µg/L' }], riskLevel: 'medium', population: 236234, conformityRate: 97.5, lastAnalysis: 'Mars 2024', waterSource: 'Nappe de la Craie' },
+  { name: 'Rennes', coords: [-1.6778, 48.1173], pollutants: [{ name: 'Nitrates', value: '20', limit: '50', unit: 'mg/L' }, { name: 'Pesticides', value: '0.05', limit: '0.1', unit: 'µg/L' }], riskLevel: 'low', population: 222485, conformityRate: 98.9, lastAnalysis: 'Mars 2024', waterSource: 'Barrage de la Chèze' },
+  { name: 'Reims', coords: [4.0317, 49.2583], pollutants: [{ name: 'Nitrates', value: '27', limit: '50', unit: 'mg/L' }, { name: 'Pesticides', value: '0.06', limit: '0.1', unit: 'µg/L' }], riskLevel: 'medium', population: 182592, conformityRate: 97.9, lastAnalysis: 'Février 2024', waterSource: 'Nappe de la Craie' },
+  { name: 'Toulon', coords: [5.928, 43.1242], pollutants: [{ name: 'Nitrates', value: '18', limit: '50', unit: 'mg/L' }, { name: 'Chlore résiduel', value: '0.12', limit: '0.3', unit: 'mg/L' }], riskLevel: 'low', population: 178745, conformityRate: 98.7, lastAnalysis: 'Janvier 2024', waterSource: 'Canal de Provence' },
+  { name: 'Grenoble', coords: [5.7243, 45.1885], pollutants: [{ name: 'Nitrates', value: '8', limit: '50', unit: 'mg/L' }], riskLevel: 'low', population: 158198, conformityRate: 99.7, lastAnalysis: 'Mars 2024', waterSource: 'Nappe alluviale du Drac' },
+  { name: 'Dijon', coords: [5.0415, 47.322], pollutants: [{ name: 'Nitrates', value: '24', limit: '50', unit: 'mg/L' }, { name: 'Pesticides', value: '0.05', limit: '0.1', unit: 'µg/L' }], riskLevel: 'low', population: 159346, conformityRate: 99.0, lastAnalysis: 'Février 2024', waterSource: 'Sources de Morcueil' },
+  { name: 'Angers', coords: [-0.5579, 47.4784], pollutants: [{ name: 'Nitrates', value: '26', limit: '50', unit: 'mg/L' }, { name: 'Pesticides', value: '0.07', limit: '0.1', unit: 'µg/L' }], riskLevel: 'medium', population: 155876, conformityRate: 97.6, lastAnalysis: 'Mars 2024', waterSource: 'Eau de surface (Maine)' },
+  { name: 'Clermont-Ferrand', coords: [3.0863, 45.7772], pollutants: [{ name: 'Nitrates', value: '10', limit: '50', unit: 'mg/L' }], riskLevel: 'low', population: 147865, conformityRate: 99.6, lastAnalysis: 'Mars 2024', waterSource: 'Sources volcaniques (Volvic)' },
+  { name: 'Rouen', coords: [1.0993, 49.4431], pollutants: [{ name: 'Nitrates', value: '30', limit: '50', unit: 'mg/L' }, { name: 'THM', value: '25', limit: '100', unit: 'µg/L' }, { name: 'Pesticides', value: '0.08', limit: '0.1', unit: 'µg/L' }], riskLevel: 'medium', population: 113368, conformityRate: 97.3, lastAnalysis: 'Février 2024', waterSource: 'Eau de surface (Seine)' },
+  { name: 'Brest', coords: [-4.486, 48.3905], pollutants: [{ name: 'Nitrates', value: '22', limit: '50', unit: 'mg/L' }, { name: 'Pesticides', value: '0.04', limit: '0.1', unit: 'µg/L' }], riskLevel: 'low', population: 139926, conformityRate: 98.8, lastAnalysis: 'Mars 2024', waterSource: 'Barrage du Drennec' },
+  { name: 'Perpignan', coords: [2.8956, 42.6886], pollutants: [{ name: 'Nitrates', value: '38', limit: '50', unit: 'mg/L' }, { name: 'Pesticides', value: '0.12', limit: '0.1', unit: 'µg/L' }, { name: 'Arsenic', value: '6.2', limit: '10', unit: 'µg/L' }], riskLevel: 'high', population: 121875, conformityRate: 94.9, lastAnalysis: 'Janvier 2024', waterSource: 'Nappe du Roussillon' },
+  { name: 'Limoges', coords: [1.2578, 45.8336], pollutants: [{ name: 'Nitrates', value: '11', limit: '50', unit: 'mg/L' }], riskLevel: 'low', population: 132175, conformityRate: 99.3, lastAnalysis: 'Mars 2024', waterSource: 'Barrage de Saint-Marc' },
+  { name: 'Amiens', coords: [2.2958, 49.8941], pollutants: [{ name: 'Nitrates', value: '34', limit: '50', unit: 'mg/L' }, { name: 'Pesticides', value: '0.08', limit: '0.1', unit: 'µg/L' }], riskLevel: 'medium', population: 135501, conformityRate: 97.2, lastAnalysis: 'Février 2024', waterSource: 'Nappe de la Craie' },
+  { name: 'Metz', coords: [6.1757, 49.1193], pollutants: [{ name: 'Nitrates', value: '16', limit: '50', unit: 'mg/L' }, { name: 'Chlore résiduel', value: '0.11', limit: '0.3', unit: 'mg/L' }], riskLevel: 'low', population: 120205, conformityRate: 99.2, lastAnalysis: 'Mars 2024', waterSource: 'Eau de surface (Moselle)' },
+  { name: 'Orléans', coords: [1.9039, 47.9029], pollutants: [{ name: 'Nitrates', value: '23', limit: '50', unit: 'mg/L' }, { name: 'Pesticides', value: '0.06', limit: '0.1', unit: 'µg/L' }], riskLevel: 'medium', population: 116685, conformityRate: 98.1, lastAnalysis: 'Février 2024', waterSource: 'Nappe de Beauce' },
+  { name: 'Ajaccio', coords: [8.7369, 41.9192], pollutants: [{ name: 'Nitrates', value: '9', limit: '50', unit: 'mg/L' }], riskLevel: 'low', population: 72399, conformityRate: 98.5, lastAnalysis: 'Janvier 2024', waterSource: 'Sources de montagne (Prunelli)' },
+];
+
+const pollutantRegions: RegionData[] = [
+  { id: 'ile-de-france', name: 'Île-de-France', mainPollutants: ['Nitrates', 'THM', 'Chlore résiduel'], riskLevel: 'medium', cities: 1276, conformityRate: 98.2, population: 12270000, supplyZones: 320, topPollutantValues: { Nitrates: '28 mg/L', THM: '18 µg/L', 'Chlore résiduel': '0.15 mg/L' } },
+  { id: 'auvergne-rhone-alpes', name: 'Auvergne-Rhône-Alpes', mainPollutants: ['Nitrates', 'Pesticides'], riskLevel: 'low', cities: 4032, conformityRate: 99.3, population: 8090000, supplyZones: 1850, topPollutantValues: { Nitrates: '12 mg/L', Pesticides: '0.04 µg/L' } },
+  { id: 'nouvelle-aquitaine', name: 'Nouvelle-Aquitaine', mainPollutants: ['Pesticides', 'Nitrates'], riskLevel: 'medium', cities: 4356, conformityRate: 97.8, population: 6040000, supplyZones: 1620, topPollutantValues: { Pesticides: '0.07 µg/L', Nitrates: '22 mg/L' } },
+  { id: 'occitanie', name: 'Occitanie', mainPollutants: ['Pesticides', 'Arsenic', 'Nitrates'], riskLevel: 'high', cities: 4448, conformityRate: 95.6, population: 5930000, supplyZones: 1480, topPollutantValues: { Pesticides: '0.11 µg/L', Arsenic: '7.8 µg/L', Nitrates: '31 mg/L' } },
+  { id: 'hauts-de-france', name: 'Hauts-de-France', mainPollutants: ['Nitrates', 'Chlore résiduel', 'Pesticides'], riskLevel: 'medium', cities: 3789, conformityRate: 97.4, population: 6010000, supplyZones: 920, topPollutantValues: { Nitrates: '33 mg/L', 'Chlore résiduel': '0.18 mg/L', Pesticides: '0.08 µg/L' } },
+  { id: 'grand-est', name: 'Grand Est', mainPollutants: ['Nitrates', 'Chlore résiduel'], riskLevel: 'low', cities: 5133, conformityRate: 99.1, population: 5560000, supplyZones: 1340, topPollutantValues: { Nitrates: '16 mg/L', 'Chlore résiduel': '0.11 mg/L' } },
+  { id: 'provence-alpes-cote-azur', name: 'Provence-Alpes-Côte d\'Azur', mainPollutants: ['Nitrates', 'Arsenic', 'Fluorures'], riskLevel: 'medium', cities: 946, conformityRate: 97.2, population: 5080000, supplyZones: 680, topPollutantValues: { Nitrates: '25 mg/L', Arsenic: '6.5 µg/L', Fluorures: '1.1 mg/L' } },
+  { id: 'pays-de-la-loire', name: 'Pays de la Loire', mainPollutants: ['Nitrates', 'Pesticides'], riskLevel: 'medium', cities: 1775, conformityRate: 97.6, population: 3830000, supplyZones: 720, topPollutantValues: { Nitrates: '25 mg/L', Pesticides: '0.06 µg/L' } },
+  { id: 'bretagne', name: 'Bretagne', mainPollutants: ['Nitrates', 'Pesticides'], riskLevel: 'medium', cities: 1208, conformityRate: 97.5, population: 3370000, supplyZones: 580, topPollutantValues: { Nitrates: '27 mg/L', Pesticides: '0.05 µg/L' } },
+  { id: 'normandie', name: 'Normandie', mainPollutants: ['Nitrates', 'THM', 'Pesticides'], riskLevel: 'medium', cities: 2651, conformityRate: 97.3, population: 3320000, supplyZones: 780, topPollutantValues: { Nitrates: '30 mg/L', THM: '25 µg/L', Pesticides: '0.07 µg/L' } },
+  { id: 'bourgogne-franche-comte', name: 'Bourgogne-Franche-Comté', mainPollutants: ['Nitrates', 'Pesticides'], riskLevel: 'low', cities: 3702, conformityRate: 98.8, population: 2800000, supplyZones: 920, topPollutantValues: { Nitrates: '20 mg/L', Pesticides: '0.04 µg/L' } },
+  { id: 'centre-val-de-loire', name: 'Centre-Val de Loire', mainPollutants: ['Nitrates', 'Pesticides'], riskLevel: 'medium', cities: 1756, conformityRate: 97.7, population: 2570000, supplyZones: 640, topPollutantValues: { Nitrates: '26 mg/L', Pesticides: '0.06 µg/L' } },
+  { id: 'corse', name: 'Corse', mainPollutants: ['Nitrates'], riskLevel: 'low', cities: 360, conformityRate: 98.5, population: 344000, supplyZones: 210, topPollutantValues: { Nitrates: '9 mg/L' } },
+];
+
 const PollutantMap = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -17,147 +84,84 @@ const PollutantMap = () => {
   useEffect(() => {
     if (!mapContainer.current) return;
 
-    // Configure Mapbox securely
     MapboxSecurityService.configureMapbox(mapboxgl);
-    
-    // Create map with secure configuration
+
     map.current = new mapboxgl.Map(
       MapboxSecurityService.createSecureMapOptions(mapContainer.current)
     );
 
-    // Add navigation controls
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-    // Pollutant data by city
-    const pollutantData = [
-      { 
-        name: 'Paris', 
-        coords: [2.3522, 48.8566], 
-        pollutants: ['Nitrates', 'Chlore résiduel', 'Trihalométhanes'],
-        riskLevel: 'medium'
-      },
-      { 
-        name: 'Lyon', 
-        coords: [4.8357, 45.7640], 
-        pollutants: ['Nitrates', 'Pesticides'],
-        riskLevel: 'low'
-      },
-      { 
-        name: 'Marseille', 
-        coords: [5.3698, 43.2965], 
-        pollutants: ['Nitrates', 'Arsenic', 'Fluorures'],
-        riskLevel: 'high'
-      },
-      { 
-        name: 'Toulouse', 
-        coords: [1.4442, 43.6047], 
-        pollutants: ['Pesticides', 'Nitrates', 'Plomb'],
-        riskLevel: 'high'
-      },
-      { 
-        name: 'Nice', 
-        coords: [7.2619, 43.7102], 
-        pollutants: ['Nitrates', 'Chlore résiduel'],
-        riskLevel: 'low'
-      },
-      { 
-        name: 'Nantes', 
-        coords: [-1.5534, 47.2184], 
-        pollutants: ['Pesticides', 'Nitrates'],
-        riskLevel: 'medium'
-      },
-      { 
-        name: 'Strasbourg', 
-        coords: [7.7521, 48.5734], 
-        pollutants: ['Nitrates'],
-        riskLevel: 'low'
-      },
-      { 
-        name: 'Montpellier', 
-        coords: [3.8767, 43.6108], 
-        pollutants: ['Pesticides', 'Arsenic', 'Nitrates', 'Fluorures'],
-        riskLevel: 'high'
-      },
-      { 
-        name: 'Bordeaux', 
-        coords: [-0.5792, 44.8378], 
-        pollutants: ['Pesticides', 'Nitrates'],
-        riskLevel: 'medium'
-      },
-      { 
-        name: 'Lille', 
-        coords: [3.0573, 50.6292], 
-        pollutants: ['Nitrates', 'Chlore résiduel', 'Trihalométhanes'],
-        riskLevel: 'medium'
-      }
-    ];
 
     const getRiskColor = (riskLevel: string) => {
       switch (riskLevel) {
-        case 'low': return '#10b981'; // green
-        case 'medium': return '#f59e0b'; // yellow
-        case 'high': return '#ef4444'; // red
-        default: return '#6b7280'; // gray
+        case 'low': return '#10b981';
+        case 'medium': return '#f59e0b';
+        case 'high': return '#ef4444';
+        default: return '#6b7280';
       }
     };
 
-    const getRiskSize = (riskLevel: string) => {
-      switch (riskLevel) {
-        case 'low': return '16px';
-        case 'medium': return '20px';
-        case 'high': return '24px';
-        default: return '16px';
-      }
-    };
+    const getRiskLabel = (r: string) =>
+      r === 'low' ? 'Faible' : r === 'medium' ? 'Modéré' : 'Élevé';
 
-    // Add markers for pollutants
-    pollutantData.forEach(city => {
-      // Create marker element
+    const formatPopulation = (n: number) => n.toLocaleString('fr-FR');
+
+    pollutantCities.forEach(city => {
       const el = document.createElement('div');
-      el.className = 'pollutant-marker';
-      el.style.backgroundColor = getRiskColor(city.riskLevel);
-      el.style.width = getRiskSize(city.riskLevel);
-      el.style.height = getRiskSize(city.riskLevel);
-      el.style.borderRadius = '50%';
-      el.style.border = '2px solid white';
-      el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
-      el.style.cursor = 'pointer';
+      el.style.cssText = `
+        width:32px;height:32px;border-radius:50%;
+        background:${getRiskColor(city.riskLevel)};
+        border:2px solid white;
+        box-shadow:0 2px 6px rgba(0,0,0,0.3);
+        cursor:pointer;display:flex;align-items:center;justify-content:center;
+        font-size:11px;font-weight:700;color:white;
+        transition:transform .2s,box-shadow .2s;
+      `;
+      el.textContent = city.riskLevel === 'high' ? '⚠️' : '●';
+      el.addEventListener('mouseenter', () => { el.style.transform = 'scale(1.2)'; el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)'; });
+      el.addEventListener('mouseleave', () => { el.style.transform = 'scale(1)'; el.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)'; });
 
-      // Add warning icon for high risk
-      if (city.riskLevel === 'high') {
-        el.innerHTML = '⚠️';
-        el.style.fontSize = '12px';
-        el.style.display = 'flex';
-        el.style.alignItems = 'center';
-        el.style.justifyContent = 'center';
-      }
+      const conformityColor = city.conformityRate >= 98 ? '#10b981' : city.conformityRate >= 96 ? '#f59e0b' : '#ef4444';
 
-      // Create popup
-      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-        `<div class="p-3">
-          <h3 class="font-bold text-lg mb-2">${city.name}</h3>
-          <p class="text-sm text-gray-600 mb-2">Niveau de risque: 
-            <span class="font-medium" style="color: ${getRiskColor(city.riskLevel)}">
-              ${city.riskLevel === 'low' ? 'Faible' : city.riskLevel === 'medium' ? 'Modéré' : 'Élevé'}
-            </span>
-          </p>
-          <div class="text-sm">
-            <p class="font-medium text-gray-700 mb-1">Polluants détectés:</p>
-            <ul class="list-disc list-inside text-gray-600">
-              ${city.pollutants.map(pollutant => `<li>${pollutant}</li>`).join('')}
-            </ul>
+      const pollutantRows = city.pollutants.map(p => {
+        const val = parseFloat(p.value);
+        const lim = parseFloat(p.limit);
+        const ratio = val / lim;
+        const color = ratio >= 1 ? '#ef4444' : ratio >= 0.7 ? '#f59e0b' : '#10b981';
+        return `<tr>
+          <td style="padding:2px 6px;font-size:12px">${p.name}</td>
+          <td style="padding:2px 6px;font-size:12px;text-align:right;color:${color};font-weight:600">${p.value} ${p.unit}</td>
+          <td style="padding:2px 6px;font-size:12px;text-align:right;color:#888">${p.limit}</td>
+        </tr>`;
+      }).join('');
+
+      const popup = new mapboxgl.Popup({ offset: 20, maxWidth: '340px' }).setHTML(
+        `<div style="padding:8px">
+          <h3 style="font-weight:700;font-size:15px;margin-bottom:2px">${city.name}</h3>
+          <p style="font-size:11px;color:#888;margin-bottom:6px">${city.waterSource}</p>
+          <div style="display:flex;gap:12px;margin-bottom:8px;font-size:12px">
+            <div><span style="color:#888">Risque</span><br/><span style="color:${getRiskColor(city.riskLevel)};font-weight:600">${getRiskLabel(city.riskLevel)}</span></div>
+            <div><span style="color:#888">Conformité</span><br/><span style="color:${conformityColor};font-weight:600">${city.conformityRate}%</span></div>
+            <div><span style="color:#888">Population</span><br/><span style="font-weight:600">${formatPopulation(city.population)}</span></div>
           </div>
+          <table style="width:100%;border-collapse:collapse;margin-bottom:6px">
+            <thead><tr style="border-bottom:1px solid #e5e7eb">
+              <th style="text-align:left;padding:2px 6px;font-size:11px;color:#888">Polluant</th>
+              <th style="text-align:right;padding:2px 6px;font-size:11px;color:#888">Mesuré</th>
+              <th style="text-align:right;padding:2px 6px;font-size:11px;color:#888">Limite</th>
+            </tr></thead>
+            <tbody>${pollutantRows}</tbody>
+          </table>
+          <p style="font-size:10px;color:#aaa;margin:0">Dernier contrôle : ${city.lastAnalysis}</p>
         </div>`
       );
 
-      // Add marker to map
       new mapboxgl.Marker(el)
-        .setLngLat(city.coords as [number, number])
+        .setLngLat(city.coords)
         .setPopup(popup)
         .addTo(map.current!);
     });
 
-    // Update coordinates on move
     map.current.on('move', () => {
       if (map.current) {
         setLng(Number(map.current.getCenter().lng.toFixed(4)));
@@ -166,21 +170,8 @@ const PollutantMap = () => {
       }
     });
 
-    // Cleanup
-    return () => {
-      map.current?.remove();
-    };
+    return () => { map.current?.remove(); };
   }, []);
-
-  // Mock data for regional pollutant overview
-  const pollutantRegions = [
-    { id: 'ile-de-france', name: 'Île-de-France', mainPollutants: ['Nitrates', 'Trihalométhanes'], riskLevel: 'medium', cities: 1276 },
-    { id: 'auvergne-rhone-alpes', name: 'Auvergne-Rhône-Alpes', mainPollutants: ['Nitrates', 'Pesticides'], riskLevel: 'low', cities: 4032 },
-    { id: 'nouvelle-aquitaine', name: 'Nouvelle-Aquitaine', mainPollutants: ['Pesticides', 'Nitrates'], riskLevel: 'medium', cities: 4356 },
-    { id: 'occitanie', name: 'Occitanie', mainPollutants: ['Pesticides', 'Arsenic'], riskLevel: 'high', cities: 4448 },
-    { id: 'hauts-de-france', name: 'Hauts-de-France', mainPollutants: ['Nitrates', 'Chlore résiduel'], riskLevel: 'medium', cities: 3789 },
-    { id: 'grand-est', name: 'Grand Est', mainPollutants: ['Nitrates'], riskLevel: 'low', cities: 5133 },
-  ];
 
   const getRiskColor = (riskLevel: string) => {
     switch (riskLevel) {
@@ -190,6 +181,13 @@ const PollutantMap = () => {
       default: return 'bg-gray-500';
     }
   };
+
+  const getRiskBadgeClass = (r: string) =>
+    r === 'low'
+      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+      : r === 'medium'
+      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
 
   const getRiskLabel = (riskLevel: string) => {
     switch (riskLevel) {
@@ -220,7 +218,7 @@ const PollutantMap = () => {
                 </div>
                 <div>
                   <div className="font-medium text-sm">{item.label}</div>
-                  <div className="text-xs text-gray-600">{item.desc}</div>
+                  <div className="text-xs text-muted-foreground">{item.desc}</div>
                 </div>
               </div>
             ))}
@@ -234,7 +232,7 @@ const PollutantMap = () => {
           <div className="relative">
             <div ref={mapContainer} className="h-96 w-full rounded-lg" />
             <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-              <div className="text-sm font-medium text-gray-700">
+              <div className="text-sm font-medium text-foreground/70">
                 Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
               </div>
             </div>
@@ -244,12 +242,17 @@ const PollutantMap = () => {
 
       {/* Regional Pollutant Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {pollutantRegions.map(region => (
+        {pollutantRegions
+          .sort((a, b) => {
+            const order = { high: 0, medium: 1, low: 2 };
+            return order[a.riskLevel] - order[b.riskLevel];
+          })
+          .map(region => (
           <Card key={region.id} className="hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">{region.name}</CardTitle>
-                <Badge className={`${getRiskColor(region.riskLevel)} text-white`}>
+                <Badge className={getRiskBadgeClass(region.riskLevel)}>
                   {getRiskLabel(region.riskLevel)}
                 </Badge>
               </div>
@@ -257,11 +260,19 @@ const PollutantMap = () => {
             <CardContent>
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Niveau de risque</span>
-                  <span className="font-medium">{getRiskLabel(region.riskLevel)}</span>
+                  <span className="text-muted-foreground">Conformité</span>
+                  <span className="font-medium">{region.conformityRate}%</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Population desservie</span>
+                  <span className="font-medium">{region.population.toLocaleString('fr-FR')}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Zones d'approvisionnement</span>
+                  <span className="font-medium">{region.supplyZones.toLocaleString('fr-FR')}</span>
                 </div>
                 <div className="text-sm">
-                  <span className="text-gray-600">Polluants principaux:</span>
+                  <span className="text-muted-foreground">Polluants principaux :</span>
                   <div className="mt-1 flex flex-wrap gap-1">
                     {region.mainPollutants.map(pollutant => (
                       <Badge key={pollutant} variant="outline" className="text-xs">
@@ -270,12 +281,23 @@ const PollutantMap = () => {
                     ))}
                   </div>
                 </div>
+                <div className="text-sm">
+                  <span className="text-muted-foreground">Valeurs moyennes :</span>
+                  <div className="mt-1 grid grid-cols-2 gap-x-4 gap-y-0.5 text-xs">
+                    {Object.entries(region.topPollutantValues).map(([key, val]) => (
+                      <div key={key} className="flex justify-between">
+                        <span className="text-muted-foreground">{key}</span>
+                        <span className="font-medium">{val}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Communes concernées</span>
-                  <span className="font-medium">{region.cities.toLocaleString()}</span>
+                  <span className="text-muted-foreground">Communes concernées</span>
+                  <span className="font-medium">{region.cities.toLocaleString('fr-FR')}</span>
                 </div>
                 {region.riskLevel === 'high' && (
-                  <div className="flex items-center space-x-1 text-sm text-red-600">
+                  <div className="flex items-center space-x-1 text-sm text-destructive">
                     <AlertTriangle className="w-4 h-4" />
                     <span>Zone à surveiller</span>
                   </div>
