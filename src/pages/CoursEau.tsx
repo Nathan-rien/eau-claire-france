@@ -508,7 +508,7 @@ const CoursEau = () => {
 
               {selectedBrand && !timeseriesLoading && timeseriesChartData.length === 0 && (
                 <p className="text-sm text-muted-foreground py-8 text-center">
-                  Aucune donnée historique disponible pour {selectedBrand} sur les 12 derniers mois.
+                  Aucune donnée historique disponible pour {selectedBrand}{brandPeriod !== 'all' ? ` sur ${brandPeriod === '6m' ? 'les 6 derniers mois' : 'les 12 derniers mois'}` : ''}.
                 </p>
               )}
 
