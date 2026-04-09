@@ -13,6 +13,7 @@ export interface UserProfile {
   description: string;
   criteria: WaterCriteria;
   color: string;
+  category?: ProfileCategory;
 }
 
 export interface UserIntolerance {
@@ -29,39 +30,78 @@ export interface UserPreference {
   criteria: WaterCriteria;
 }
 
+export type ProfileCategory = 'situation' | 'sante' | 'bienetre' | 'alimentation';
+
+export type AgeGroup = 'bebe' | 'enfant-1-6' | 'enfant-6-12' | 'adulte' | 'senior';
+export type Gender = 'homme' | 'femme' | 'autre';
+export type DailyConsumption = '0.5L' | '1L' | '1.5L' | '2L' | '3L+';
+
+export interface DiagnosticContext {
+  age?: AgeGroup;
+  gender?: Gender;
+  dailyConsumption?: DailyConsumption;
+}
+
+export const profileCategories: Record<ProfileCategory, { label: string; icon: string }> = {
+  situation: { label: 'Situation de vie', icon: '👶' },
+  sante: { label: 'Santé', icon: '🏥' },
+  bienetre: { label: 'Bien-être', icon: '🧘' },
+  alimentation: { label: 'Alimentation', icon: '🥗' },
+};
+
+export const ageGroups: { id: AgeGroup; label: string }[] = [
+  { id: 'bebe', label: 'Bébé (0-1 an)' },
+  { id: 'enfant-1-6', label: 'Enfant (1-6 ans)' },
+  { id: 'enfant-6-12', label: 'Enfant (6-12 ans)' },
+  { id: 'adulte', label: 'Adulte (18-50 ans)' },
+  { id: 'senior', label: 'Senior (50+ ans)' },
+];
+
+export const genders: { id: Gender; label: string }[] = [
+  { id: 'femme', label: 'Femme' },
+  { id: 'homme', label: 'Homme' },
+  { id: 'autre', label: 'Autre / Ne pas préciser' },
+];
+
+export const dailyConsumptions: { id: DailyConsumption; label: string; desc: string }[] = [
+  { id: '0.5L', label: '< 1 L', desc: 'Faible consommation' },
+  { id: '1L', label: '1 – 1,5 L', desc: 'Consommation modérée' },
+  { id: '1.5L', label: '1,5 – 2 L', desc: 'Consommation recommandée' },
+  { id: '2L', label: '2 – 3 L', desc: 'Consommation élevée' },
+  { id: '3L+', label: '3 L+', desc: 'Très forte consommation' },
+];
+
+// Modificateurs de priorité selon âge × sexe
+export const ageGenderModifiers: Record<string, Partial<WaterCriteria>> = {
+  'femme-senior': {
+    calcium: { min: 150, priority: 5 },
+    magnesium: { min: 25, priority: 3 },
+  },
+  'femme-adulte': {
+    calcium: { min: 80, priority: 3 },
+  },
+  'homme-senior': {
+    calcium: { min: 100, priority: 3 },
+    sodium: { max: 30, priority: 2 },
+  },
+  'bebe': {
+    sodium: { max: 10, priority: 5 },
+    nitrates: { max: 10, priority: 5 },
+    residusSec: { max: 500, priority: 4 },
+  },
+  'enfant-1-6': {
+    nitrates: { max: 15, priority: 4 },
+    sodium: { max: 20, priority: 3 },
+    residusSec: { max: 600, priority: 3 },
+  },
+  'enfant-6-12': {
+    calcium: { min: 50, priority: 3 },
+    magnesium: { min: 15, priority: 2 },
+  },
+};
+
 export const userProfiles: UserProfile[] = [
-  {
-    id: 'sportif-regulier',
-    name: 'Sportif régulier',
-    description: 'Activité sportive modérée régulière',
-    criteria: {
-      magnesium: { min: 20, priority: 3 },
-      sodium: { min: 10, max: 50, priority: 2 }
-    },
-    color: 'bg-orange-100 text-orange-800 border-orange-200'
-  },
-  {
-    id: 'activite-intense',
-    name: 'Activité intense / endurance',
-    description: 'Sport de haut niveau, endurance',
-    criteria: {
-      sodium: { min: 50, priority: 3 },
-      residusSec: { min: 1000, priority: 3 },
-      magnesium: { min: 30, priority: 2 }
-    },
-    color: 'bg-red-100 text-red-800 border-red-200'
-  },
-  {
-    id: 'hypertension',
-    name: 'Hypertension',
-    description: 'Contrôle de la tension artérielle',
-    criteria: {
-      sodium: { max: 20, priority: 5 },
-      calcium: { min: 50, priority: 2 },
-      magnesium: { min: 10, priority: 2 }
-    },
-    color: 'bg-purple-100 text-purple-800 border-purple-200'
-  },
+  // ── Situation de vie ──
   {
     id: 'grossesse',
     name: 'Grossesse',
@@ -71,7 +111,20 @@ export const userProfiles: UserProfile[] = [
       calcium: { min: 80, priority: 4 },
       sodium: { max: 20, priority: 3 }
     },
-    color: 'bg-pink-100 text-pink-800 border-pink-200'
+    color: 'bg-pink-100 text-pink-800 border-pink-200',
+    category: 'situation',
+  },
+  {
+    id: 'allaitement',
+    name: 'Allaitement',
+    description: 'Besoins accrus en calcium et magnésium',
+    criteria: {
+      calcium: { min: 100, priority: 4 },
+      magnesium: { min: 25, priority: 3 },
+      nitrates: { max: 10, priority: 5 },
+    },
+    color: 'bg-pink-100 text-pink-800 border-pink-200',
+    category: 'situation',
   },
   {
     id: 'nourrisson',
@@ -82,88 +135,31 @@ export const userProfiles: UserProfile[] = [
       nitrates: { max: 10, priority: 5 },
       residusSec: { max: 500, priority: 4 }
     },
-    color: 'bg-blue-100 text-blue-800 border-blue-200'
+    color: 'bg-blue-100 text-blue-800 border-blue-200',
+    category: 'situation',
   },
   {
-    id: 'constipation',
-    name: 'Constipation',
-    description: 'Amélioration du transit intestinal',
+    id: 'enfant-1-6',
+    name: 'Enfant 1-6 ans',
+    description: 'Eau douce adaptée aux jeunes enfants',
     criteria: {
-      magnesium: { min: 50, priority: 4 },
-      residusSec: { min: 1000, priority: 3 }
+      nitrates: { max: 15, priority: 4 },
+      sodium: { max: 20, priority: 3 },
+      residusSec: { max: 600, priority: 3 },
     },
-    color: 'bg-amber-100 text-amber-800 border-amber-200'
+    color: 'bg-blue-100 text-blue-800 border-blue-200',
+    category: 'situation',
   },
   {
-    id: 'diarrhee-colon',
-    name: 'Diarrhée ou côlon irritable',
-    description: 'Apaisement du système digestif',
+    id: 'enfant-6-12',
+    name: 'Enfant 6-12 ans',
+    description: 'Apport en calcium pour la croissance',
     criteria: {
-      magnesium: { max: 30, priority: 4 },
-      residusSec: { max: 800, priority: 3 },
-      sodium: { max: 20, priority: 2 }
+      calcium: { min: 50, priority: 3 },
+      magnesium: { min: 15, priority: 2 },
     },
-    color: 'bg-teal-100 text-teal-800 border-teal-200'
-  },
-  {
-    id: 'calculs-renaux',
-    name: 'Calculs rénaux',
-    description: 'Prévention des calculs rénaux',
-    criteria: {
-      calcium: { max: 100, priority: 4 },
-      residusSec: { max: 800, priority: 3 },
-      sodium: { max: 20, priority: 2 }
-    },
-    color: 'bg-yellow-100 text-yellow-800 border-yellow-200'
-  },
-  {
-    id: 'osteoporose',
-    name: 'Ostéoporose / prévention osseuse',
-    description: 'Renforcement osseux',
-    criteria: {
-      calcium: { min: 150, priority: 4 },
-      magnesium: { min: 20, priority: 3 }
-    },
-    color: 'bg-green-100 text-green-800 border-green-200'
-  },
-  {
-    id: 'fatigue-chronique',
-    name: 'Fatigue chronique / stress',
-    description: 'Apport en magnésium pour l\'énergie',
-    criteria: {
-      magnesium: { min: 30, priority: 4 },
-      calcium: { min: 50, priority: 2 }
-    },
-    color: 'bg-indigo-100 text-indigo-800 border-indigo-200'
-  },
-  {
-    id: 'regime-sans-sel',
-    name: 'Régime sans sel',
-    description: 'Restriction sodique stricte',
-    criteria: {
-      sodium: { max: 10, priority: 5 }
-    },
-    color: 'bg-gray-100 text-gray-800 border-gray-200'
-  },
-  {
-    id: 'alimentation-alcaline',
-    name: 'Alimentation alcaline',
-    description: 'Équilibre acido-basique',
-    criteria: {
-      residusSec: { min: 800, priority: 3 },
-      magnesium: { min: 20, priority: 2 }
-    },
-    color: 'bg-emerald-100 text-emerald-800 border-emerald-200'
-  },
-  {
-    id: 'acidite-gastrique',
-    name: 'Acidité gastrique',
-    description: 'Neutralisation de l\'acidité',
-    criteria: {
-      magnesium: { min: 25, priority: 3 },
-      calcium: { min: 80, priority: 2 }
-    },
-    color: 'bg-lime-100 text-lime-800 border-lime-200'
+    color: 'bg-blue-100 text-blue-800 border-blue-200',
+    category: 'situation',
   },
   {
     id: 'menopause-seniors',
@@ -174,7 +170,205 @@ export const userProfiles: UserProfile[] = [
       magnesium: { min: 25, priority: 3 },
       sodium: { max: 30, priority: 2 }
     },
-    color: 'bg-violet-100 text-violet-800 border-violet-200'
+    color: 'bg-violet-100 text-violet-800 border-violet-200',
+    category: 'situation',
+  },
+
+  // ── Santé ──
+  {
+    id: 'hypertension',
+    name: 'Hypertension',
+    description: 'Contrôle de la tension artérielle',
+    criteria: {
+      sodium: { max: 20, priority: 5 },
+      calcium: { min: 50, priority: 2 },
+      magnesium: { min: 10, priority: 2 }
+    },
+    color: 'bg-purple-100 text-purple-800 border-purple-200',
+    category: 'sante',
+  },
+  {
+    id: 'diabete-type2',
+    name: 'Diabète type 2',
+    description: 'Magnésium élevé, sodium faible',
+    criteria: {
+      magnesium: { min: 30, priority: 4 },
+      sodium: { max: 20, priority: 3 },
+    },
+    color: 'bg-purple-100 text-purple-800 border-purple-200',
+    category: 'sante',
+  },
+  {
+    id: 'insuffisance-renale',
+    name: 'Insuffisance rénale',
+    description: 'Sodium et minéralisation strictement limités',
+    criteria: {
+      sodium: { max: 10, priority: 5 },
+      residusSec: { max: 500, priority: 4 },
+      calcium: { max: 100, priority: 3 },
+    },
+    color: 'bg-purple-100 text-purple-800 border-purple-200',
+    category: 'sante',
+  },
+  {
+    id: 'calculs-renaux',
+    name: 'Calculs rénaux',
+    description: 'Prévention des calculs rénaux',
+    criteria: {
+      calcium: { max: 100, priority: 4 },
+      residusSec: { max: 800, priority: 3 },
+      sodium: { max: 20, priority: 2 }
+    },
+    color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    category: 'sante',
+  },
+  {
+    id: 'osteoporose',
+    name: 'Ostéoporose / prévention osseuse',
+    description: 'Renforcement osseux',
+    criteria: {
+      calcium: { min: 150, priority: 4 },
+      magnesium: { min: 20, priority: 3 }
+    },
+    color: 'bg-green-100 text-green-800 border-green-200',
+    category: 'sante',
+  },
+  {
+    id: 'retention-eau',
+    name: 'Rétention d\'eau',
+    description: 'Limiter sodium et minéralisation',
+    criteria: {
+      sodium: { max: 10, priority: 5 },
+      residusSec: { max: 500, priority: 3 },
+    },
+    color: 'bg-purple-100 text-purple-800 border-purple-200',
+    category: 'sante',
+  },
+
+  // ── Bien-être ──
+  {
+    id: 'sportif-regulier',
+    name: 'Sportif régulier',
+    description: 'Activité sportive modérée régulière',
+    criteria: {
+      magnesium: { min: 20, priority: 3 },
+      sodium: { min: 10, max: 50, priority: 2 }
+    },
+    color: 'bg-orange-100 text-orange-800 border-orange-200',
+    category: 'bienetre',
+  },
+  {
+    id: 'activite-intense',
+    name: 'Activité intense / endurance',
+    description: 'Sport de haut niveau, endurance',
+    criteria: {
+      sodium: { min: 50, priority: 3 },
+      residusSec: { min: 1000, priority: 3 },
+      magnesium: { min: 30, priority: 2 }
+    },
+    color: 'bg-red-100 text-red-800 border-red-200',
+    category: 'bienetre',
+  },
+  {
+    id: 'fatigue-chronique',
+    name: 'Fatigue chronique / stress',
+    description: 'Apport en magnésium pour l\'énergie',
+    criteria: {
+      magnesium: { min: 30, priority: 4 },
+      calcium: { min: 50, priority: 2 }
+    },
+    color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    category: 'bienetre',
+  },
+  {
+    id: 'constipation',
+    name: 'Constipation',
+    description: 'Amélioration du transit intestinal',
+    criteria: {
+      magnesium: { min: 50, priority: 4 },
+      residusSec: { min: 1000, priority: 3 }
+    },
+    color: 'bg-amber-100 text-amber-800 border-amber-200',
+    category: 'bienetre',
+  },
+  {
+    id: 'diarrhee-colon',
+    name: 'Diarrhée ou côlon irritable',
+    description: 'Apaisement du système digestif',
+    criteria: {
+      magnesium: { max: 30, priority: 4 },
+      residusSec: { max: 800, priority: 3 },
+      sodium: { max: 20, priority: 2 }
+    },
+    color: 'bg-teal-100 text-teal-800 border-teal-200',
+    category: 'bienetre',
+  },
+  {
+    id: 'crampes-musculaires',
+    name: 'Crampes musculaires',
+    description: 'Apport en magnésium et calcium',
+    criteria: {
+      magnesium: { min: 40, priority: 4 },
+      calcium: { min: 80, priority: 3 },
+    },
+    color: 'bg-orange-100 text-orange-800 border-orange-200',
+    category: 'bienetre',
+  },
+  {
+    id: 'detox-drainage',
+    name: 'Détox / drainage',
+    description: 'Eau légère pour éliminer',
+    criteria: {
+      residusSec: { max: 300, priority: 4 },
+      sodium: { max: 10, priority: 3 },
+    },
+    color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    category: 'bienetre',
+  },
+  {
+    id: 'acidite-gastrique',
+    name: 'Acidité gastrique',
+    description: 'Neutralisation de l\'acidité',
+    criteria: {
+      magnesium: { min: 25, priority: 3 },
+      calcium: { min: 80, priority: 2 }
+    },
+    color: 'bg-lime-100 text-lime-800 border-lime-200',
+    category: 'bienetre',
+  },
+
+  // ── Alimentation ──
+  {
+    id: 'regime-sans-sel',
+    name: 'Régime sans sel',
+    description: 'Restriction sodique stricte',
+    criteria: {
+      sodium: { max: 10, priority: 5 }
+    },
+    color: 'bg-gray-100 text-gray-800 border-gray-200',
+    category: 'alimentation',
+  },
+  {
+    id: 'regime-cetogene',
+    name: 'Régime cétogène / low carb',
+    description: 'Compenser les pertes électrolytiques',
+    criteria: {
+      sodium: { min: 30, priority: 3 },
+      magnesium: { min: 30, priority: 3 },
+    },
+    color: 'bg-amber-100 text-amber-800 border-amber-200',
+    category: 'alimentation',
+  },
+  {
+    id: 'alimentation-alcaline',
+    name: 'Alimentation alcaline',
+    description: 'Équilibre acido-basique',
+    criteria: {
+      residusSec: { min: 800, priority: 3 },
+      magnesium: { min: 20, priority: 2 }
+    },
+    color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    category: 'alimentation',
   },
   {
     id: 'gout-neutre',
@@ -183,7 +377,8 @@ export const userProfiles: UserProfile[] = [
     criteria: {
       residusSec: { max: 300, priority: 4 }
     },
-    color: 'bg-slate-100 text-slate-800 border-slate-200'
+    color: 'bg-slate-100 text-slate-800 border-slate-200',
+    category: 'alimentation',
   },
   {
     id: 'eau-pure',
@@ -193,7 +388,8 @@ export const userProfiles: UserProfile[] = [
       residusSec: { max: 200, priority: 5 },
       sodium: { max: 5, priority: 3 }
     },
-    color: 'bg-cyan-100 text-cyan-800 border-cyan-200'
+    color: 'bg-cyan-100 text-cyan-800 border-cyan-200',
+    category: 'alimentation',
   },
   {
     id: 'suivi-medical',
@@ -203,7 +399,8 @@ export const userProfiles: UserProfile[] = [
       sodium: { max: 15, priority: 3 },
       residusSec: { max: 600, priority: 2 }
     },
-    color: 'bg-rose-100 text-rose-800 border-rose-200'
+    color: 'bg-rose-100 text-rose-800 border-rose-200',
+    category: 'sante',
   }
 ];
 
@@ -212,17 +409,13 @@ export const userIntolerances: UserIntolerance[] = [
     id: 'intolerance-sulfates',
     name: 'Sulfates',
     description: 'éviter si présent >50 mg/L',
-    criteria: {
-      // Note: sulfates pas disponible dans bottleWaterData, critère ignoré pour l'instant
-    }
+    criteria: {}
   },
   {
     id: 'intolerance-fluor',
     name: 'Fluor',
     description: 'éviter si présent >0,3 mg/L',
-    criteria: {
-      // Note: fluor pas disponible dans bottleWaterData, critère ignoré pour l'instant
-    }
+    criteria: {}
   },
   {
     id: 'intolerance-nitrates',
@@ -260,25 +453,19 @@ export const userIntolerances: UserIntolerance[] = [
     id: 'intolerance-bicarbonates',
     name: 'Bicarbonates',
     description: 'éviter si présent >600 mg/L',
-    criteria: {
-      // Note: bicarbonates pas disponible dans bottleWaterData, critère ignoré pour l'instant
-    }
+    criteria: {}
   },
   {
     id: 'intolerance-ph-acide',
     name: 'pH acide (<7)',
     description: 'éviter si pH < 7',
-    criteria: {
-      // Note: pH pas disponible dans bottleWaterData, critère ignoré pour l'instant
-    }
+    criteria: {}
   },
   {
     id: 'intolerance-ph-basique',
     name: 'pH basique (>8,5)',
     description: 'éviter si pH > 8.5',
-    criteria: {
-      // Note: pH pas disponible dans bottleWaterData, critère ignoré pour l'instant
-    }
+    criteria: {}
   },
   {
     id: 'intolerance-mineralisation',
@@ -332,5 +519,33 @@ export const userPreferences: UserPreference[] = [
     criteria: {
       sodium: { max: 20, priority: 3 }
     }
-  }
+  },
+  {
+    id: 'eau-tres-mineralisee',
+    name: 'Très minéralisée',
+    description: 'Résidu sec élevé (> 1000 mg/L)',
+    criteria: {
+      residusSec: { min: 1000, priority: 3 }
+    }
+  },
+  {
+    id: 'eau-riche-bicarbonates',
+    name: 'Riche en bicarbonates',
+    description: 'Eau digestion (proxy : résidu sec élevé)',
+    criteria: {
+      residusSec: { min: 800, priority: 3 }
+    }
+  },
+  {
+    id: 'eco-responsable',
+    name: 'Éco-responsable',
+    description: 'Privilégier un bon éco-score (A ou B)',
+    criteria: {}
+  },
+  {
+    id: 'budget-serre',
+    name: 'Budget serré',
+    description: 'Eau à moins de 0,30 €/L',
+    criteria: {}
+  },
 ];
