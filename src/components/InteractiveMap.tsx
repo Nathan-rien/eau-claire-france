@@ -96,11 +96,6 @@ const getPollutantStatus = (value: number, limit: number) => {
   return { color: '#ef4444', label: '✗' };
 };
 
-const iconMap = {
-  Baby: <Baby className="h-3 w-3" />,
-  Sparkles: <Sparkles className="h-3 w-3" />,
-};
-
 const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -108,33 +103,22 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ showWaterSources = true
   const [lat, setLat] = useState(46.6034);
   const [zoom, setZoom] = useState(4);
   const [selectedZone, setSelectedZone] = useState<{ name: string; color: string } | null>(null);
-  const [allSources, setAllSources] = useState<SourceItem[]>([]);
-  const [zoneSources, setZoneSources] = useState<SourceItem[]>([]);
+  const [zoneCities, setZoneCities] = useState<CityData[]>([]);
 
-  // Load sources data
-  useEffect(() => {
-    buildSources().then(sources => {
-      console.log('[InteractiveMap] Loaded sources:', sources.length);
-      setAllSources(sources);
-    }).catch(err => console.error('[InteractiveMap] Failed to load sources:', err));
-  }, []);
-
-  // When a zone is selected, find matching sources
+  // When a zone is selected, find matching cities
   useEffect(() => {
     if (!selectedZone) {
-      setZoneSources([]);
+      setZoneCities([]);
       return;
     }
     const zone = waterSourceZones.find(z => z.name === selectedZone.name);
     if (!zone) return;
 
-    const matched = allSources.filter(s =>
-      Number.isFinite(s.latitude) && Number.isFinite(s.longitude) &&
-      isPointInZone(s.longitude, s.latitude, zone.coordinates as number[][][])
+    const matched = waterQualityData.filter(city =>
+      isPointInZone(city.coords[0], city.coords[1], zone.coordinates as number[][][])
     );
-    console.log(`[InteractiveMap] Zone "${selectedZone.name}": ${matched.length} sources found`);
-    setZoneSources(matched);
-  }, [selectedZone, allSources]);
+    setZoneCities(matched);
+  }, [selectedZone]);
 
   useEffect(() => {
     if (!mapContainer.current) return;
