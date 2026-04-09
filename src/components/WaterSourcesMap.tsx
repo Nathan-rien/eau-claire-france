@@ -326,6 +326,7 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
         duration: 2000
       });
       setSelectedSource(null);
+      setOverlappingSources([]);
     }
   };
 
@@ -378,6 +379,23 @@ const WaterSourcesMap: React.FC<WaterSourcesMapProps> = ({ sources }) => {
                 <Badge className={getTypeColor(getWaterType(selectedSource))}>
                   {getWaterType(selectedSource)}
                 </Badge>
+                {overlappingSources.length > 1 && (
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">{overlappingSources.length} sources à cet emplacement :</p>
+                    <div className="flex flex-wrap gap-1">
+                      {overlappingSources.map(s => (
+                        <Badge
+                          key={s.source_id}
+                          variant={s.source_id === selectedSource.source_id ? 'default' : 'outline'}
+                          className="cursor-pointer text-xs"
+                          onClick={() => setSelectedSource(s)}
+                        >
+                          {s.brands[0] || s.source_name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {(() => {
                   const residue = selectedSource.residu_sec_180_mg_L ?? selectedSource.residue;
                   const mLevel = getMineralizationLevel(residue);
