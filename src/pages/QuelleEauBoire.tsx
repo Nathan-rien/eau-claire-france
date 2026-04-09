@@ -3,12 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Zap, ClipboardList, ArrowLeft, Droplets, Sparkles, GlassWater, Baby, Heart, Dumbbell, User, Sun, ShieldAlert, Info, Target, Activity, Bone, Leaf, Search } from 'lucide-react';
+import { AlertTriangle, Zap, ClipboardList, ArrowLeft, Droplets, Sparkles, GlassWater, Baby, Heart, Dumbbell, User, Sun, ShieldAlert, Info, Target, Activity, Bone, Leaf, Search, Users, Calendar, GlassWater as Cup } from 'lucide-react';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
 import { seoData, generateFAQSchema } from '@/utils/seoData';
-import { userProfiles, userIntolerances, userPreferences, UserProfile } from '@/data/waterProfiles';
+import { userProfiles, userIntolerances, userPreferences, UserProfile, profileCategories, ProfileCategory, ageGroups, genders, dailyConsumptions, AgeGroup, Gender, DailyConsumption, DiagnosticContext } from '@/data/waterProfiles';
 import { waterRecommendationService, WaterRecommendation } from '@/services/waterRecommendationService';
 import { useBottleData } from '@/hooks/useBottleData';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -50,6 +50,11 @@ const QuelleEauBoire: React.FC = () => {
   const [showResults, setShowResults] = useState(false);
   const [recommendations, setRecommendations] = useState<WaterRecommendation[]>([]);
   
+  // New context state
+  const [selectedAge, setSelectedAge] = useState<AgeGroup | undefined>();
+  const [selectedGender, setSelectedGender] = useState<Gender | undefined>();
+  const [selectedConsumption, setSelectedConsumption] = useState<DailyConsumption | undefined>();
+  
   // Quick diagnostic state
   const [quickWaterType, setQuickWaterType] = useState<string>('all');
   const [quickProfile, setQuickProfile] = useState<string | null>(null);
@@ -90,7 +95,13 @@ const QuelleEauBoire: React.FC = () => {
     const intolerancesData = userIntolerances.filter(i => selectedIntolerances.includes(i.id));
     const preferencesData = userPreferences.filter(p => selectedPreferences.includes(p.id));
     
-    let results = waterRecommendationService.calculateRecommendations(profiles, intolerancesData, preferencesData);
+    const context: DiagnosticContext = {
+      age: selectedAge,
+      gender: selectedGender,
+      dailyConsumption: selectedConsumption,
+    };
+    
+    let results = waterRecommendationService.calculateRecommendations(profiles, intolerancesData, preferencesData, context);
     results = filterByWaterType(results, selectedWaterType);
     
     setRecommendations(results);
@@ -120,6 +131,9 @@ const QuelleEauBoire: React.FC = () => {
     setSelectedProfiles([]);
     setSelectedIntolerances([]);
     setSelectedPreferences([]);
+    setSelectedAge(undefined);
+    setSelectedGender(undefined);
+    setSelectedConsumption(undefined);
     setShowResults(false);
     setRecommendations([]);
     setQuickWaterType('all');
