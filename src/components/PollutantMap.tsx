@@ -115,11 +115,11 @@ const PollutantMap = () => {
         box-shadow:0 2px 6px rgba(0,0,0,0.3);
         cursor:pointer;display:flex;align-items:center;justify-content:center;
         font-size:11px;font-weight:700;color:white;
-        transition:transform .2s,box-shadow .2s;
+        transition:box-shadow .2s;
       `;
       el.textContent = city.riskLevel === 'high' ? '⚠️' : '●';
-      el.addEventListener('mouseenter', () => { el.style.transform = 'scale(1.2)'; el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)'; });
-      el.addEventListener('mouseleave', () => { el.style.transform = 'scale(1)'; el.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)'; });
+      el.addEventListener('mouseenter', () => { el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)'; });
+      el.addEventListener('mouseleave', () => { el.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)'; });
 
       const conformityColor = city.conformityRate >= 98 ? '#10b981' : city.conformityRate >= 96 ? '#f59e0b' : '#ef4444';
 
