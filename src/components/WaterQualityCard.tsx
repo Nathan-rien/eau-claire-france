@@ -197,9 +197,9 @@ const WaterQualityCard: React.FC<WaterQualityCardProps> = ({ city }) => {
                     <p className="text-sm text-muted-foreground">
                       Limite: {pollutant.limiteQualite} {pollutant.uniteParametre}
                     </p>
-                    {PARAMETER_DESCRIPTIONS[pollutant.parametreAnalyse] && (
+                    {getParameterDescription(pollutant.parametreAnalyse) && (
                       <p className="text-xs text-muted-foreground/70 mt-1 italic">
-                        {PARAMETER_DESCRIPTIONS[pollutant.parametreAnalyse]}
+                        {getParameterDescription(pollutant.parametreAnalyse)}
                       </p>
                     )}
                   </div>
