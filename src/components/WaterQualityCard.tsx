@@ -188,15 +188,21 @@ const WaterQualityCard: React.FC<WaterQualityCardProps> = ({ city }) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {data.data.map((pollutant, index) => (
+            {data.data.map((pollutant, index) => {
+              const isQualitative = pollutant.uniteParametre?.toUpperCase() === 'SANS OBJET' || pollutant.uniteParametre?.toUpperCase() === 'N/A';
+              const displayUnit = isQualitative ? '' : pollutant.uniteParametre;
+
+              return (
               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center space-x-3">
                   {getPollutantIcon(pollutant.conformite)}
                   <div>
                     <p className="font-medium">{pollutant.parametreAnalyse}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Limite: {pollutant.limiteQualite} {pollutant.uniteParametre}
-                    </p>
+                    {!isQualitative && (
+                      <p className="text-sm text-muted-foreground">
+                        Limite: {pollutant.limiteQualite} {displayUnit}
+                      </p>
+                    )}
                     {getParameterDescription(pollutant.parametreAnalyse) && (
                       <p className="text-xs text-muted-foreground/70 mt-1 italic">
                         {getParameterDescription(pollutant.parametreAnalyse)}
@@ -205,22 +211,31 @@ const WaterQualityCard: React.FC<WaterQualityCardProps> = ({ city }) => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-lg">
-                    {pollutant.valeurParametre} {pollutant.uniteParametre}
-                  </p>
-                  <div className="flex items-center space-x-1">
-                    {pollutant.valeurParametre < pollutant.limiteQualite * 0.5 ? (
-                      <TrendingDown className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <TrendingUp className="w-4 h-4 text-yellow-500" />
-                    )}
-                    <span className={`text-sm ${pollutant.valeurParametre < pollutant.limiteQualite * 0.5 ? 'text-green-600' : 'text-yellow-600'}`}>
-                      {Math.round((pollutant.valeurParametre / pollutant.limiteQualite) * 100)}% limite
-                    </span>
-                  </div>
+                  {isQualitative ? (
+                    <Badge variant={pollutant.conformite === 'Conforme' ? 'default' : 'destructive'}>
+                      {pollutant.conformite === 'Conforme' ? 'Conforme' : 'Non conforme'}
+                    </Badge>
+                  ) : (
+                    <>
+                      <p className="font-bold text-lg">
+                        {pollutant.valeurParametre} {displayUnit}
+                      </p>
+                      <div className="flex items-center space-x-1">
+                        {pollutant.valeurParametre < pollutant.limiteQualite * 0.5 ? (
+                          <TrendingDown className="w-4 h-4 text-green-500" />
+                        ) : (
+                          <TrendingUp className="w-4 h-4 text-yellow-500" />
+                        )}
+                        <span className={`text-sm ${pollutant.valeurParametre < pollutant.limiteQualite * 0.5 ? 'text-green-600' : 'text-yellow-600'}`}>
+                          {Math.round((pollutant.valeurParametre / pollutant.limiteQualite) * 100)}% limite
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>
