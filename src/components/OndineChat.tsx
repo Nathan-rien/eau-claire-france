@@ -55,12 +55,18 @@ const OndineChat: React.FC = () => {
     setInput('');
     setMessages(prev => [...prev, userMsg]);
     setIsLoading(true);
+    setLastMessageId(prev => prev + 1);
 
     const commune = detectCommune(text);
     let assistantSoFar = '';
+    let assistantStarted = false;
 
     const upsertAssistant = (chunk: string) => {
       assistantSoFar += chunk;
+      if (!assistantStarted) {
+        assistantStarted = true;
+        setLastMessageId(prev => prev + 1);
+      }
       setMessages(prev => {
         const last = prev[prev.length - 1];
         if (last?.role === 'assistant' && prev.length > 1 && prev[prev.length - 2]?.role === 'user' && prev[prev.length - 2]?.content === text) {
