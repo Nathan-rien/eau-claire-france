@@ -1,36 +1,32 @@
 
 
-## Plan : Renseigner les descriptions manquantes via correspondance partielle
+## Plan : Corriger la conformité des paramètres d'analyse
 
-### Probleme
-L'API Hub'Eau renvoie des noms de parametres longs et varies (ex: "Bacteries coliformes /100ml-MS", "Turbidite nephelometrique NFU", "Coloration", "Aspect (qualitatif)", "Bact. aer. revivifiables a 36°-44h") qui ne correspondent pas exactement aux cles du dictionnaire (`"Bacteries coliformes"`, `"Turbidite"`, `"Couleur"`).
+### Problème
+Le champ `conclusion_conformite_prelevement` de l'API Hub'Eau indique la conformité **du prélèvement entier**, pas de chaque paramètre individuel. Si un seul paramètre du prélèvement est non conforme, **tous** les paramètres de ce prélèvement apparaissent comme "Non conforme", ce qui est faux.
 
-### Solution (2 actions dans `WaterQualityCard.tsx`)
+Par exemple, "Odeur (qualitatif)" avec une valeur de 0 (= pas d'odeur) apparaît "Non conforme" parce qu'un autre paramètre du même prélèvement a posé problème.
 
-1. **Ajouter les parametres manquants au dictionnaire** — couvrir les noms exacts courants de l'API :
-   - `"Coloration"` — coloration de l'eau, indicateur visuel
-   - `"Aspect (qualitatif)"` — aspect visuel general
-   - `"Bact. aér. revivifiables à 36°-44h"` — bacteries indicatrices de qualite microbiologique
-   - `"Bact. aér. revivifiables à 22°-68h"` — idem a temperature ambiante
-   - `"Turbidité néphélométrique NFU"` — mesure de la limpidite
-   - `"Bactéries coliformes /100ml-MS"` — indicateurs microbiologiques
-   - `"Escherichia coli /100ml-MS"` — variante du nom E. coli
-   - `"Entérocoques /100ml-MS"` — variante enterocoques
-   - Et autres variantes courantes
+### Solution dans `src/services/dataGouvApi.ts`
 
-2. **Ajouter une fonction de recherche par inclusion** — si le nom exact n'est pas dans le dictionnaire, chercher une cle du dictionnaire qui est contenue dans le nom du parametre (ou l'inverse). Cela couvre les variantes futures sans devoir les lister toutes.
+Déterminer la conformité **par paramètre** en comparant la valeur au seuil :
 
 ```typescript
-function getParameterDescription(name: string): string | undefined {
-  if (PARAMETER_DESCRIPTIONS[name]) return PARAMETER_DESCRIPTIONS[name];
-  const key = Object.keys(PARAMETER_DESCRIPTIONS).find(k => 
-    name.toLowerCase().includes(k.toLowerCase()) || 
-    k.toLowerCase().includes(name.toLowerCase())
-  );
-  return key ? PARAMETER_DESCRIPTIONS[key] : undefined;
-}
+// Pour les paramètres quantitatifs :
+conformite = valeur <= limite ? 'Conforme' : 'Non conforme'
+
+// Pour les paramètres qualitatifs (unité "SANS OBJET", ou limite = 0) :
+// Valeur 0 = normal/conforme, valeur > 0 = anomalie détectée
+conformite = valeur === 0 ? 'Conforme' : 'Non conforme'
 ```
 
-### Fichier modifie
-- `src/components/WaterQualityCard.tsx`
+Concrètement, remplacer les lignes 97-98 par une logique de conformité individuelle au lieu d'utiliser `conclusion_conformite_prelevement` qui est global au prélèvement.
+
+### Fichier modifié
+- `src/services/dataGouvApi.ts` — logique de conversion (lignes 89-99)
+
+### Impact
+- Les paramètres dont la valeur est bien en dessous de la limite s'afficheront correctement comme "Conforme"
+- Seuls les paramètres réellement hors limite seront marqués "Non conforme"
+- Le score de qualité et le compteur de conformité seront plus précis
 
