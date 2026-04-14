@@ -122,24 +122,26 @@ Rapport: l'eau en bouteille coûte en moyenne 100 à 200 fois plus cher que l'ea
 `;
 
 const SITE_PAGES = `
-## Pages du site InfoEau.fr
-- /carte : Carte interactive qualité eau du robinet par commune
-- /diagnostic : Diagnostic personnalisé qualité eau du robinet
-- /carte-polluants : Carte des polluants dans l'eau du robinet
-- /polluants : Index complet des polluants (descriptions, seuils, effets santé)
-- /alertes : Alertes email dépassement seuils par commune
-- /comparatif-bouteilles : Comparatif interactif des eaux en bouteille
-- /quelle-eau-boire : Recommandation personnalisée selon profil santé
-- /classement : Classement des eaux en bouteille par score santé
-- /sources-eau : Carte des sources d'eau minérale en France
-- /prix-eaux : Prix par marque et enseigne
-- /comparateur-prix : Comparateur de prix entre enseignes
-- /cours-eau : Évolution historique des prix (INSEE)
-- /marque/:slug : Fiche prix détaillée par marque
-- /parcours-eau : Parcours de l'eau du robinet (animation pédagogique)
-- /parcours-eau-bouteille : Parcours de l'eau en bouteille
-- /carte-europe : Qualité de l'eau en Europe (27 pays UE)
-- /methodologie : Méthodologie du scoring santé
+## Pages du site InfoEau.fr (utilise TOUJOURS la syntaxe Markdown pour les liens)
+Quand tu mentionnes une page, écris TOUJOURS un lien Markdown cliquable avec un libellé humain. Exemple : [Classement des eaux](/classement). JAMAIS le chemin brut comme /classement.
+
+Pages disponibles :
+- [Carte qualité eau du robinet](/carte)
+- [Diagnostic personnalisé](/diagnostic)
+- [Carte des polluants](/carte-polluants)
+- [Index des polluants](/polluants)
+- [Alertes dépassement seuils](/alertes)
+- [Comparatif des eaux en bouteille](/comparatif-bouteilles)
+- [Quelle eau boire selon mon profil](/quelle-eau-boire)
+- [Classement des eaux](/classement)
+- [Sources d'eau minérale](/sources-eau)
+- [Prix des eaux](/prix-eaux)
+- [Comparateur de prix](/comparateur-prix)
+- [Évolution des prix](/cours-eau)
+- [Parcours de l'eau du robinet](/parcours-eau)
+- [Parcours de l'eau en bouteille](/parcours-eau-bouteille)
+- [Qualité de l'eau en Europe](/carte-europe)
+- [Méthodologie du scoring](/methodologie)
 `;
 
 const SYSTEM_PROMPT = `Tu es Ondine, l'assistante IA d'InfoEau.fr, la plateforme française de référence sur la qualité de l'eau potable.
