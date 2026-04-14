@@ -1,32 +1,35 @@
 
 
-## Plan : Corriger la conformité des paramètres d'analyse
+## Plan : Corriger les erreurs NaN% et Infinity% limite
 
-### Problème
-Le champ `conclusion_conformite_prelevement` de l'API Hub'Eau indique la conformité **du prélèvement entier**, pas de chaque paramètre individuel. Si un seul paramètre du prélèvement est non conforme, **tous** les paramètres de ce prélèvement apparaissent comme "Non conforme", ce qui est faux.
+### Probleme
+L'API Hub'Eau renvoie le champ `limite_qualite_parametre` sous forme de **string** (ex: `"<=0 n/(100mL)"`, `"<=50 mg/L"`) ou `null`. Le code actuel :
+1. Utilise le mauvais nom de champ (`limite_de_qualite_parametre` au lieu de `limite_qualite_parametre`)
+2. S'attend a un nombre, alors que c'est une string
 
-Par exemple, "Odeur (qualitatif)" avec une valeur de 0 (= pas d'odeur) apparaît "Non conforme" parce qu'un autre paramètre du même prélèvement a posé problème.
+Result: `limite` vaut toujours `0`, causant des divisions par zero (Infinity%) ou 0/0 (NaN%).
 
 ### Solution dans `src/services/dataGouvApi.ts`
 
-Déterminer la conformité **par paramètre** en comparant la valeur au seuil :
+1. **Corriger l'interface `HubEauResult`** : renommer le champ en `limite_qualite_parametre: string | null` et ajouter `reference_qualite_parametre: string | null`
+
+2. **Parser la valeur numerique depuis la string** : extraire le nombre de chaines comme `"<=50 mg/L"` ou `">=6,5 et <=9 unite pH"` avec une regex
 
 ```typescript
-// Pour les paramètres quantitatifs :
-conformite = valeur <= limite ? 'Conforme' : 'Non conforme'
-
-// Pour les paramètres qualitatifs (unité "SANS OBJET", ou limite = 0) :
-// Valeur 0 = normal/conforme, valeur > 0 = anomalie détectée
-conformite = valeur === 0 ? 'Conforme' : 'Non conforme'
+function parseLimite(raw: string | null): number {
+  if (!raw) return 0;
+  // Extraire le dernier nombre (pour ">=6,5 et <=9", prend 9)
+  const matches = raw.match(/[\d]+[,.]?[\d]*/g);
+  if (!matches) return 0;
+  return parseFloat(matches[matches.length - 1].replace(',', '.'));
+}
 ```
 
-Concrètement, remplacer les lignes 97-98 par une logique de conformité individuelle au lieu d'utiliser `conclusion_conformite_prelevement` qui est global au prélèvement.
+3. **Utiliser aussi `reference_qualite_parametre`** comme fallback quand `limite_qualite_parametre` est null (cas du pH, temperature, chlore total)
 
-### Fichier modifié
-- `src/services/dataGouvApi.ts` — logique de conversion (lignes 89-99)
+4. **Dans `WaterQualityCard.tsx`** : ne pas afficher le pourcentage limite quand `limiteQualite` est `0` (pas de limite connue)
 
-### Impact
-- Les paramètres dont la valeur est bien en dessous de la limite s'afficheront correctement comme "Conforme"
-- Seuls les paramètres réellement hors limite seront marqués "Non conforme"
-- Le score de qualité et le compteur de conformité seront plus précis
+### Fichiers modifies
+- `src/services/dataGouvApi.ts` — interface + parsing de la limite
+- `src/components/WaterQualityCard.tsx` — masquer "% limite" quand pas de limite
 
