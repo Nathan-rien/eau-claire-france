@@ -1,70 +1,75 @@
 
 
-## Plan : Enrichir le diagnostic complet avec de nouveaux choix
+## Plan : Ondine accede a toutes les donnees (59 eaux + robinet + prix)
 
-### Vue d'ensemble
-Ajouter 4 nouvelles dimensions au diagnostic complet : profils de sante supplementaires, preferences etendues, selection age/sexe, et consommation quotidienne. Les donnees de composition existantes (pH, bicarbonates ne sont pas dans le modele) limitent certains criteres, mais on peut enrichir significativement la logique avec les 5 mineraux disponibles (nitrates, sodium, calcium, magnesium, residu sec).
+### Probleme
+
+Le plan precedent injectait seulement les 12 eaux de `bottleWaterData.ts` dans le system prompt d'Ondine. Or le site dispose de **59 eaux en bouteille** (fichier `infoeau_emn_composition_v2_partial.csv`) avec composition minerale complete, plus **105 references catalogue**, les **donnees MDD**, et les donnees eau du robinet par commune via l'API data.gouv.fr.
+
+### Solution
+
+Injecter dans le system prompt d'Ondine toutes les donnees statiques disponibles et lui donner la capacite d'interroger l'API eau du robinet en temps reel.
 
 ### Changements
 
-#### 1. `src/data/waterProfiles.ts` — Nouveaux profils et preferences
+#### 1. Edge Function `supabase/functions/ondine-chat/index.ts`
 
-**Nouveaux profils de sante** (ajouter a `userProfiles`) :
-- **Diabete type 2** : magnesium eleve (min 30), sodium faible (max 20)
-- **Insuffisance renale** : sodium strict (max 10), residu sec strict (max 500), calcium (max 100)
-- **Allaitement** : calcium eleve (min 100), magnesium (min 25), nitrates faible (max 10)
-- **Enfant 1-6 ans** : nitrates faible (max 15), sodium faible (max 20), residu sec (max 600)
-- **Enfant 6-12 ans** : calcium (min 50), magnesium (min 15)
-- **Regime cetogene / low carb** : sodium (min 30), magnesium (min 30) — compenser les pertes electrolytiques
-- **Crampes musculaires** : magnesium (min 40), calcium (min 80)
-- **Detox / drainage** : residu sec faible (max 300), sodium (max 10)
-- **Retention d'eau** : sodium strict (max 10), residu sec (max 500)
+**System prompt enrichi avec :**
+- Les 59 eaux en bouteille du CSV `infoeau_emn_composition_v2_partial.csv` : marque, source, localisation, gazeuse/plate, pH, residu sec, HCO3, Ca, Cl, F, Mg, NO3, K, SiO2, Na, SO4 — formatte en bloc texte structure
+- Les 105 references catalogue du CSV `infoeau_catalog_eaux_v3.csv` : water_id, marque, categorie, variante, gazeuse, groupe proprietaire, source, formats bouteilles, EAN
+- Les 11 eaux MDD du CSV `eaux_MDD_par_distributeur_et_source_FR_v3.csv` : distributeur, marque MDD, source
+- Le contenu complet de `llms-full.txt` (documentation site, pages, methodologie, scoring)
+- Les seuils reglementaires francais et OMS pour les principaux parametres
+- Les prix moyens par marque (depuis `bottleWaterData.ts` + donnees Supabase si disponibles)
+- Instructions pour rediriger vers les pages du site selon la question
 
-**Nouvelles preferences** (ajouter a `userPreferences`) :
-- **Riche en bicarbonates** : residu sec eleve (min 800) — proxy, car bicarbonates non modelise
-- **Eco-responsable** : critere bonus dans le scoring (ecoscore A/B)
-- **Budget serre** : critere bonus sur prix_moyen_litre < 0.30 euro/L
-- **Eau tres mineralisee** : residu sec (min 1000)
+**Capacite eau du robinet :**
+- L'edge function accepte un champ optionnel `commune` dans le body
+- Si fourni, elle interroge l'API Hub'Eau (qualite eau potable) pour recuperer les dernieres analyses de la commune et les injecte dans le contexte du message
+- Ondine peut ainsi repondre avec des donnees reelles sur l'eau du robinet d'une commune specifique
 
-**Nouvelles structures de donnees** :
-- `AgeGroup` : `'bebe'|'enfant-1-6'|'enfant-6-12'|'adulte'|'senior'`
-- `Gender` : `'homme'|'femme'|'autre'`
-- `DailyConsumption` : `'1L'|'1.5L'|'2L'|'3L+'`
+**Le system prompt sera construit au build-time** pour les donnees statiques (CSV lus une fois au demarrage de la fonction) et enrichi dynamiquement avec les donnees communales si demandees.
 
-Exporter un objet `ageGenderModifiers` avec des ajustements de criteres par combinaison age/sexe (ex: femme senior → calcium priority boost).
+#### 2. `src/components/OndineChat.tsx` — Widget de chat
 
-#### 2. `src/services/waterRecommendationService.ts` — Scoring etendu
+- Bouton flottant en bas a droite (icone goutte d'eau)
+- Fenetre de chat avec header "Ondine", historique de messages, champ de saisie
+- Streaming SSE token par token avec `react-markdown` pour le rendu
+- Message d'accueil : "Bonjour ! Je suis Ondine, votre assistante eau. Posez-moi vos questions sur la qualite de l'eau, les eaux en bouteille, les prix, les polluants..."
+- Detection automatique de noms de communes dans les messages pour enrichir le contexte
+- Responsive : plein ecran mobile, 400px desktop
+- Z-index eleve, animation d'ouverture
 
-- Ajouter un parametre optionnel `context?: { age?: AgeGroup, gender?: Gender, dailyConsumption?: DailyConsumption }` a `calculateRecommendations`
-- Appliquer des modificateurs de priorite selon age/sexe (ex: femme + senior → calcium priority x1.5)
-- Ajouter un bonus eco-score si la preference "eco-responsable" est selectionnee
-- Ajouter un bonus prix si la preference "budget serre" est selectionnee
-- Ajouter dans les `reasons` des mentions contextuelles ("Adaptee a votre consommation de 2L/jour")
-- La consommation quotidienne influence les warnings : a 3L+/jour une eau tres mineralisee merite un avertissement supplementaire
+#### 3. `src/App.tsx` — Integration globale
 
-#### 3. `src/pages/QuelleEauBoire.tsx` — Nouvelle UI du diagnostic complet
+- Ajouter `<OndineChat />` dans le layout, visible sur toutes les pages
 
-Passer de 4 a 6 etapes :
+#### 4. `supabase/config.toml`
 
-1. **Type d'eau** (existant) — plate/gazeuse/toutes
-2. **Votre profil** (existant, enrichi avec les nouveaux profils) — organiser en categories visuelles :
-   - Situation de vie : Grossesse, Allaitement, Nourrisson, Enfant 1-6, Enfant 6-12
-   - Sante : Hypertension, Diabete, Insuffisance renale, Calculs renaux, Osteoporose
-   - Bien-etre : Sportif, Activite intense, Fatigue, Constipation, Crampes, Detox
-   - Alimentation : Regime sans sel, Cetogene, Alcaline, Gout neutre, Eau pure
-3. **NEW — Age et sexe** : selecteurs simples (boutons radio pour tranche d'age, boutons radio pour sexe)
-4. **NEW — Consommation quotidienne** : slider ou boutons (< 1L, 1-1.5L, 1.5-2L, 2L+)
-5. **Intolerances** (existant)
-6. **Preferences** (existant, enrichi avec eco-responsable, budget, etc.)
+- Ajouter `[functions.ondine-chat]` avec `verify_jwt = false`
 
-#### 4. Mise a jour du bouton "Obtenir mes recommandations"
-Passer le nouveau contexte (age, sexe, consommation) au service de recommandation.
+### Donnees injectees (volume estime du system prompt)
 
-### Fichiers modifies
-- `src/data/waterProfiles.ts` — ~80 lignes (nouveaux profils, preferences, types)
-- `src/services/waterRecommendationService.ts` — ~40 lignes (scoring etendu)
-- `src/pages/QuelleEauBoire.tsx` — ~80 lignes (2 nouvelles etapes UI)
+| Source | Contenu | ~Taille |
+|--------|---------|---------|
+| CSV compositions | 59 eaux, 16 parametres chacune | ~4 KB |
+| CSV catalogue | 105 references, formats, EAN | ~3 KB |
+| CSV MDD | 11 eaux distributeurs | ~0.5 KB |
+| llms-full.txt | Doc complete du site | ~4 KB |
+| Seuils reglementaires | 15 parametres, limites FR/OMS | ~0.5 KB |
+| Prix moyens | 12 marques principales | ~0.5 KB |
+| **Total** | | **~13 KB** |
 
-### Limites
-- Les criteres fluor, sulfates, bicarbonates et pH ne sont pas exploitables car absents du modele de donnees `BottleWaterData` pour la plupart des bouteilles (seul pH est present mais pas dans `WaterCriteria`). On utilise des proxys (residu sec) quand pertinent.
+Ce volume est largement dans les limites du contexte des modeles utilises.
+
+### Dependance
+
+- Installer `react-markdown` pour le rendu des reponses
+
+### Fichiers crees/modifies
+
+- **Cree** : `supabase/functions/ondine-chat/index.ts`
+- **Cree** : `src/components/OndineChat.tsx`
+- **Modifie** : `src/App.tsx`
+- **Modifie** : `supabase/config.toml`
 
