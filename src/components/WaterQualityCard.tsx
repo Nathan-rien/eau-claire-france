@@ -177,9 +177,14 @@ const WaterQualityCard: React.FC<WaterQualityCardProps> = ({ city }) => {
                   {getPollutantIcon(pollutant.conformite)}
                   <div>
                     <p className="font-medium">{pollutant.parametreAnalyse}</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Limite: {pollutant.limiteQualite} {pollutant.uniteParametre}
                     </p>
+                    {PARAMETER_DESCRIPTIONS[pollutant.parametreAnalyse] && (
+                      <p className="text-xs text-muted-foreground/70 mt-1 italic">
+                        {PARAMETER_DESCRIPTIONS[pollutant.parametreAnalyse]}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="text-right">
