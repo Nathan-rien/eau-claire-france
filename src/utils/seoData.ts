@@ -302,19 +302,6 @@ export const seoData = {
     }
   },
 
-  comparateurPrix: {
-    title: "Comparateur de prix - Eaux en bouteille par marque et enseigne",
-    description: "Comparez les prix des eaux en bouteille entre marques ou enseignes. Trouvez les meilleures offres et économisez sur vos achats d'eau minérale.",
-    keywords: "comparateur prix eau, comparer marques eau bouteille, meilleur prix eau minérale, économiser eau bouteille",
-    canonical: "/comparateur-prix",
-    schemaData: {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "name": "Comparateur de prix des eaux en bouteille",
-      "description": "Outil de comparaison des prix d'eaux en bouteille entre marques et enseignes",
-      "url": "https://infoeau.fr/comparateur-prix"
-    }
-  },
 
   coursEau: {
     title: "Cours de l'eau - Évolution des prix eau bouteille & robinet",
