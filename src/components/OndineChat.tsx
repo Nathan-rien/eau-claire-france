@@ -3,11 +3,11 @@ import { X, Send, Droplets, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Link } from 'react-router-dom';
 
-const ChatLink = ({ href, children, ...props }: any) => {
+const ChatLink = ({ href, children, onNavigate, ...props }: any) => {
   const isInternal = href?.startsWith('/');
   const linkClasses = "text-primary underline underline-offset-2 font-medium hover:text-primary/80 transition-colors inline-flex items-center gap-0.5";
   if (isInternal) {
-    return <Link to={href} className={linkClasses}>{children}</Link>;
+    return <Link to={href} className={linkClasses} onClick={() => onNavigate?.()}>{children}</Link>;
   }
   return (
     <a href={href} target="_blank" rel="noopener noreferrer" className={linkClasses} {...props}>
@@ -208,7 +208,7 @@ const OndineChat: React.FC = () => {
                 >
                   {msg.role === 'assistant' ? (
                     <div className="prose prose-sm max-w-none dark:prose-invert [&>p]:mb-1.5 [&>ul]:mb-1.5 [&>ul]:mt-0 [&>p:last-child]:mb-0">
-                      <ReactMarkdown components={{ a: ChatLink }}>{msg.content}</ReactMarkdown>
+                      <ReactMarkdown components={{ a: (props: any) => <ChatLink {...props} onNavigate={() => setIsOpen(false)} /> }}>{msg.content}</ReactMarkdown>
                     </div>
                   ) : (
                     <p className="whitespace-pre-wrap">{msg.content}</p>
