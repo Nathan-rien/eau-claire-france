@@ -6,6 +6,39 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useWaterQuality } from '@/hooks/useWaterQuality';
 
+const PARAMETER_DESCRIPTIONS: Record<string, string> = {
+  "Nitrates": "Proviennent de l'agriculture. Un excès peut être dangereux pour les nourrissons.",
+  "Nitrites": "Indicateur de pollution récente. Toxique à forte concentration, surtout pour les nourrissons.",
+  "pH": "Mesure l'acidité de l'eau. Influence le goût et l'efficacité du traitement.",
+  "Chlore total": "Désinfectant ajouté pour éliminer les bactéries. Peut altérer le goût.",
+  "Chlore libre": "Forme active du chlore désinfectant. Garantit la potabilité dans le réseau.",
+  "Escherichia coli": "Bactérie indicatrice de contamination fécale. Sa présence signale un risque sanitaire.",
+  "Entérocoques": "Bactéries intestinales. Leur présence indique une contamination microbiologique.",
+  "Bactéries coliformes": "Indicateurs généraux de qualité microbiologique. Signalent un défaut de traitement.",
+  "Turbidité": "Mesure la limpidité. Une eau trouble peut masquer des contaminants.",
+  "Odeur": "Paramètre organoleptique. Une odeur anormale peut signaler une pollution.",
+  "Saveur": "Paramètre organoleptique. Un goût inhabituel peut indiquer une contamination.",
+  "Couleur": "Paramètre visuel. Une coloration peut révéler la présence de fer ou de matières organiques.",
+  "Fluorures": "En faible dose, protège les dents. En excès, risque de fluorose.",
+  "Plomb": "Métal toxique pouvant provenir des canalisations anciennes. Dangereux pour le développement des enfants.",
+  "Arsenic": "Élément naturel toxique à forte dose, à surveiller dans certaines régions.",
+  "Cuivre": "Oligo-élément essentiel, mais en excès il donne un goût métallique et peut être toxique.",
+  "Fer total": "Non toxique mais altère le goût et la couleur de l'eau à forte concentration.",
+  "Manganèse": "Naturellement présent. En excès, colore l'eau et peut affecter le système nerveux.",
+  "Aluminium total": "Utilisé dans le traitement de l'eau. En excès, fait l'objet de précautions sanitaires.",
+  "Sulfates": "Présents naturellement. En excès, peuvent avoir un effet laxatif.",
+  "Calcium": "Contribue à la dureté de l'eau. Essentiel pour les os et les dents.",
+  "Magnésium": "Contribue à la dureté. Bénéfique pour le système cardiovasculaire.",
+  "Sodium": "Présent naturellement. À surveiller pour les régimes pauvres en sel.",
+  "Potassium": "Minéral essentiel. Rarement problématique dans l'eau potable.",
+  "Conductivité": "Reflète la minéralisation globale de l'eau. Plus elle est élevée, plus l'eau est minéralisée.",
+  "Température": "Influence le goût et la prolifération bactérienne. Idéalement entre 10 et 15 °C.",
+  "Ammonium": "Indicateur de pollution organique récente ou de dysfonctionnement du traitement.",
+  "Pesticides totaux": "Somme des résidus de pesticides. Leur présence signale une contamination agricole.",
+  "Atrazine": "Herbicide interdit mais persistant dans les sols. Perturbateur endocrinien suspecté.",
+  "Sélénium": "Oligo-élément essentiel à faible dose, mais toxique en excès.",
+};
+
 interface WaterQualityCardProps {
   city: string;
 }
