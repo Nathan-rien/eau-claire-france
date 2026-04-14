@@ -30,14 +30,16 @@ const OndineChat: React.FC = () => {
   const [messages, setMessages] = useState<Msg[]>([WELCOME_MESSAGE]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [lastMessageId, setLastMessageId] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const lastMessageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (lastMessageRef.current) {
+      lastMessageRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
-  }, [messages]);
+  }, [lastMessageId]);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -53,12 +55,18 @@ const OndineChat: React.FC = () => {
     setInput('');
     setMessages(prev => [...prev, userMsg]);
     setIsLoading(true);
+    setLastMessageId(prev => prev + 1);
 
     const commune = detectCommune(text);
     let assistantSoFar = '';
+    let assistantStarted = false;
 
     const upsertAssistant = (chunk: string) => {
       assistantSoFar += chunk;
+      if (!assistantStarted) {
+        assistantStarted = true;
+        setLastMessageId(prev => prev + 1);
+      }
       setMessages(prev => {
         const last = prev[prev.length - 1];
         if (last?.role === 'assistant' && prev.length > 1 && prev[prev.length - 2]?.role === 'user' && prev[prev.length - 2]?.content === text) {
@@ -174,6 +182,7 @@ const OndineChat: React.FC = () => {
             {messages.map((msg, i) => (
               <div
                 key={i}
+                ref={i === messages.length - 1 ? lastMessageRef : undefined}
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
