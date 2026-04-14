@@ -317,8 +317,10 @@ const QualityMap = () => {
       </Card>
 
       {/* Interactive Map */}
-      <MapLoader loadOnInteraction={true} minHeight="70vh">
-        <LazyInteractiveMap showWaterSources={showWaterSources} />
+      <MapLoader loadOnInteraction={true} minHeight="50vh">
+        <div className="h-[400px] md:h-[70vh]">
+          <LazyInteractiveMap showWaterSources={showWaterSources} />
+        </div>
       </MapLoader>
 
       {/* Regional Overview */}

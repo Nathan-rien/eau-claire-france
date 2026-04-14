@@ -16,14 +16,14 @@ const CartePolluants = () => {
     <Layout>
       <SEOHead {...seoData.cartePolluants} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-        <section className="py-12 px-4">
+        <section className="py-6 md:py-12 px-4">
           <div className="container mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center space-x-2">
-                <AlertTriangle className="w-8 h-8 text-red-600" />
+            <div className="text-center mb-6 md:mb-8">
+              <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-3 md:mb-4 flex items-center justify-center space-x-2">
+                <AlertTriangle className="w-6 h-6 md:w-8 md:h-8 text-red-600" />
                 <span>{t('pollutantMap.title')}</span>
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              </h1>
+              <p className="text-sm md:text-lg text-gray-600 max-w-2xl mx-auto">
                 {t('pollutantMap.subtitle')}
               </p>
             </div>
@@ -34,9 +34,9 @@ const CartePolluants = () => {
               </Suspense>
             </MapLoader>
             
-            <div className="mt-8 text-center">
-              <div className="bg-white rounded-lg p-6 shadow-lg max-w-2xl mx-auto">
-                <h3 className="text-lg font-semibold mb-3 text-gray-900">{t('pollutantMap.nav')}</h3>
+            <div className="mt-6 md:mt-8 text-center">
+              <div className="bg-white rounded-lg p-4 md:p-6 shadow-lg max-w-2xl mx-auto">
+                <h3 className="text-base md:text-lg font-semibold mb-3 text-gray-900">{t('pollutantMap.nav')}</h3>
                 <div className="flex flex-wrap gap-3 justify-center">
                   <a 
                     href="/carte" 

@@ -402,14 +402,14 @@ const TapWaterJourneyMap: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Controls */}
-      <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
         {selectedRoute ? (
           <>
             <Button variant="outline" size="sm" onClick={handleBack} className="gap-2">
               <ArrowLeft className="w-4 h-4" />
               {t('tapJourney.backToOverview')}
             </Button>
-            <div className="flex items-center gap-2 ml-auto">
+            <div className="flex items-center gap-2 sm:ml-auto">
               <Switch
                 id="show-communes"
                 checked={showCommunes}
@@ -427,7 +427,7 @@ const TapWaterJourneyMap: React.FC = () => {
               <span className="text-sm font-medium">{t('tapJourney.filterLabel')}</span>
             </div>
             <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger className="w-[220px]">
+              <SelectTrigger className="w-full sm:w-[220px]">
                 <SelectValue placeholder={t('tapJourney.allTypes')} />
               </SelectTrigger>
               <SelectContent>
@@ -450,7 +450,7 @@ const TapWaterJourneyMap: React.FC = () => {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 flex-wrap text-xs text-muted-foreground">
+      <div className="flex items-center gap-3 md:gap-4 gap-y-2 flex-wrap text-xs text-muted-foreground">
         {selectedRoute ? (
           <>
             {Object.entries(STEP_LABELS).map(([key, labels]) => (
@@ -492,7 +492,7 @@ const TapWaterJourneyMap: React.FC = () => {
       )}
 
       {/* Map */}
-      <div ref={mapContainer} className="w-full h-[600px] rounded-xl border overflow-hidden shadow-sm" />
+      <div ref={mapContainer} className="w-full h-[350px] md:h-[600px] rounded-xl border overflow-hidden shadow-sm" />
     </div>
   );
 };

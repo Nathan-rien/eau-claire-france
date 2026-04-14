@@ -639,13 +639,13 @@ const WaterJourneyMap: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Controls */}
-      <div className="flex items-center gap-4 flex-wrap">
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-4">
         <div className="flex items-center gap-2">
           <Building2 className="w-4 h-4 text-muted-foreground" />
           <span className="text-sm font-medium">{t('bottleJourney.filterLabel')}</span>
         </div>
         <Select value={selectedRetailer} onValueChange={setSelectedRetailer}>
-          <SelectTrigger className="w-[220px]">
+          <SelectTrigger className="w-full md:w-[220px]">
             <SelectValue placeholder={t('bottleJourney.allDistributors')} />
           </SelectTrigger>
           <SelectContent>
@@ -656,7 +656,7 @@ const WaterJourneyMap: React.FC = () => {
           </SelectContent>
         </Select>
 
-        <div className="flex items-center gap-4 ml-auto flex-wrap">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 md:ml-auto">
           <div className="flex items-center gap-2">
             <Factory className="w-4 h-4 text-muted-foreground" />
             <label htmlFor="toggle-industrial" className="text-sm font-medium cursor-pointer">
@@ -675,7 +675,7 @@ const WaterJourneyMap: React.FC = () => {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 flex-wrap text-xs text-muted-foreground">
+      <div className="flex items-center gap-3 md:gap-4 gap-y-2 flex-wrap text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-full bg-primary inline-block" />
           {t('bottleJourney.legendSource')}
@@ -716,11 +716,11 @@ const WaterJourneyMap: React.FC = () => {
 
       {/* Map */}
       <div className="relative">
-        <div ref={mapContainer} className="w-full h-[600px] rounded-xl border overflow-hidden shadow-sm" />
+        <div ref={mapContainer} className="w-full h-[350px] md:h-[600px] rounded-xl border overflow-hidden shadow-sm" />
 
         {/* Source detail panel */}
         {selectedSource && (
-          <div className="absolute top-4 left-4 bg-card/95 backdrop-blur-sm border rounded-xl shadow-lg p-4 max-w-[280px] z-10 animate-in slide-in-from-left-2 fade-in duration-200">
+          <div className="absolute top-2 left-2 md:top-4 md:left-4 bg-card/95 backdrop-blur-sm border rounded-xl shadow-lg p-3 md:p-4 max-w-[calc(100%-1rem)] md:max-w-[280px] z-10 animate-in slide-in-from-left-2 fade-in duration-200">
             <div className="flex items-start justify-between gap-2 mb-3">
               <div>
                 <h3 className="font-bold text-sm text-foreground">{selectedSource.name}</h3>
@@ -752,12 +752,12 @@ const WaterJourneyMap: React.FC = () => {
 
       {/* Journey Timeline */}
       <TooltipProvider delayDuration={0}>
-        <div className="bg-card border rounded-xl p-6 shadow-sm">
-          <h3 className="text-sm font-semibold text-foreground mb-5 flex items-center gap-2">
+        <div className="bg-card border rounded-xl p-4 md:p-6 shadow-sm">
+          <h3 className="text-xs md:text-sm font-semibold text-foreground mb-4 md:mb-5 flex items-center gap-2 flex-wrap">
             <Package className="w-4 h-4 text-muted-foreground" />
             Parcours de l'eau en bouteille
             {showIndustrial && !animatingSource && (
-              <span className="text-[10px] font-normal text-muted-foreground ml-2">
+              <span className="text-[10px] font-normal text-muted-foreground ml-2 hidden sm:inline">
                 — survolez une étape pour la mettre en surbrillance sur la carte
               </span>
             )}
@@ -767,7 +767,8 @@ const WaterJourneyMap: React.FC = () => {
               </span>
             )}
           </h3>
-          <div className="relative flex items-center justify-between">
+          <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0">
+          <div className="relative flex items-center justify-between min-w-[500px] md:min-w-0">
             {/* Connecting line */}
             <div className="absolute top-5 left-8 right-8 h-0.5 bg-border" />
             <div className="absolute top-5 left-8 right-8 h-0.5 bg-gradient-to-r from-primary via-violet-500 to-emerald-500 opacity-30" />
@@ -817,6 +818,7 @@ const WaterJourneyMap: React.FC = () => {
                 </Tooltip>
               );
             })}
+          </div>
           </div>
         </div>
       </TooltipProvider>
