@@ -147,13 +147,18 @@ const OndineChat: React.FC = () => {
     <>
       {/* Floating button */}
       {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center hover:scale-110"
-          aria-label="Ouvrir le chat Ondine"
-        >
-          <Droplets className="w-6 h-6" />
-        </button>
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+          <span className="bg-background text-foreground text-xs font-medium px-3 py-1.5 rounded-full shadow-md border border-border animate-in fade-in slide-in-from-bottom-2 duration-500">
+            Une question ?
+          </span>
+          <button
+            onClick={() => setIsOpen(true)}
+            className="w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center hover:scale-110"
+            aria-label="Ouvrir le chat Ondine"
+          >
+            <Droplets className="w-6 h-6" />
+          </button>
+        </div>
       )}
 
       {/* Chat window */}
