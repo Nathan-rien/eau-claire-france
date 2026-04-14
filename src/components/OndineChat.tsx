@@ -30,14 +30,16 @@ const OndineChat: React.FC = () => {
   const [messages, setMessages] = useState<Msg[]>([WELCOME_MESSAGE]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [lastMessageId, setLastMessageId] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const lastMessageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (lastMessageRef.current) {
+      lastMessageRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
-  }, [messages]);
+  }, [lastMessageId]);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
