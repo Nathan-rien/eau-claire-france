@@ -234,7 +234,8 @@ const WaterQualityCard: React.FC<WaterQualityCardProps> = ({ city }) => {
                   )}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>
