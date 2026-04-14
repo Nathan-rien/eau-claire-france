@@ -1,27 +1,14 @@
 
+## Plan : Supprimer la page /comparateur-prix
 
-## Plan : Liens cliquables + fix clavier mobile dans Ondine
+### Fichiers modifiés
 
-### Probleme 1 — Liens non cliquables
-Ondine renvoie les pages sous forme de texte brut (`/quelle-eau-boire`) au lieu de liens Markdown (`[Quelle eau boire](/quelle-eau-boire)`). Le composant `ChatLink` fonctionne deja mais le LLM ne genere pas de syntaxe Markdown pour les liens.
+1. **`src/App.tsx`** — Supprimer le lazy import `ComparateurPrix` et la route `/comparateur-prix`
+2. **`supabase/functions/ondine-chat/index.ts`** — Retirer la ligne `[Comparateur de prix](/comparateur-prix)` du system prompt + redéployer
+3. **`src/utils/seoData.ts`** — Supprimer l'entrée `comparateurPrix`
 
-**Solution** : Modifier le system prompt pour instruire Ondine de toujours formater les pages du site en liens Markdown cliquables avec un libelle lisible. Exemple : `[Quelle eau boire](/quelle-eau-boire)` au lieu de `/quelle-eau-boire`.
+### Fichier supprimé
+4. **`src/pages/ComparateurPrix.tsx`** — Supprimer le fichier
 
-Ajouter une regle dans la section "Tes regles" du system prompt :
-> Quand tu mentionnes une page du site, utilise TOUJOURS un lien Markdown avec un libelle humain : `[Classement des eaux](/classement)`, jamais `/classement` en texte brut.
-
-Mettre a jour la section "Pages du site" pour inclure les libelles suggeres.
-
-**Fichier** : `supabase/functions/ondine-chat/index.ts` — modifier le system prompt (~5 lignes)
-
-### Probleme 2 — Clavier mobile s'ouvre a l'ouverture du chat
-Le `useEffect` sur `isOpen` fait `inputRef.current.focus()`, ce qui ouvre le clavier sur mobile et masque la conversation.
-
-**Solution** : Supprimer l'auto-focus a l'ouverture du chat. L'utilisateur tapera dans le champ quand il le souhaitera.
-
-**Fichier** : `src/components/OndineChat.tsx` — supprimer le `useEffect` lignes 58-62
-
-### Resume des fichiers
-- `supabase/functions/ondine-chat/index.ts` — ajout instruction liens Markdown dans le prompt
-- `src/components/OndineChat.tsx` — suppression auto-focus mobile
-
+### Note
+La navigation (Header/Navigation) ne pointe pas vers `/comparateur-prix` — elle pointe vers `/prix-eaux` avec le label "Comparateur de prix", donc rien à changer côté nav.
