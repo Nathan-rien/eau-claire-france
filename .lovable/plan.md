@@ -1,22 +1,32 @@
 
-## Plan : Dédupliquer les données du diagnostic eau
 
-### Problème
-L'API Hub'Eau renvoie jusqu'à 50 résultats bruts. Un même paramètre (ex: Nitrates) apparaît plusieurs fois car il y a plusieurs prélèvements à des dates différentes. Le composant affiche tous les résultats tels quels, créant des redondances.
+## Plan : Ajouter une description d'impact sous chaque paramètre d'analyse
 
-### Solution
-Dédupliquer les données dans `src/services/dataGouvApi.ts` après conversion : grouper par `parametreAnalyse` et ne garder que le résultat le plus récent (date de prélèvement la plus récente) pour chaque paramètre.
+### Objectif
+Sous chaque paramètre affiché dans "Détail des analyses officielles", ajouter une courte ligne explicative décrivant à quoi sert ce paramètre et quel est son impact sur la santé ou le goût de l'eau.
 
-### Fichier modifié
+### Fichiers modifiés
 
-**`src/services/dataGouvApi.ts`** — Après la conversion des données (ligne 99), ajouter une étape de déduplication :
-- Grouper les résultats par `parametreAnalyse`
-- Pour chaque groupe, ne garder que l'entrée avec la `datePrelevement` la plus récente
-- Retourner le tableau dédupliqué
+#### 1. `src/components/WaterQualityCard.tsx`
+- Créer un dictionnaire `PARAMETER_DESCRIPTIONS` mappant les noms de paramètres courants (Nitrates, pH, Chlore, E. coli, Entérocoques, Turbidité, Fluorures, Pesticides, Plomb, Arsenic, Odeur, etc.) vers une courte description d'impact (~1 phrase)
+- Ajouter sous le nom du paramètre et la limite une ligne `<p className="text-xs text-gray-500 mt-1 italic">` affichant la description correspondante (ou rien si paramètre inconnu)
 
-Cela corrige à la fois les données réelles et n'affecte pas les données mock (qui sont déjà uniques).
+### Exemples de descriptions
+| Paramètre | Description |
+|---|---|
+| Nitrates | Proviennent de l'agriculture. Un excès peut être dangereux pour les nourrissons. |
+| pH | Mesure l'acidité de l'eau. Influence le goût et l'efficacité du traitement. |
+| Chlore total | Désinfectant ajouté pour éliminer les bactéries. Peut altérer le goût. |
+| Escherichia coli | Bactérie indicatrice de contamination fécale. Sa présence signale un risque sanitaire. |
+| Entérocoques | Bactéries intestinales. Leur présence indique une contamination microbiologique. |
+| Turbidité | Mesure la limpidité. Une eau trouble peut masquer des contaminants. |
+| Odeur | Un paramètre organoleptique. Une odeur anormale peut signaler une pollution. |
+| Fluorures | En faible dose, protège les dents. En excès, risque de fluorose. |
+| Plomb | Métal toxique pouvant provenir des canalisations anciennes. |
+| Arsenic | Élément naturel toxique à forte dose, surveiller dans certaines régions. |
 
-### Impact
-- La liste passe de ~50 lignes redondantes à ~10-15 paramètres uniques
-- Le score de qualité devient plus représentatif (pas biaisé par la répétition d'un même paramètre)
-- Aucun changement dans le composant d'affichage
+Le dictionnaire couvrira ~20 paramètres courants de l'API Hub'Eau. Pour les paramètres non répertoriés, aucune description ne sera affichée.
+
+### Aucun autre fichier modifié
+Changement purement visuel dans le composant d'affichage.
+
