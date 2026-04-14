@@ -1,32 +1,36 @@
 
 
-## Plan : Ajouter une description d'impact sous chaque paramètre d'analyse
+## Plan : Renseigner les descriptions manquantes via correspondance partielle
 
-### Objectif
-Sous chaque paramètre affiché dans "Détail des analyses officielles", ajouter une courte ligne explicative décrivant à quoi sert ce paramètre et quel est son impact sur la santé ou le goût de l'eau.
+### Probleme
+L'API Hub'Eau renvoie des noms de parametres longs et varies (ex: "Bacteries coliformes /100ml-MS", "Turbidite nephelometrique NFU", "Coloration", "Aspect (qualitatif)", "Bact. aer. revivifiables a 36°-44h") qui ne correspondent pas exactement aux cles du dictionnaire (`"Bacteries coliformes"`, `"Turbidite"`, `"Couleur"`).
 
-### Fichiers modifiés
+### Solution (2 actions dans `WaterQualityCard.tsx`)
 
-#### 1. `src/components/WaterQualityCard.tsx`
-- Créer un dictionnaire `PARAMETER_DESCRIPTIONS` mappant les noms de paramètres courants (Nitrates, pH, Chlore, E. coli, Entérocoques, Turbidité, Fluorures, Pesticides, Plomb, Arsenic, Odeur, etc.) vers une courte description d'impact (~1 phrase)
-- Ajouter sous le nom du paramètre et la limite une ligne `<p className="text-xs text-gray-500 mt-1 italic">` affichant la description correspondante (ou rien si paramètre inconnu)
+1. **Ajouter les parametres manquants au dictionnaire** — couvrir les noms exacts courants de l'API :
+   - `"Coloration"` — coloration de l'eau, indicateur visuel
+   - `"Aspect (qualitatif)"` — aspect visuel general
+   - `"Bact. aér. revivifiables à 36°-44h"` — bacteries indicatrices de qualite microbiologique
+   - `"Bact. aér. revivifiables à 22°-68h"` — idem a temperature ambiante
+   - `"Turbidité néphélométrique NFU"` — mesure de la limpidite
+   - `"Bactéries coliformes /100ml-MS"` — indicateurs microbiologiques
+   - `"Escherichia coli /100ml-MS"` — variante du nom E. coli
+   - `"Entérocoques /100ml-MS"` — variante enterocoques
+   - Et autres variantes courantes
 
-### Exemples de descriptions
-| Paramètre | Description |
-|---|---|
-| Nitrates | Proviennent de l'agriculture. Un excès peut être dangereux pour les nourrissons. |
-| pH | Mesure l'acidité de l'eau. Influence le goût et l'efficacité du traitement. |
-| Chlore total | Désinfectant ajouté pour éliminer les bactéries. Peut altérer le goût. |
-| Escherichia coli | Bactérie indicatrice de contamination fécale. Sa présence signale un risque sanitaire. |
-| Entérocoques | Bactéries intestinales. Leur présence indique une contamination microbiologique. |
-| Turbidité | Mesure la limpidité. Une eau trouble peut masquer des contaminants. |
-| Odeur | Un paramètre organoleptique. Une odeur anormale peut signaler une pollution. |
-| Fluorures | En faible dose, protège les dents. En excès, risque de fluorose. |
-| Plomb | Métal toxique pouvant provenir des canalisations anciennes. |
-| Arsenic | Élément naturel toxique à forte dose, surveiller dans certaines régions. |
+2. **Ajouter une fonction de recherche par inclusion** — si le nom exact n'est pas dans le dictionnaire, chercher une cle du dictionnaire qui est contenue dans le nom du parametre (ou l'inverse). Cela couvre les variantes futures sans devoir les lister toutes.
 
-Le dictionnaire couvrira ~20 paramètres courants de l'API Hub'Eau. Pour les paramètres non répertoriés, aucune description ne sera affichée.
+```typescript
+function getParameterDescription(name: string): string | undefined {
+  if (PARAMETER_DESCRIPTIONS[name]) return PARAMETER_DESCRIPTIONS[name];
+  const key = Object.keys(PARAMETER_DESCRIPTIONS).find(k => 
+    name.toLowerCase().includes(k.toLowerCase()) || 
+    k.toLowerCase().includes(name.toLowerCase())
+  );
+  return key ? PARAMETER_DESCRIPTIONS[key] : undefined;
+}
+```
 
-### Aucun autre fichier modifié
-Changement purement visuel dans le composant d'affichage.
+### Fichier modifie
+- `src/components/WaterQualityCard.tsx`
 
