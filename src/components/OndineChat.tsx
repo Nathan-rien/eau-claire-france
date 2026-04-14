@@ -55,11 +55,6 @@ const OndineChat: React.FC = () => {
     }
   }, [lastMessageId]);
 
-  useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isOpen]);
 
   const sendMessage = useCallback(async () => {
     const text = input.trim();
