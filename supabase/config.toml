@@ -65,3 +65,6 @@ verify_jwt = false
 
 [functions.eu-water-quality]
 verify_jwt = false
+
+[functions.ondine-chat]
+verify_jwt = false
