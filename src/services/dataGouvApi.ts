@@ -26,13 +26,22 @@ interface HubEauResult {
   libelle_parametre: string;
   resultat_numerique: number;
   libelle_unite: string;
-  limite_de_qualite_parametre: number;
+  limite_qualite_parametre: string | null;
+  reference_qualite_parametre: string | null;
   conclusion_conformite_prelevement: string;
 }
 
 interface HubEauResponse {
   data: HubEauResult[];
   count: number;
+}
+
+// Parse numeric limit from Hub'Eau string like "<=50 mg/L" or ">=6,5 et <=9 unité pH"
+function parseLimite(raw: string | null): number {
+  if (!raw) return 0;
+  const matches = raw.match(/[\d]+[,.]?[\d]*/g);
+  if (!matches) return 0;
+  return parseFloat(matches[matches.length - 1].replace(',', '.'));
 }
 
 // Fonction optimisée pour obtenir le code commune (avec données locales)
@@ -88,7 +97,7 @@ export const getWaterQualityByCommune = async (commune: string): Promise<ApiResp
     // Conversion des données Hub'Eau vers notre format
     const convertedData: WaterQualityData[] = hubEauData.data.map(item => {
       const valeur = item.resultat_numerique || 0;
-      const limite = item.limite_de_qualite_parametre || 0;
+      const limite = parseLimite(item.limite_qualite_parametre) || parseLimite(item.reference_qualite_parametre);
       const unite = item.libelle_unite || 'mg/L';
       const isQualitative = unite.toUpperCase() === 'SANS OBJET' || unite.toUpperCase() === 'N/A';
 

@@ -220,16 +220,18 @@ const WaterQualityCard: React.FC<WaterQualityCardProps> = ({ city }) => {
                       <p className="font-bold text-lg">
                         {pollutant.valeurParametre} {displayUnit}
                       </p>
-                      <div className="flex items-center space-x-1">
-                        {pollutant.valeurParametre < pollutant.limiteQualite * 0.5 ? (
-                          <TrendingDown className="w-4 h-4 text-green-500" />
-                        ) : (
-                          <TrendingUp className="w-4 h-4 text-yellow-500" />
-                        )}
-                        <span className={`text-sm ${pollutant.valeurParametre < pollutant.limiteQualite * 0.5 ? 'text-green-600' : 'text-yellow-600'}`}>
-                          {Math.round((pollutant.valeurParametre / pollutant.limiteQualite) * 100)}% limite
-                        </span>
-                      </div>
+                      {pollutant.limiteQualite > 0 && (
+                        <div className="flex items-center space-x-1">
+                          {pollutant.valeurParametre < pollutant.limiteQualite * 0.5 ? (
+                            <TrendingDown className="w-4 h-4 text-green-500" />
+                          ) : (
+                            <TrendingUp className="w-4 h-4 text-yellow-500" />
+                          )}
+                          <span className={`text-sm ${pollutant.valeurParametre < pollutant.limiteQualite * 0.5 ? 'text-green-600' : 'text-yellow-600'}`}>
+                            {Math.round((pollutant.valeurParametre / pollutant.limiteQualite) * 100)}% limite
+                          </span>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
