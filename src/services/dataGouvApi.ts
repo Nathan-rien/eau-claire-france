@@ -97,10 +97,20 @@ export const getWaterQualityByCommune = async (commune: string): Promise<ApiResp
       conformite: item.conclusion_conformite_prelevement === 'C' ? 'Conforme' : 
                   item.conclusion_conformite_prelevement === 'N' ? 'Non conforme' : 'Non déterminé'
     }));
+
+    // Dédupliquer : garder uniquement le prélèvement le plus récent par paramètre
+    const deduplicatedMap = new Map<string, WaterQualityData>();
+    for (const item of convertedData) {
+      const existing = deduplicatedMap.get(item.parametreAnalyse);
+      if (!existing || new Date(item.datePrelevement) > new Date(existing.datePrelevement)) {
+        deduplicatedMap.set(item.parametreAnalyse, item);
+      }
+    }
+    const deduplicated = Array.from(deduplicatedMap.values());
     
     return {
-      data: convertedData,
-      total: hubEauData.count || convertedData.length
+      data: deduplicated,
+      total: deduplicated.length
     };
   } catch (error) {
     console.error('Erreur API Hub\'Eau:', error);
