@@ -182,6 +182,7 @@ const OndineChat: React.FC = () => {
             {messages.map((msg, i) => (
               <div
                 key={i}
+                ref={i === messages.length - 1 ? lastMessageRef : undefined}
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
