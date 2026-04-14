@@ -1,24 +1,20 @@
 
 
-## Plan : Rendre les réponses d'Ondine concises
+## Plan : Rendre les liens cliquables et visibles dans le chat Ondine
 
-### Problème
-Ondine produit des réponses trop longues avec des anecdotes non demandées ("Le savais-tu ?", comparaisons prix robinet vs bouteille, etc.) au lieu de répondre directement à la question.
+### Probleme
+Les liens dans les reponses d'Ondine (ex: `/quelle-eau-boire`) ne sont pas visuellement distincts du texte normal. `ReactMarkdown` les rend mais sans style specifique car les classes `prose` par defaut ne suffisent pas dans ce contexte de bulle de chat sur fond `bg-muted`.
 
 ### Solution
-Modifier les instructions du system prompt dans l'edge function pour imposer un format de réponse court et progressif.
+Passer un composant custom `a` a `ReactMarkdown` via la prop `components` pour styler les liens avec une couleur primaire, un soulignement et une icone externe optionnelle. Les liens internes (`/quelle-eau-boire`) utiliseront la navigation client-side.
 
-### Changement dans `supabase/functions/ondine-chat/index.ts`
+### Changement dans `src/components/OndineChat.tsx`
 
-Remplacer la section "Tes règles" (lignes 153-162) par des instructions de concision et de réponse progressive :
+1. Ajouter un import de `Link` depuis `react-router-dom` et `ExternalLink` depuis `lucide-react`
+2. Passer `components={{ a: CustomLink }}` a `<ReactMarkdown>` (ligne 202)
+3. `CustomLink` : si le `href` commence par `/`, rendre un `<Link>` React Router ; sinon un `<a target="_blank">`
+4. Style : `text-primary underline underline-offset-2 font-medium hover:text-primary/80` + petite icone pour les liens externes
 
-**Nouvelles règles :**
-1. **Répondre d'abord, développer ensuite** : donner la réponse directe en 2-4 phrases maximum, puis proposer "Souhaites-tu en savoir plus ?" ou "Je peux détailler si tu veux."
-2. **Pas d'anecdotes non sollicitées** : ne pas ajouter de "Le savais-tu ?", de comparaisons prix robinet/bouteille, ou de fun facts sauf si l'utilisateur le demande explicitement.
-3. **Pas de récapitulatifs ou conclusions** quand la réponse tient en quelques lignes.
-4. **Listes à puces** uniquement si la question porte sur une comparaison ou plusieurs éléments.
-5. Si l'utilisateur demande d'en savoir plus, alors développer avec détails, contexte et pages du site pertinentes.
-
-### Fichier modifié
-- `supabase/functions/ondine-chat/index.ts` — ~15 lignes modifiées dans le system prompt
+### Fichier modifie
+- `src/components/OndineChat.tsx` — ~15 lignes ajoutees
 
