@@ -1,20 +1,27 @@
 
 
-## Plan : Rendre les liens cliquables et visibles dans le chat Ondine
+## Plan : Liens cliquables + fix clavier mobile dans Ondine
 
-### Probleme
-Les liens dans les reponses d'Ondine (ex: `/quelle-eau-boire`) ne sont pas visuellement distincts du texte normal. `ReactMarkdown` les rend mais sans style specifique car les classes `prose` par defaut ne suffisent pas dans ce contexte de bulle de chat sur fond `bg-muted`.
+### Probleme 1 — Liens non cliquables
+Ondine renvoie les pages sous forme de texte brut (`/quelle-eau-boire`) au lieu de liens Markdown (`[Quelle eau boire](/quelle-eau-boire)`). Le composant `ChatLink` fonctionne deja mais le LLM ne genere pas de syntaxe Markdown pour les liens.
 
-### Solution
-Passer un composant custom `a` a `ReactMarkdown` via la prop `components` pour styler les liens avec une couleur primaire, un soulignement et une icone externe optionnelle. Les liens internes (`/quelle-eau-boire`) utiliseront la navigation client-side.
+**Solution** : Modifier le system prompt pour instruire Ondine de toujours formater les pages du site en liens Markdown cliquables avec un libelle lisible. Exemple : `[Quelle eau boire](/quelle-eau-boire)` au lieu de `/quelle-eau-boire`.
 
-### Changement dans `src/components/OndineChat.tsx`
+Ajouter une regle dans la section "Tes regles" du system prompt :
+> Quand tu mentionnes une page du site, utilise TOUJOURS un lien Markdown avec un libelle humain : `[Classement des eaux](/classement)`, jamais `/classement` en texte brut.
 
-1. Ajouter un import de `Link` depuis `react-router-dom` et `ExternalLink` depuis `lucide-react`
-2. Passer `components={{ a: CustomLink }}` a `<ReactMarkdown>` (ligne 202)
-3. `CustomLink` : si le `href` commence par `/`, rendre un `<Link>` React Router ; sinon un `<a target="_blank">`
-4. Style : `text-primary underline underline-offset-2 font-medium hover:text-primary/80` + petite icone pour les liens externes
+Mettre a jour la section "Pages du site" pour inclure les libelles suggeres.
 
-### Fichier modifie
-- `src/components/OndineChat.tsx` — ~15 lignes ajoutees
+**Fichier** : `supabase/functions/ondine-chat/index.ts` — modifier le system prompt (~5 lignes)
+
+### Probleme 2 — Clavier mobile s'ouvre a l'ouverture du chat
+Le `useEffect` sur `isOpen` fait `inputRef.current.focus()`, ce qui ouvre le clavier sur mobile et masque la conversation.
+
+**Solution** : Supprimer l'auto-focus a l'ouverture du chat. L'utilisateur tapera dans le champ quand il le souhaitera.
+
+**Fichier** : `src/components/OndineChat.tsx` — supprimer le `useEffect` lignes 58-62
+
+### Resume des fichiers
+- `supabase/functions/ondine-chat/index.ts` — ajout instruction liens Markdown dans le prompt
+- `src/components/OndineChat.tsx` — suppression auto-focus mobile
 
