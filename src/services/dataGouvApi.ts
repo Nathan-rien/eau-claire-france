@@ -86,17 +86,31 @@ export const getWaterQualityByCommune = async (commune: string): Promise<ApiResp
     console.log('Données Hub\'Eau reçues:', hubEauData);
     
     // Conversion des données Hub'Eau vers notre format
-    const convertedData: WaterQualityData[] = hubEauData.data.map(item => ({
-      commune: item.libelle_commune,
-      codeCommune: item.code_commune,
-      datePrelevement: item.date_prelevement,
-      parametreAnalyse: item.libelle_parametre,
-      valeurParametre: item.resultat_numerique || 0,
-      uniteParametre: item.libelle_unite || 'mg/L',
-      limiteQualite: item.limite_de_qualite_parametre || 50,
-      conformite: item.conclusion_conformite_prelevement === 'C' ? 'Conforme' : 
-                  item.conclusion_conformite_prelevement === 'N' ? 'Non conforme' : 'Non déterminé'
-    }));
+    const convertedData: WaterQualityData[] = hubEauData.data.map(item => {
+      const valeur = item.resultat_numerique || 0;
+      const limite = item.limite_de_qualite_parametre || 0;
+      const unite = item.libelle_unite || 'mg/L';
+      const isQualitative = unite.toUpperCase() === 'SANS OBJET' || unite.toUpperCase() === 'N/A';
+
+      // Conformité individuelle par paramètre
+      let conformite: 'Conforme' | 'Non conforme' | 'Non déterminé';
+      if (isQualitative || limite === 0) {
+        conformite = valeur === 0 ? 'Conforme' : 'Non conforme';
+      } else {
+        conformite = valeur <= limite ? 'Conforme' : 'Non conforme';
+      }
+
+      return {
+        commune: item.libelle_commune,
+        codeCommune: item.code_commune,
+        datePrelevement: item.date_prelevement,
+        parametreAnalyse: item.libelle_parametre,
+        valeurParametre: valeur,
+        uniteParametre: unite,
+        limiteQualite: limite,
+        conformite,
+      };
+    });
 
     // Dédupliquer : garder uniquement le prélèvement le plus récent par paramètre
     const deduplicatedMap = new Map<string, WaterQualityData>();
