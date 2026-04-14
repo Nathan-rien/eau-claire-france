@@ -37,7 +37,24 @@ const PARAMETER_DESCRIPTIONS: Record<string, string> = {
   "Pesticides totaux": "Somme des résidus de pesticides. Leur présence signale une contamination agricole.",
   "Atrazine": "Herbicide interdit mais persistant dans les sols. Perturbateur endocrinien suspecté.",
   "Sélénium": "Oligo-élément essentiel à faible dose, mais toxique en excès.",
+  "Coloration": "Indicateur visuel de la qualité. Une coloration peut révéler la présence de fer ou de matières organiques.",
+  "Aspect (qualitatif)": "Évaluation visuelle générale de l'eau. Doit être limpide et sans particules.",
+  "Bact. aér. revivifiables à 36°-44h": "Bactéries cultivées à 36 °C. Indicatrices de la qualité microbiologique générale.",
+  "Bact. aér. revivifiables à 22°-68h": "Bactéries cultivées à 22 °C. Reflètent la flore naturelle de l'eau et l'efficacité du traitement.",
+  "Bactéries sulfito-réductrices": "Bactéries sporulées résistantes. Leur présence peut indiquer une contamination ancienne.",
+  "Chlorures": "Présents naturellement. En excès, donnent un goût salé et peuvent signaler une pollution.",
+  "Carbone organique total": "Mesure la matière organique dissoute. Peut favoriser la prolifération bactérienne.",
+  "Oxydabilité": "Indicateur de la charge en matière organique. Reflète la vulnérabilité de l'eau aux pollutions.",
 };
+
+function getParameterDescription(name: string): string | undefined {
+  if (PARAMETER_DESCRIPTIONS[name]) return PARAMETER_DESCRIPTIONS[name];
+  const key = Object.keys(PARAMETER_DESCRIPTIONS).find(k =>
+    name.toLowerCase().includes(k.toLowerCase()) ||
+    k.toLowerCase().includes(name.toLowerCase())
+  );
+  return key ? PARAMETER_DESCRIPTIONS[key] : undefined;
+}
 
 interface WaterQualityCardProps {
   city: string;
@@ -180,9 +197,9 @@ const WaterQualityCard: React.FC<WaterQualityCardProps> = ({ city }) => {
                     <p className="text-sm text-muted-foreground">
                       Limite: {pollutant.limiteQualite} {pollutant.uniteParametre}
                     </p>
-                    {PARAMETER_DESCRIPTIONS[pollutant.parametreAnalyse] && (
+                    {getParameterDescription(pollutant.parametreAnalyse) && (
                       <p className="text-xs text-muted-foreground/70 mt-1 italic">
-                        {PARAMETER_DESCRIPTIONS[pollutant.parametreAnalyse]}
+                        {getParameterDescription(pollutant.parametreAnalyse)}
                       </p>
                     )}
                   </div>
