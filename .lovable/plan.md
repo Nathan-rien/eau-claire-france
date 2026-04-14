@@ -1,14 +1,22 @@
 
-## Plan : Supprimer la page /comparateur-prix
 
-### Fichiers modifiés
+## Plan : Fermer le chat Ondine au clic sur un lien interne
 
-1. **`src/App.tsx`** — Supprimer le lazy import `ComparateurPrix` et la route `/comparateur-prix`
-2. **`supabase/functions/ondine-chat/index.ts`** — Retirer la ligne `[Comparateur de prix](/comparateur-prix)` du system prompt + redéployer
-3. **`src/utils/seoData.ts`** — Supprimer l'entrée `comparateurPrix`
+### Probleme
+Sur mobile, quand on clique un lien interne dans une reponse d'Ondine, la navigation s'effectue mais le chat reste ouvert en plein ecran, masquant la page de destination.
 
-### Fichier supprimé
-4. **`src/pages/ComparateurPrix.tsx`** — Supprimer le fichier
+### Solution
+Le composant `ChatLink` n'a pas acces a `setIsOpen`. Il faut lui passer une callback `onNavigate` qui ferme le chat quand un lien interne est clique.
 
-### Note
-La navigation (Header/Navigation) ne pointe pas vers `/comparateur-prix` — elle pointe vers `/prix-eaux` avec le label "Comparateur de prix", donc rien à changer côté nav.
+### Changement dans `src/components/OndineChat.tsx`
+
+1. Transformer `ChatLink` pour accepter une prop `onNavigate` et l'appeler au clic sur un lien interne
+2. Dans le rendu `ReactMarkdown`, passer `components={{ a: (props) => <ChatLink {...props} onNavigate={() => setIsOpen(false)} /> }}`
+
+Concretement ~5 lignes modifiees :
+- `ChatLink` : ajouter `onClick={() => onNavigate?.()}` sur le `<Link>`
+- Le `components` de `ReactMarkdown` : wrapper pour injecter `onNavigate`
+
+### Fichier modifie
+- `src/components/OndineChat.tsx`
+
