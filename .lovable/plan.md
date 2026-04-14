@@ -1,44 +1,22 @@
 
+## Plan : Dédupliquer les données du diagnostic eau
 
-## Plan : Optimisation mobile des pages cartes
+### Problème
+L'API Hub'Eau renvoie jusqu'à 50 résultats bruts. Un même paramètre (ex: Nitrates) apparaît plusieurs fois car il y a plusieurs prélèvements à des dates différentes. Le composant affiche tous les résultats tels quels, créant des redondances.
 
-### Problemes identifies
+### Solution
+Dédupliquer les données dans `src/services/dataGouvApi.ts` après conversion : grouper par `parametreAnalyse` et ne garder que le résultat le plus récent (date de prélèvement la plus récente) pour chaque paramètre.
 
-1. **Map height fixe `h-[600px]`** — Trop haut sur mobile (depasse l'ecran), pas adaptatif
-2. **Controles WaterJourneyMap** — `flex-wrap` insuffisant : le `Select` a une largeur fixe `w-[220px]`, les toggles "Etapes industrielles" et "Communes desservies" ne s'empilent pas proprement
-3. **Timeline du parcours bouteille** — `flex items-center justify-between` horizontal avec 6 etapes : les labels debordent sur petit ecran, le texte `max-w-[90px]` tronque mal
-4. **Legende** — Elements en `flex-wrap` sans espacement vertical suffisant sur mobile
-5. **Source detail panel (WaterJourneyMap)** — `absolute top-4 left-4 max-w-[280px]` peut couvrir toute la carte sur mobile
-6. **CartePolluants** — Pas de padding mobile (`py-12` partout, titre `text-3xl` sans responsive, `h2` au lieu de `h1`)
-7. **TapWaterJourneyMap** — Meme probleme de hauteur fixe `h-[600px]`
+### Fichier modifié
 
-### Fichiers modifies
+**`src/services/dataGouvApi.ts`** — Après la conversion des données (ligne 99), ajouter une étape de déduplication :
+- Grouper les résultats par `parametreAnalyse`
+- Pour chaque groupe, ne garder que l'entrée avec la `datePrelevement` la plus récente
+- Retourner le tableau dédupliqué
 
-#### 1. `src/components/QualityMap.tsx`
-- Map container : `h-[400px] md:h-[600px]` au lieu de `minHeight="70vh"`
-- Stats banner : reduire padding sur mobile
+Cela corrige à la fois les données réelles et n'affecte pas les données mock (qui sont déjà uniques).
 
-#### 2. `src/components/WaterJourneyMap.tsx`
-- Map container : `h-[350px] md:h-[600px]`
-- Controles : empiler verticalement sur mobile (`flex-col md:flex-row`), Select en `w-full md:w-[220px]`
-- Toggles : empiler sur mobile
-- Timeline : passer en scroll horizontal sur mobile (`overflow-x-auto`) ou grille 3x2
-- Legende : ajouter `gap-y-2` pour le wrap mobile
-- Source detail panel : `max-w-[calc(100%-2rem)]` sur mobile
-
-#### 3. `src/components/TapWaterJourneyMap.tsx`
-- Map container : `h-[350px] md:h-[600px]`
-- Controles : empiler verticalement sur mobile, Select en `w-full md:w-[220px]`
-
-#### 4. `src/pages/CartePolluants.tsx`
-- Padding responsive : `py-6 md:py-12`
-- Titre : `text-xl md:text-3xl`, icone responsive
-- Section navigation : padding mobile
-
-#### 5. `src/pages/Carte.tsx` (deja ok mais verification)
-- Confirmer que le padding et les titres sont responsifs (deja fait)
-
-### Details techniques
-
-Tous les changements sont purement CSS/Tailwind, aucun changement de logique. Principe : reduire les hauteurs de carte sur mobile, empiler les controles verticalement, et rendre la timeline scrollable horizontalement sur petit ecran.
-
+### Impact
+- La liste passe de ~50 lignes redondantes à ~10-15 paramètres uniques
+- Le score de qualité devient plus représentatif (pas biaisé par la répétition d'un même paramètre)
+- Aucun changement dans le composant d'affichage
