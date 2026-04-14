@@ -14,6 +14,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import PageLoader from "@/components/PageLoader";
 import SecurityHeaders from "@/components/SecurityHeaders";
 import { EnhancedSecurityService } from "@/services/enhancedSecurityService";
+import OndineChat from "@/components/OndineChat";
 
 // Lazy load all pages for code splitting
 const Index = React.lazy(() => import("./pages/Index"));
@@ -156,6 +157,7 @@ const App = () => {
               </Routes>
             </Suspense>
             </BrowserRouter>
+            <OndineChat />
             </TooltipProvider>
             </RegionProvider>
           </LanguageProvider>
