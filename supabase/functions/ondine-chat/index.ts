@@ -136,7 +136,7 @@ Pages disponibles :
 - [Classement des eaux](/classement)
 - [Sources d'eau minérale](/sources-eau)
 - [Prix des eaux](/prix-eaux)
-- [Comparateur de prix](/comparateur-prix)
+
 - [Évolution des prix](/cours-eau)
 - [Parcours de l'eau du robinet](/parcours-eau)
 - [Parcours de l'eau en bouteille](/parcours-eau-bouteille)
