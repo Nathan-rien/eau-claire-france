@@ -214,8 +214,11 @@ const Classement = () => {
                   </DialogContent>
                 </Dialog>
               </h1>
-              <p className="text-sm text-gray-600 mt-2">
-                <strong>{waters.length}</strong> eaux comparées · {ranked.length} affichées
+              <p className="text-sm text-gray-600 mt-2 flex items-center justify-center gap-2 flex-wrap">
+                <Badge variant="outline" className={isFrance ? 'border-blue-300 text-blue-700 bg-blue-50' : 'border-green-300 text-green-700 bg-green-50'}>
+                  {isFrance ? '🇫🇷 Marché français' : '🇪🇺 Catalogue Europe'}
+                </Badge>
+                <span><strong>{waters.length}</strong> eaux comparées · {ranked.length} affichées</span>
               </p>
             </div>
           </div>
