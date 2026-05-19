@@ -1,7 +1,7 @@
 "use client";
 import { X, Sparkles } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Composition, scoreBottle, letterGrade, Profile, CRITERION_LABELS, getCompositionForDisplay } from '@/utils/rankingV2';
+import { Composition, scoreBottle, letterGrade, Profile, CRITERION_LABELS, getCompositionForDisplay, formatMineralValue } from '@/utils/rankingV2';
 import type { WaterSource } from '@/hooks/useWaterCompositions';
 
 interface Props {
@@ -100,7 +100,7 @@ export default function BottleCompareModal({ open, onClose, waters, profile }: P
                               ? v === max ? 'text-blue-700 font-semibold' : v === min ? 'text-gray-500' : 'text-gray-700'
                               : 'text-gray-700'
                           }>
-                            {criterion === 'pH' ? v.toFixed(1) : v}
+                            {formatMineralValue(v, criterion)}
                           </span>
                         ) : (
                           <span className="text-gray-300">—</span>

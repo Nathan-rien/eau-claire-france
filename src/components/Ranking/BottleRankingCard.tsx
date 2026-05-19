@@ -1,5 +1,5 @@
 "use client";
-import { Composition, scoreBottle, letterGrade, reasons, Profile, CRITERION_LABELS, getCompositionForDisplay } from "@/utils/rankingV2";
+import { Composition, scoreBottle, letterGrade, reasons, Profile, CRITERION_LABELS, getCompositionForDisplay, formatMineralValue } from "@/utils/rankingV2";
 import { AlertTriangle, Sparkles, Droplets } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -122,7 +122,7 @@ export default function BottleRankingCard({
                   {info.label}
                   {value != null && (
                     <span className="text-gray-400">
-                      ({criterion === 'pH' ? value.toFixed(1) : Math.round(value)}{info.unit ? ` ${info.unit}` : ''})
+                      ({formatMineralValue(value, criterion)}{info.unit ? ` ${info.unit}` : ''})
                     </span>
                   )}
                 </span>

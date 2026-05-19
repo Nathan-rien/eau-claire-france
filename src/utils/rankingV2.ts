@@ -590,3 +590,21 @@ export function getCompositionForDisplay(comp: Composition): { criterion: Criter
     { criterion: "chlorures", value: comp.Cl_mg_L },
   ];
 }
+
+/**
+ * Format a mineral value for display.
+ * - pH: always 1 decimal
+ * - Fluorure: up to 2 decimals
+ * - Others: 1 decimal if fractional, otherwise integer
+ * - null/undefined/NaN: returns "—"
+ */
+export function formatMineralValue(value: number | undefined | null, criterion?: Criterion): string {
+  if (value == null || !Number.isFinite(value)) return "—";
+  if (criterion === "pH") return value.toFixed(1);
+  if (criterion === "fluorure") {
+    const r = Math.round(value * 100) / 100;
+    return Number.isInteger(r) ? r.toString() : r.toString();
+  }
+  const r = Math.round(value * 10) / 10;
+  return Number.isInteger(r) ? r.toString() : r.toFixed(1);
+}
