@@ -62,7 +62,7 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       bicarbonates:{ type:"low-better", fullAt:50,   zeroAt:600 },
       sulfates:    { type:"low-better", fullAt:10,   zeroAt:100 },
       fluorure:    { type:"low-better", fullAt:0.1,  zeroAt:0.5 },
-      potassium:   { type:"low-better", fullAt:2,    zeroAt:15 },
+      potassium:   { type:"low-better", fullAt:10,   zeroAt:50 },
       chlorures:   { type:"low-better", fullAt:10,   zeroAt:50 },
     },
 
@@ -285,26 +285,41 @@ export type ScoreBreakdown = Record<Criterion, number>;
 
 export function scoreBottle(comp: Composition, profile: Profile = "daily") {
   const cfg = PROFILES[profile];
-  
-  const breakdown10: ScoreBreakdown = {
-    nitrates:    applyRule(comp.NO3_mg_L,            cfg.rules.nitrates),
-    residu:      applyRule(comp.residu_sec_180_mg_L, cfg.rules.residu),
-    calcium:     applyRule(comp.Ca_mg_L,             cfg.rules.calcium),
-    magnesium:   applyRule(comp.Mg_mg_L,             cfg.rules.magnesium),
-    sodium:      applyRule(comp.Na_mg_L,             cfg.rules.sodium),
-    pH:          applyRule(comp.pH,                  cfg.rules.pH),
-    bicarbonates:applyRule(comp.HCO3_mg_L,           cfg.rules.bicarbonates),
-    sulfates:    applyRule(comp.SO4_mg_L,            cfg.rules.sulfates),
-    fluorure:    applyRule(comp.F_mg_L,              cfg.rules.fluorure),
-    potassium:   applyRule(comp.K_mg_L,              cfg.rules.potassium),
-    chlorures:   applyRule(comp.Cl_mg_L,             cfg.rules.chlorures),
+
+  const rawValues: Record<Criterion, number | undefined> = {
+    nitrates:     comp.NO3_mg_L,
+    residu:       comp.residu_sec_180_mg_L,
+    calcium:      comp.Ca_mg_L,
+    magnesium:    comp.Mg_mg_L,
+    sodium:       comp.Na_mg_L,
+    pH:           comp.pH,
+    bicarbonates: comp.HCO3_mg_L,
+    sulfates:     comp.SO4_mg_L,
+    fluorure:     comp.F_mg_L,
+    potassium:    comp.K_mg_L,
+    chlorures:    comp.Cl_mg_L,
   };
 
+  const breakdown10: ScoreBreakdown = {} as ScoreBreakdown;
+  (Object.keys(rawValues) as Criterion[]).forEach(k => {
+    breakdown10[k] = applyRule(rawValues[k], cfg.rules[k]);
+  });
+
   const w = cfg.weights;
-  const total80 = Object.keys(breakdown10).reduce((sum, key) => {
-    const k = key as Criterion;
-    return sum + (breakdown10[k] / 10) * w[k];
-  }, 0);
+  const totalWeight = (Object.keys(w) as Criterion[]).reduce((s, k) => s + w[k], 0);
+
+  // Normaliser sur les critères disponibles : les valeurs manquantes ne pénalisent pas
+  let weightedSum = 0;
+  let availableWeight = 0;
+  (Object.keys(rawValues) as Criterion[]).forEach(k => {
+    if (rawValues[k] != null && Number.isFinite(rawValues[k] as number)) {
+      weightedSum += (breakdown10[k] / 10) * w[k];
+      availableWeight += w[k];
+    }
+  });
+  const total80 = availableWeight > 0
+    ? (weightedSum / availableWeight) * totalWeight
+    : 0;
 
   // Check exclusions
   const exclusionReasons: string[] = [];
@@ -317,11 +332,11 @@ export function scoreBottle(comp: Composition, profile: Profile = "daily") {
     }
   }
 
-  return { 
-    total: Math.round(total80 * 10) / 10, 
-    outOf: 80, 
-    breakdown10, 
-    weights: w, 
+  return {
+    total: Math.round(total80 * 10) / 10,
+    outOf: totalWeight,
+    breakdown10,
+    weights: w,
     profile,
     excluded: exclusionReasons.length > 0,
     exclusionReasons,
