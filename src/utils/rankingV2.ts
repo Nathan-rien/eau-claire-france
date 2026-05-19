@@ -38,19 +38,28 @@ type ProfileConfig = {
   recommendations?: Recommendations;
 };
 
+// Scoring continu : 10 à v=0, 9 à v=fullAt, 0 à v>=zeroAt — différencie les valeurs basses
 const lowBetter = (v:number|undefined, fullAt:number, zeroAt:number) => {
-  if (v == null || !Number.isFinite(v)) return 5; // Valeur neutre si donnée manquante
-  if (v <= fullAt) return 10;
+  if (v == null || !Number.isFinite(v)) return 5;
+  if (v <= 0) return 10;
   if (v >= zeroAt) return 0;
-  return ((zeroAt - v) / (zeroAt - fullAt)) * 10;
+  if (v <= fullAt) return 10 - (v / fullAt) * 1; // 10 → 9 linéaire
+  return 9 * ((zeroAt - v) / (zeroAt - fullAt)); // 9 → 0 linéaire
 };
 
+// Scoring continu : pic à 10 au centre de [optLow, optHigh], 9 aux bornes optimales, 0 aux bornes absolues
 const windowed = (v:number|undefined, min:number, optLow:number, optHigh:number, max:number) => {
-  if (v == null || !Number.isFinite(v)) return 5; // Valeur neutre si donnée manquante
+  if (v == null || !Number.isFinite(v)) return 5;
   if (v <= min || v >= max) return 0;
-  if (v >= optLow && v <= optHigh) return 10;
-  if (v < optLow) return ((v - min) / (optLow - min)) * 10;
-  return ((max - v) / (max - optHigh)) * 10;
+  const optCenter = (optLow + optHigh) / 2;
+  if (v >= optLow && v <= optHigh) {
+    const halfWidth = (optHigh - optLow) / 2;
+    if (halfWidth <= 0) return 10;
+    const dist = Math.abs(v - optCenter) / halfWidth; // 0 au centre, 1 aux bornes
+    return 10 - dist * 1; // 10 → 9
+  }
+  if (v < optLow) return 9 * ((v - min) / (optLow - min));
+  return 9 * ((max - v) / (max - optHigh));
 };
 
 // Total des poids = 80 points
@@ -61,15 +70,15 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
     icon: "⚖️",
     weights: { nitrates:10, residu:10, calcium:7, magnesium:7, sodium:8, pH:6, bicarbonates:6, sulfates:8, fluorure:8, potassium:4, chlorures:6 },
     rules: {
-      nitrates:    { type:"low-better", fullAt:5,    zeroAt:50 },
+      nitrates:    { type:"low-better", fullAt:2,    zeroAt:50 },
       residu:      { type:"window",     min:30,      optLow:150, optHigh:800,  max:2000 },
       calcium:     { type:"window",     min:0,       optLow:40,  optHigh:250,  max:600 },
       magnesium:   { type:"window",     min:0,       optLow:10,  optHigh:80,   max:200 },
-      sodium:      { type:"low-better", fullAt:20,   zeroAt:250 },
+      sodium:      { type:"low-better", fullAt:5,    zeroAt:250 },
       pH:          { type:"window",     min:5.5,     optLow:6.5, optHigh:7.8,  max:9.0 },
       bicarbonates:{ type:"window",     min:0,       optLow:80,  optHigh:600,  max:2000 },
-      sulfates:    { type:"low-better", fullAt:50,   zeroAt:400 },
-      fluorure:    { type:"low-better", fullAt:0.3,  zeroAt:1.5 },
+      sulfates:    { type:"low-better", fullAt:20,   zeroAt:400 },
+      fluorure:    { type:"low-better", fullAt:0.15, zeroAt:1.5 },
       potassium:   { type:"window",     min:0,       optLow:1,   optHigh:20,   max:80 },
       chlorures:   { type:"low-better", fullAt:20,   zeroAt:200 },
     },
