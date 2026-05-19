@@ -16,6 +16,7 @@ import { Profile, scoreBottle, Composition, CRITERION_LABELS, getProfileInfo } f
 import { useWaterCompositions } from '@/hooks/useWaterCompositions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { seoData } from '@/utils/seoData';
+import { useRegion } from '@/contexts/RegionContext';
 
 const FAVORITES_KEY = 'ranking-water-favorites';
 const MAX_COMPARE = 5;
