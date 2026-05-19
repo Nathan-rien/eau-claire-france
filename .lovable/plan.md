@@ -1,89 +1,38 @@
-## Plan : Faire de /classement un vrai comparateur d'eaux enrichi
+## Plan : Faire remonter Mont Roucous dans le profil Pureté
 
-### Objectif
-Transformer la page en comparateur complet : Mont Roucous correctement valorisée, base de données enrichie (~100 eaux), sélection multi-eaux, filtres avancés, vue tableau triable, recherche et favoris.
+### Diagnostic
+Mont Roucous **est bien chargée** (ligne 26 du CSV) et n'est pas exclue par les filtres. Mais le profil Pureté la pénalise sur 4 critères alors qu'elle est l'archétype de l'eau ultra-pure :
 
----
+| Critère | Valeur Mont Roucous | Règle actuelle Pureté | Score actuel | Problème |
+|---|---|---|---|---|
+| pH | 5.8 | window 5.5 / 6.5 / 7.5 / 8.5 | 3/10 | pH bas = pureté, pas un défaut |
+| Calcium | 2.4 mg/L | window 0 / 5 / 80 / 200 | 4.8/10 | Ca bas = pureté, pas un défaut |
+| Magnésium | 0.5 mg/L | window 0 / 1 / 25 / 80 | 5/10 | Mg bas = pureté, pas un défaut |
+| Bicarbonates | 6.3 mg/L | window 0 / 10 / 200 / 600 | 6.3/10 | HCO3 bas = pureté, pas un défaut |
 
-### 1. Nouveau profil "Pureté / Bébé+" (scoring)
+Résultat : Mont Roucous score ~70/80 (rang ~5–10) au lieu d'être dans le top 3.
 
-Fichier : `src/utils/rankingV2.ts`
+Cristaline Aurèle finit n°1 (79.8/80) car ses minéraux modérés tombent dans toutes les fenêtres "optimales".
 
-Ajouter un profil `purity` qui valorise les eaux ultra-faiblement minéralisées :
-- Résidu sec : optimum **10–150 mg/L** (Mont Roucous = 25 → score max)
-- Sodium, nitrates, fluorure, sulfates : règles `low-better` strictes
-- Exclusion : résidu sec > 500 mg/L
-- Icône 💎 — description : "Eau ultra-pure, idéale bébé et usage quotidien léger"
+### Correction
 
-Avec ce profil, Mont Roucous, Montcalm, Rosée de la Reine, Volvic atterriront dans le top 5.
+**Fichier : `src/utils/rankingV2.ts`** — profil `purity` uniquement.
 
-### 2. Enrichir la base de données (~40 eaux supplémentaires)
+1. **Remplacer les windows par `low-better`** pour Ca, Mg, HCO3 (le moins minéralisé = meilleur en pureté) :
+   - calcium : `low-better` fullAt 30, zeroAt 200
+   - magnesium : `low-better` fullAt 10, zeroAt 80
+   - bicarbonates : `low-better` fullAt 50, zeroAt 600
 
-Fichier : `public/data/infoeau_emn_composition_v2_partial.csv`
+2. **Élargir la fenêtre pH** vers le bas pour ne plus pénaliser les eaux légèrement acides (typiques des sources granitiques pures) :
+   - pH : window 4.5 / 5.5 / 7.5 / 8.5
 
-Ajouter en 3 vagues :
-- **FR manquantes** : Courmayeur, Mont Blanc, Carola, Vals, Rosée de la Reine, Spa, St-Géron, St-Antonin, Vernière, Salvetat (variantes), Wattwiller variantes
-- **Internationales premium** : San Pellegrino, Acqua Panna, Fiji, Highland Spring, Voss, Gerolsteiner, Apollinaris, Vittel International, Selters
-- **MDD / économiques** : Cristaline (déjà), Auchan source, Carrefour source, Leclerc Eco+, Lidl Saskia, Monoprix Bio, Rozana variantes, Casino source
+3. **Rééquilibrer les poids** pour vraiment valoriser les marqueurs de pureté (résidu sec + nitrates + sodium + fluorure) :
+   - residu 16, nitrates 14, sodium 12, fluorure 8, sulfates 8, pH 4, calcium 4, magnésium 4, bicarbonates 4, potassium 2, chlorures 4 (total 80)
 
-Sources : Wikipedia "Eaux minérales françaises", étiquettes officielles, fiches techniques producteurs. Marquer `source_url` pour traçabilité.
+### Résultat attendu
+- Mont Roucous : ~78–79/80 → **Top 3** (avec Montcalm et Rosée de la Reine)
+- Cristaline Aurèle redescend légèrement (résidu 156 > optimum pureté)
+- Le profil Pureté tient enfin sa promesse marketing affichée sur la page.
 
-### 3. Refonte de la page en vrai comparateur
-
-Fichier : `src/pages/Classement.tsx` + nouveaux composants
-
-**Structure UI :**
-```text
-[ Header + sélecteur profil ]
-[ Barre recherche  ★ Favoris  [Cartes|Tableau] ]
-[ Filtres avancés (collapsible) :
-  - Gazeuse/Plate  - Origine (FR/EU/Monde)
-  - Sliders : minéralisation, calcium, sodium, pH, nitrates
-  - MDD / Marque   - Exclure non-recommandées
-]
-[ Barre comparaison sticky : 0/5 sélectionnées → [Comparer] ]
-[ Résultats : cartes OU tableau triable ]
-[ Modal/section comparaison côte-à-côte ]
-```
-
-**Nouveaux composants :**
-- `RankingFilters.tsx` : filtres avancés avec sliders Radix
-- `RankingTableView.tsx` : tableau triable (rang, marque, score, lettre, 11 minéraux, gaz)
-- `RankingViewToggle.tsx` : switch Cartes/Tableau
-- `BottleCompareModal.tsx` : comparaison côte-à-côte de 2–5 eaux (mêmes barres que `BottleRankingCard` + tableau minéraux + recommandation textuelle)
-- `RankingSearchBar.tsx` : input avec suggestions
-
-**Hooks réutilisés** :
-- `useFavorites` (existant) pour le système favoris
-- `useWaterCompositions` (étendu pour exposer toutes les colonnes)
-
-**État local** dans `Classement.tsx` :
-- `selectedForCompare: string[]` (max 5)
-- `viewMode: 'cards' | 'table'`
-- `filters: { minRes, maxRes, minCa, maxNa, ... }`
-- `search: string`
-- `showFavoritesOnly: boolean`
-
-### 4. Améliorations scoring globales
-
-Dans `rankingV2.ts` :
-- Valeur neutre actuelle pour donnée manquante = 5. La passer à 4 pour pénaliser légèrement les eaux sans données complètes (transparence)
-- Ajouter `dataCompleteness` au retour de `scoreBottle` (déjà calculé dans la carte, le centraliser)
-- Tri secondaire par complétude de données quand scores égaux
-
-### Fichiers touchés
-- `src/utils/rankingV2.ts` — nouveau profil `purity`, ajustements
-- `public/data/infoeau_emn_composition_v2_partial.csv` — +40 lignes
-- `src/hooks/useWaterCompositions.ts` — exposer tous les champs CSV
-- `src/pages/Classement.tsx` — refonte
-- `src/components/Ranking/RankingFilters.tsx` (nouveau)
-- `src/components/Ranking/RankingTableView.tsx` (nouveau)
-- `src/components/Ranking/BottleCompareModal.tsx` (nouveau)
-- `src/components/Ranking/RankingSearchBar.tsx` (nouveau)
-- `src/components/Ranking/RankingProfileSelector.tsx` — ajouter le profil purity
-- `src/i18n/translations.ts` — clés nouveaux libellés
-
-### Hors scope
-- Pas de migration Supabase (les données restent en CSV statique)
-- Pas de modification du système de prix
-- Pas de changement aux autres pages (/comparatif-bouteilles reste tel quel)
+### Aucun autre profil n'est touché
+La modification est strictement limitée au profil `purity`. Quotidien, Bébé, Sport, etc. restent inchangés.
