@@ -53,14 +53,21 @@ export default function BottleRankingCard({
     .sort((a, b) => b.weight - a.weight)
     .slice(0, 6);
 
+  const podiumBorder = podium && rank
+    ? rank === 1 ? 'border-2 border-yellow-400 shadow-yellow-100 shadow-lg'
+    : rank === 2 ? 'border-2 border-gray-300 shadow-md'
+    : rank === 3 ? 'border-2 border-amber-600/40 shadow-md'
+    : ''
+    : '';
+
   return (
-    <div className={`rounded-xl border p-4 bg-white shadow-sm relative ${scored.excluded ? 'border-red-300 bg-red-50/30' : ''}`}>
+    <div className={`rounded-xl border p-4 bg-white shadow-sm relative ${podiumBorder} ${scored.excluded ? 'border-red-300 bg-red-50/30' : ''}`}>
       {/* Rank badge */}
-      {rank && rank <= 3 && (
-        <div className={`absolute -top-2 -left-2 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
-          rank === 1 ? 'bg-yellow-500' : rank === 2 ? 'bg-gray-400' : 'bg-amber-700'
+      {rank && (
+        <div className={`absolute -top-3 -left-3 ${rank <= 3 ? 'w-10 h-10 text-base' : 'w-8 h-8 text-sm'} rounded-full flex items-center justify-center text-white font-bold shadow-md ${
+          rank === 1 ? 'bg-yellow-500' : rank === 2 ? 'bg-gray-400' : rank === 3 ? 'bg-amber-700' : 'bg-blue-500'
         }`}>
-          {rank}
+          {rank <= 3 ? (rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉') : rank}
         </div>
       )}
 
