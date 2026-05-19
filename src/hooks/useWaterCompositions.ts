@@ -11,6 +11,7 @@ export interface WaterSource {
   is_sparkling: boolean;
   origin: Origin;
   is_mdd: boolean;
+  available_fr: boolean;
   source_url?: string;
   composition: Composition;
 }
