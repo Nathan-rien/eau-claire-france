@@ -1,12 +1,31 @@
 import { useState, useEffect } from 'react';
 import { Composition } from '@/utils/rankingV2';
 
+export type Origin = 'FR' | 'EU' | 'Monde';
+
 export interface WaterSource {
+  id: string;
   brand: string;
   source_name: string;
   location: string;
   is_sparkling: boolean;
+  origin: Origin;
+  is_mdd: boolean;
+  source_url?: string;
   composition: Composition;
+}
+
+const MDD_BRANDS = new Set([
+  'Cristaline','Auchan','Carrefour','Leclerc','Lidl','Monoprix','Casino','Intermarché'
+]);
+
+const EU_KEYWORDS = ['Belgique','Italie','Allemagne','Espagne','Suisse','Autriche','Portugal','Pays-Bas'];
+const WORLD_KEYWORDS = ['Fidji','Norvège','Écosse','Royaume-Uni','USA','Canada','Japon','Islande'];
+
+function detectOrigin(location: string): Origin {
+  if (WORLD_KEYWORDS.some(k => location.includes(k))) return 'Monde';
+  if (EU_KEYWORDS.some(k => location.includes(k))) return 'EU';
+  return 'FR';
 }
 
 export function useWaterCompositions() {
@@ -20,7 +39,7 @@ export function useWaterCompositions() {
         const response = await fetch('/data/infoeau_emn_composition_v2_partial.csv');
         const text = await response.text();
         const lines = text.split('\n').filter(line => line.trim());
-        
+
         if (lines.length < 2) {
           setWaters([]);
           setLoading(false);
@@ -32,19 +51,24 @@ export function useWaterCompositions() {
 
         for (let i = 1; i < lines.length; i++) {
           const values = parseCSVLine(lines[i]);
-          if (values.length < headers.length) continue;
+          if (values.length < 4) continue;
 
           const getVal = (name: string): number | undefined => {
             const idx = headers.indexOf(name);
-            if (idx === -1) return undefined;
+            if (idx === -1 || idx >= values.length) return undefined;
             const v = parseFloat(values[idx]);
             return isNaN(v) ? undefined : v;
           };
+          const getStr = (name: string): string => {
+            const idx = headers.indexOf(name);
+            if (idx === -1 || idx >= values.length) return '';
+            return values[idx] || '';
+          };
 
-          const brand = values[headers.indexOf('brand')] || '';
-          const source_name = values[headers.indexOf('source_name')] || '';
-          const location = values[headers.indexOf('location')] || '';
-          const is_sparkling = values[headers.indexOf('is_sparkling')]?.toLowerCase() === 'true';
+          const brand = getStr('brand');
+          const source_name = getStr('source_name');
+          const location = getStr('location');
+          const is_sparkling = getStr('is_sparkling').toLowerCase() === 'true';
 
           const composition: Composition = {
             NO3_mg_L: getVal('NO3_mg_L'),
@@ -60,7 +84,17 @@ export function useWaterCompositions() {
             Cl_mg_L: getVal('Cl_mg_L'),
           };
 
-          parsed.push({ brand, source_name, location, is_sparkling, composition });
+          parsed.push({
+            id: `${brand}-${source_name}`.toLowerCase().replace(/\s+/g, '-'),
+            brand,
+            source_name,
+            location,
+            is_sparkling,
+            origin: detectOrigin(location),
+            is_mdd: MDD_BRANDS.has(brand),
+            source_url: getStr('source_url'),
+            composition,
+          });
         }
 
         setWaters(parsed);
@@ -78,7 +112,6 @@ export function useWaterCompositions() {
   return { waters, loading, error };
 }
 
-// Helper to parse CSV line handling quoted values
 function parseCSVLine(line: string): string[] {
   const result: string[] = [];
   let current = '';
