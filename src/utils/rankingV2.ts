@@ -38,19 +38,28 @@ type ProfileConfig = {
   recommendations?: Recommendations;
 };
 
+// Scoring continu : 10 à v=0, 9 à v=fullAt, 0 à v>=zeroAt — différencie les valeurs basses
 const lowBetter = (v:number|undefined, fullAt:number, zeroAt:number) => {
-  if (v == null || !Number.isFinite(v)) return 5; // Valeur neutre si donnée manquante
-  if (v <= fullAt) return 10;
+  if (v == null || !Number.isFinite(v)) return 5;
+  if (v <= 0) return 10;
   if (v >= zeroAt) return 0;
-  return ((zeroAt - v) / (zeroAt - fullAt)) * 10;
+  if (v <= fullAt) return 10 - (v / fullAt) * 1; // 10 → 9 linéaire
+  return 9 * ((zeroAt - v) / (zeroAt - fullAt)); // 9 → 0 linéaire
 };
 
+// Scoring continu : pic à 10 au centre de [optLow, optHigh], 9 aux bornes optimales, 0 aux bornes absolues
 const windowed = (v:number|undefined, min:number, optLow:number, optHigh:number, max:number) => {
-  if (v == null || !Number.isFinite(v)) return 5; // Valeur neutre si donnée manquante
+  if (v == null || !Number.isFinite(v)) return 5;
   if (v <= min || v >= max) return 0;
-  if (v >= optLow && v <= optHigh) return 10;
-  if (v < optLow) return ((v - min) / (optLow - min)) * 10;
-  return ((max - v) / (max - optHigh)) * 10;
+  const optCenter = (optLow + optHigh) / 2;
+  if (v >= optLow && v <= optHigh) {
+    const halfWidth = (optHigh - optLow) / 2;
+    if (halfWidth <= 0) return 10;
+    const dist = Math.abs(v - optCenter) / halfWidth; // 0 au centre, 1 aux bornes
+    return 10 - dist * 1; // 10 → 9
+  }
+  if (v < optLow) return 9 * ((v - min) / (optLow - min));
+  return 9 * ((max - v) / (max - optHigh));
 };
 
 // Total des poids = 80 points
