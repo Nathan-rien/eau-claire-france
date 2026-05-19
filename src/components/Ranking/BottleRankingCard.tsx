@@ -139,11 +139,13 @@ export default function BottleRankingCard({
         })}
       </div>
 
-      {/* Data completeness indicator */}
-      <div className="flex items-center gap-2 text-xs text-gray-400 mb-2">
-        <Droplets className="w-3 h-3" />
-        <span>Données: {availableData}/11 critères ({dataCompleteness}%)</span>
-      </div>
+      {/* Data completeness indicator - only when partial */}
+      {availableData < 8 && (
+        <div className="flex items-center gap-2 text-xs text-amber-600 mb-2">
+          <Droplets className="w-3 h-3" />
+          <span>Données partielles: {availableData}/11 critères</span>
+        </div>
+      )}
 
       {/* Reasons */}
       {rsn.length > 0 && (
