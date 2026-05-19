@@ -36,7 +36,7 @@ function countActiveFilters(f: RankingFilterState): number {
 }
 
 const Classement = () => {
-  const [profile, setProfile] = useState<Profile>("purity");
+  const [profile, setProfile] = useState<Profile>("general");
   const [filters, setFilters] = useState<RankingFilterState>(DEFAULT_FILTERS);
   const [search, setSearch] = useState('');
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
@@ -233,14 +233,9 @@ const Classement = () => {
 
         <section className="py-6 px-4">
           <div className="container mx-auto max-w-6xl">
-            {/* Profile description badge */}
-            <div className="mb-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-50 to-green-50 border border-blue-100">
-              <span className="text-xl">{profileInfo.icon}</span>
-              <div className="text-sm">
-                <span className="font-semibold text-blue-900">{profileInfo.label}</span>
-                <span className="text-gray-600"> — {profileInfo.description}</span>
-              </div>
-            </div>
+            {/* Profile description with official recommendations */}
+            <ProfileRecommendationCard profile={profile} />
+
 
             {/* Toolbar */}
             <div className="flex flex-wrap gap-2 mb-4 items-center">
