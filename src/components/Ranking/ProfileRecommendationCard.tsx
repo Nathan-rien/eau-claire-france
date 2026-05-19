@@ -1,10 +1,22 @@
 "use client";
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Info } from "lucide-react";
+import { ChevronDown, ChevronUp, AlertTriangle, Info, CheckCircle2 } from "lucide-react";
 import { Profile, getProfileInfo } from "@/utils/rankingV2";
 
 interface Props {
   profile: Profile;
+}
+
+function parseGuideline(raw: string): { label: string; op: string; value: string } | null {
+  const m = raw.match(/^(.+?)\s*(<|>|≤|≥|=)\s*(.+)$/);
+  if (!m) return null;
+  return { label: m[1].trim(), op: m[2], value: m[3].trim() };
+}
+
+function parseAvoid(raw: string): { title: string; detail?: string } {
+  const m = raw.match(/^(.+?)\s*\((.+)\)\s*$/);
+  if (!m) return { title: raw };
+  return { title: m[1].trim(), detail: m[2].trim() };
 }
 
 export default function ProfileRecommendationCard({ profile }: Props) {
@@ -12,73 +24,100 @@ export default function ProfileRecommendationCard({ profile }: Props) {
   const rec = info.recommendations;
   const [open, setOpen] = useState(true);
 
+  const parsed = (rec?.guidelines ?? []).map((g) => ({ raw: g, p: parseGuideline(g) }));
+  const metrics = parsed.filter((g) => g.p) as { raw: string; p: { label: string; op: string; value: string } }[];
+  const textGuidelines = parsed.filter((g) => !g.p);
+
   return (
-    <div className="mb-4 rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50/70 to-green-50/70 overflow-hidden">
+    <div className="mb-6 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/40 transition-colors"
+        className="w-full px-5 sm:px-6 py-4 flex items-center justify-between gap-3 border-b border-slate-100 hover:bg-slate-50/60 transition-colors text-left"
         aria-expanded={open}
       >
-        <span className="text-2xl shrink-0">{info.icon}</span>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-baseline gap-2 flex-wrap">
-            <span className="font-semibold text-blue-900">{info.label}</span>
-            <span className="text-sm text-gray-600">— {info.description}</span>
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 shrink-0 rounded-xl bg-blue-50 flex items-center justify-center text-xl">
+            {info.icon}
+          </div>
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">{info.label}</h2>
+            <p className="text-xs sm:text-sm text-slate-500 truncate">{info.description}</p>
           </div>
         </div>
-        {rec && (
-          <span className="shrink-0 text-blue-700 inline-flex items-center gap-1 text-xs font-medium">
-            {open ? (
-              <>Masquer <ChevronUp className="w-4 h-4" /></>
-            ) : (
-              <>Recommandations <ChevronDown className="w-4 h-4" /></>
-            )}
-          </span>
-        )}
+        <span className="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 transition-colors">
+          {open ? (<>Masquer <ChevronUp className="w-4 h-4" /></>) : (<>Recommandations <ChevronDown className="w-4 h-4" /></>)}
+        </span>
       </button>
 
       {rec && open && (
-        <div className="px-4 pb-4 pt-1 border-t border-blue-100/60 bg-white/50">
-          <div className="grid sm:grid-cols-2 gap-4 text-sm">
-            <div>
-              <div className="text-xs uppercase tracking-wide font-semibold text-blue-700 mb-1">
-                Pour qui
+        <div className="flex flex-col md:flex-row">
+          <div className="md:w-2/5 p-5 sm:p-6 bg-slate-50/60 border-b md:border-b-0 md:border-r border-slate-100">
+            <span className="inline-block text-[10px] uppercase tracking-[0.18em] font-bold text-blue-600 mb-3">
+              Cible prioritaire
+            </span>
+            <p className="text-[15px] text-slate-800 leading-relaxed">{rec.who}</p>
+            {rec.source && (
+              <div className="mt-5 pt-4 border-t border-slate-200/70 flex items-start gap-2">
+                <Info className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                <p className="text-[11px] italic text-slate-500 leading-relaxed">{rec.source}</p>
               </div>
-              <p className="text-gray-700">{rec.who}</p>
-            </div>
-            <div>
-              <div className="text-xs uppercase tracking-wide font-semibold text-blue-700 mb-1">
-                Recommandations officielles
-              </div>
-              <ul className="space-y-1 text-gray-700">
-                {rec.guidelines.map((g, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="text-green-600 shrink-0">•</span>
-                    <span>{g}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            {rec.avoid && rec.avoid.length > 0 && (
-              <div className="sm:col-span-2">
-                <div className="text-xs uppercase tracking-wide font-semibold text-amber-700 mb-1">
-                  À éviter
+            )}
+          </div>
+
+          <div className="md:w-3/5 p-5 sm:p-6 space-y-6">
+            <section>
+              <h4 className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.18em] mb-3 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                Seuils recommandés
+              </h4>
+
+              {metrics.length > 0 && (
+                <div className="grid grid-cols-2 gap-x-6 gap-y-3.5">
+                  {metrics.map((g, i) => (
+                    <div key={i}>
+                      <p className="text-[11px] text-slate-500 font-medium mb-0.5 leading-tight">{g.p.label}</p>
+                      <p className="text-sm text-slate-900 font-semibold tabular-nums">
+                        <span className="text-slate-400 font-normal mr-1">{g.p.op}</span>
+                        {g.p.value}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-                <ul className="space-y-1 text-gray-700">
-                  {rec.avoid.map((a, i) => (
-                    <li key={i} className="flex gap-2">
-                      <span className="text-amber-600 shrink-0">⚠</span>
-                      <span>{a}</span>
+              )}
+
+              {textGuidelines.length > 0 && (
+                <ul className={`space-y-2 ${metrics.length > 0 ? "mt-4 pt-4 border-t border-slate-100" : ""}`}>
+                  {textGuidelines.map((g, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-700 leading-snug">
+                      <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
+                      <span>{g.raw}</span>
                     </li>
                   ))}
                 </ul>
-              </div>
-            )}
-            {rec.source && (
-              <div className="sm:col-span-2 flex gap-2 text-xs text-gray-500 italic pt-1 border-t border-gray-100">
-                <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                <span>{rec.source}</span>
-              </div>
+              )}
+            </section>
+
+            {rec.avoid && rec.avoid.length > 0 && (
+              <section>
+                <h4 className="text-[10px] font-bold text-amber-600 uppercase tracking-[0.18em] mb-3 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+                  Contre-indications
+                </h4>
+                <ul className="space-y-2">
+                  {rec.avoid.map((a, i) => {
+                    const { title, detail } = parseAvoid(a);
+                    return (
+                      <li key={i} className="flex items-start gap-3 p-3 rounded-xl bg-amber-50/60 border border-amber-100">
+                        <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                        <div className="text-sm leading-snug">
+                          <span className="font-semibold text-amber-900">{title}</span>
+                          {detail && <span className="block text-xs text-amber-800/80 mt-0.5">{detail}</span>}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
             )}
           </div>
         </div>

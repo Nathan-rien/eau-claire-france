@@ -1,73 +1,40 @@
-# Profil "Général" par défaut + descriptifs enrichis avec recommandations
+# Refonte de la carte de recommandations — direction Éditorial split
 
-## 1. Ajouter un profil "Général" (sélectionné par défaut)
+Réécriture de `src/components/Ranking/ProfileRecommendationCard.tsx` selon la direction choisie : carte blanche `rounded-2xl`, header sobre + body en split 2/5 – 3/5.
 
-Nouveau profil `general` dans `src/utils/rankingV2.ts`, ajouté en premier dans `PROFILES` et utilisé comme défaut de `Classement.tsx` (à la place de `purity`).
+## Structure
 
-**Principe** : classement neutre, sans biais santé. Une eau est "globalement bonne" si elle :
-- respecte largement les seuils réglementaires français (nitrates < 10, fluorure < 1.5, sulfates < 250 conseillé en quotidien)
-- offre un pH proche neutre (6.5–7.8)
-- a une minéralisation modérée (résidu sec 150–800, ni trop pure ni trop minéralisée pour l'usage courant)
-- présente un équilibre Ca/Mg/Na sans valeur extrême
+**Header** (cliquable, toggle ouvert/fermé)
+- Bloc icône `w-10 h-10 rounded-xl bg-blue-50` avec emoji du profil
+- Titre `text-lg font-bold text-slate-900` + sous-titre `text-sm text-slate-500`
+- Bouton "Masquer / Recommandations" `text-xs font-semibold` à droite
 
-**Implémentation** : tous les critères utilisent des règles `window` larges autour des valeurs idéales d'une eau "passe-partout", avec des poids équilibrés (~7 chacun, total 80). Pas d'exclusion.
+**Colonne gauche (2/5) — fond `slate-50/60`**
+- Label uppercase tracking-[0.18em] `text-blue-600` : "Cible prioritaire"
+- `rec.who` en `text-[15px] text-slate-800`
+- Source en bas avec icône Info, italique `text-[11px] text-slate-500`
 
-Icon: `⚖️` (équilibre) — label: `Général` — description courte: `Classement neutre, sans orientation santé spécifique`.
+**Colonne droite (3/5)**
+- Section "Seuils recommandés" (point bleu + label uppercase)
+  - Parser chaque `guideline` : si format `Label <|>|≤|≥ valeur` → grille 2 colonnes (label petit + valeur en `font-semibold tabular-nums`)
+  - Sinon → liste avec `CheckCircle2` vert pour les guidelines en texte libre (ex. « Mention "convient à…" obligatoire »)
+- Section "Contre-indications" (si `avoid` présent, point ambre)
+  - Cards `bg-amber-50/60 border-amber-100 rounded-xl` avec `AlertTriangle`
+  - Parser `Titre (détail entre parenthèses)` → titre en gras + détail en sous-ligne
 
-## 2. Descriptifs enrichis avec recommandations officielles
+## Typo unifiée
+Une seule police (héritée — Inter), tailles strictement limitées :
+- `text-lg` (titre) / `text-[15px]` (cible) / `text-sm` (corps) / `text-xs` (CTA) / `text-[11px]` (source) / `text-[10px]` uppercase (labels de section)
 
-Étendre `ProfileConfig` avec un champ `recommendations` structuré :
+Plus de `text-xl` emoji + mélange de tailles incohérent. Tracking et poids harmonisés.
 
-```ts
-recommendations: {
-  who: string;          // À qui s'adresse le profil
-  guidelines: string[]; // Recommandations officielles (Afssa, ANSES, OMS, PNNS…)
-  avoid?: string[];     // Ce qu'il faut éviter
-  source?: string;      // Source officielle
-}
-```
+## Responsive
+- `flex-col` mobile → `md:flex-row` desktop
+- Bordure droite remplacée par bordure basse sur mobile
+- Padding `p-5 sm:p-6` partout
 
-Exemples de contenu par profil :
+## Aucun changement
+- Aucune modification de `rankingV2.ts` ni de `Classement.tsx`
+- Mêmes données consommées (`who`, `guidelines`, `avoid`, `source`)
 
-- **Bébé** : Afssa 2003 — nitrates < 10 mg/L, fluorure < 0,3 mg/L, sodium < 20 mg/L, résidu sec < 500 mg/L. Mention « convient à l'alimentation des nourrissons » obligatoire.
-- **Grossesse** : ANSES — privilégier eaux riches en calcium (>150 mg/L) et magnésium (>50 mg/L), nitrates < 25 mg/L.
-- **Sport** : INSEP — réhydratation post-effort avec eaux bicarbonatées (>600 mg/L HCO3) et riches en sodium/magnésium.
-- **Régime sans sel** : ANSES/HAS hypertension — sodium < 20 mg/L (mention « convient à un régime pauvre en sodium »).
-- **Os & calcium** : PNNS — calcium > 300 mg/L pour contribuer aux apports (Hépar, Contrex, Courmayeur, Talians).
-- **Transit** : sulfates > 200 mg/L et magnésium > 50 mg/L (Hépar, Hunyadi Janos).
-- **Senior** : équilibre Ca/Mg, surveillance sodium.
-- **Digestion** : bicarbonates > 600 mg/L (Vichy, Saint-Yorre, Badoit).
-- **Thé** : résidu < 150 mg/L, pH neutre.
-- **Pureté** : eau très peu minéralisée (résidu < 100), idéale soif et bébé.
-- **Général** : Pas de recommandation médicale spécifique — classement neutre basé sur conformité réglementaire et équilibre minéral.
-
-### 3. Affichage dans `Classement.tsx`
-
-Remplacer le simple badge actuel (`icon + label + description courte`) par un encadré plus riche, juste sous le sélecteur de profil :
-
-```text
-┌────────────────────────────────────────────────────┐
-│ 👶  Bébé — Préparation des biberons                │
-│ ─────────────────────────────────────────────────  │
-│ Pour qui : nourrissons de 0 à 6 mois               │
-│ Recommandations officielles (Afssa 2003) :         │
-│  • Nitrates < 10 mg/L                              │
-│  • Fluorure < 0,3 mg/L                             │
-│  • Sodium < 20 mg/L                                │
-│  • Résidu sec < 500 mg/L                           │
-│ À éviter : eaux gazeuses, fortement minéralisées   │
-│ Source : Afssa, avis 2003                          │
-└────────────────────────────────────────────────────┘
-```
-
-L'encadré est dépliable (par défaut ouvert sur desktop, replié sur mobile pour économiser l'espace) avec un toggle "Voir les recommandations".
-
-### 4. Fichiers modifiés
-- `src/utils/rankingV2.ts` : ajout du profil `general`, type `Profile` étendu, contenu `recommendations` par profil, helper `getProfileInfo` mis à jour.
-- `src/components/Ranking/RankingProfileSelector.tsx` : ajouter `general` en premier dans la liste.
-- `src/pages/Classement.tsx` : défaut `profile = "general"`, remplacer le mini-badge par le nouvel encadré.
-- Nouveau composant `src/components/Ranking/ProfileRecommendationCard.tsx` (encadré dépliable).
-
-## Question
-
-Souhaitez-vous que le profil "Général" devienne aussi le défaut pour les **nouveaux visiteurs** (donc à la place de `purity` actuellement), ou conserver `purity` pour les utilisateurs revenants ? Par défaut je pars sur **`general` pour tout le monde**.
+Passez en mode build pour que j'applique le changement.
