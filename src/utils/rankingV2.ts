@@ -21,6 +21,13 @@ type Rule =
 
 type Criterion = "nitrates"|"residu"|"calcium"|"magnesium"|"sodium"|"pH"|"bicarbonates"|"sulfates"|"fluorure"|"potassium"|"chlorures";
 
+export type Recommendations = {
+  who: string;
+  guidelines: string[];
+  avoid?: string[];
+  source?: string;
+};
+
 type ProfileConfig = {
   label: string;
   description: string;
@@ -28,6 +35,7 @@ type ProfileConfig = {
   weights: Record<Criterion, number>;
   rules: Record<Criterion, Rule>;
   exclusions?: { criterion: Criterion; maxValue: number; reason: string }[];
+  recommendations?: Recommendations;
 };
 
 const lowBetter = (v:number|undefined, fullAt:number, zeroAt:number) => {
