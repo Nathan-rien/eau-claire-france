@@ -1,4 +1,4 @@
-export type Profile = "daily"|"baby"|"sport"|"low_sodium"|"tea"|"grossesse"|"constipation"|"osteoporose"|"senior"|"digestion";
+export type Profile = "purity"|"daily"|"baby"|"sport"|"low_sodium"|"tea"|"grossesse"|"constipation"|"osteoporose"|"senior"|"digestion";
 
 export type Composition = {
   NO3_mg_L?: number;             // Nitrates
