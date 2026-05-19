@@ -55,6 +55,36 @@ const windowed = (v:number|undefined, min:number, optLow:number, optHigh:number,
 
 // Total des poids = 80 points
 export const PROFILES: Record<Profile, ProfileConfig> = {
+  general: {
+    label: "Général",
+    description: "Classement neutre, sans orientation santé spécifique",
+    icon: "⚖️",
+    weights: { nitrates:10, residu:10, calcium:7, magnesium:7, sodium:8, pH:6, bicarbonates:6, sulfates:8, fluorure:8, potassium:4, chlorures:6 },
+    rules: {
+      nitrates:    { type:"low-better", fullAt:5,    zeroAt:50 },
+      residu:      { type:"window",     min:30,      optLow:150, optHigh:800,  max:2000 },
+      calcium:     { type:"window",     min:0,       optLow:40,  optHigh:250,  max:600 },
+      magnesium:   { type:"window",     min:0,       optLow:10,  optHigh:80,   max:200 },
+      sodium:      { type:"low-better", fullAt:20,   zeroAt:250 },
+      pH:          { type:"window",     min:5.5,     optLow:6.5, optHigh:7.8,  max:9.0 },
+      bicarbonates:{ type:"window",     min:0,       optLow:80,  optHigh:600,  max:2000 },
+      sulfates:    { type:"low-better", fullAt:50,   zeroAt:400 },
+      fluorure:    { type:"low-better", fullAt:0.3,  zeroAt:1.5 },
+      potassium:   { type:"window",     min:0,       optLow:1,   optHigh:20,   max:80 },
+      chlorures:   { type:"low-better", fullAt:20,   zeroAt:200 },
+    },
+    recommendations: {
+      who: "Tous publics — adultes en bonne santé sans besoin spécifique",
+      guidelines: [
+        "Respecte les limites réglementaires françaises (décret 2007-49)",
+        "pH proche neutre (6,5–7,8)",
+        "Minéralisation modérée : résidu sec entre 150 et 800 mg/L",
+        "Nitrates < 10 mg/L recommandés en quotidien",
+        "Fluorure < 1,5 mg/L (limite réglementaire)",
+      ],
+      source: "Classement neutre basé sur les seuils réglementaires français et l'équilibre minéral global. Aucune recommandation médicale spécifique.",
+    },
+  },
   purity: {
     label: "Pureté",
     description: "Eau ultra-pure, idéale bébé et usage quotidien léger",
