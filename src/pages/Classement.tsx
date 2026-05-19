@@ -13,7 +13,7 @@ import RankingFilters, { DEFAULT_FILTERS, RankingFilterState } from '@/component
 import RankingTableView from '@/components/Ranking/RankingTableView';
 import BottleCompareModal from '@/components/Ranking/BottleCompareModal';
 import { Profile, scoreBottle, Composition, CRITERION_LABELS } from '@/utils/rankingV2';
-import { useWaterCompositions, WaterSource } from '@/hooks/useWaterCompositions';
+import { useWaterCompositions } from '@/hooks/useWaterCompositions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { seoData } from '@/utils/seoData';
