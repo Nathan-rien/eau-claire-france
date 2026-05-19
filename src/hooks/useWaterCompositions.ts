@@ -11,6 +11,7 @@ export interface WaterSource {
   is_sparkling: boolean;
   origin: Origin;
   is_mdd: boolean;
+  available_fr: boolean;
   source_url?: string;
   composition: Composition;
 }
@@ -84,6 +85,7 @@ export function useWaterCompositions() {
             Cl_mg_L: getVal('Cl_mg_L'),
           };
 
+          const availStr = getStr('available_fr').toLowerCase();
           parsed.push({
             id: `${brand}-${source_name}`.toLowerCase().replace(/\s+/g, '-'),
             brand,
@@ -92,6 +94,7 @@ export function useWaterCompositions() {
             is_sparkling,
             origin: detectOrigin(location),
             is_mdd: MDD_BRANDS.has(brand),
+            available_fr: availStr === '' ? true : availStr === 'true',
             source_url: getStr('source_url'),
             composition,
           });

@@ -16,6 +16,7 @@ import { Profile, scoreBottle, Composition, CRITERION_LABELS, getProfileInfo } f
 import { useWaterCompositions } from '@/hooks/useWaterCompositions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { seoData } from '@/utils/seoData';
+import { useRegion } from '@/contexts/RegionContext';
 
 const FAVORITES_KEY = 'ranking-water-favorites';
 const MAX_COMPARE = 5;
@@ -45,7 +46,12 @@ const Classement = () => {
   const [compareOpen, setCompareOpen] = useState(false);
 
   const resultsRef = useRef<HTMLDivElement>(null);
-  const { waters, loading, error } = useWaterCompositions();
+  const { waters: allWaters, loading, error } = useWaterCompositions();
+  const { isFrance } = useRegion();
+  const waters = useMemo(
+    () => isFrance ? allWaters.filter(w => w.available_fr) : allWaters,
+    [allWaters, isFrance]
+  );
 
   useEffect(() => {
     try {
@@ -208,8 +214,11 @@ const Classement = () => {
                   </DialogContent>
                 </Dialog>
               </h1>
-              <p className="text-sm text-gray-600 mt-2">
-                <strong>{waters.length}</strong> eaux comparées · {ranked.length} affichées
+              <p className="text-sm text-gray-600 mt-2 flex items-center justify-center gap-2 flex-wrap">
+                <Badge variant="outline" className={isFrance ? 'border-blue-300 text-blue-700 bg-blue-50' : 'border-green-300 text-green-700 bg-green-50'}>
+                  {isFrance ? '🇫🇷 Marché français' : '🇪🇺 Catalogue Europe'}
+                </Badge>
+                <span><strong>{waters.length}</strong> eaux comparées · {ranked.length} affichées</span>
               </p>
             </div>
           </div>
