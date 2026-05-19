@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { ArrowUpDown, ArrowUp, ArrowDown, Star, Plus, Check, Sparkles } from 'lucide-react';
-import { Composition, scoreBottle, letterGrade, Profile, getCompositionForDisplay } from '@/utils/rankingV2';
+import { Composition, scoreBottle, letterGrade, Profile, getCompositionForDisplay, formatMineralValue } from '@/utils/rankingV2';
 import type { WaterSource } from '@/hooks/useWaterCompositions';
 
 type SortKey = 'rank' | 'name' | 'score' | 'residu' | 'calcium' | 'magnesium' | 'sodium' | 'nitrates' | 'pH';
@@ -121,12 +121,12 @@ export default function RankingTableView({
                     {row.letter}
                   </span>
                 </td>
-                <td className="px-2 py-2 text-gray-700">{w.composition.residu_sec_180_mg_L ?? '–'}</td>
-                <td className="px-2 py-2 text-gray-700">{w.composition.Ca_mg_L ?? '–'}</td>
-                <td className="px-2 py-2 text-gray-700">{w.composition.Mg_mg_L ?? '–'}</td>
-                <td className="px-2 py-2 text-gray-700">{w.composition.Na_mg_L ?? '–'}</td>
-                <td className="px-2 py-2 text-gray-700">{w.composition.NO3_mg_L ?? '–'}</td>
-                <td className="px-2 py-2 text-gray-700">{w.composition.pH ?? '–'}</td>
+                <td className="px-2 py-2 text-gray-700">{formatMineralValue(w.composition.residu_sec_180_mg_L, 'residu')}</td>
+                <td className="px-2 py-2 text-gray-700">{formatMineralValue(w.composition.Ca_mg_L, 'calcium')}</td>
+                <td className="px-2 py-2 text-gray-700">{formatMineralValue(w.composition.Mg_mg_L, 'magnesium')}</td>
+                <td className="px-2 py-2 text-gray-700">{formatMineralValue(w.composition.Na_mg_L, 'sodium')}</td>
+                <td className="px-2 py-2 text-gray-700">{formatMineralValue(w.composition.NO3_mg_L, 'nitrates')}</td>
+                <td className="px-2 py-2 text-gray-700">{formatMineralValue(w.composition.pH, 'pH')}</td>
               </tr>
             );
           })}
