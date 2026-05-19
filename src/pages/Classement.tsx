@@ -1,10 +1,10 @@
 "use client";
-import React, { useState, useMemo, useEffect } from 'react';
-import { Trophy, Info, Sparkles, LayoutGrid, Table as TableIcon, Search, Star, X, GitCompare, Check, Plus } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { Trophy, Info, LayoutGrid, Table as TableIcon, Search, Star, X, GitCompare, Check, Plus, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import RankingProfileSelector from '@/components/Ranking/RankingProfileSelector';
@@ -12,17 +12,29 @@ import BottleRankingCard from '@/components/Ranking/BottleRankingCard';
 import RankingFilters, { DEFAULT_FILTERS, RankingFilterState } from '@/components/Ranking/RankingFilters';
 import RankingTableView from '@/components/Ranking/RankingTableView';
 import BottleCompareModal from '@/components/Ranking/BottleCompareModal';
-import { Profile, scoreBottle, Composition, CRITERION_LABELS } from '@/utils/rankingV2';
+import { Profile, scoreBottle, Composition, CRITERION_LABELS, getProfileInfo } from '@/utils/rankingV2';
 import { useWaterCompositions } from '@/hooks/useWaterCompositions';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { seoData } from '@/utils/seoData';
 
 const FAVORITES_KEY = 'ranking-water-favorites';
 const MAX_COMPARE = 5;
 
+function countActiveFilters(f: RankingFilterState): number {
+  let n = 0;
+  if (!f.showSparkling || !f.showStill) n++;
+  if (f.hideExcluded) n++;
+  if (f.showMddOnly) n++;
+  if (f.origins.length !== 3) n++;
+  if (f.residuRange[0] !== 0 || f.residuRange[1] !== 5000) n++;
+  if (f.calciumRange[0] !== 0 || f.calciumRange[1] !== 600) n++;
+  if (f.sodiumRange[0] !== 0 || f.sodiumRange[1] !== 2000) n++;
+  if (f.nitratesMax !== 50) n++;
+  if (f.pHRange[0] !== 5 || f.pHRange[1] !== 9) n++;
+  return n;
+}
+
 const Classement = () => {
-  const { t } = useLanguage();
   const [profile, setProfile] = useState<Profile>("purity");
   const [filters, setFilters] = useState<RankingFilterState>(DEFAULT_FILTERS);
   const [search, setSearch] = useState('');
@@ -32,15 +44,25 @@ const Classement = () => {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [compareOpen, setCompareOpen] = useState(false);
 
+  const resultsRef = useRef<HTMLDivElement>(null);
   const { waters, loading, error } = useWaterCompositions();
 
-  // Load favorites
   useEffect(() => {
     try {
       const raw = localStorage.getItem(FAVORITES_KEY);
       if (raw) setFavorites(new Set(JSON.parse(raw)));
     } catch {}
   }, []);
+
+  // Scroll to results on profile change for clear visual feedback
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [profile]);
 
   const toggleFavorite = (id: string) => {
     setFavorites(prev => {
@@ -106,58 +128,117 @@ const Classement = () => {
       });
   }, [filtered, profile, filters.hideExcluded]);
 
+  const podium = ranked.slice(0, 3);
+  const rest = ranked.slice(3);
+
   const selectedWaters = useMemo(
     () => waters.filter(w => selectedIds.has(w.id)),
     [waters, selectedIds]
   );
 
+  const activeFilterCount = countActiveFilters(filters);
   const criteriaCount = Object.keys(CRITERION_LABELS).length;
+  const profileInfo = getProfileInfo(profile);
+
+  const renderCard = (water: typeof ranked[number]['water'], rank: number | undefined, podiumStyle = false) => (
+    <div key={water.id} className="relative animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <div className="absolute top-2 right-2 z-10 flex gap-1">
+        <button
+          onClick={() => toggleFavorite(water.id)}
+          className="p-1.5 bg-white/90 rounded-full shadow hover:bg-white transition"
+          aria-label="Favori"
+        >
+          <Star className={`w-4 h-4 ${favorites.has(water.id) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`} />
+        </button>
+        <button
+          onClick={() => toggleSelect(water.id)}
+          disabled={!selectedIds.has(water.id) && selectedIds.size >= MAX_COMPARE}
+          className={`p-1.5 rounded-full shadow transition ${selectedIds.has(water.id) ? 'bg-blue-600 text-white' : 'bg-white/90 text-gray-600 hover:bg-white disabled:opacity-40'}`}
+          aria-label="Comparer"
+          title={selectedIds.has(water.id) ? 'Retirer de la comparaison' : 'Ajouter à la comparaison'}
+        >
+          {selectedIds.has(water.id) ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+        </button>
+      </div>
+      <BottleRankingCard
+        name={water.source_name}
+        brand={water.brand}
+        location={water.location}
+        isSparkling={water.is_sparkling}
+        compos={water.composition as Composition}
+        profile={profile}
+        rank={rank}
+        podium={podiumStyle}
+      />
+    </div>
+  );
 
   return (
     <Layout>
       <SEOHead {...seoData.classement} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-        <section className="py-8 md:py-12 px-4">
+        {/* Compact hero */}
+        <section className="py-6 px-4">
           <div className="container mx-auto max-w-6xl">
-            {/* En-tête */}
-            <div className="text-center mb-6">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-2">
-                <Trophy className="w-6 h-6 md:w-8 md:h-8 text-yellow-600" />
+            <div className="text-center mb-4">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center justify-center gap-2 flex-wrap">
+                <Trophy className="w-6 h-6 md:w-7 md:h-7 text-yellow-600" />
                 <span>Classement & comparateur des eaux</span>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button
+                      aria-label="Comment fonctionne le score"
+                      className="text-blue-600 hover:text-blue-800 transition"
+                    >
+                      <HelpCircle className="w-5 h-5" />
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-lg">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-2">
+                        <Info className="w-5 h-5 text-blue-600" /> Comment fonctionne le score ?
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="text-sm text-gray-700 space-y-2">
+                      <p>Chaque eau est notée sur 80 points selon <strong>{criteriaCount} critères</strong> (minéralisation, nitrates, calcium, sodium, pH, etc.) pondérés en fonction du profil choisi.</p>
+                      <p>Le profil <strong>💎 Pureté</strong> valorise les eaux ultra-pures comme Mont Roucous ou Montcalm. Le profil <strong>🦴 Os & calcium</strong> valorise au contraire les eaux fortement minéralisées.</p>
+                      <p>Les valeurs manquantes ne pénalisent pas une eau : le score est normalisé sur les critères disponibles.</p>
+                      <p className="text-amber-700 text-xs mt-2">⚠️ Les eaux marquées « non recommandées » dépassent un seuil critique pour le profil sélectionné.</p>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </h1>
-              <p className="text-base text-gray-600 max-w-2xl mx-auto">
-                {waters.length} eaux comparées sur {criteriaCount} critères. Sélectionnez votre profil et comparez côte-à-côte.
+              <p className="text-sm text-gray-600 mt-2">
+                <strong>{waters.length}</strong> eaux comparées · {ranked.length} affichées
               </p>
             </div>
+          </div>
+        </section>
 
-            {/* Explication score */}
-            <Card className="mb-6 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-blue-800 text-base">
-                  <Info className="w-5 h-5" />
-                  <span>Comment fonctionne le score ?</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-blue-700 text-sm">
-                <p className="mb-2">
-                  Chaque eau est notée sur 80 points selon 11 critères pondérés en fonction du profil choisi.
-                  Le profil <strong>💎 Pureté</strong> valorise les eaux ultra-pures comme Mont Roucous.
-                </p>
-                <div className="text-xs text-blue-600">
-                  ⚠️ Les eaux marquées "non recommandées" dépassent un seuil critique pour le profil sélectionné.
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Profile selector */}
+        {/* Sticky profile selector */}
+        <div className="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b shadow-sm">
+          <div className="container mx-auto max-w-6xl px-4 py-3">
             <RankingProfileSelector value={profile} onChange={setProfile} />
+          </div>
+        </div>
 
-            {/* Search + view toggle + favorites */}
-            <div className="flex flex-wrap gap-3 mb-4 items-center">
+        <section className="py-6 px-4">
+          <div className="container mx-auto max-w-6xl">
+            {/* Profile description badge */}
+            <div className="mb-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-50 to-green-50 border border-blue-100">
+              <span className="text-xl">{profileInfo.icon}</span>
+              <div className="text-sm">
+                <span className="font-semibold text-blue-900">{profileInfo.label}</span>
+                <span className="text-gray-600"> — {profileInfo.description}</span>
+              </div>
+            </div>
+
+            {/* Toolbar */}
+            <div className="flex flex-wrap gap-2 mb-4 items-center">
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  placeholder="Rechercher une marque, source, région..."
+                  placeholder="Rechercher une marque, source, région…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="pl-9"
@@ -174,13 +255,13 @@ const Classement = () => {
               <div className="flex gap-1 bg-white border rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('cards')}
-                  className={`px-2 py-1 rounded text-xs flex items-center gap-1 transition ${viewMode === 'cards' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}
+                  className={`px-2 py-1.5 rounded text-xs flex items-center gap-1 transition ${viewMode === 'cards' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}
                 >
                   <LayoutGrid className="w-3.5 h-3.5" /> Cartes
                 </button>
                 <button
                   onClick={() => setViewMode('table')}
-                  className={`px-2 py-1 rounded text-xs flex items-center gap-1 transition ${viewMode === 'table' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}
+                  className={`px-2 py-1.5 rounded text-xs flex items-center gap-1 transition ${viewMode === 'table' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}
                 >
                   <TableIcon className="w-3.5 h-3.5" /> Tableau
                 </button>
@@ -188,82 +269,79 @@ const Classement = () => {
             </div>
 
             {/* Filters */}
-            <RankingFilters filters={filters} onChange={setFilters} resultCount={ranked.length} />
-
-            {/* Loading */}
-            {loading && (
-              <div className="grid sm:grid-cols-2 gap-4">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="rounded-xl border p-4 bg-white shadow-sm">
-                    <Skeleton className="h-6 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-1/2 mb-4" />
-                    <Skeleton className="h-2 w-full mb-2" />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {error && (
-              <div className="text-center py-12 text-red-500"><p>{error}</p></div>
-            )}
+            <RankingFilters filters={filters} onChange={setFilters} resultCount={ranked.length} activeCount={activeFilterCount} />
 
             {/* Results */}
-            {!loading && !error && (
-              <>
-                {viewMode === 'cards' ? (
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {ranked.map((r, index) => (
-                      <div key={r.water.id} className="relative">
-                        {/* Selection / favorite controls */}
-                        <div className="absolute top-2 right-2 z-10 flex gap-1">
-                          <button
-                            onClick={() => toggleFavorite(r.water.id)}
-                            className="p-1.5 bg-white/90 rounded-full shadow hover:bg-white transition"
-                            aria-label="Favori"
-                          >
-                            <Star className={`w-4 h-4 ${favorites.has(r.water.id) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`} />
-                          </button>
-                          <button
-                            onClick={() => toggleSelect(r.water.id)}
-                            disabled={!selectedIds.has(r.water.id) && selectedIds.size >= MAX_COMPARE}
-                            className={`p-1.5 rounded-full shadow transition ${selectedIds.has(r.water.id) ? 'bg-blue-600 text-white' : 'bg-white/90 text-gray-600 hover:bg-white disabled:opacity-40'}`}
-                            aria-label="Comparer"
-                            title={selectedIds.has(r.water.id) ? 'Retirer de la comparaison' : 'Ajouter à la comparaison'}
-                          >
-                            {selectedIds.has(r.water.id) ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                          </button>
-                        </div>
-                        <BottleRankingCard
-                          name={r.water.source_name}
-                          brand={r.water.brand}
-                          location={r.water.location}
-                          isSparkling={r.water.is_sparkling}
-                          compos={r.water.composition as Composition}
-                          profile={profile}
-                          rank={!r.excluded ? index + 1 : undefined}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <RankingTableView
-                    waters={ranked.map(r => r.water)}
-                    profile={profile}
-                    favorites={favorites}
-                    selectedIds={selectedIds}
-                    onToggleFavorite={toggleFavorite}
-                    onToggleSelect={toggleSelect}
-                  />
-                )}
+            <div ref={resultsRef} className="scroll-mt-24">
+              {loading && (
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="rounded-xl border p-4 bg-white shadow-sm">
+                      <Skeleton className="h-6 w-3/4 mb-2" />
+                      <Skeleton className="h-4 w-1/2 mb-4" />
+                      <Skeleton className="h-2 w-full mb-2" />
+                    </div>
+                  ))}
+                </div>
+              )}
 
-                {ranked.length === 0 && (
-                  <div className="text-center py-12">
-                    <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <p className="text-lg text-gray-500">Aucune eau ne correspond à vos filtres</p>
-                  </div>
-                )}
-              </>
-            )}
+              {error && (
+                <div className="text-center py-12 text-red-500"><p>{error}</p></div>
+              )}
+
+              {!loading && !error && (
+                <>
+                  {viewMode === 'cards' ? (
+                    <div key={profile}>
+                      {podium.length > 0 && (
+                        <div className="mb-6">
+                          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <Trophy className="w-4 h-4 text-yellow-600" /> Podium
+                          </h2>
+                          <div className="grid md:grid-cols-3 gap-4">
+                            {podium.map((r, i) =>
+                              renderCard(r.water, r.excluded ? undefined : i + 1, true)
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {rest.length > 0 && (
+                        <>
+                          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                            Reste du classement
+                          </h2>
+                          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {rest.map((r, i) =>
+                              renderCard(r.water, r.excluded ? undefined : i + 4, false)
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <RankingTableView
+                      waters={ranked.map(r => r.water)}
+                      profile={profile}
+                      favorites={favorites}
+                      selectedIds={selectedIds}
+                      onToggleFavorite={toggleFavorite}
+                      onToggleSelect={toggleSelect}
+                    />
+                  )}
+
+                  {ranked.length === 0 && (
+                    <div className="text-center py-12">
+                      <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <p className="text-lg text-gray-500">Aucune eau ne correspond à vos filtres</p>
+                      <Button variant="outline" className="mt-4" onClick={() => setFilters(DEFAULT_FILTERS)}>
+                        Réinitialiser les filtres
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
 
             {/* Sticky compare bar */}
             {selectedIds.size > 0 && (

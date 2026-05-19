@@ -4,7 +4,7 @@ import { AlertTriangle, Sparkles, Droplets } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function BottleRankingCard({
-  name, brand, location, isSparkling, compos, profile, rank
+  name, brand, location, isSparkling, compos, profile, rank, podium
 }: {
   name: string;
   brand?: string;
@@ -13,6 +13,7 @@ export default function BottleRankingCard({
   compos: Composition;
   profile: Profile;
   rank?: number;
+  podium?: boolean;
 }) {
   const scored = scoreBottle(compos, profile);
   const letter = letterGrade(scored.total);
