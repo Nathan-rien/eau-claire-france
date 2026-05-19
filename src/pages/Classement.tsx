@@ -46,7 +46,12 @@ const Classement = () => {
   const [compareOpen, setCompareOpen] = useState(false);
 
   const resultsRef = useRef<HTMLDivElement>(null);
-  const { waters, loading, error } = useWaterCompositions();
+  const { waters: allWaters, loading, error } = useWaterCompositions();
+  const { isFrance } = useRegion();
+  const waters = useMemo(
+    () => isFrance ? allWaters.filter(w => w.available_fr) : allWaters,
+    [allWaters, isFrance]
+  );
 
   useEffect(() => {
     try {
