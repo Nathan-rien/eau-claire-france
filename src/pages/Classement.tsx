@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import RankingProfileSelector from '@/components/Ranking/RankingProfileSelector';
+import ProfileRecommendationCard from '@/components/Ranking/ProfileRecommendationCard';
 import BottleRankingCard from '@/components/Ranking/BottleRankingCard';
 import RankingFilters, { DEFAULT_FILTERS, RankingFilterState } from '@/components/Ranking/RankingFilters';
 import RankingTableView from '@/components/Ranking/RankingTableView';
