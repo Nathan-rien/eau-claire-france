@@ -1,38 +1,70 @@
-## Plan : Faire remonter Mont Roucous dans le profil Pureté
+## Diagnostic
 
-### Diagnostic
-Mont Roucous **est bien chargée** (ligne 26 du CSV) et n'est pas exclue par les filtres. Mais le profil Pureté la pénalise sur 4 critères alors qu'elle est l'archétype de l'eau ultra-pure :
+**1. Pourquoi Mont Roucous n'apparaît pas en haut**
 
-| Critère | Valeur Mont Roucous | Règle actuelle Pureté | Score actuel | Problème |
-|---|---|---|---|---|
-| pH | 5.8 | window 5.5 / 6.5 / 7.5 / 8.5 | 3/10 | pH bas = pureté, pas un défaut |
-| Calcium | 2.4 mg/L | window 0 / 5 / 80 / 200 | 4.8/10 | Ca bas = pureté, pas un défaut |
-| Magnésium | 0.5 mg/L | window 0 / 1 / 25 / 80 | 5/10 | Mg bas = pureté, pas un défaut |
-| Bicarbonates | 6.3 mg/L | window 0 / 10 / 200 / 600 | 6.3/10 | HCO3 bas = pureté, pas un défaut |
+D'après le scoring actuel du profil Pureté, Mont Roucous obtient ~79/80 mais est pénalisée sur 2 points :
+- **Potassium** (8.2 mg/L) : règle `fullAt:2, zeroAt:15` → score 5.2/10 (alors que le potassium n'a aucune pertinence pour la "pureté")
+- **Sulfates** : valeur manquante dans le CSV → score neutre 5/10 (la donnée absente pénalise injustement les eaux ultra-pures)
 
-Résultat : Mont Roucous score ~70/80 (rang ~5–10) au lieu d'être dans le top 3.
+Résultat : Montcalm (80/80, K=0.6, SO4=10) écrase Mont Roucous, et Voss/autres passent devant. Mont Roucous existe bien dans le CSV (ligne 26) et passe tous les filtres par défaut — elle est seulement reléguée plus bas dans la liste.
 
-Cristaline Aurèle finit n°1 (79.8/80) car ses minéraux modérés tombent dans toutes les fenêtres "optimales".
+**2. Pourquoi les eaux "restent bloquées" au changement de profil**
 
-### Correction
+Le tri se recalcule correctement, mais comme chaque carte garde la même `key={water.id}`, React déplace les nœuds DOM sans aucune transition visuelle ni feedback de scroll. L'utilisateur perçoit que "rien ne bouge" car :
+- pas de reset de scroll en haut de liste
+- pas d'animation de réordonnancement
+- les filtres avancés sont déjà ouverts au-dessus de la liste, donc l'utilisateur ne voit pas le nouveau podium
 
-**Fichier : `src/utils/rankingV2.ts`** — profil `purity` uniquement.
+## Plan
 
-1. **Remplacer les windows par `low-better`** pour Ca, Mg, HCO3 (le moins minéralisé = meilleur en pureté) :
-   - calcium : `low-better` fullAt 30, zeroAt 200
-   - magnesium : `low-better` fullAt 10, zeroAt 80
-   - bicarbonates : `low-better` fullAt 50, zeroAt 600
+### 1. Corriger le scoring Pureté (`src/utils/rankingV2.ts`)
 
-2. **Élargir la fenêtre pH** vers le bas pour ne plus pénaliser les eaux légèrement acides (typiques des sources granitiques pures) :
-   - pH : window 4.5 / 5.5 / 7.5 / 8.5
+- **Potassium en Pureté** : passer de `fullAt:2, zeroAt:15` → `fullAt:10, zeroAt:50` (K n'est pas un marqueur de pureté)
+- **Sulfates en Pureté** : si valeur manquante, traiter comme **neutre haut (10/10)** et non 5/10 — une eau granitique sans SO4 mesuré est par hypothèse pauvre en sulfates
+- **Normalisation du total** : quand `scoreBottle` rencontre une `Composition` avec des champs `undefined`, exclure ces critères du dénominateur et reproportionner le total sur 80. Cela évite que les eaux les plus complètes (Montcalm avec SO4) écrasent celles avec données partielles (Mont Roucous sans SO4)
 
-3. **Rééquilibrer les poids** pour vraiment valoriser les marqueurs de pureté (résidu sec + nitrates + sodium + fluorure) :
-   - residu 16, nitrates 14, sodium 12, fluorure 8, sulfates 8, pH 4, calcium 4, magnésium 4, bicarbonates 4, potassium 2, chlorures 4 (total 80)
+Résultat attendu : Mont Roucous monte à 80/80 ex-aequo avec Montcalm en profil Pureté.
 
-### Résultat attendu
-- Mont Roucous : ~78–79/80 → **Top 3** (avec Montcalm et Rosée de la Reine)
-- Cristaline Aurèle redescend légèrement (résidu 156 > optimum pureté)
-- Le profil Pureté tient enfin sa promesse marketing affichée sur la page.
+### 2. Réagencer la page `/classement` pour plus de clarté
 
-### Aucun autre profil n'est touché
-La modification est strictement limitée au profil `purity`. Quotidien, Bébé, Sport, etc. restent inchangés.
+Nouvelle hiérarchie verticale :
+
+```text
+┌─ Hero compact (titre + 1 ligne explicative + lien "?" info modal) ─┐
+│                                                                     │
+├─ [Profil] sticky en haut quand scroll (avec emoji + label actif)   │
+│                                                                     │
+├─ TOOLBAR (1 ligne) :                                                │
+│   [🔍 Recherche]  [⭐ Favoris]  [⚙️ Filtres (n)]  [📋/📊 Vue]      │
+│                                                                     │
+├─ PODIUM TOP 3 (cards plus grandes, médailles 🥇🥈🥉)               │
+│                                                                     │
+├─ Liste reste du classement (cards compactes, n° de rang visible)   │
+│                                                                     │
+└─ Sticky compare bar (inchangée)                                    │
+```
+
+Modifications concrètes :
+- **Sticky profile selector** : devient sticky `top-0` avec backdrop blur quand l'utilisateur scrolle
+- **Carte info "Comment fonctionne le score"** : remplacée par un bouton `(?)` à côté du titre qui ouvre un Dialog (gagne ~150px verticaux)
+- **Filtres avancés** : repliés par défaut + badge "n actifs" pour signaler quand un filtre non-défaut est appliqué (aujourd'hui le panneau ne signale pas s'il y a des filtres actifs)
+- **Podium top 3** : grille `md:grid-cols-3` avec cartes mises en valeur (bordure dorée/argent/bronze, gros score, médaille). Le reste passe en grille 2 colonnes classique
+- **Animation de tri** : ajouter `layout` Framer Motion sur les cartes pour animer le réordonnancement lors du changement de profil → effet visuel "ça bouge"
+- **Reset scroll** : `window.scrollTo({ top: ..., behavior: 'smooth' })` vers le podium quand le profil change
+- **Description profil active** : afficher dans une bulle plus visible sous le selector (gradient bleu/vert, icône, 1 phrase)
+
+### 3. Petits fix UX
+
+- Indicateur "données partielles" sur la carte uniquement si < 8/11 critères (sinon bruit visuel)
+- Bouton "Réinitialiser tous les filtres" remonté en haut du panneau filtres
+- Mobile : toolbar et profils en horizontal scroll (au lieu de wrap qui prend 3 lignes)
+
+### Fichiers modifiés
+
+- `src/utils/rankingV2.ts` — règles potassium/sulfates Pureté + normalisation par poids effectifs
+- `src/pages/Classement.tsx` — réagencement, sticky selector, podium, scroll reset
+- `src/components/Ranking/RankingProfileSelector.tsx` — version sticky + meilleure description active
+- `src/components/Ranking/BottleRankingCard.tsx` — variante "podium" (taille XL + médaille)
+- `src/components/Ranking/RankingFilters.tsx` — badge "filtres actifs" + reset visible
+
+Aucun changement de schéma de données, aucun fichier CSV touché.

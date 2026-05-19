@@ -36,9 +36,10 @@ interface Props {
   filters: RankingFilterState;
   onChange: (f: RankingFilterState) => void;
   resultCount: number;
+  activeCount?: number;
 }
 
-export default function RankingFilters({ filters, onChange, resultCount }: Props) {
+export default function RankingFilters({ filters, onChange, resultCount, activeCount = 0 }: Props) {
   const [open, setOpen] = useState(false);
 
   const update = <K extends keyof RankingFilterState>(key: K, value: RankingFilterState[K]) => {
@@ -60,10 +61,13 @@ export default function RankingFilters({ filters, onChange, resultCount }: Props
         onClick={() => setOpen(!open)}
         className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Filter className="w-4 h-4 text-gray-600" />
           <span className="font-medium text-sm">Filtres avancés</span>
-          <Badge variant="secondary" className="ml-2">{resultCount} eaux</Badge>
+          <Badge variant="secondary">{resultCount} eaux</Badge>
+          {activeCount > 0 && (
+            <Badge variant="default" className="bg-blue-600">{activeCount} actif{activeCount > 1 ? 's' : ''}</Badge>
+          )}
         </div>
         {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
       </button>
