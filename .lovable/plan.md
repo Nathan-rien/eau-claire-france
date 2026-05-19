@@ -1,42 +1,73 @@
-# Filtrer le classement par marché (France vs Europe)
+# Profil "Général" par défaut + descriptifs enrichis avec recommandations
 
-## Problème
-Le CSV `infoeau_emn_composition_v2_partial.csv` contient 103 eaux mélangeant :
-- eaux françaises (Évian, Volvic, Mont Roucous…)
-- eaux internationales vendues en France (San Pellegrino, Perrier, Acqua Panna, Voss…)
-- eaux internationales **non** distribuées sur le marché français (ex. Apollinaris, Selters, Highland Spring, Fiji selon les cas)
-- eaux régionales/confidentielles peu présentes en GMS française
+## 1. Ajouter un profil "Général" (sélectionné par défaut)
 
-Aujourd'hui `/classement` affiche tout, indépendamment du `RegionContext` (FR/EU dans le header).
+Nouveau profil `general` dans `src/utils/rankingV2.ts`, ajouté en premier dans `PROFILES` et utilisé comme défaut de `Classement.tsx` (à la place de `purity`).
 
-## Objectif
-Quand l'utilisateur est en région **France**, n'afficher que les eaux **réellement disponibles sur le marché français** (GMS, spécialisé, e-commerce mainstream). En région **Europe**, garder le catalogue complet.
+**Principe** : classement neutre, sans biais santé. Une eau est "globalement bonne" si elle :
+- respecte largement les seuils réglementaires français (nitrates < 10, fluorure < 1.5, sulfates < 250 conseillé en quotidien)
+- offre un pH proche neutre (6.5–7.8)
+- a une minéralisation modérée (résidu sec 150–800, ni trop pure ni trop minéralisée pour l'usage courant)
+- présente un équilibre Ca/Mg/Na sans valeur extrême
 
-## Approche
+**Implémentation** : tous les critères utilisent des règles `window` larges autour des valeurs idéales d'une eau "passe-partout", avec des poids équilibrés (~7 chacun, total 80). Pas d'exclusion.
 
-### 1. Ajouter un champ `available_fr` au CSV
-Nouvelle colonne booléenne `available_fr` dans `public/data/infoeau_emn_composition_v2_partial.csv`.
+Icon: `⚖️` (équilibre) — label: `Général` — description courte: `Classement neutre, sans orientation santé spécifique`.
 
-Règle de curation :
-- `true` : toutes les marques distribuées nationalement en France (Évian, Volvic, Contrex, Hépar, Vittel, Cristaline, Mont Roucous, Montcalm, Perrier, Badoit, Salvetat, Quézac, Saint-Yorre, Vichy Célestins, Wattwiller, Plancoët, Thonon, Courmayeur, San Pellegrino, Acqua Panna, Voss, Fiji, Spa, Gerolsteiner, Rozana, Arvie, Chateldon, Orezza, Saint-Géron, Mont Blanc, La Cairolle, MDD Auchan/Carrefour/Leclerc/Lidl/Monoprix/Casino/Intermarché, Laqueuille, Pyrénéa…)
-- `false` : eaux très régionales ou non commercialisées en France (Hydroxydase, Amanda, Nessel, Apollinaris, Selters, Highland Spring, Reine des Basaltes, Faustine, César, Aizac, Arcens, Le Vernet, Puits Saint-Georges, Cilaos, La Française, Prince Noir, Celtic/La Liese, Luchon, Chambon, Alizée, Biovive, Vals, Rosée de la Reine, Saint-Antonin, Aix-les-Bains, Abatilles selon vérification…)
+## 2. Descriptifs enrichis avec recommandations officielles
 
-### 2. Lecture dans le hook
-`src/hooks/useWaterCompositions.ts` : parser `available_fr` et l'exposer sur `WaterSource` (`available_fr: boolean`, défaut `true` si colonne absente pour rétro-compat).
+Étendre `ProfileConfig` avec un champ `recommendations` structuré :
 
-### 3. Filtrage dans `Classement.tsx`
-- Importer `useRegion` depuis `@/contexts/RegionContext`.
-- Dans le `useMemo` `filtered`, si `isFrance`, exclure les eaux dont `available_fr === false`.
-- Mettre à jour le compteur header (« X eaux comparées ») pour refléter le contexte régional.
-- Ajouter un petit indicateur près du compteur : « Marché français » / « Catalogue Europe » lié au `RegionSwitcher` du header.
+```ts
+recommendations: {
+  who: string;          // À qui s'adresse le profil
+  guidelines: string[]; // Recommandations officielles (Afssa, ANSES, OMS, PNNS…)
+  avoid?: string[];     // Ce qu'il faut éviter
+  source?: string;      // Source officielle
+}
+```
 
-### 4. Aucun impact sur `ClassementEurope.tsx`
-Cette page reste sur les données européennes (`eu_water_composition.csv`), pas touchée.
+Exemples de contenu par profil :
 
-## Fichiers modifiés
-- `public/data/infoeau_emn_composition_v2_partial.csv` (ajout colonne + valeurs)
-- `src/hooks/useWaterCompositions.ts` (parse + expose `available_fr`)
-- `src/pages/Classement.tsx` (filtre selon `useRegion()`, badge indicateur)
+- **Bébé** : Afssa 2003 — nitrates < 10 mg/L, fluorure < 0,3 mg/L, sodium < 20 mg/L, résidu sec < 500 mg/L. Mention « convient à l'alimentation des nourrissons » obligatoire.
+- **Grossesse** : ANSES — privilégier eaux riches en calcium (>150 mg/L) et magnésium (>50 mg/L), nitrates < 25 mg/L.
+- **Sport** : INSEP — réhydratation post-effort avec eaux bicarbonatées (>600 mg/L HCO3) et riches en sodium/magnésium.
+- **Régime sans sel** : ANSES/HAS hypertension — sodium < 20 mg/L (mention « convient à un régime pauvre en sodium »).
+- **Os & calcium** : PNNS — calcium > 300 mg/L pour contribuer aux apports (Hépar, Contrex, Courmayeur, Talians).
+- **Transit** : sulfates > 200 mg/L et magnésium > 50 mg/L (Hépar, Hunyadi Janos).
+- **Senior** : équilibre Ca/Mg, surveillance sodium.
+- **Digestion** : bicarbonates > 600 mg/L (Vichy, Saint-Yorre, Badoit).
+- **Thé** : résidu < 150 mg/L, pH neutre.
+- **Pureté** : eau très peu minéralisée (résidu < 100), idéale soif et bébé.
+- **Général** : Pas de recommandation médicale spécifique — classement neutre basé sur conformité réglementaire et équilibre minéral.
 
-## Question ouverte
-La curation `available_fr` repose sur une connaissance marché. Je proposerai une liste explicite dans le PR pour relecture, marquant comme `true` toutes les marques nationales + internationales premium courantes en GMS française, et `false` les eaux confidentielles ou étrangères absentes du marché FR.
+### 3. Affichage dans `Classement.tsx`
+
+Remplacer le simple badge actuel (`icon + label + description courte`) par un encadré plus riche, juste sous le sélecteur de profil :
+
+```text
+┌────────────────────────────────────────────────────┐
+│ 👶  Bébé — Préparation des biberons                │
+│ ─────────────────────────────────────────────────  │
+│ Pour qui : nourrissons de 0 à 6 mois               │
+│ Recommandations officielles (Afssa 2003) :         │
+│  • Nitrates < 10 mg/L                              │
+│  • Fluorure < 0,3 mg/L                             │
+│  • Sodium < 20 mg/L                                │
+│  • Résidu sec < 500 mg/L                           │
+│ À éviter : eaux gazeuses, fortement minéralisées   │
+│ Source : Afssa, avis 2003                          │
+└────────────────────────────────────────────────────┘
+```
+
+L'encadré est dépliable (par défaut ouvert sur desktop, replié sur mobile pour économiser l'espace) avec un toggle "Voir les recommandations".
+
+### 4. Fichiers modifiés
+- `src/utils/rankingV2.ts` : ajout du profil `general`, type `Profile` étendu, contenu `recommendations` par profil, helper `getProfileInfo` mis à jour.
+- `src/components/Ranking/RankingProfileSelector.tsx` : ajouter `general` en premier dans la liste.
+- `src/pages/Classement.tsx` : défaut `profile = "general"`, remplacer le mini-badge par le nouvel encadré.
+- Nouveau composant `src/components/Ranking/ProfileRecommendationCard.tsx` (encadré dépliable).
+
+## Question
+
+Souhaitez-vous que le profil "Général" devienne aussi le défaut pour les **nouveaux visiteurs** (donc à la place de `purity` actuellement), ou conserver `purity` pour les utilisateurs revenants ? Par défaut je pars sur **`general` pour tout le monde**.

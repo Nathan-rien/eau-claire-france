@@ -1,4 +1,4 @@
-export type Profile = "purity"|"daily"|"baby"|"sport"|"low_sodium"|"tea"|"grossesse"|"constipation"|"osteoporose"|"senior"|"digestion";
+export type Profile = "general"|"purity"|"daily"|"baby"|"sport"|"low_sodium"|"tea"|"grossesse"|"constipation"|"osteoporose"|"senior"|"digestion";
 
 export type Composition = {
   NO3_mg_L?: number;             // Nitrates
@@ -21,6 +21,13 @@ type Rule =
 
 type Criterion = "nitrates"|"residu"|"calcium"|"magnesium"|"sodium"|"pH"|"bicarbonates"|"sulfates"|"fluorure"|"potassium"|"chlorures";
 
+export type Recommendations = {
+  who: string;
+  guidelines: string[];
+  avoid?: string[];
+  source?: string;
+};
+
 type ProfileConfig = {
   label: string;
   description: string;
@@ -28,6 +35,7 @@ type ProfileConfig = {
   weights: Record<Criterion, number>;
   rules: Record<Criterion, Rule>;
   exclusions?: { criterion: Criterion; maxValue: number; reason: string }[];
+  recommendations?: Recommendations;
 };
 
 const lowBetter = (v:number|undefined, fullAt:number, zeroAt:number) => {
@@ -47,6 +55,36 @@ const windowed = (v:number|undefined, min:number, optLow:number, optHigh:number,
 
 // Total des poids = 80 points
 export const PROFILES: Record<Profile, ProfileConfig> = {
+  general: {
+    label: "Général",
+    description: "Classement neutre, sans orientation santé spécifique",
+    icon: "⚖️",
+    weights: { nitrates:10, residu:10, calcium:7, magnesium:7, sodium:8, pH:6, bicarbonates:6, sulfates:8, fluorure:8, potassium:4, chlorures:6 },
+    rules: {
+      nitrates:    { type:"low-better", fullAt:5,    zeroAt:50 },
+      residu:      { type:"window",     min:30,      optLow:150, optHigh:800,  max:2000 },
+      calcium:     { type:"window",     min:0,       optLow:40,  optHigh:250,  max:600 },
+      magnesium:   { type:"window",     min:0,       optLow:10,  optHigh:80,   max:200 },
+      sodium:      { type:"low-better", fullAt:20,   zeroAt:250 },
+      pH:          { type:"window",     min:5.5,     optLow:6.5, optHigh:7.8,  max:9.0 },
+      bicarbonates:{ type:"window",     min:0,       optLow:80,  optHigh:600,  max:2000 },
+      sulfates:    { type:"low-better", fullAt:50,   zeroAt:400 },
+      fluorure:    { type:"low-better", fullAt:0.3,  zeroAt:1.5 },
+      potassium:   { type:"window",     min:0,       optLow:1,   optHigh:20,   max:80 },
+      chlorures:   { type:"low-better", fullAt:20,   zeroAt:200 },
+    },
+    recommendations: {
+      who: "Tous publics — adultes en bonne santé sans besoin spécifique",
+      guidelines: [
+        "Respecte les limites réglementaires françaises (décret 2007-49)",
+        "pH proche neutre (6,5–7,8)",
+        "Minéralisation modérée : résidu sec entre 150 et 800 mg/L",
+        "Nitrates < 10 mg/L recommandés en quotidien",
+        "Fluorure < 1,5 mg/L (limite réglementaire)",
+      ],
+      source: "Classement neutre basé sur les seuils réglementaires français et l'équilibre minéral global. Aucune recommandation médicale spécifique.",
+    },
+  },
   purity: {
     label: "Pureté",
     description: "Eau ultra-pure, idéale bébé et usage quotidien léger",
@@ -70,6 +108,17 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       { criterion: "residu", maxValue: 500, reason: "Trop minéralisée pour ce profil pureté" },
       { criterion: "nitrates", maxValue: 15, reason: "Nitrates trop élevés" },
     ],
+    recommendations: {
+      who: "Recherche d'une eau très peu minéralisée — soif quotidienne, biberons, traitements rénaux légers",
+      guidelines: [
+        "Résidu sec < 100 mg/L (eau très faiblement minéralisée)",
+        "Nitrates < 10 mg/L",
+        "Sodium < 20 mg/L",
+        "Fluorure < 0,5 mg/L",
+      ],
+      avoid: ["Eaux fortement minéralisées (Hépar, Contrex, Courmayeur)", "Eaux gazeuses bicarbonatées"],
+      source: "Recommandations Afssa pour eaux faiblement minéralisées (référence : Mont Roucous, Montcalm, Volvic).",
+    },
   },
   daily: {
     label: "Quotidien",
@@ -88,6 +137,16 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       fluorure:    { type:"window",     min:0,       optLow:0.2, optHigh:0.8, max:1.5 },
       potassium:   { type:"window",     min:0,       optLow:2,   optHigh:15,  max:50 },
       chlorures:   { type:"low-better", fullAt:20,   zeroAt:150 },
+    },
+    recommendations: {
+      who: "Adultes en bonne santé, consommation quotidienne",
+      guidelines: [
+        "Résidu sec entre 150 et 500 mg/L (minéralisation moyenne)",
+        "pH proche neutre (6,5–7,8)",
+        "Sodium < 200 mg/L, fluorure < 1,5 mg/L",
+        "Équilibre Ca/Mg favorable aux apports journaliers",
+      ],
+      source: "Recommandations ANSES — eau de consommation courante.",
     },
   },
   baby: {
@@ -113,6 +172,19 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       { criterion: "fluorure", maxValue: 0.5, reason: "Fluorure excessif pour un nourrisson" },
       { criterion: "sulfates", maxValue: 140, reason: "Sulfates trop élevés" },
     ],
+    recommendations: {
+      who: "Nourrissons (0–6 mois), préparation des biberons",
+      guidelines: [
+        "Nitrates < 10 mg/L (limite stricte pour nourrissons)",
+        "Fluorure < 0,3 mg/L",
+        "Sodium < 20 mg/L",
+        "Sulfates < 140 mg/L",
+        "Résidu sec < 500 mg/L",
+        "Mention « convient à l'alimentation des nourrissons » obligatoire sur l'étiquette",
+      ],
+      avoid: ["Eaux gazeuses", "Eaux fortement minéralisées", "Eaux fluorées"],
+      source: "Avis Afssa du 7 octobre 2003 sur l'eau d'alimentation des nourrissons.",
+    },
   },
   sport: {
     label: "Sport",
@@ -131,6 +203,16 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       fluorure:    { type:"low-better", fullAt:0.5,  zeroAt:2.0 },
       potassium:   { type:"window",     min:5,       optLow:20,  optHigh:100,  max:250 },
       chlorures:   { type:"window",     min:10,      optLow:30,  optHigh:100,  max:200 },
+    },
+    recommendations: {
+      who: "Sportifs — récupération et compensation des pertes sudorales",
+      guidelines: [
+        "Eaux bicarbonatées (HCO3 > 600 mg/L) pour neutraliser l'acidité musculaire",
+        "Magnésium > 50 mg/L pour prévenir les crampes",
+        "Calcium > 150 mg/L et sodium 20–150 mg/L pour compenser les pertes",
+        "Résidu sec 500–1500 mg/L (eau minérale)",
+      ],
+      source: "Recommandations INSEP / Société Française de Nutrition du Sport (références : Saint-Yorre, Quézac, Rozana, Badoit).",
     },
   },
   low_sodium: {
@@ -154,6 +236,16 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
     exclusions: [
       { criterion: "sodium", maxValue: 20, reason: "Sodium trop élevé pour un régime hyposodé" },
     ],
+    recommendations: {
+      who: "Hypertension artérielle, insuffisance cardiaque, régime hyposodé prescrit",
+      guidelines: [
+        "Sodium < 20 mg/L (mention « convient à un régime pauvre en sodium »)",
+        "Apport total quotidien de sel < 5 g/jour (OMS)",
+        "Privilégier les eaux faiblement minéralisées",
+      ],
+      avoid: ["Eaux gazeuses sodiques (Vichy, Saint-Yorre, Badoit, Rozana)", "Eaux > 50 mg/L de sodium"],
+      source: "Recommandations HAS pour l'hypertension artérielle et OMS sur l'apport sodé.",
+    },
   },
   tea: {
     label: "Thé & infusions",
@@ -172,6 +264,16 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       fluorure:    { type:"window",     min:0,       optLow:0.1, optHigh:0.5, max:1.0 },
       potassium:   { type:"low-better", fullAt:5,    zeroAt:30 },
       chlorures:   { type:"low-better", fullAt:15,   zeroAt:60 },
+    },
+    recommendations: {
+      who: "Préparation du thé, café, infusions — préserver les arômes",
+      guidelines: [
+        "Résidu sec < 150 mg/L (eau peu minéralisée)",
+        "pH neutre (6,8–7,5)",
+        "Bicarbonates < 200 mg/L pour éviter l'altération des tanins",
+        "Calcium < 80 mg/L pour limiter le voile en surface",
+      ],
+      source: "Référentiels des écoles de thé (Palais des Thés, Mariage Frères) — eaux conseillées : Volvic, Mont Roucous, Montcalm.",
     },
   },
   grossesse: {
@@ -196,6 +298,17 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       { criterion: "nitrates", maxValue: 25, reason: "Nitrates trop élevés pour la grossesse" },
       { criterion: "fluorure", maxValue: 1.0, reason: "Fluorure excessif" },
     ],
+    recommendations: {
+      who: "Femmes enceintes ou allaitantes",
+      guidelines: [
+        "Calcium > 150 mg/L (besoins majorés à 1000 mg/jour)",
+        "Magnésium > 50 mg/L (prévention crampes et HTA gravidique)",
+        "Nitrates < 25 mg/L",
+        "Fluorure < 1 mg/L",
+        "Sodium < 100 mg/L (prévention rétention hydrique)",
+      ],
+      source: "Recommandations ANSES et CNGOF (Collège National des Gynécologues et Obstétriciens Français).",
+    },
   },
   constipation: {
     label: "Transit",
@@ -214,6 +327,16 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       fluorure:    { type:"low-better", fullAt:0.5,  zeroAt:2.0 },
       potassium:   { type:"window",     min:5,       optLow:15,  optHigh:50,   max:100 },
       chlorures:   { type:"low-better", fullAt:30,   zeroAt:150 },
+    },
+    recommendations: {
+      who: "Constipation occasionnelle, paresse intestinale",
+      guidelines: [
+        "Sulfates > 200 mg/L (effet laxatif osmotique)",
+        "Magnésium > 50 mg/L (action sur le péristaltisme)",
+        "Cure courte : 1 à 1,5 L/jour sur quelques jours",
+      ],
+      avoid: ["Usage prolongé sans avis médical (risque de déséquilibre)"],
+      source: "Références hydrologie médicale (eaux sulfatées magnésiennes : Hépar, Hunyadi Janos, Donat Mg).",
     },
   },
   osteoporose: {
@@ -234,6 +357,15 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       potassium:   { type:"window",     min:2,       optLow:5,   optHigh:20,   max:50 },
       chlorures:   { type:"low-better", fullAt:20,   zeroAt:100 },
     },
+    recommendations: {
+      who: "Prévention ostéoporose, croissance osseuse, post-ménopause",
+      guidelines: [
+        "Calcium > 300 mg/L (contribue significativement aux 1000–1200 mg/jour requis)",
+        "Bicarbonates > 250 mg/L (favorise la biodisponibilité du calcium)",
+        "Mention « convient à un régime riche en calcium » dès 150 mg/L",
+      ],
+      source: "Recommandations PNNS (Programme National Nutrition Santé) — références : Hépar, Contrex, Courmayeur, Talians, Salvetat.",
+    },
   },
   senior: {
     label: "Senior",
@@ -253,6 +385,16 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       potassium:   { type:"window",     min:2,       optLow:5,   optHigh:20,  max:50 },
       chlorures:   { type:"low-better", fullAt:20,   zeroAt:100 },
     },
+    recommendations: {
+      who: "Personnes âgées (65+) — hydratation, prévention chutes et dénutrition",
+      guidelines: [
+        "1,5 L/jour minimum (sensation de soif diminuée avec l'âge)",
+        "Calcium 100–250 mg/L (prévention ostéoporose)",
+        "Magnésium 40–100 mg/L",
+        "Sodium < 80 mg/L (prévention HTA fréquente après 65 ans)",
+      ],
+      source: "Recommandations PNNS Senior et Société Française de Gériatrie.",
+    },
   },
   digestion: {
     label: "Digestion",
@@ -271,6 +413,16 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       fluorure:    { type:"low-better", fullAt:0.5,  zeroAt:2.0 },
       potassium:   { type:"window",     min:10,      optLow:30,  optHigh:100,  max:200 },
       chlorures:   { type:"window",     min:20,      optLow:50,  optHigh:150,  max:300 },
+    },
+    recommendations: {
+      who: "Digestion difficile, reflux, repas copieux",
+      guidelines: [
+        "Bicarbonates > 600 mg/L (effet antiacide naturel)",
+        "Consommation après repas, à température ambiante",
+        "Préférer les eaux gazeuses bicarbonatées sodiques",
+      ],
+      avoid: ["Utilisation quotidienne intensive en cas d'HTA (sodium élevé)"],
+      source: "Hydrologie médicale — références : Vichy Célestins, Saint-Yorre, Badoit, Quézac, Rozana.",
     },
   },
 };
