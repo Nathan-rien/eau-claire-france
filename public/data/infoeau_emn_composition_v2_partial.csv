@@ -58,3 +58,47 @@ Pyrénéa,Pyrénéa,Pyrénées,False,7.4,282.0,230.0,78.0,6.0,0.2,8.0,2.0,1.0,,4
 Saint-Martin d'Abbat,Saint-Martin d'Abbat,Saint-Martin-d'Abbat (Loiret),False,7.5,320.0,270.0,95.0,10.0,0.2,7.0,4.0,2.0,,9.0,15.0,https://www.roxane.fr
 Louise,Louise,Andrézieux-Bouthéon (Loire),False,7.4,290.0,240.0,60.0,8.0,0.3,18.0,3.0,2.5,,8.0,12.0,https://www.roxane.fr
 Ophélie,Ophélie,Saint-Cyr-en-Val (Loiret),False,7.6,310.0,260.0,98.0,9.0,0.2,5.0,2.0,1.5,,7.0,10.0,https://www.roxane.fr
+Courmayeur,Courmayeur,Courmayeur (Italie),False,7.4,2080.0,168.0,517.0,1.0,0.5,67.0,2.0,1.6,,1.6,1371.0,https://www.courmayeur.com
+Mont Blanc,Mont Blanc,Saint-Gervais (Haute-Savoie),False,7.5,167.0,156.0,32.0,2.0,0.05,7.0,0.8,1.0,,3.0,4.0,https://www.mont-blanc.com
+Carola,Carola Rouge,Ribeauvillé (Haut-Rhin),True,6.5,580.0,452.0,93.0,18.0,0.4,30.0,3.0,3.0,,18.0,55.0,https://www.carola.fr
+Carola,Carola Verte,Ribeauvillé (Haut-Rhin),False,7.4,260.0,200.0,72.0,5.0,0.3,8.0,1.5,1.5,,4.0,18.0,https://www.carola.fr
+Vals,Vivaraise,Vals-les-Bains (Ardèche),True,6.5,1830.0,1700.0,45.0,40.0,1.0,21.0,1.0,80.0,,450.0,38.0,https://www.vals.fr
+Rosée de la Reine,Rosée de la Reine,Saint-Lager-Bressac (Ardèche),False,6.8,90.0,75.0,12.0,4.0,0.1,2.5,1.5,1.0,,4.5,4.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises
+Spa,Spa Reine,Spa (Belgique),False,6.0,33.0,11.0,3.5,5.0,1.1,1.3,1.9,0.5,,3.0,3.5,https://www.spa.be
+Spa,Spa Marie-Henriette,Spa (Belgique),True,5.8,330.0,250.0,46.0,7.0,0.7,13.0,2.0,2.0,,17.0,30.0,https://www.spa.be
+Saint-Géron,Saint-Géron,Saint-Géron (Haute-Loire),True,6.3,2900.0,2685.0,160.0,40.0,1.3,75.0,1.0,140.0,,440.0,20.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises
+Saint-Antonin,Saint-Antonin,Saint-Antonin-Noble-Val (Tarn-et-Garonne),False,7.2,330.0,280.0,86.0,3.0,0.1,8.0,1.0,1.5,,3.5,12.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises
+San Pellegrino,San Pellegrino,San Pellegrino Terme (Italie),True,7.7,949.0,219.0,178.0,53.5,0.5,53.5,1.0,3.0,,32.0,415.0,https://www.sanpellegrino.com
+Acqua Panna,Acqua Panna,Toscane (Italie),False,8.0,156.0,108.0,32.7,7.4,0.13,6.5,4.1,1.0,,6.4,22.0,https://www.acquapanna.com
+Fiji,Fiji Natural Artesian,Yaqara (Fidji),False,7.7,222.0,154.0,18.0,9.0,0.24,15.0,0.3,5.0,,18.0,2.0,https://www.fijiwater.com
+Highland Spring,Highland Spring,Blackford (Écosse),False,7.8,210.0,167.0,40.0,8.0,0.05,12.0,0.5,0.6,,6.0,8.0,https://www.highlandspring.com
+Voss,Voss Still,Vatnestrøm (Norvège),False,6.0,44.0,16.0,5.0,8.0,0.1,1.0,0.5,0.4,,6.0,4.0,https://www.vosswater.com
+Gerolsteiner,Gerolsteiner Sprudel,Gerolstein (Allemagne),True,6.2,2528.0,1817.0,348.0,40.0,0.1,108.0,3.0,11.0,,118.0,38.0,https://www.gerolsteiner.de
+Apollinaris,Apollinaris,Bad Neuenahr (Allemagne),True,6.0,2650.0,1810.0,90.0,130.0,0.3,120.0,4.0,30.0,,470.0,100.0,https://www.apollinaris.de
+Selters,Selters Classic,Selters (Allemagne),True,6.3,1840.0,1846.0,251.0,38.0,1.0,77.0,3.0,11.0,,177.0,38.0,https://www.selters.de
+Vittel,Vittel Bonne Source,Vittel (Vosges),False,7.5,841.0,402.0,202.0,1.0,0.3,43.0,4.6,1.0,,3.8,306.0,https://www.vittel.fr
+Cristaline,Cristaline Saint-Cyr,Saint-Cyr-en-Val (Loiret),False,7.6,308.0,265.0,98.0,7.0,0.2,5.5,2.0,2.0,,8.0,11.0,https://www.cristaline.com
+Cristaline,Cristaline Aurèle,Aurelle-Verlac (Aveyron),False,7.3,156.0,128.0,42.0,3.0,0.1,8.0,1.0,1.0,,4.0,5.0,https://www.cristaline.com
+Auchan,Eau de Source Auchan,Saint-Yorre (Allier),False,7.4,290.0,240.0,88.0,5.0,0.2,7.0,2.0,1.5,,6.0,10.0,https://www.auchan.fr
+Carrefour,Source Montagne Carrefour,Sources des Pyrénées,False,7.6,180.0,148.0,42.0,4.0,0.1,9.0,1.5,1.0,,4.5,6.0,https://www.carrefour.fr
+Leclerc,Eco+ Eau de Source,Multi-sources,False,7.5,250.0,210.0,75.0,6.0,0.15,8.0,2.0,1.2,,5.5,8.0,https://www.leclerc.com
+Lidl,Saskia Quelle,Source Lidl (Allemagne),False,7.4,200.0,170.0,55.0,5.0,0.1,10.0,1.5,0.8,,5.0,7.0,https://www.lidl.fr
+Monoprix,Eau de Source Monoprix,Saint-Yorre (Allier),False,7.5,260.0,220.0,78.0,5.0,0.2,7.5,1.5,1.5,,5.5,9.0,https://www.monoprix.fr
+Casino,Eau de Source Casino,Vosges,False,7.6,310.0,250.0,90.0,6.0,0.15,8.0,2.0,1.5,,6.0,11.0,https://www.casino.fr
+Intermarché,Pierval,Saint-Yorre (Allier),False,7.5,280.0,230.0,84.0,5.0,0.2,7.0,1.8,1.4,,5.5,10.0,https://www.intermarche.com
+Vernière,Vernière,Lamalou-les-Bains (Hérault),True,6.4,3325.0,2820.0,200.0,250.0,3.5,75.0,2.0,140.0,,790.0,30.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises
+La Salvetat,La Salvetat,La Salvetat-sur-Agout (Hérault),True,6.0,253.0,205.0,160.0,4.0,0.6,11.0,1.0,3.0,,11.0,3.0,https://www.lasalvetat.com
+Wattwiller,Wattwiller plate,Wattwiller (Haut-Rhin),False,7.5,335.0,160.0,98.0,4.0,0.5,11.0,2.0,2.5,,3.0,135.0,https://www.wattwiller.com
+Wattwiller,Wattwiller fines bulles,Wattwiller (Haut-Rhin),True,7.0,335.0,160.0,98.0,4.0,0.5,11.0,2.0,2.5,,3.0,135.0,https://www.wattwiller.com
+Évian,Évian,Évian-les-Bains (Haute-Savoie),False,7.2,345.0,357.0,80.0,4.5,0.1,26.0,3.7,1.0,,6.5,12.6,https://www.evian.com
+Volvic,Volvic,Volvic (Puy-de-Dôme),False,7.0,130.0,71.0,11.5,13.5,0.2,8.0,6.3,6.2,,11.6,8.1,https://www.volvic.fr
+Contrex,Contrex,Contrexéville (Vosges),False,7.3,2125.0,403.0,486.0,10.0,0.4,84.0,2.7,3.2,,9.4,1187.0,https://www.contrex.fr
+Hépar,Hépar,Vittel (Vosges),False,7.2,2580.0,403.0,549.0,19.0,0.4,119.0,4.0,4.0,,14.2,1530.0,https://www.heparcontrex.fr
+Badoit,Badoit Verte,Saint-Galmier (Loire),True,6.0,1200.0,1300.0,190.0,40.0,1.2,85.0,7.0,10.0,,150.0,38.0,https://www.badoit.com
+Perrier,Perrier,Vergèze (Gard),True,5.5,475.0,390.0,150.0,21.5,0.1,4.0,18.0,1.0,,11.8,33.0,https://www.perrier.com
+Vichy Célestins,Vichy Célestins,Vichy (Allier),True,7.0,3325.0,2989.0,103.0,235.0,6.0,10.0,1.0,66.0,,1172.0,138.0,https://www.vichy-celestins.com
+Saint-Yorre,Saint-Yorre,Saint-Yorre (Allier),True,6.6,4774.0,4368.0,90.0,322.0,8.5,11.0,1.0,132.0,,1708.0,174.0,https://www.saint-yorre.com
+Quézac,Quézac,Quézac (Lozère),True,6.4,1010.0,1685.0,241.0,40.0,1.0,95.0,1.0,50.0,,255.0,143.0,https://www.quezac.com
+Arvie,Arvie,Le Vernet-Sainte-Marguerite (Puy-de-Dôme),True,6.5,2552.0,2195.0,170.0,387.0,0.9,92.0,1.0,130.0,,650.0,31.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises
+Plancoët,Plancoët Source Sassay,Plancoët (Côtes-d'Armor),False,7.5,300.0,288.0,36.0,12.0,0.7,32.0,2.0,2.0,,7.0,5.0,https://www.eauxdeplancoet.fr
+Pyrénéa,Pyrénéa,Ogeu-les-Bains (Pyrénées-Atlantiques),False,7.6,177.0,150.0,48.0,5.0,0.5,11.0,2.0,1.5,,4.5,7.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises
