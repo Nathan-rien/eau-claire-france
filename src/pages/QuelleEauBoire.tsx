@@ -456,16 +456,16 @@ const QuelleEauBoire: React.FC<QuelleEauBoireProps> = ({ initialMode }) => {
           <div className="container mx-auto">
             <Breadcrumb items={[{ name: t('breadcrumb.waterRecommendation'), href: '/quelle-eau-boire', current: true }]} />
           </div>
-          <div className="container mx-auto py-6 md:py-8 px-4 max-w-2xl">
+          <div className="container mx-auto pt-2 md:pt-3 pb-6 md:pb-8 px-4 max-w-2xl">
             <button
               onClick={handleBackToChoice}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 min-h-[44px]"
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-3 min-h-[44px]"
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="text-sm">Retour au choix</span>
             </button>
 
-            <div className="text-center mb-6 md:mb-8">
+            <div className="text-center mb-4 md:mb-6">
               <div className="inline-flex items-center gap-2 mb-3">
                 <Zap className="w-5 h-5 text-primary" />
                 <h1 className="text-xl md:text-2xl font-bold">Diagnostic rapide</h1>
@@ -577,16 +577,16 @@ const QuelleEauBoire: React.FC<QuelleEauBoireProps> = ({ initialMode }) => {
           <Breadcrumb items={[{ name: t('breadcrumb.waterRecommendation'), href: '/quelle-eau-boire', current: true }]} />
         </div>
         
-        <div className="container mx-auto py-6 md:py-8 px-4 max-w-4xl">
+        <div className="container mx-auto pt-2 md:pt-3 pb-6 md:pb-8 px-4 max-w-4xl">
           <button
             onClick={handleBackToChoice}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 min-h-[44px]"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-3 min-h-[44px]"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm">Retour au choix</span>
           </button>
 
-          <div className="text-center mb-6 md:mb-8">
+          <div className="text-center mb-4 md:mb-6">
             <div className="inline-flex items-center gap-2 mb-3">
               <ClipboardList className="w-5 h-5 text-muted-foreground" />
               <h1 className="text-2xl md:text-3xl font-bold">Diagnostic complet</h1>
