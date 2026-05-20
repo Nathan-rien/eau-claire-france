@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -32,8 +33,13 @@ const quickObjectives = [
   { id: 'pure', name: 'Eau la plus pure', icon: Search, preferenceId: 'eau-legere' },
 ];
 
-const QuelleEauBoire: React.FC = () => {
+interface QuelleEauBoireProps {
+  initialMode?: 'quick' | 'full';
+}
+
+const QuelleEauBoire: React.FC<QuelleEauBoireProps> = ({ initialMode }) => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   
   const faqData = [
     { question: "Comment choisir la meilleure eau en bouteille selon mon profil ?", answer: "Notre outil d'aide au choix prend en compte votre profil (femme enceinte, sportif, etc.), vos intolérances et préférences pour recommander les eaux les plus adaptées à vos besoins spécifiques." },
@@ -42,7 +48,7 @@ const QuelleEauBoire: React.FC = () => {
     { question: "Comment éviter les eaux trop riches en sodium ?", answer: "Sélectionnez l'option 'Hypertension' ou 'Pauvre en sodium' dans nos filtres pour obtenir uniquement des eaux avec moins de 20 mg/L de sodium." }
   ];
 
-  const [mode, setMode] = useState<DiagnosticMode>(null);
+  const [mode, setMode] = useState<DiagnosticMode>(initialMode ?? null);
   const [selectedWaterType, setSelectedWaterType] = useState<string>('all');
   const [selectedProfiles, setSelectedProfiles] = useState<string[]>([]);
   const [selectedIntolerances, setSelectedIntolerances] = useState<string[]>([]);
@@ -147,6 +153,7 @@ const QuelleEauBoire: React.FC = () => {
     setQuickWaterType('all');
     setQuickProfile(null);
     setQuickObjective(null);
+    navigate('/quelle-eau-boire');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -291,8 +298,8 @@ const QuelleEauBoire: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* Quick diagnostic */}
-              <button
-                onClick={() => { setMode('quick'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              <Link
+                to="/quelle-eau-boire/rapide"
                 className="group text-left"
               >
                 <Card className="h-full transition-all duration-200 hover:shadow-lg hover:border-primary/50 active:scale-[0.98] cursor-pointer">
@@ -309,11 +316,11 @@ const QuelleEauBoire: React.FC = () => {
                     <Badge variant="secondary" className="mt-auto">⚡ Rapide</Badge>
                   </CardContent>
                 </Card>
-              </button>
+              </Link>
 
               {/* Full diagnostic */}
-              <button
-                onClick={() => { setMode('full'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              <Link
+                to="/quelle-eau-boire/complet"
                 className="group text-left"
               >
                 <Card className="h-full transition-all duration-200 hover:shadow-lg hover:border-primary/50 active:scale-[0.98] cursor-pointer">
@@ -330,8 +337,9 @@ const QuelleEauBoire: React.FC = () => {
                     <Badge variant="outline" className="mt-auto">📋 6 étapes</Badge>
                   </CardContent>
                 </Card>
-              </button>
+              </Link>
             </div>
+
 
             {/* SEO Content Sections */}
             <div className="mt-12 md:mt-16 space-y-10 md:space-y-12 max-w-3xl mx-auto">

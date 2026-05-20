@@ -38,10 +38,14 @@ const WaterRecommendationSkeleton = () => (
   </div>
 );
 
-const LazyWaterRecommendation: React.FC = () => {
+interface LazyWaterRecommendationProps {
+  initialMode?: 'quick' | 'full';
+}
+
+const LazyWaterRecommendation: React.FC<LazyWaterRecommendationProps> = ({ initialMode }) => {
   return (
     <Suspense fallback={<WaterRecommendationSkeleton />}>
-      <QuelleEauBoire />
+      <QuelleEauBoire initialMode={initialMode} />
     </Suspense>
   );
 };
