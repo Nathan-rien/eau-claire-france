@@ -21,6 +21,7 @@ const letterColor = (l: string) => ({
   C: 'bg-yellow-50 text-yellow-700',
   D: 'bg-orange-50 text-orange-600',
   E: 'bg-red-50 text-red-600',
+  X: 'bg-red-100 text-red-700 border border-red-300',
 }[l] || 'bg-gray-100 text-gray-600');
 
 export default function RankingTableView({
