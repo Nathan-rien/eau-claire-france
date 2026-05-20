@@ -87,7 +87,7 @@ const Index = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Link to="/quelle-eau-boire" className="group">
+              <Link to="/quelle-eau-boire/rapide" className="group">
                 <Card className="h-full border-2 border-primary/20 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
                   <CardHeader className="text-center pb-2">
                     <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
@@ -106,7 +106,7 @@ const Index = () => {
                 </Card>
               </Link>
 
-              <Link to="/quelle-eau-boire" className="group">
+              <Link to="/quelle-eau-boire/complet" className="group">
                 <Card className="h-full border-2 border-primary/20 hover:border-primary/50 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
                   <CardHeader className="text-center pb-2">
                     <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 bg-cyan-100 text-primary">

@@ -107,6 +107,8 @@ const App = () => {
                 <Route path="/comparatif-bouteilles" element={<Navigate to="/classement" replace />} />
                 <Route path="/bouteilles" element={<Navigate to="/classement" replace />} />
                 <Route path="/quelle-eau-boire" element={<LazyWaterRecommendation />} />
+                <Route path="/quelle-eau-boire/rapide" element={<LazyWaterRecommendation initialMode="quick" />} />
+                <Route path="/quelle-eau-boire/complet" element={<LazyWaterRecommendation initialMode="full" />} />
                 <Route path="/classement" element={<Classement />} />
                 <Route path="/polluants" element={<Polluants />} />
                 <Route path="/auth" element={<Auth />} />
