@@ -194,9 +194,11 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       chlorures:   { type:"low-better", fullAt:15,   zeroAt:50 },
     },
     exclusions: [
-      { criterion: "nitrates", maxValue: 15, reason: "Nitrates trop élevés pour un bébé" },
-      { criterion: "fluorure", maxValue: 0.5, reason: "Fluorure excessif pour un nourrisson" },
-      { criterion: "sulfates", maxValue: 140, reason: "Sulfates trop élevés" },
+      { criterion: "nitrates", maxValue: 10, reason: "Nitrates > 10 mg/L : limite stricte pour nourrissons (Afssa)" },
+      { criterion: "fluorure", maxValue: 0.3, reason: "Fluorure > 0,3 mg/L : risque de fluorose dentaire chez le nourrisson" },
+      { criterion: "sulfates", maxValue: 140, reason: "Sulfates trop élevés pour un nourrisson" },
+      { criterion: "sodium", maxValue: 20, reason: "Sodium trop élevé pour la préparation des biberons" },
+      { criterion: "residu", maxValue: 500, reason: "Eau trop minéralisée pour un nourrisson" },
     ],
     recommendations: {
       who: "Nourrissons (0–6 mois), préparation des biberons",
