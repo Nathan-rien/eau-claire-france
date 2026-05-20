@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { ArrowUpDown, ArrowUp, ArrowDown, Star, Plus, Check, Sparkles } from 'lucide-react';
-import { Composition, scoreBottle, letterGrade, Profile, getCompositionForDisplay, formatMineralValue } from '@/utils/rankingV2';
+import { Composition, scoreBottle, letterGrade, Profile, getCompositionForDisplay, formatMineralValue, compareRanked } from '@/utils/rankingV2';
 import type { WaterSource } from '@/hooks/useWaterCompositions';
 
 type SortKey = 'rank' | 'name' | 'score' | 'residu' | 'calcium' | 'magnesium' | 'sodium' | 'nitrates' | 'pH';
