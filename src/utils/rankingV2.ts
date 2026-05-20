@@ -82,6 +82,14 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       potassium:   { type:"window",     min:0,       optLow:1,   optHigh:20,   max:80 },
       chlorures:   { type:"low-better", fullAt:20,   zeroAt:200 },
     },
+    exclusions: [
+      { criterion: "residu", maxValue: 1500, reason: "Eau extrêmement minéralisée (usage thérapeutique, non quotidien)" },
+      { criterion: "sodium", maxValue: 200, reason: "Sodium trop élevé pour un usage quotidien" },
+      { criterion: "nitrates", maxValue: 50, reason: "Nitrates au-dessus de la limite réglementaire" },
+      { criterion: "fluorure", maxValue: 1.5, reason: "Fluorure au-dessus de la limite réglementaire" },
+      { criterion: "sulfates", maxValue: 500, reason: "Sulfates très élevés (effet laxatif marqué)" },
+      { criterion: "magnesium", maxValue: 100, reason: "Magnésium très élevé (effet laxatif marqué)" },
+    ],
     recommendations: {
       who: "Tous publics — adultes en bonne santé sans besoin spécifique",
       guidelines: [
