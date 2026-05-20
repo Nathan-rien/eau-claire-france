@@ -422,6 +422,11 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       potassium:   { type:"window",     min:2,       optLow:5,   optHigh:20,  max:50 },
       chlorures:   { type:"low-better", fullAt:20,   zeroAt:100 },
     },
+    exclusions: [
+      { criterion: "nitrates", maxValue: 25, reason: "Nitrates élevés" },
+      { criterion: "fluorure", maxValue: 1.2, reason: "Fluorure élevé pour un senior" },
+      { criterion: "sodium", maxValue: 100, reason: "Sodium élevé (HTA fréquente après 65 ans)" },
+    ],
     recommendations: {
       who: "Personnes âgées (65+) — hydratation, prévention chutes et dénutrition",
       guidelines: [
