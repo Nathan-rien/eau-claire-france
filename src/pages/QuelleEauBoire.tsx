@@ -298,8 +298,8 @@ const QuelleEauBoire: React.FC<QuelleEauBoireProps> = ({ initialMode }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* Quick diagnostic */}
-              <button
-                onClick={() => { setMode('quick'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              <Link
+                to="/quelle-eau-boire/rapide"
                 className="group text-left"
               >
                 <Card className="h-full transition-all duration-200 hover:shadow-lg hover:border-primary/50 active:scale-[0.98] cursor-pointer">
@@ -316,11 +316,11 @@ const QuelleEauBoire: React.FC<QuelleEauBoireProps> = ({ initialMode }) => {
                     <Badge variant="secondary" className="mt-auto">⚡ Rapide</Badge>
                   </CardContent>
                 </Card>
-              </button>
+              </Link>
 
               {/* Full diagnostic */}
-              <button
-                onClick={() => { setMode('full'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              <Link
+                to="/quelle-eau-boire/complet"
                 className="group text-left"
               >
                 <Card className="h-full transition-all duration-200 hover:shadow-lg hover:border-primary/50 active:scale-[0.98] cursor-pointer">
@@ -337,8 +337,9 @@ const QuelleEauBoire: React.FC<QuelleEauBoireProps> = ({ initialMode }) => {
                     <Badge variant="outline" className="mt-auto">📋 6 étapes</Badge>
                   </CardContent>
                 </Card>
-              </button>
+              </Link>
             </div>
+
 
             {/* SEO Content Sections */}
             <div className="mt-12 md:mt-16 space-y-10 md:space-y-12 max-w-3xl mx-auto">
