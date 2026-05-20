@@ -43,9 +43,8 @@ Permettre à chaque citoyen de connaître la qualité de l'eau qu'il boit, qu'el
 - Algorithme transparent documenté sur /methodologie
 
 ### Pages associées
-- `/comparatif-bouteilles` : tableau comparatif interactif avec filtres par minéral, tri, sélection multiple
+- `/classement` : **page principale** — comparateur ET classement complet des eaux en bouteille. Tableau interactif filtrable par minéral, tri, sélection multi-eaux, score global et par profil. Inclut Evian, Contrex, Hépar, Volvic, Mont Roucous, Badoit, Vittel, Cristaline, Wattwiller, Thonon, Montcalm, Sainte-Sophie, etc. Top du profil Général : Sainte-Sophie, Évian, Thonon, Mont Roucous, Volvic. Top Pureté : Mont Roucous, Montcalm, Voss. Top Os & calcium : Hépar, Contrex, Courmayeur. (Anciennement accessible aussi via `/comparatif-bouteilles`, redirigé.)
 - `/quelle-eau-boire` : recommandation personnalisée selon le profil de santé
-- `/classement` : classement complet par score, filtrable par profil et catégorie
 - `/sources-eau` : carte des sources d'eau minérale en France avec coordonnées géographiques
 
 ---
