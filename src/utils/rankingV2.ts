@@ -1,4 +1,4 @@
-export type Profile = "general"|"purity"|"daily"|"baby"|"sport"|"low_sodium"|"tea"|"grossesse"|"constipation"|"osteoporose"|"senior"|"digestion";
+export type Profile = "general"|"purity"|"daily"|"baby"|"child"|"sport"|"low_sodium"|"tea"|"grossesse"|"constipation"|"osteoporose"|"senior"|"digestion";
 
 export type Composition = {
   NO3_mg_L?: number;             // Nitrates
@@ -212,6 +212,45 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       ],
       avoid: ["Eaux gazeuses", "Eaux fortement minéralisées", "Eaux fluorées"],
       source: "Avis Afssa du 7 octobre 2003 sur l'eau d'alimentation des nourrissons.",
+    },
+  },
+  child: {
+    label: "Enfant",
+    description: "Croissance, hydratation des enfants (1–12 ans)",
+    icon: "🧒",
+    weights: { nitrates:14, residu:10, calcium:10, magnesium:8, sodium:10, pH:6, bicarbonates:4, sulfates:8, fluorure:10, potassium:2, chlorures:4 },
+    rules: {
+      nitrates:    { type:"low-better", fullAt:2,    zeroAt:25 },
+      residu:      { type:"window",     min:0,       optLow:50,  optHigh:500, max:1000 },
+      calcium:     { type:"window",     min:0,       optLow:40,  optHigh:150, max:300 },
+      magnesium:   { type:"window",     min:0,       optLow:10,  optHigh:50,  max:100 },
+      sodium:      { type:"low-better", fullAt:10,   zeroAt:100 },
+      pH:          { type:"window",     min:5.5,     optLow:6.5, optHigh:7.8, max:8.5 },
+      bicarbonates:{ type:"window",     min:0,       optLow:20,  optHigh:400, max:800 },
+      sulfates:    { type:"low-better", fullAt:25,   zeroAt:250 },
+      fluorure:    { type:"window",     min:0,       optLow:0.3, optHigh:0.7, max:1.0 },
+      potassium:   { type:"low-better", fullAt:5,    zeroAt:20 },
+      chlorures:   { type:"low-better", fullAt:25,   zeroAt:200 },
+    },
+    exclusions: [
+      { criterion: "nitrates", maxValue: 25, reason: "Nitrates > 25 mg/L : déconseillé en consommation régulière chez l'enfant" },
+      { criterion: "fluorure", maxValue: 1.0, reason: "Fluorure > 1 mg/L : risque de fluorose dentaire chez l'enfant en croissance" },
+      { criterion: "sodium", maxValue: 100, reason: "Sodium trop élevé pour la consommation quotidienne d'un enfant" },
+      { criterion: "residu", maxValue: 1000, reason: "Eau trop minéralisée pour une consommation régulière chez l'enfant" },
+      { criterion: "sulfates", maxValue: 250, reason: "Sulfates élevés (effet laxatif marqué chez l'enfant)" },
+      { criterion: "magnesium", maxValue: 100, reason: "Magnésium très élevé (effet laxatif marqué chez l'enfant)" },
+    ],
+    recommendations: {
+      who: "Enfants de 1 à 12 ans en bonne santé",
+      guidelines: [
+        "Nitrates < 25 mg/L (idéalement < 10 mg/L)",
+        "Fluorure 0,3–0,7 mg/L (prévention carie sans risque de fluorose)",
+        "Sodium < 100 mg/L",
+        "Résidu sec modéré : 50–500 mg/L",
+        "Calcium 40–150 mg/L (croissance osseuse)",
+      ],
+      avoid: ["Eaux très fluorées (> 1 mg/L)", "Eaux fortement minéralisées (Hépar, Contrex en quotidien)", "Eaux gazeuses en consommation régulière"],
+      source: "Recommandations Anses et Programme National Nutrition Santé (PNNS) pour l'hydratation de l'enfant.",
     },
   },
   sport: {
