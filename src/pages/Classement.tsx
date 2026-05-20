@@ -122,17 +122,29 @@ const Classement = () => {
   }, [waters, filters, search, showFavoritesOnly, favorites]);
 
   const ranked = useMemo(() => {
-    return filtered
+    const scored = filtered
       .map(w => {
-        const scored = scoreBottle(w.composition, profile);
-        return { water: w, score: scored.total, excluded: scored.excluded, name: w.brand };
+        const s = scoreBottle(w.composition, profile);
+        return { water: w, score: s.total, excluded: s.excluded, name: w.brand };
       })
-      .filter(r => !filters.hideExcluded || !r.excluded)
-      .sort((a, b) => {
-        if (a.excluded !== b.excluded) return a.excluded ? 1 : -1;
-        if (b.score !== a.score) return b.score - a.score;
-        return a.water.brand.localeCompare(b.water.brand);
-      });
+      .filter(r => !filters.hideExcluded || !r.excluded);
+
+    // Déduplication par marque : garder la meilleure variante par profil
+    const bestByBrand = new Map<string, typeof scored[number]>();
+    for (const r of scored) {
+      const key = r.water.brand.trim().toLowerCase();
+      const cur = bestByBrand.get(key);
+      if (!cur) { bestByBrand.set(key, r); continue; }
+      // Préfère non-exclue, puis score plus haut
+      if (cur.excluded && !r.excluded) bestByBrand.set(key, r);
+      else if (cur.excluded === r.excluded && r.score > cur.score) bestByBrand.set(key, r);
+    }
+
+    return [...bestByBrand.values()].sort((a, b) => {
+      if (a.excluded !== b.excluded) return a.excluded ? 1 : -1;
+      if (b.score !== a.score) return b.score - a.score;
+      return a.water.brand.localeCompare(b.water.brand);
+    });
   }, [filtered, profile, filters.hideExcluded]);
 
   const podium = ranked.slice(0, 3);
