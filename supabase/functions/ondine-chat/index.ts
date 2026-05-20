@@ -131,9 +131,8 @@ Pages disponibles :
 - [Carte des polluants](/carte-polluants)
 - [Index des polluants](/polluants)
 - [Alertes dépassement seuils](/alertes)
-- [Comparatif des eaux en bouteille](/comparatif-bouteilles)
+- [Comparateur & classement des eaux en bouteille](/classement)
 - [Quelle eau boire selon mon profil](/quelle-eau-boire)
-- [Classement des eaux](/classement)
 - [Sources d'eau minérale](/sources-eau)
 - [Prix des eaux](/prix-eaux)
 

@@ -724,10 +724,10 @@ const ParcoursEauBouteille = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="/comparatif-bouteilles"
+              href="/classement"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
             >
-              Comparateur bouteilles
+              Comparateur & classement des eaux
               <Droplets className="w-5 h-5" />
             </a>
             <a
