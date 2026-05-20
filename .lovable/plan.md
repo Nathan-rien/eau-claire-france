@@ -1,72 +1,35 @@
-# Refonte du menu responsive
+# Séparer les deux diagnostics en pages distinctes
 
-Objectif : transformer la longue liste plate actuelle en grille visuelle 2 colonnes avec recherche, organisée par sections.
+## Objectif
+Aujourd'hui, les deux cartes "Diagnostic rapide" et "Diagnostic complet" sur la page d'accueil pointent toutes deux vers `/quelle-eau-boire`, qui affiche un écran de choix intermédiaire. On veut que chaque bouton mène directement au diagnostic correspondant, sur deux URL distinctes.
 
-## Structure cible (drawer latéral droit, inchangé)
+## Nouvelles URL
+- `/quelle-eau-boire/rapide` → écran "Diagnostic rapide" (3 questions)
+- `/quelle-eau-boire/complet` → écran "Diagnostic complet" (6 étapes)
+- `/quelle-eau-boire` → conservée comme page de choix (entrée depuis le menu/header), avec les deux cartes qui renvoient vers les nouvelles URL
 
-```text
-┌─────────────────────────────┐
-│  💧 InfoEau.fr         ✕    │
-├─────────────────────────────┤
-│  [🇫🇷 France ▾]  [🇬🇧 FR ▾]  │  ← région + langue
-├─────────────────────────────┤
-│  🔍 Rechercher dans le menu │  ← filtre live
-├─────────────────────────────┤
-│  CARTES                     │
-│  ┌────────┐  ┌────────┐     │
-│  │ 🚰     │  │ 💧     │     │
-│  │ Robinet│  │Boutei. │     │
-│  └────────┘  └────────┘     │
-│  ┌────────┐  ┌────────┐     │
-│  │ ⚠️     │  │ 🛣️    │     │
-│  │Pollu.  │  │Parcours│     │
-│  └────────┘  └────────┘     │
-├─────────────────────────────┤
-│  INFOGRAPHIES               │
-│  ┌────────┐  ┌────────┐     │
-│  │ 🌧️    │  │ 🍶     │     │
-│  │Eau     │  │Boutei. │     │
-│  └────────┘  └────────┘     │
-├─────────────────────────────┤
-│  PRIX                       │
-│  ┌────────┐  ┌────────┐     │
-│  │ 🛒     │  │ 📈     │     │
-│  │Compar. │  │Cours   │     │
-│  └────────┘  └────────┘     │
-├─────────────────────────────┤
-│  OUTILS                     │
-│  ┌────────┐  ┌────────┐     │
-│  │ 🩺     │  │ 🥤     │     │
-│  │Diagnos.│  │Quelle  │     │
-│  └────────┘  └────────┘     │
-│  ┌────────┐  ┌────────┐     │
-│  │ 🏆     │  │ 🔔     │     │
-│  │Classem.│  │Alertes │     │
-│  └────────┘  └────────┘     │
-└─────────────────────────────┘
-```
+## Modifications
 
-## Changements visuels
+1. **`src/App.tsx`** — ajouter deux nouvelles routes :
+   - `/quelle-eau-boire/rapide` → `LazyWaterRecommendation` avec prop/contexte `initialMode="quick"`
+   - `/quelle-eau-boire/complet` → `LazyWaterRecommendation` avec prop `initialMode="full"`
 
-- **Grille 2 colonnes** au lieu d'une liste linéaire — gain vertical ~50%, scan instantané.
-- **Cartes** ~44px de haut : icône Lucide en haut, libellé court en bas, bordure douce, état actif = fond `bg-accent` + ring `primary`.
-- **Sections** séparées par un titre fin `text-xs uppercase tracking-wide` + séparateur léger.
-- **Recherche** : `Input` avec icône loupe, filtre toutes les entrées en temps réel (case-insensitive, accent-insensitive). Quand actif, la grille devient une liste filtrée plate avec libellés complets.
-- **CTA principal** (Diagnostic) légèrement mis en avant via un dégradé blue→green sur sa carte.
-- **Region + Langue** regroupés en haut sous le logo, sur la même ligne, pour libérer le header.
+2. **`src/pages/QuelleEauBoire.tsx`** — utiliser `useLocation()` pour détecter l'URL :
+   - `/rapide` → initialiser `mode = 'quick'` et masquer l'écran de choix
+   - `/complet` → initialiser `mode = 'full'` et masquer l'écran de choix
+   - `/quelle-eau-boire` (sans suffixe) → comportement actuel (écran de choix), mais les deux `<button onClick={() => setMode(...)}>` sont remplacés par des `<Link to="/quelle-eau-boire/rapide">` et `<Link to="/quelle-eau-boire/complet">` pour que l'URL change aussi
+   - Le bouton "Retour" (`handleBackToChoice`) navigue vers `/quelle-eau-boire`
+   - Le breadcrumb affiche un libellé adapté (Diagnostic rapide / Diagnostic complet)
 
-## Détails techniques
+3. **`src/pages/Index.tsx`** — mettre à jour les deux `<Link>` :
+   - Carte "Diagnostic rapide" → `to="/quelle-eau-boire/rapide"`
+   - Carte "Diagnostic complet" → `to="/quelle-eau-boire/complet"`
 
-- Fichier : `src/components/Header.tsx` (refonte du contenu `SheetContent` uniquement, le drawer reste).
-- Largeur sheet : passer `w-72 sm:w-80` → `w-[88vw] max-w-sm` pour plus d'espace sur petits écrans (320px).
-- Ajouter une structure de données unique `menuSections: { id, label, items: { href, label, icon }[] }[]` calculée depuis `isEurope`, pour centraliser le mapping icône↔route.
-- Icônes Lucide à associer (FR) : `Droplet` (robinet), `GlassWater` (bouteilles), `AlertTriangle` (polluants), `Truck` (parcours bouteille map), `Route` (parcours robinet map), `CloudRain` (infographie eau), `Wine` (infographie bouteille), `ShoppingCart` (comparateur), `TrendingUp` (cours), `Stethoscope` (diagnostic), `HelpCircle` (quelle eau), `Trophy` (classement), `Bell` (alertes). EU : sous-ensemble équivalent.
-- Recherche : `useState('')` + filtre `.filter(item => normalize(item.label).includes(normalize(query)))` sur tous les items aplatis ; si `query.length > 0` afficher liste plate, sinon grille par sections.
-- Accessibilité : chaque carte = `<Link>` avec `min-h-[64px]`, `aria-current="page"` si actif, focus ring visible.
-- Conserver fermeture du sheet sur clic (`onClick={() => setIsOpen(false)}`).
-- Aucun changement sur la nav desktop (≥xl) ni sur les routes / contextes existants.
+4. **`src/components/LazyWaterRecommendation.tsx`** — accepter et transmettre une prop optionnelle `initialMode?: 'quick' | 'full'` à `QuelleEauBoire`.
+
+5. **SEO** — ajouter des `canonical` distincts pour chaque mode (`/quelle-eau-boire/rapide`, `/quelle-eau-boire/complet`) afin d'éviter le contenu dupliqué, avec des `title`/`description` adaptés.
 
 ## Hors scope
-
-- Menu desktop, footer, RegionSwitcher interne (réutilisé tel quel).
-- Traductions : on réutilise les clés `t('nav.*')` existantes, pas de nouvelles entrées i18n nécessaires.
+- Pas de changement de logique métier du moteur de recommandation
+- Pas de modification du menu mobile/desktop (les liens existants restent vers `/quelle-eau-boire`)
+- Pas de redirection 301 côté serveur (SPA only)
