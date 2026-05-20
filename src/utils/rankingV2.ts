@@ -451,6 +451,10 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       potassium:   { type:"window",     min:10,      optLow:30,  optHigh:100,  max:200 },
       chlorures:   { type:"window",     min:20,      optLow:50,  optHigh:150,  max:300 },
     },
+    exclusions: [
+      { criterion: "nitrates", maxValue: 25, reason: "Nitrates élevés" },
+      { criterion: "fluorure", maxValue: 1.5, reason: "Fluorure au-dessus de la limite réglementaire" },
+    ],
     recommendations: {
       who: "Digestion difficile, reflux, repas copieux",
       guidelines: [
