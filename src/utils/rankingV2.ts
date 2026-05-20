@@ -480,7 +480,7 @@ export function scoreBottle(comp: Composition, profile: Profile = "daily") {
       availableWeight += w[k];
     }
   });
-  const total80 = availableWeight > 0
+  const rawTotal80 = availableWeight > 0
     ? (weightedSum / availableWeight) * totalWeight
     : 0;
 
@@ -494,6 +494,12 @@ export function scoreBottle(comp: Composition, profile: Profile = "daily") {
       }
     }
   }
+
+  // Cap excluded waters to a low ceiling so they cannot appear "decent"
+  const EXCLUDED_MAX = 20;
+  const total80 = exclusionReasons.length > 0
+    ? Math.min(rawTotal80, EXCLUDED_MAX)
+    : rawTotal80;
 
   return {
     total: Math.round(total80 * 10) / 10,
