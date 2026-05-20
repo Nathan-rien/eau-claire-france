@@ -125,13 +125,13 @@ const Classement = () => {
     return filtered
       .map(w => {
         const scored = scoreBottle(w.composition, profile);
-        return { water: w, score: scored.total, excluded: scored.excluded };
+        return { water: w, score: scored.total, excluded: scored.excluded, name: w.brand };
       })
       .filter(r => !filters.hideExcluded || !r.excluded)
       .sort((a, b) => {
-        if (a.excluded && !b.excluded) return 1;
-        if (!a.excluded && b.excluded) return -1;
-        return b.score - a.score;
+        if (a.excluded !== b.excluded) return a.excluded ? 1 : -1;
+        if (b.score !== a.score) return b.score - a.score;
+        return a.water.brand.localeCompare(b.water.brand);
       });
   }, [filtered, profile, filters.hideExcluded]);
 
