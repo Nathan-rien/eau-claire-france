@@ -232,6 +232,10 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       potassium:   { type:"window",     min:5,       optLow:20,  optHigh:100,  max:250 },
       chlorures:   { type:"window",     min:10,      optLow:30,  optHigh:100,  max:200 },
     },
+    exclusions: [
+      { criterion: "nitrates", maxValue: 25, reason: "Nitrates élevés" },
+      { criterion: "fluorure", maxValue: 1.5, reason: "Fluorure au-dessus de la limite réglementaire" },
+    ],
     recommendations: {
       who: "Sportifs — récupération et compensation des pertes sudorales",
       guidelines: [
