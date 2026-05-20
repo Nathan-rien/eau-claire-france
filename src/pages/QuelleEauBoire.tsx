@@ -159,18 +159,43 @@ const QuelleEauBoire: React.FC<QuelleEauBoireProps> = ({ initialMode }) => {
 
   const hasSelections = selectedWaterType !== 'all' || selectedProfiles.length > 0 || selectedIntolerances.length > 0 || selectedPreferences.length > 0 || selectedAge !== undefined || selectedGender !== undefined || selectedConsumption !== undefined;
 
+  const seoVariants = {
+    quick: {
+      title: "Diagnostic rapide : quelle eau boire ? | InfoEau.fr",
+      description: "Diagnostic rapide en 30 secondes : recevez une recommandation d'eau adaptée à votre profil (sportif, femme enceinte, senior…) en quelques clics.",
+      canonical: "/quelle-eau-boire/rapide",
+      url: "https://infoeau.fr/quelle-eau-boire/rapide",
+      name: "Diagnostic rapide - Quelle eau boire ?",
+    },
+    full: {
+      title: "Diagnostic complet : quelle eau boire ? | InfoEau.fr",
+      description: "Diagnostic complet et personnalisé : profils santé, intolérances, âge, préférences. Obtenez les eaux en bouteille et du robinet les mieux adaptées à vos besoins.",
+      canonical: "/quelle-eau-boire/complet",
+      url: "https://infoeau.fr/quelle-eau-boire/complet",
+      name: "Diagnostic complet - Quelle eau boire ?",
+    },
+    none: {
+      title: seoData.quelleEauBoire.title,
+      description: seoData.quelleEauBoire.description,
+      canonical: "/quelle-eau-boire",
+      url: "https://infoeau.fr/quelle-eau-boire",
+      name: "Quelle eau boire ? - Guide personnalisé",
+    },
+  } as const;
+  const variant = seoVariants[mode ?? 'none'];
+
   const seoProps = {
-    title: seoData.quelleEauBoire.title,
-    description: seoData.quelleEauBoire.description,
+    title: variant.title,
+    description: variant.description,
     keywords: seoData.quelleEauBoire.keywords,
-    canonical: "/quelle-eau-boire",
+    canonical: variant.canonical,
     ogImage: seoData.quelleEauBoire.ogImage,
     schemaData: {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      "name": "Quelle eau boire ? - Guide personnalisé",
-      "description": seoData.quelleEauBoire.description,
-      "url": "https://infoeau.fr/quelle-eau-boire",
+      "name": variant.name,
+      "description": variant.description,
+      "url": variant.url,
       "mainEntity": generateFAQSchema(faqData)
     }
   };
