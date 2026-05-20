@@ -1082,6 +1082,7 @@ export const translations = {
     'nav.menu': 'Menu',
     'nav.navigation': 'Navigation',
     'nav.openMenu': 'Open menu',
+    'nav.searchPlaceholder': 'Search the menu…',
     'nav.backHome': 'InfoEau.fr - Back to home',
     'language.french': 'Français',
     'language.english': 'English',
