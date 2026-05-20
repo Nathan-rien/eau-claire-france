@@ -72,6 +72,47 @@ const Header = () => {
   const isActiveJourneySection = journeyItems.some(item => location.pathname === item.href);
   const isActivePricesSection = pricesItems.some(item => location.pathname === item.href);
 
+  // Icon mapping by route — used for the mobile grid
+  const iconByHref: Record<string, LucideIcon> = {
+    '/carte': Droplet,
+    '/sources-eau': GlassWater,
+    '/carte-polluants': AlertTriangle,
+    '/carte-parcours-eau': Truck,
+    '/carte-parcours-robinet': RouteIcon,
+    '/carte-europe': MapIcon,
+    '/carte-polluants-europe': AlertTriangle,
+    '/parcours-eau': CloudRain,
+    '/parcours-eau-bouteille': Wine,
+    '/prix-eaux': ShoppingCart,
+    '/cours-eau': TrendingUp,
+    '/prix-eaux-europe': ShoppingCart,
+    '/diagnostic': Stethoscope,
+    '/diagnostic-europe': Stethoscope,
+    '/quelle-eau-boire': HelpCircle,
+    '/classement': Trophy,
+    '/classement-europe': Trophy,
+    '/polluants': AlertTriangle,
+    '/polluants-europe': AlertTriangle,
+    '/alertes': Bell,
+    '/alertes-europe': Bell,
+  };
+
+  const mobileSections = [
+    { id: 'maps', label: t('nav.maps'), items: mapsItems },
+    { id: 'journey', label: t('nav.journeyTab'), items: journeyItems },
+    { id: 'prices', label: t('nav.prices'), items: pricesItems },
+    { id: 'tools', label: t('nav.navigation'), items: navigationItems },
+  ];
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const normalize = (s: string) =>
+    s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const allItems = mobileSections.flatMap(s => s.items);
+  const filteredItems = searchQuery.trim()
+    ? allItems.filter(i => normalize(i.label).includes(normalize(searchQuery)))
+    : [];
+
+
   const [mapsMenuOpen, setMapsMenuOpen] = useState(false);
   const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
   const [pricesMenuOpen, setPricesMenuOpen] = useState(false);
