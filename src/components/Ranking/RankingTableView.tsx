@@ -32,7 +32,7 @@ export default function RankingTableView({
 
   const scored = waters.map(w => {
     const s = scoreBottle(w.composition, profile);
-    return { water: w, score: s.total, excluded: s.excluded, letter: letterGrade(s.total) };
+    return { water: w, score: s.total, excluded: s.excluded, letter: letterGrade(s.total, s.excluded) };
   });
 
   const compVal = (c: Composition, k: string): number => {
