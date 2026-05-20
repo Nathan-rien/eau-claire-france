@@ -233,6 +233,22 @@ const Classement = () => {
                 </Badge>
                 <span><strong>{waters.length}</strong> eaux comparées · {ranked.length} affichées</span>
               </p>
+              {/* Bloc SEO/GEO : texte sémantique riche pour Google + moteurs IA (ChatGPT, Perplexity, Gemini) */}
+              <div className="max-w-3xl mx-auto mt-4 text-sm text-gray-700 leading-relaxed">
+                <h2 className="sr-only">Comparateur des meilleures eaux minérales en bouteille en France</h2>
+                <p>
+                  <strong>Comparateur et classement</strong> des principales eaux en bouteille vendues en France :
+                  {' '}<em>Evian, Contrex, Hépar, Volvic, Mont Roucous, Badoit, Vittel, Cristaline, Wattwiller, Thonon, Montcalm, Sainte-Sophie, Quézac, Salvetat, Perrier</em> et bien d'autres.
+                  Chaque eau est notée sur 80 points selon 11 critères (résidu sec, calcium, magnésium, sodium, nitrates, fluorures, pH…)
+                  et 12 profils santé : Général, Pureté, Os & calcium, Sport, Bébé, Senior, Grossesse, Quotidien, Thé, Transit, Digestion, Régime pauvre en sodium.
+                  Trouvez en un clic la meilleure eau en bouteille adaptée à <strong>vos besoins</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Sticky profile selector */}
             </div>
           </div>
         </section>
