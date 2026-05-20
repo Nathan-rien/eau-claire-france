@@ -75,7 +75,7 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       calcium:     { type:"window",     min:0,       optLow:0,   optHigh:200,  max:500 },
       magnesium:   { type:"window",     min:0,       optLow:0,   optHigh:80,   max:200 },
       sodium:      { type:"low-better", fullAt:5,    zeroAt:150 },
-      pH:          { type:"window",     min:5.5,     optLow:6.5, optHigh:7.8,  max:9.0 },
+      pH:          { type:"window",     min:4.5,     optLow:5.5, optHigh:8.0,  max:9.0 },
       bicarbonates:{ type:"window",     min:0,       optLow:10,  optHigh:500,  max:1500 },
       sulfates:    { type:"low-better", fullAt:20,   zeroAt:300 },
       fluorure:    { type:"low-better", fullAt:0.15, zeroAt:1.5 },
