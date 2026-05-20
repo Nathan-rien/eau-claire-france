@@ -1,7 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Droplets, Menu, ChevronDown } from 'lucide-react';
+import {
+  Droplets, Menu, ChevronDown, Search,
+  Droplet, GlassWater, AlertTriangle, Truck, Route as RouteIcon,
+  CloudRain, Wine, ShoppingCart, TrendingUp, Stethoscope,
+  HelpCircle, Trophy, Bell, Map as MapIcon, type LucideIcon,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/contexts/LanguageContext';
