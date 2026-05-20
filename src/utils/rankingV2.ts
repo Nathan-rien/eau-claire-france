@@ -116,6 +116,8 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
     exclusions: [
       { criterion: "residu", maxValue: 500, reason: "Trop minéralisée pour ce profil pureté" },
       { criterion: "nitrates", maxValue: 15, reason: "Nitrates trop élevés" },
+      { criterion: "sodium", maxValue: 30, reason: "Sodium trop élevé pour une eau ultra-pure" },
+      { criterion: "sulfates", maxValue: 100, reason: "Sulfates trop élevés pour une eau ultra-pure" },
     ],
     recommendations: {
       who: "Recherche d'une eau très peu minéralisée — soif quotidienne, biberons, traitements rénaux légers",
