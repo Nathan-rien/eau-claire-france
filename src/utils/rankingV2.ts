@@ -545,6 +545,16 @@ export function letterGrade(total80: number, excluded?: boolean) {
   return "E";
 }
 
+/**
+ * Comparateur unique du classement : exclues toujours en bas,
+ * puis score décroissant, puis nom alphabétique.
+ */
+export function compareRanked<T extends { score: number; excluded: boolean; name?: string }>(a: T, b: T): number {
+  if (a.excluded !== b.excluded) return a.excluded ? 1 : -1;
+  if (b.score !== a.score) return b.score - a.score;
+  return (a.name ?? '').localeCompare(b.name ?? '');
+}
+
 export function getProfileInfo(profile: Profile) {
   return PROFILES[profile];
 }
