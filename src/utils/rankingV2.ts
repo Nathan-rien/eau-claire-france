@@ -72,8 +72,8 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
     rules: {
       nitrates:    { type:"low-better", fullAt:2,    zeroAt:50 },
       residu:      { type:"window",     min:0,       optLow:20,  optHigh:500,  max:1500 },
-      calcium:     { type:"window",     min:0,       optLow:5,   optHigh:200,  max:500 },
-      magnesium:   { type:"window",     min:0,       optLow:1,   optHigh:80,   max:200 },
+      calcium:     { type:"window",     min:0,       optLow:0,   optHigh:200,  max:500 },
+      magnesium:   { type:"window",     min:0,       optLow:0,   optHigh:80,   max:200 },
       sodium:      { type:"low-better", fullAt:5,    zeroAt:150 },
       pH:          { type:"window",     min:5.5,     optLow:6.5, optHigh:7.8,  max:9.0 },
       bicarbonates:{ type:"window",     min:0,       optLow:10,  optHigh:500,  max:1500 },
