@@ -249,11 +249,6 @@ const Classement = () => {
         </section>
 
         {/* Sticky profile selector */}
-            </div>
-          </div>
-        </section>
-
-        {/* Sticky profile selector */}
         <div className="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b shadow-sm">
           <div className="container mx-auto max-w-6xl px-4 py-3">
             <RankingProfileSelector value={profile} onChange={setProfile} />
