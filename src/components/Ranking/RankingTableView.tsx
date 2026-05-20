@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { ArrowUpDown, ArrowUp, ArrowDown, Star, Plus, Check, Sparkles } from 'lucide-react';
-import { Composition, scoreBottle, letterGrade, Profile, getCompositionForDisplay, formatMineralValue } from '@/utils/rankingV2';
+import { Composition, scoreBottle, letterGrade, Profile, getCompositionForDisplay, formatMineralValue, compareRanked } from '@/utils/rankingV2';
 import type { WaterSource } from '@/hooks/useWaterCompositions';
 
 type SortKey = 'rank' | 'name' | 'score' | 'residu' | 'calcium' | 'magnesium' | 'sodium' | 'nitrates' | 'pH';
@@ -45,17 +45,19 @@ export default function RankingTableView({
 
   const sorted = [...scored].sort((a, b) => {
     if (a.excluded !== b.excluded) return a.excluded ? 1 : -1;
+    if (sortKey === 'rank') {
+      // Rang = score décroissant strict, tie-break par nom
+      if (b.score !== a.score) return b.score - a.score;
+      return a.water.brand.localeCompare(b.water.brand);
+    }
     let av: number | string = 0, bv: number | string = 0;
-    if (sortKey === 'rank' || sortKey === 'score') { av = a.score; bv = b.score; }
+    if (sortKey === 'score') { av = a.score; bv = b.score; }
     else if (sortKey === 'name') { av = a.water.brand; bv = b.water.brand; }
     else { av = compVal(a.water.composition, sortKey); bv = compVal(b.water.composition, sortKey); }
     if (av < bv) return sortDir === 'asc' ? -1 : 1;
     if (av > bv) return sortDir === 'asc' ? 1 : -1;
     return 0;
   });
-
-  // For rank: always sort by score desc visually
-  if (sortKey === 'rank') sorted.sort((a, b) => (a.excluded !== b.excluded ? (a.excluded ? 1 : -1) : b.score - a.score));
 
   const toggleSort = (k: SortKey) => {
     if (sortKey === k) setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
