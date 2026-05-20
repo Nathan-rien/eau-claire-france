@@ -528,7 +528,8 @@ function getCompositionValue(comp: Composition, criterion: Criterion): number | 
   }
 }
 
-export function letterGrade(total80: number) {
+export function letterGrade(total80: number, excluded?: boolean) {
+  if (excluded) return "X";
   if (total80 >= 68) return "A";  // 85%+
   if (total80 >= 56) return "B";  // 70%+
   if (total80 >= 44) return "C";  // 55%+
