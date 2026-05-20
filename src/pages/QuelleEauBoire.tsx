@@ -32,7 +32,11 @@ const quickObjectives = [
   { id: 'pure', name: 'Eau la plus pure', icon: Search, preferenceId: 'eau-legere' },
 ];
 
-const QuelleEauBoire: React.FC = () => {
+interface QuelleEauBoireProps {
+  initialMode?: 'quick' | 'full';
+}
+
+const QuelleEauBoire: React.FC<QuelleEauBoireProps> = ({ initialMode }) => {
   const { t } = useLanguage();
   
   const faqData = [
@@ -42,7 +46,7 @@ const QuelleEauBoire: React.FC = () => {
     { question: "Comment éviter les eaux trop riches en sodium ?", answer: "Sélectionnez l'option 'Hypertension' ou 'Pauvre en sodium' dans nos filtres pour obtenir uniquement des eaux avec moins de 20 mg/L de sodium." }
   ];
 
-  const [mode, setMode] = useState<DiagnosticMode>(null);
+  const [mode, setMode] = useState<DiagnosticMode>(initialMode ?? null);
   const [selectedWaterType, setSelectedWaterType] = useState<string>('all');
   const [selectedProfiles, setSelectedProfiles] = useState<string[]>([]);
   const [selectedIntolerances, setSelectedIntolerances] = useState<string[]>([]);
