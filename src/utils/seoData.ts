@@ -63,18 +63,20 @@ export const seoData = {
     }
   },
 
+  // Conservé pour compatibilité — la route /comparatif-bouteilles redirige désormais vers /classement.
+  // Canonical pointe vers /classement pour consolider l'autorité SEO.
   comparatifBouteilles: {
-    title: "Comparateur eaux en bouteille - Composition et prix",
-    description: "Comparez jusqu'à 3 eaux en bouteille simultanément : composition minérale, prix, origine, impact environnemental. Trouvez l'eau qui vous convient.",
-    keywords: "comparateur eaux minérales, composition eaux bouteille, prix eaux minérales, comparaison Evian Contrex Badoit",
+    title: "Comparateur & classement des eaux en bouteille | InfoEau",
+    description: "Comparez et classez +50 eaux en bouteille selon votre profil santé : composition minérale, prix, nitrates, sodium. Trouvez la meilleure eau pour vous.",
+    keywords: "comparateur eaux bouteille, classement eaux minérales, meilleure eau bouteille, comparer Evian Contrex Hépar Volvic, composition minérale eau, score eau santé, prix eau minérale",
     ogImage: "/images/og-comparatif.jpg",
-    canonical: "/comparatif-bouteilles",
+    canonical: "/classement",
     schemaData: {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      "name": "Comparateur d'eaux en bouteille",
-      "description": "Comparez composition minérale, prix et origine de plus de 50 eaux en bouteille",
-      "url": "https://infoeau.fr/comparatif-bouteilles",
+      "name": "Comparateur et classement des eaux en bouteille",
+      "description": "Comparez et classez plus de 50 eaux en bouteille selon votre profil santé",
+      "url": "https://infoeau.fr/classement",
       "isPartOf": { "@type": "WebSite", "url": "https://infoeau.fr" }
     }
   },
@@ -437,17 +439,86 @@ export const seoData = {
   // === Pages classement, parcours carte, diagnostic prix ===
 
   classement: {
-    title: "Classement des eaux en bouteille - Meilleures eaux France",
-    description: "Classement interactif des eaux en bouteille selon votre profil : sportif, femme enceinte, quotidien. Score multi-critères basé sur la composition minérale.",
-    keywords: "classement eaux bouteille, meilleure eau minérale, top eau en bouteille France, score eau santé",
+    title: "Comparateur & classement des eaux en bouteille | InfoEau",
+    description: "Comparez et classez +50 eaux en bouteille (Evian, Contrex, Volvic, Hépar, Mont Roucous…) selon votre profil santé : composition minérale, nitrates, sodium, pH, prix.",
+    keywords: "comparateur eaux bouteille, classement eaux minérales, meilleure eau en bouteille, comparer Evian Contrex Hépar Volvic, composition minérale eau, score eau santé, top eau France, prix eau minérale",
     canonical: "/classement",
     schemaData: {
       "@context": "https://schema.org",
-      "@type": "WebPage",
-      "name": "Classement des eaux en bouteille en France",
-      "description": "Classement interactif des eaux en bouteille selon votre profil et besoins",
-      "url": "https://infoeau.fr/classement",
-      "isPartOf": { "@type": "WebSite", "url": "https://infoeau.fr" }
+      "@graph": [
+        {
+          "@type": "WebPage",
+          "@id": "https://infoeau.fr/classement#webpage",
+          "name": "Comparateur et classement des eaux en bouteille en France",
+          "description": "Classement interactif et comparateur de +50 eaux en bouteille selon 11 critères (minéralisation, nitrates, calcium, sodium, pH…) et 12 profils santé.",
+          "url": "https://infoeau.fr/classement",
+          "inLanguage": "fr-FR",
+          "isPartOf": { "@type": "WebSite", "name": "InfoEau.fr", "url": "https://infoeau.fr" },
+          "primaryImageOfPage": { "@type": "ImageObject", "url": "https://infoeau.fr/images/og-comparatif.jpg" }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://infoeau.fr/" },
+            { "@type": "ListItem", "position": 2, "name": "Eaux en bouteille", "item": "https://infoeau.fr/quelle-eau-boire" },
+            { "@type": "ListItem", "position": 3, "name": "Classement", "item": "https://infoeau.fr/classement" }
+          ]
+        },
+        {
+          "@type": "ItemList",
+          "name": "Top eaux en bouteille — profil Général",
+          "description": "Classement général des meilleures eaux en bouteille en France selon le score InfoEau (80 points, 11 critères).",
+          "itemListOrder": "https://schema.org/ItemListOrderDescending",
+          "numberOfItems": 10,
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Sainte-Sophie", "url": "https://infoeau.fr/classement" },
+            { "@type": "ListItem", "position": 2, "name": "Évian", "url": "https://infoeau.fr/marque/evian" },
+            { "@type": "ListItem", "position": 3, "name": "Thonon", "url": "https://infoeau.fr/marque/thonon" },
+            { "@type": "ListItem", "position": 4, "name": "Mont Roucous", "url": "https://infoeau.fr/marque/mont-roucous" },
+            { "@type": "ListItem", "position": 5, "name": "Volvic", "url": "https://infoeau.fr/marque/volvic" },
+            { "@type": "ListItem", "position": 6, "name": "Montcalm", "url": "https://infoeau.fr/marque/montcalm" },
+            { "@type": "ListItem", "position": 7, "name": "Mont Blanc", "url": "https://infoeau.fr/marque/mont-blanc" },
+            { "@type": "ListItem", "position": 8, "name": "Wattwiller", "url": "https://infoeau.fr/marque/wattwiller" },
+            { "@type": "ListItem", "position": 9, "name": "Cristaline", "url": "https://infoeau.fr/marque/cristaline" },
+            { "@type": "ListItem", "position": 10, "name": "Vittel", "url": "https://infoeau.fr/marque/vittel" }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Quelle est la meilleure eau en bouteille en France ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Selon le score InfoEau (11 critères, 80 points), les meilleures eaux du profil Général sont Sainte-Sophie, Évian, Thonon, Mont Roucous et Volvic. Le « meilleur » dépend toutefois du profil santé : Mont Roucous et Montcalm dominent en pureté, Contrex et Hépar en apport calcium/magnésium, Évian et Volvic pour le quotidien." }
+            },
+            {
+              "@type": "Question",
+              "name": "Quelle eau boire au quotidien ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Une eau faiblement à moyennement minéralisée (résidu sec 50–500 mg/L), pauvre en sodium (<20 mg/L) et nitrates (<10 mg/L) : Évian, Volvic, Mont Roucous, Thonon ou Montcalm. Évitez les eaux très minéralisées comme Hépar ou Contrex en consommation quotidienne." }
+            },
+            {
+              "@type": "Question",
+              "name": "Quelle eau pour un bébé ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Pour un bébé, choisissez une eau avec la mention « convient à la préparation des aliments des nourrissons » : résidu sec < 500 mg/L, sodium < 20 mg/L, nitrates < 10 mg/L, fluor < 0,3 mg/L. Mont Roucous, Montcalm, Évian, Volvic et Mont Blanc figurent parmi les plus adaptées." }
+            },
+            {
+              "@type": "Question",
+              "name": "Quelle eau a le moins de nitrates ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Mont Roucous (< 1 mg/L), Montcalm, Rosée de la Reine, Volvic et Mont Blanc affichent les taux de nitrates parmi les plus bas du marché français, bien en deçà du seuil réglementaire de 50 mg/L." }
+            },
+            {
+              "@type": "Question",
+              "name": "Comment est calculé le score InfoEau ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Le score s'établit sur 80 points selon 11 critères pondérés (résidu sec, calcium, magnésium, sodium, potassium, bicarbonates, sulfates, nitrates, fluorures, pH, dureté). Les pondérations varient selon 12 profils santé (Général, Pureté, Os & calcium, Sport, Bébé, Senior, Grossesse, etc.). Méthodologie complète sur /methodologie." }
+            },
+            {
+              "@type": "Question",
+              "name": "Quelle est la différence entre eau de source et eau minérale ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Une eau de source (Cristaline, Mont Blanc) doit respecter les critères de potabilité mais sa composition peut varier. Une eau minérale naturelle (Évian, Contrex, Vittel) a une composition stable, des propriétés favorables à la santé reconnues et provient d'une source unique protégée." }
+            }
+          ]
+        }
+      ]
     }
   },
 

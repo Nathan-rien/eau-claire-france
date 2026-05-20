@@ -23,9 +23,8 @@
 - / — Accueil avec diagnostic rapide par commune
 - /carte — Carte interactive de la qualité de l'eau en France
 - /diagnostic — Diagnostic personnalisé de la qualité de l'eau par commune
-- /comparatif-bouteilles — Comparateur de composition minérale des eaux en bouteille
+- /classement — Comparateur et classement des eaux en bouteille : +50 eaux notées sur 80 points selon 11 critères (résidu sec, calcium, magnésium, sodium, nitrates, fluor, pH…) et 12 profils santé (Général, Pureté, Os & calcium, Sport, Bébé, Senior, Grossesse, Quotidien, Thé, Transit, Digestion, Régime pauvre en sodium). Permet de comparer Evian, Contrex, Hépar, Volvic, Mont Roucous, Badoit, Vittel, Cristaline, etc. (remplace l'ancienne URL /comparatif-bouteilles)
 - /quelle-eau-boire — Recommandation d'eau selon le profil (bébé, sport, senior, grossesse...)
-- /classement — Classement des eaux en bouteille par score santé (80 points, 11 critères)
 - /prix-eaux — Suivi des prix des eaux en bouteille par enseigne
 - /comparateur-prix — Comparateur de prix entre enseignes
 - /cours-eau — Évolution historique des prix (eau du robinet vs eau en bouteille)

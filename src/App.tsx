@@ -103,8 +103,9 @@ const App = () => {
                 <Route path="/sources-eau" element={<SourcesEau />} />
                 <Route path="/alertes" element={<Alertes />} />
                 <Route path="/diagnostic" element={<Diagnostic />} />
-                <Route path="/comparatif-bouteilles" element={<ComparatifBouteilles />} />
-                <Route path="/bouteilles" element={<Navigate to="/comparatif-bouteilles" replace />} />
+                {/* Redirections SEO: ancienne URL comparateur → page classement (plus aboutie) */}
+                <Route path="/comparatif-bouteilles" element={<Navigate to="/classement" replace />} />
+                <Route path="/bouteilles" element={<Navigate to="/classement" replace />} />
                 <Route path="/quelle-eau-boire" element={<LazyWaterRecommendation />} />
                 <Route path="/classement" element={<Classement />} />
                 <Route path="/polluants" element={<Polluants />} />
