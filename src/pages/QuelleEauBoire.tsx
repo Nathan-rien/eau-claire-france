@@ -39,6 +39,7 @@ interface QuelleEauBoireProps {
 
 const QuelleEauBoire: React.FC<QuelleEauBoireProps> = ({ initialMode }) => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   
   const faqData = [
     { question: "Comment choisir la meilleure eau en bouteille selon mon profil ?", answer: "Notre outil d'aide au choix prend en compte votre profil (femme enceinte, sportif, etc.), vos intolérances et préférences pour recommander les eaux les plus adaptées à vos besoins spécifiques." },
