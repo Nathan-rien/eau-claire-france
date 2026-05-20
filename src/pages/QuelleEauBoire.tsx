@@ -153,6 +153,7 @@ const QuelleEauBoire: React.FC<QuelleEauBoireProps> = ({ initialMode }) => {
     setQuickWaterType('all');
     setQuickProfile(null);
     setQuickObjective(null);
+    navigate('/quelle-eau-boire');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
