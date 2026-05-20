@@ -68,26 +68,26 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
     label: "Général",
     description: "Classement neutre, sans orientation santé spécifique",
     icon: "⚖️",
-    weights: { nitrates:10, residu:10, calcium:7, magnesium:7, sodium:8, pH:6, bicarbonates:6, sulfates:8, fluorure:8, potassium:4, chlorures:6 },
+    weights: { nitrates:12, residu:10, calcium:6, magnesium:6, sodium:10, pH:6, bicarbonates:4, sulfates:8, fluorure:10, potassium:2, chlorures:6 },
     rules: {
       nitrates:    { type:"low-better", fullAt:2,    zeroAt:50 },
-      residu:      { type:"window",     min:30,      optLow:150, optHigh:800,  max:2000 },
-      calcium:     { type:"window",     min:0,       optLow:40,  optHigh:250,  max:600 },
-      magnesium:   { type:"window",     min:0,       optLow:10,  optHigh:80,   max:200 },
-      sodium:      { type:"low-better", fullAt:5,    zeroAt:250 },
+      residu:      { type:"window",     min:0,       optLow:20,  optHigh:500,  max:1500 },
+      calcium:     { type:"window",     min:0,       optLow:0,   optHigh:200,  max:500 },
+      magnesium:   { type:"window",     min:0,       optLow:0,   optHigh:80,   max:200 },
+      sodium:      { type:"low-better", fullAt:5,    zeroAt:150 },
       pH:          { type:"window",     min:5.5,     optLow:6.5, optHigh:7.8,  max:9.0 },
-      bicarbonates:{ type:"window",     min:0,       optLow:80,  optHigh:600,  max:2000 },
-      sulfates:    { type:"low-better", fullAt:20,   zeroAt:400 },
+      bicarbonates:{ type:"window",     min:0,       optLow:10,  optHigh:500,  max:1500 },
+      sulfates:    { type:"low-better", fullAt:20,   zeroAt:300 },
       fluorure:    { type:"low-better", fullAt:0.15, zeroAt:1.5 },
-      potassium:   { type:"window",     min:0,       optLow:1,   optHigh:20,   max:80 },
+      potassium:   { type:"window",     min:0,       optLow:0.5, optHigh:20,   max:80 },
       chlorures:   { type:"low-better", fullAt:20,   zeroAt:200 },
     },
     exclusions: [
       { criterion: "residu", maxValue: 1500, reason: "Eau extrêmement minéralisée (usage thérapeutique, non quotidien)" },
-      { criterion: "sodium", maxValue: 200, reason: "Sodium trop élevé pour un usage quotidien" },
-      { criterion: "nitrates", maxValue: 50, reason: "Nitrates au-dessus de la limite réglementaire" },
+      { criterion: "sodium", maxValue: 150, reason: "Sodium trop élevé pour un usage général quotidien" },
+      { criterion: "nitrates", maxValue: 25, reason: "Nitrates élevés (au-dessus de la recommandation OMS quotidienne)" },
       { criterion: "fluorure", maxValue: 1.5, reason: "Fluorure au-dessus de la limite réglementaire" },
-      { criterion: "sulfates", maxValue: 500, reason: "Sulfates très élevés (effet laxatif marqué)" },
+      { criterion: "sulfates", maxValue: 400, reason: "Sulfates élevés (effet laxatif marqué)" },
       { criterion: "magnesium", maxValue: 100, reason: "Magnésium très élevé (effet laxatif marqué)" },
     ],
     recommendations: {
@@ -157,6 +157,13 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       potassium:   { type:"window",     min:0,       optLow:2,   optHigh:15,  max:50 },
       chlorures:   { type:"low-better", fullAt:20,   zeroAt:150 },
     },
+    exclusions: [
+      { criterion: "residu", maxValue: 1500, reason: "Eau trop minéralisée pour un usage quotidien" },
+      { criterion: "sodium", maxValue: 200, reason: "Sodium trop élevé pour un usage quotidien" },
+      { criterion: "nitrates", maxValue: 25, reason: "Nitrates élevés pour une consommation quotidienne" },
+      { criterion: "fluorure", maxValue: 1.5, reason: "Fluorure au-dessus de la limite réglementaire" },
+      { criterion: "sulfates", maxValue: 400, reason: "Sulfates élevés (effet laxatif marqué)" },
+    ],
     recommendations: {
       who: "Adultes en bonne santé, consommation quotidienne",
       guidelines: [
@@ -187,9 +194,11 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       chlorures:   { type:"low-better", fullAt:15,   zeroAt:50 },
     },
     exclusions: [
-      { criterion: "nitrates", maxValue: 15, reason: "Nitrates trop élevés pour un bébé" },
-      { criterion: "fluorure", maxValue: 0.5, reason: "Fluorure excessif pour un nourrisson" },
-      { criterion: "sulfates", maxValue: 140, reason: "Sulfates trop élevés" },
+      { criterion: "nitrates", maxValue: 10, reason: "Nitrates > 10 mg/L : limite stricte pour nourrissons (Afssa)" },
+      { criterion: "fluorure", maxValue: 0.3, reason: "Fluorure > 0,3 mg/L : risque de fluorose dentaire chez le nourrisson" },
+      { criterion: "sulfates", maxValue: 140, reason: "Sulfates trop élevés pour un nourrisson" },
+      { criterion: "sodium", maxValue: 20, reason: "Sodium trop élevé pour la préparation des biberons" },
+      { criterion: "residu", maxValue: 500, reason: "Eau trop minéralisée pour un nourrisson" },
     ],
     recommendations: {
       who: "Nourrissons (0–6 mois), préparation des biberons",
@@ -223,6 +232,10 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       potassium:   { type:"window",     min:5,       optLow:20,  optHigh:100,  max:250 },
       chlorures:   { type:"window",     min:10,      optLow:30,  optHigh:100,  max:200 },
     },
+    exclusions: [
+      { criterion: "nitrates", maxValue: 25, reason: "Nitrates élevés" },
+      { criterion: "fluorure", maxValue: 1.5, reason: "Fluorure au-dessus de la limite réglementaire" },
+    ],
     recommendations: {
       who: "Sportifs — récupération et compensation des pertes sudorales",
       guidelines: [
@@ -270,20 +283,25 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
     label: "Thé & infusions",
     description: "Préparation du thé",
     icon: "🍵",
-    weights: { nitrates:8, residu:14, calcium:8, magnesium:6, sodium:6, pH:10, bicarbonates:8, sulfates:6, fluorure:4, potassium:4, chlorures:6 },
+    weights: { nitrates:8, residu:18, calcium:10, magnesium:4, sodium:6, pH:8, bicarbonates:10, sulfates:6, fluorure:4, potassium:2, chlorures:4 },
     rules: {
       nitrates:    { type:"low-better", fullAt:5,    zeroAt:45 },
-      residu:      { type:"window",     min:0,       optLow:50,  optHigh:150, max:400 },
-      calcium:     { type:"window",     min:0,       optLow:20,  optHigh:80,  max:200 },
-      magnesium:   { type:"window",     min:0,       optLow:5,   optHigh:30,  max:80 },
+      residu:      { type:"window",     min:0,       optLow:30,  optHigh:130, max:300 },
+      calcium:     { type:"low-better", fullAt:20,   zeroAt:100 },
+      magnesium:   { type:"window",     min:0,       optLow:2,   optHigh:20,  max:60 },
       sodium:      { type:"low-better", fullAt:5,    zeroAt:50 },
       pH:          { type:"window",     min:6.0,     optLow:6.8, optHigh:7.5, max:8.5 },
-      bicarbonates:{ type:"window",     min:0,       optLow:50,  optHigh:200, max:500 },
-      sulfates:    { type:"low-better", fullAt:30,   zeroAt:150 },
+      bicarbonates:{ type:"low-better", fullAt:50,   zeroAt:300 },
+      sulfates:    { type:"low-better", fullAt:20,   zeroAt:120 },
       fluorure:    { type:"window",     min:0,       optLow:0.1, optHigh:0.5, max:1.0 },
       potassium:   { type:"low-better", fullAt:5,    zeroAt:30 },
       chlorures:   { type:"low-better", fullAt:15,   zeroAt:60 },
     },
+    exclusions: [
+      { criterion: "residu", maxValue: 300, reason: "Eau trop minéralisée — altère les arômes du thé" },
+      { criterion: "bicarbonates", maxValue: 300, reason: "Bicarbonates élevés — altèrent les tanins" },
+      { criterion: "calcium", maxValue: 100, reason: "Calcium élevé — voile en surface" },
+    ],
     recommendations: {
       who: "Préparation du thé, café, infusions — préserver les arômes",
       guidelines: [
@@ -347,6 +365,10 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       potassium:   { type:"window",     min:5,       optLow:15,  optHigh:50,   max:100 },
       chlorures:   { type:"low-better", fullAt:30,   zeroAt:150 },
     },
+    exclusions: [
+      { criterion: "nitrates", maxValue: 25, reason: "Nitrates élevés" },
+      { criterion: "fluorure", maxValue: 1.5, reason: "Fluorure au-dessus de la limite réglementaire" },
+    ],
     recommendations: {
       who: "Constipation occasionnelle, paresse intestinale",
       guidelines: [
@@ -376,6 +398,10 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       potassium:   { type:"window",     min:2,       optLow:5,   optHigh:20,   max:50 },
       chlorures:   { type:"low-better", fullAt:20,   zeroAt:100 },
     },
+    exclusions: [
+      { criterion: "nitrates", maxValue: 25, reason: "Nitrates élevés" },
+      { criterion: "fluorure", maxValue: 1.5, reason: "Fluorure au-dessus de la limite réglementaire" },
+    ],
     recommendations: {
       who: "Prévention ostéoporose, croissance osseuse, post-ménopause",
       guidelines: [
@@ -404,6 +430,11 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       potassium:   { type:"window",     min:2,       optLow:5,   optHigh:20,  max:50 },
       chlorures:   { type:"low-better", fullAt:20,   zeroAt:100 },
     },
+    exclusions: [
+      { criterion: "nitrates", maxValue: 25, reason: "Nitrates élevés" },
+      { criterion: "fluorure", maxValue: 1.2, reason: "Fluorure élevé pour un senior" },
+      { criterion: "sodium", maxValue: 100, reason: "Sodium élevé (HTA fréquente après 65 ans)" },
+    ],
     recommendations: {
       who: "Personnes âgées (65+) — hydratation, prévention chutes et dénutrition",
       guidelines: [
@@ -433,6 +464,10 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       potassium:   { type:"window",     min:10,      optLow:30,  optHigh:100,  max:200 },
       chlorures:   { type:"window",     min:20,      optLow:50,  optHigh:150,  max:300 },
     },
+    exclusions: [
+      { criterion: "nitrates", maxValue: 25, reason: "Nitrates élevés" },
+      { criterion: "fluorure", maxValue: 1.5, reason: "Fluorure au-dessus de la limite réglementaire" },
+    ],
     recommendations: {
       who: "Digestion difficile, reflux, repas copieux",
       guidelines: [
