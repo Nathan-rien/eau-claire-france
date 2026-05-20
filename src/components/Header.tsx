@@ -1,7 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Droplets, Menu, ChevronDown } from 'lucide-react';
+import {
+  Droplets, Menu, ChevronDown, Search,
+  Droplet, GlassWater, AlertTriangle, Truck, Route as RouteIcon,
+  CloudRain, Wine, ShoppingCart, TrendingUp, Stethoscope,
+  HelpCircle, Trophy, Bell, Map as MapIcon, type LucideIcon,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -65,6 +71,47 @@ const Header = () => {
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
   const isActiveJourneySection = journeyItems.some(item => location.pathname === item.href);
   const isActivePricesSection = pricesItems.some(item => location.pathname === item.href);
+
+  // Icon mapping by route — used for the mobile grid
+  const iconByHref: Record<string, LucideIcon> = {
+    '/carte': Droplet,
+    '/sources-eau': GlassWater,
+    '/carte-polluants': AlertTriangle,
+    '/carte-parcours-eau': Truck,
+    '/carte-parcours-robinet': RouteIcon,
+    '/carte-europe': MapIcon,
+    '/carte-polluants-europe': AlertTriangle,
+    '/parcours-eau': CloudRain,
+    '/parcours-eau-bouteille': Wine,
+    '/prix-eaux': ShoppingCart,
+    '/cours-eau': TrendingUp,
+    '/prix-eaux-europe': ShoppingCart,
+    '/diagnostic': Stethoscope,
+    '/diagnostic-europe': Stethoscope,
+    '/quelle-eau-boire': HelpCircle,
+    '/classement': Trophy,
+    '/classement-europe': Trophy,
+    '/polluants': AlertTriangle,
+    '/polluants-europe': AlertTriangle,
+    '/alertes': Bell,
+    '/alertes-europe': Bell,
+  };
+
+  const mobileSections = [
+    { id: 'maps', label: t('nav.maps'), items: mapsItems },
+    { id: 'journey', label: t('nav.journeyTab'), items: journeyItems },
+    { id: 'prices', label: t('nav.prices'), items: pricesItems },
+    { id: 'tools', label: t('nav.navigation'), items: navigationItems },
+  ];
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const normalize = (s: string) =>
+    s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const allItems = mobileSections.flatMap(s => s.items);
+  const filteredItems = searchQuery.trim()
+    ? allItems.filter(i => normalize(i.label).includes(normalize(searchQuery)))
+    : [];
+
 
   const [mapsMenuOpen, setMapsMenuOpen] = useState(false);
   const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
@@ -279,9 +326,10 @@ const Header = () => {
                     <span className="sr-only">Toggle menu</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-72 sm:w-80 overflow-y-auto">
-                  <div className="flex flex-col space-y-1 mt-6 pb-8">
-                    <div className="flex items-center space-x-2 mb-4 pb-4 border-b">
+                <SheetContent side="right" className="w-[88vw] max-w-sm p-0 flex flex-col">
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b">
+                    <div className="flex items-center space-x-2">
                       <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center">
                         <Droplets className="w-4 h-4 text-white" />
                       </div>
@@ -289,85 +337,98 @@ const Header = () => {
                         InfoEau.fr
                       </span>
                     </div>
+                  </div>
 
-                    <div className="px-3 pb-4">
-                      <RegionSwitcher />
+                  {/* Region */}
+                  <div className="px-4 pt-3 pb-2">
+                    <RegionSwitcher />
+                  </div>
+
+                  {/* Search */}
+                  <div className="px-4 pb-3">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder={t('nav.searchPlaceholder') || 'Rechercher…'}
+                        className="pl-9 h-10"
+                        aria-label="Rechercher dans le menu"
+                      />
                     </div>
+                  </div>
 
-                    {/* Section cartes */}
-                    <div className="mb-4">
-                      <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
-                        {t('nav.maps')}
+                  {/* Body */}
+                  <div className="flex-1 overflow-y-auto px-4 pb-6">
+                    {searchQuery.trim() ? (
+                      <div className="flex flex-col gap-1">
+                        {filteredItems.length === 0 && (
+                          <p className="text-sm text-muted-foreground py-6 text-center">
+                            Aucun résultat
+                          </p>
+                        )}
+                        {filteredItems.map((item) => {
+                          const Icon = iconByHref[item.href] ?? Droplet;
+                          const active = isActive(item.href);
+                          return (
+                            <Link
+                              key={item.href}
+                              to={item.href}
+                              onClick={() => { setIsOpen(false); setSearchQuery(''); }}
+                              aria-current={active ? 'page' : undefined}
+                              className={`flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium transition-colors ${
+                                active
+                                  ? 'bg-accent text-accent-foreground'
+                                  : 'text-foreground hover:bg-accent/60'
+                              }`}
+                            >
+                              <Icon className="h-4 w-4 text-primary shrink-0" />
+                              <span>{item.label}</span>
+                            </Link>
+                          );
+                        })}
                       </div>
-                      {mapsItems.map((item) => (
-                        <Link
-                          key={item.href}
-                          to={item.href}
-                          onClick={() => setIsOpen(false)}
-                          className={`block px-3 py-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground ml-3 ${
-                            isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
-                          }`}
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
-                    </div>
-
-                    {/* Section parcours */}
-                    <div className="mb-4">
-                      <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
-                        {t('nav.journeyTab')}
+                    ) : (
+                      <div className="flex flex-col gap-5">
+                        {mobileSections.map((section) => (
+                          <div key={section.id}>
+                            <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 px-1">
+                              {section.label}
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              {section.items.map((item) => {
+                                const Icon = iconByHref[item.href] ?? Droplet;
+                                const active = isActive(item.href);
+                                const isDiagnostic = item.href === '/diagnostic' || item.href === '/diagnostic-europe';
+                                return (
+                                  <Link
+                                    key={item.href}
+                                    to={item.href}
+                                    onClick={() => setIsOpen(false)}
+                                    aria-current={active ? 'page' : undefined}
+                                    className={`group relative flex flex-col items-start justify-between min-h-[72px] rounded-xl border p-3 transition-all hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                                      active
+                                        ? 'border-primary bg-accent text-accent-foreground ring-1 ring-primary/40'
+                                        : isDiagnostic
+                                          ? 'border-transparent bg-gradient-to-br from-blue-500/10 to-green-500/10 hover:from-blue-500/15 hover:to-green-500/15 text-foreground'
+                                          : 'border-border bg-card hover:bg-accent/50 text-foreground'
+                                    }`}
+                                  >
+                                    <Icon className={`h-5 w-5 ${active ? 'text-primary' : isDiagnostic ? 'text-blue-600' : 'text-muted-foreground group-hover:text-primary'} transition-colors`} />
+                                    <span className="text-[13px] font-medium leading-tight mt-2 line-clamp-2">
+                                      {item.label}
+                                    </span>
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                      {journeyItems.map((item) => (
-                        <Link
-                          key={item.href}
-                          to={item.href}
-                          onClick={() => setIsOpen(false)}
-                          className={`block px-3 py-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground ml-3 ${
-                            isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
-                          }`}
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
-                    </div>
-
-                    {/* Section prix */}
-                    <div className="mb-4">
-                      <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
-                        {t('nav.prices')}
-                      </div>
-                      {pricesItems.map((item) => (
-                        <Link
-                          key={item.href}
-                          to={item.href}
-                          onClick={() => setIsOpen(false)}
-                          className={`block px-3 py-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground ml-3 ${
-                            isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
-                          }`}
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
-                    </div>
-
-                    <div className="text-xs uppercase tracking-wide text-muted-foreground px-3 py-2 font-semibold">
-                      {t('nav.navigation')}
-                    </div>
-                    {navigationItems.map((item) => (
-                      <Link
-                        key={item.href}
-                        to={item.href}
-                        onClick={() => setIsOpen(false)}
-                        className={`block px-3 py-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground ${
-                          isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
-                        }`}
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
+                    )}
                   </div>
                 </SheetContent>
+
               </Sheet>
             </div>
           </div>
