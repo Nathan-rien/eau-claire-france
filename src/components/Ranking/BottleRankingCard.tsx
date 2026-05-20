@@ -31,6 +31,7 @@ export default function BottleRankingCard({
       case "C": return "text-yellow-600 bg-yellow-50";
       case "D": return "text-orange-500 bg-orange-50";
       case "E": return "text-red-500 bg-red-50";
+      case "X": return "text-red-700 bg-red-100 border border-red-300";
       default: return "text-gray-500 bg-gray-50";
     }
   };
