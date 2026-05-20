@@ -394,6 +394,10 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
       potassium:   { type:"window",     min:2,       optLow:5,   optHigh:20,   max:50 },
       chlorures:   { type:"low-better", fullAt:20,   zeroAt:100 },
     },
+    exclusions: [
+      { criterion: "nitrates", maxValue: 25, reason: "Nitrates élevés" },
+      { criterion: "fluorure", maxValue: 1.5, reason: "Fluorure au-dessus de la limite réglementaire" },
+    ],
     recommendations: {
       who: "Prévention ostéoporose, croissance osseuse, post-ménopause",
       guidelines: [
