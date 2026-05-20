@@ -1,42 +1,31 @@
-## Problème identifié
+## Constat
 
-Sur le profil **Pureté**, Hépar (résidu sec 2513 mg/L) apparaît avec un score de 50,9/80 et une note **C**, ce qui le fait passer pour une eau "correcte" alors qu'il dépasse massivement le seuil d'exclusion du profil (résidu > 500 mg/L).
-
-Cause technique :
-- L'exclusion est bien détectée (`excluded: true`), mais elle n'affecte **pas le score affiché** ni la **lettre de note**.
-- Les eaux exclues sont simplement triées en bas de liste mais conservent un score "normal" et une lettre A–E trompeuse.
-- Le filtre "Masquer les eaux non recommandées" est désactivé par défaut.
-- Le calcul utilise une normalisation pondérée : un mauvais score sur 1 critère (résidu) est dilué par les bons scores des 10 autres critères, donc une eau exclue peut quand même obtenir 50+/80.
+Le problème visible vient très probablement d’un écart entre le code corrigé et l’état réellement chargé dans la preview : avec la logique actuelle dans `rankingV2.ts`, Hépar est bien exclue en profil Pureté, plafonnée à `20/80`, notée `X`, et triée en bas. En revanche, le tableau affiché dans la capture montre encore l’ancienne logique (`Hépar 50.9`, note `C`) et un tri incohérent avec les scores (`72.7` avant `75.8`).
 
 ## Plan de correction
 
-### 1. Pénaliser fortement les eaux exclues dans `scoreBottle` (rankingV2.ts)
-- Si `excluded === true`, plafonner le `total` à un seuil bas (ex. **20/80 max**) — l'écart entre les exclusions et les non-exclues devient flagrant.
-- Garder le `breakdown10` intact (utile pour le détail), mais le total reflète la non-recommandation.
+1. **Centraliser le tri du classement**
+   - Créer une logique unique de comparaison :
+     - eaux exclues toujours en dernier ;
+     - puis score décroissant ;
+     - puis nom alphabétique en cas d’égalité.
+   - L’utiliser à la fois dans les cartes et dans le tableau pour éviter deux comportements différents.
 
-### 2. Forcer la note à "X" (ou "—") pour les eaux exclues (`letterGrade`)
-- Modifier la signature : `letterGrade(total80, excluded?)` → renvoie `"X"` si exclue.
-- Couleur rouge dédiée (badge "Non recommandée") au lieu de C/D jaune/orange trompeur.
-- Mettre à jour les 3 endroits qui consomment `letterGrade` : `RankingTableView`, `BottleRankingCard`, `BottleCompareModal`.
+2. **Forcer le tableau à afficher l’ordre du classement par défaut**
+   - Mettre le tableau en tri “rang” décroissant par score dès l’ouverture.
+   - Corriger le libellé/rendu du rang pour qu’il corresponde à la position réelle après tri.
+   - Éviter qu’un ancien tri ascendant place `72.7` avant `75.8`.
 
-### 3. Activer `hideExcluded` par défaut
-- `DEFAULT_FILTERS.hideExcluded: true` dans `RankingFilters.tsx`.
-- L'utilisateur peut le désactiver explicitement s'il veut voir les eaux non recommandées.
-- L'étiquette du switch reste claire ("Afficher les eaux non recommandées").
+3. **Rendre les eaux exclues impossibles à remonter dans le classement**
+   - Conserver le plafond de score à `20/80` pour les eaux exclues.
+   - Conserver la note `X` pour les exclues.
+   - Vérifier que `hideExcluded=true` est bien appliqué au chargement et lors de la réinitialisation des filtres.
 
-### 4. Ajouter une 2e exclusion implicite au profil Pureté
-- Actuellement : exclusions sur `residu > 500` et `nitrates > 15`.
-- Ajouter : `sodium > 30` et `sulfates > 100` (cohérents avec les `zeroAt` des règles).
-- Cela exclut aussi Contrex, Courmayeur, San Pellegrino du profil Pureté, conformément à la description ("Eau ultra-pure").
+4. **Renforcer la cohérence de la notation Pureté**
+   - Vérifier les seuils Pureté sur les critères clés : résidu sec, nitrates, sodium, sulfates, fluorure.
+   - Ajouter une justification visible/fiable côté détails si une eau est exclue : par exemple “Trop minéralisée pour ce profil pureté”.
 
-## Fichiers à modifier
-
-- `src/utils/rankingV2.ts` — plafonner score si excluded, `letterGrade(total, excluded)`, ajouter exclusions purity
-- `src/components/Ranking/RankingFilters.tsx` — `hideExcluded: true` par défaut
-- `src/components/Ranking/RankingTableView.tsx` — passer `excluded` à `letterGrade`, style badge "X" rouge
-- `src/components/Ranking/BottleRankingCard.tsx` — idem
-- `src/components/Ranking/BottleCompareModal.tsx` — idem
-
-## Hors-scope (inchangé)
-
-- Pondérations, règles `lowBetter`/`windowed`, formatage des décimales, autres profils santé.
+5. **Validation**
+   - Calculer localement le top Pureté attendu : Mont Roucous, Montcalm, Voss, etc.
+   - Vérifier qu’Hépar n’apparaît plus dans le top quand “Masquer non-recommandées” est actif.
+   - Vérifier que si les non-recommandées sont affichées, Hépar est en bas avec note `X` et score plafonné.
