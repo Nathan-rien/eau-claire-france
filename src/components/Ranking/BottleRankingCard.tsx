@@ -16,7 +16,7 @@ export default function BottleRankingCard({
   podium?: boolean;
 }) {
   const scored = scoreBottle(compos, profile);
-  const letter = letterGrade(scored.total);
+  const letter = letterGrade(scored.total, scored.excluded);
   const rsn = reasons(compos, profile);
   const compositionData = getCompositionForDisplay(compos);
 
