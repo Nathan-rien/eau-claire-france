@@ -116,6 +116,8 @@ export const PROFILES: Record<Profile, ProfileConfig> = {
     exclusions: [
       { criterion: "residu", maxValue: 500, reason: "Trop minéralisée pour ce profil pureté" },
       { criterion: "nitrates", maxValue: 15, reason: "Nitrates trop élevés" },
+      { criterion: "sodium", maxValue: 30, reason: "Sodium trop élevé pour une eau ultra-pure" },
+      { criterion: "sulfates", maxValue: 100, reason: "Sulfates trop élevés pour une eau ultra-pure" },
     ],
     recommendations: {
       who: "Recherche d'une eau très peu minéralisée — soif quotidienne, biberons, traitements rénaux légers",
@@ -478,7 +480,7 @@ export function scoreBottle(comp: Composition, profile: Profile = "daily") {
       availableWeight += w[k];
     }
   });
-  const total80 = availableWeight > 0
+  const rawTotal80 = availableWeight > 0
     ? (weightedSum / availableWeight) * totalWeight
     : 0;
 
@@ -492,6 +494,12 @@ export function scoreBottle(comp: Composition, profile: Profile = "daily") {
       }
     }
   }
+
+  // Cap excluded waters to a low ceiling so they cannot appear "decent"
+  const EXCLUDED_MAX = 20;
+  const total80 = exclusionReasons.length > 0
+    ? Math.min(rawTotal80, EXCLUDED_MAX)
+    : rawTotal80;
 
   return {
     total: Math.round(total80 * 10) / 10,
@@ -520,7 +528,8 @@ function getCompositionValue(comp: Composition, criterion: Criterion): number | 
   }
 }
 
-export function letterGrade(total80: number) {
+export function letterGrade(total80: number, excluded?: boolean) {
+  if (excluded) return "X";
   if (total80 >= 68) return "A";  // 85%+
   if (total80 >= 56) return "B";  // 70%+
   if (total80 >= 44) return "C";  // 55%+

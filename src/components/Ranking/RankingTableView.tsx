@@ -21,6 +21,7 @@ const letterColor = (l: string) => ({
   C: 'bg-yellow-50 text-yellow-700',
   D: 'bg-orange-50 text-orange-600',
   E: 'bg-red-50 text-red-600',
+  X: 'bg-red-100 text-red-700 border border-red-300',
 }[l] || 'bg-gray-100 text-gray-600');
 
 export default function RankingTableView({
@@ -31,7 +32,7 @@ export default function RankingTableView({
 
   const scored = waters.map(w => {
     const s = scoreBottle(w.composition, profile);
-    return { water: w, score: s.total, excluded: s.excluded, letter: letterGrade(s.total) };
+    return { water: w, score: s.total, excluded: s.excluded, letter: letterGrade(s.total, s.excluded) };
   });
 
   const compVal = (c: Composition, k: string): number => {

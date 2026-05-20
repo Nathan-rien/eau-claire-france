@@ -22,7 +22,7 @@ export interface RankingFilterState {
 export const DEFAULT_FILTERS: RankingFilterState = {
   showSparkling: true,
   showStill: true,
-  hideExcluded: false,
+  hideExcluded: true,
   showMddOnly: false,
   origins: ['FR', 'EU', 'Monde'],
   residuRange: [0, 5000],
