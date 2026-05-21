@@ -51,6 +51,7 @@ const Navigation = () => {
         { href: '/polluants-europe', label: t('nav.pollutants') },
         { href: '/alertes-europe', label: t('nav.alerts') },
         { href: '/parcours-eau', label: t('nav.journey') },
+        { href: '/lettre-de-leau', label: "Lettre de l'eau" },
       ]
     : [
         { href: '/diagnostic', label: t('nav.diagnostic') },
@@ -59,6 +60,7 @@ const Navigation = () => {
         { href: '/polluants', label: t('nav.pollutants') },
         { href: '/alertes', label: t('nav.alerts') },
         { href: '/parcours-eau', label: t('nav.journey') },
+        { href: '/lettre-de-leau', label: "Lettre de l'eau" },
       ];
 
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);

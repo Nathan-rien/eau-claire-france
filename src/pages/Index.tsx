@@ -10,6 +10,7 @@ const rankingWaterBg = new URL('@/assets/ranking-water-bg.jpg', import.meta.url)
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
+import HomeBlogTeaser from '@/components/blog/HomeBlogTeaser';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Index = () => {
@@ -310,6 +311,8 @@ const Index = () => {
             </div>
           </div>
         </section>
+
+        <HomeBlogTeaser />
       </div>
     </Layout>
   );
