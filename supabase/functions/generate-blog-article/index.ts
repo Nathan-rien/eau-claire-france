@@ -203,14 +203,9 @@ Deno.serve(async (req) => {
       .map((s, i) => `### Source ${i + 1}: ${s.title}\nURL: ${s.url}\n${s.content}`)
       .join("\n\n---\n\n");
 
-    const writeRes = await callLovableAI([
-      {
-        role: "system",
-        content: `Tu es journaliste pour "Lettre de l'eau", la rubrique actualités d'InfoEau.fr (qualité de l'eau en France). Tu écris des articles factuels, fouillés, accessibles, en français, basés UNIQUEMENT sur les sources fournies. Date du jour: ${today}. Tu réponds STRICTEMENT en JSON valide, sans markdown autour.`,
-      },
-      {
-        role: "user",
-        content: `Rédige un article d'environ 1500 mots sur le sujet ci-dessous, en t'appuyant sur les sources.
+    const systemPrompt = `Tu es journaliste pour "Lettre de l'eau", la rubrique actualités d'InfoEau.fr (qualité de l'eau en France). Tu écris des articles factuels, fouillés, accessibles, en français, basés UNIQUEMENT sur les sources fournies. Date du jour: ${today}. Tu réponds STRICTEMENT en JSON valide, sans markdown autour.`;
+
+    const userPrompt = `Rédige un article d'environ 1500 mots sur le sujet ci-dessous, en t'appuyant sur les sources.
 
 Sujet principal: ${fresh.title}
 URL principale: ${fresh.url}
@@ -238,12 +233,9 @@ Si l'article contient des chiffres comparatifs intéressants (ex: contaminations
   "title": "Titre du graphique",
   "data": [{"label":"X","value":12},{"label":"Y","value":8}],
   "unit": "%"
-}`,
-      },
-    ], { response_format: { type: "json_object" } });
+}`;
 
-    const raw = writeRes.choices?.[0]?.message?.content;
-    if (!raw) throw new Error("Empty AI response");
+    const raw = await callGeminiText(systemPrompt, userPrompt);
     let article: any;
     try {
       article = JSON.parse(raw);
