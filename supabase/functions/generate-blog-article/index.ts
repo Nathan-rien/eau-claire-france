@@ -244,6 +244,14 @@ Si l'article contient des chiffres comparatifs intéressants (ex: contaminations
       article = JSON.parse(m![0]);
     }
 
+    // Strip residual inline source mentions like (Source 1), (Sources 1, 2 et 3), (source 2)
+    if (typeof article.content_md === "string") {
+      article.content_md = article.content_md
+        .replace(/\s*\(\s*sources?\s*\d+(?:\s*(?:,|et)\s*\d+)*\s*\)/gi, "")
+        .replace(/[ \t]{2,}/g, " ")
+        .replace(/\s+([,.;:!?])/g, "$1");
+    }
+
     const slug = slugify(article.slug || article.title);
 
     // 5. Generate cover image
