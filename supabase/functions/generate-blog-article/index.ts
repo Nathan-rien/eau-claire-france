@@ -24,7 +24,7 @@ function slugify(s: string): string {
     .slice(0, 90);
 }
 
-async function firecrawlSearch(query: string) {
+async function firecrawlSearch(query: string, tbs?: string) {
   const r = await fetch("https://api.firecrawl.dev/v2/search", {
     method: "POST",
     headers: {
@@ -33,10 +33,10 @@ async function firecrawlSearch(query: string) {
     },
     body: JSON.stringify({
       query,
-      limit: 8,
+      limit: 10,
       lang: "fr",
       country: "fr",
-      tbs: "qdr:w",
+      ...(tbs ? { tbs } : {}),
     }),
   });
   if (!r.ok) throw new Error(`Firecrawl search ${r.status}: ${await r.text()}`);
@@ -141,10 +141,21 @@ Deno.serve(async (req) => {
     ];
     const query = queries[Math.floor(Math.random() * queries.length)];
     console.log("Searching:", query);
-    const search = await firecrawlSearch(query);
-    const results = (search?.data?.web ?? search?.data ?? search?.web ?? [])
-      .filter((r: any) => r?.url && r?.title)
-      .slice(0, 8);
+    let search = await firecrawlSearch(query, "qdr:w");
+    let results = (search?.data?.web ?? search?.data ?? [])
+      .filter((r: any) => r?.url && r?.title);
+    if (!results.length) {
+      console.log("No results last week, falling back to last month");
+      search = await firecrawlSearch(query, "qdr:m");
+      results = (search?.data?.web ?? search?.data ?? [])
+        .filter((r: any) => r?.url && r?.title);
+    }
+    if (!results.length) {
+      search = await firecrawlSearch(query);
+      results = (search?.data?.web ?? search?.data ?? [])
+        .filter((r: any) => r?.url && r?.title);
+    }
+    results = results.slice(0, 8);
 
     if (!results.length) throw new Error("No search results");
 
