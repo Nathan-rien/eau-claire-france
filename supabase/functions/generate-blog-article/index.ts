@@ -132,6 +132,11 @@ Deno.serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
     if (!FIRECRAWL_API_KEY) throw new Error("FIRECRAWL_API_KEY missing");
 
+    // 0. Parse optional forced topic
+    const body = await req.json().catch(() => ({} as any));
+    const forcedTopic: string | undefined = body?.topic;
+    const skipDedupe: boolean = !!body?.skipDedupe || !!forcedTopic;
+
     // 1. Search recent water news
     const queries = [
       "actualité eau potable France scandale",
@@ -139,9 +144,9 @@ Deno.serve(async (req) => {
       "qualité eau robinet PFAS pesticides",
       "eau minérale Nestlé Perrier Vittel",
     ];
-    const query = queries[Math.floor(Math.random() * queries.length)];
-    console.log("Searching:", query);
-    let search = await firecrawlSearch(query, "qdr:w");
+    const query = forcedTopic ?? queries[Math.floor(Math.random() * queries.length)];
+    console.log("Searching:", query, "forced:", !!forcedTopic);
+    let search = await firecrawlSearch(query, forcedTopic ? "qdr:m" : "qdr:w");
     let results = (search?.data?.web ?? search?.data ?? [])
       .filter((r: any) => r?.url && r?.title);
     if (!results.length) {
