@@ -219,7 +219,7 @@ Réponds UNIQUEMENT avec un JSON valide de cette forme:
   "slug": "slug-court-en-tirets",
   "excerpt": "Chapeau de 2-3 phrases (max 280 caractères) qui donne envie de lire",
   "category": "scandale|reglementation|qualite|sante|environnement|economie",
-  "content_md": "Article complet en Markdown ~1500 mots. Structure: introduction, plusieurs sections avec ## titres, citations en blockquote si pertinent, conclusion. Pas de titre H1 au début (déjà affiché). Sois précis, cite les sources entre parenthèses (Source 1), (Source 2).",
+  "content_md": "Article complet en Markdown ~1500 mots. Structure: introduction, plusieurs sections avec ## titres, citations en blockquote si pertinent, conclusion. Pas de titre H1 au début (déjà affiché). Sois précis et factuel. IMPORTANT: n'ajoute AUCUNE mention de source inline du type (Source 1), (Source 2), (Sources 1 et 2), (source 1), etc. Les sources cliquables sont déjà affichées en bas de l'article — ne les répète pas dans le texte.",
   "seo_title": "Titre SEO (max 60 car)",
   "seo_description": "Méta-description (max 155 car)",
   "reading_time_min": 7,
@@ -242,6 +242,14 @@ Si l'article contient des chiffres comparatifs intéressants (ex: contaminations
     } catch {
       const m = raw.match(/\{[\s\S]*\}/);
       article = JSON.parse(m![0]);
+    }
+
+    // Strip residual inline source mentions like (Source 1), (Sources 1, 2 et 3), (source 2)
+    if (typeof article.content_md === "string") {
+      article.content_md = article.content_md
+        .replace(/\s*\(\s*sources?\s*\d+(?:\s*(?:,|et)\s*\d+)*\s*\)/gi, "")
+        .replace(/[ \t]{2,}/g, " ")
+        .replace(/\s+([,.;:!?])/g, "$1");
     }
 
     const slug = slugify(article.slug || article.title);

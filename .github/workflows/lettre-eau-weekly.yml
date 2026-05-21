@@ -1,0 +1,38 @@
+name: Lettre de l'eau - weekly article
+
+on:
+  schedule:
+    # Every Monday at 07:00 UTC (~09:00 Paris)
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: 'Optional forced topic (leave empty for auto)'
+        required: false
+        default: ''
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Invoke generate-blog-article
+        env:
+          SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TOPIC: ${{ github.event.inputs.topic }}
+        run: |
+          if [ -n "$TOPIC" ]; then
+            BODY=$(printf '{"topic":"%s"}' "$TOPIC")
+          else
+            BODY='{}'
+          fi
+          echo "Triggering weekly article generation..."
+          HTTP_CODE=$(curl -sS -o /tmp/resp.json -w "%{http_code}" \
+            -X POST "https://xblogttmomuogdhmaztf.supabase.co/functions/v1/generate-blog-article" \
+            -H "Authorization: Bearer $SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/json" \
+            --data "$BODY" \
+            --max-time 540)
+          echo "HTTP $HTTP_CODE"
+          cat /tmp/resp.json
+          [ "$HTTP_CODE" = "200" ] || exit 1
