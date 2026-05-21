@@ -138,7 +138,7 @@ Deno.serve(async (req) => {
   const logPayload: any = { status: "started" };
 
   try {
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY missing");
     if (!FIRECRAWL_API_KEY) throw new Error("FIRECRAWL_API_KEY missing");
 
     // 0. Parse optional forced topic
