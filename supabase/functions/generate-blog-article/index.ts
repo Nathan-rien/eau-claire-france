@@ -7,7 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -56,44 +56,53 @@ async function firecrawlScrape(url: string) {
   return r.json();
 }
 
-async function callLovableAI(messages: any[], opts: any = {}) {
-  const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+async function callGeminiText(systemInstruction: string, userPrompt: string): Promise<string> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+  const r = await fetch(url, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "google/gemini-2.5-pro",
-      messages,
-      ...opts,
+      system_instruction: { parts: [{ text: systemInstruction }] },
+      contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+      generationConfig: {
+        response_mime_type: "application/json",
+        temperature: 0.7,
+        maxOutputTokens: 8192,
+      },
     }),
   });
-  if (!r.ok) throw new Error(`Lovable AI ${r.status}: ${await r.text()}`);
-  return r.json();
+  if (!r.ok) throw new Error(`Gemini text ${r.status}: ${await r.text()}`);
+  const data = await r.json();
+  const text = data?.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join("") ?? "";
+  if (!text) throw new Error("Empty Gemini response");
+  return text;
 }
 
 async function generateCoverImage(prompt: string): Promise<string | null> {
   try {
-    const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${GEMINI_API_KEY}`;
+    const r = await fetch(url, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image",
-        messages: [{ role: "user", content: prompt }],
-        modalities: ["image", "text"],
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: { responseModalities: ["IMAGE"] },
       }),
     });
     if (!r.ok) {
-      console.error("Image gen failed:", r.status, await r.text());
+      console.error("Gemini image failed:", r.status, await r.text());
       return null;
     }
     const data = await r.json();
-    const imageData = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    return imageData ?? null;
+    const parts = data?.candidates?.[0]?.content?.parts ?? [];
+    for (const p of parts) {
+      const inline = p?.inlineData ?? p?.inline_data;
+      if (inline?.data) {
+        const mime = inline.mimeType ?? inline.mime_type ?? "image/png";
+        return `data:${mime};base64,${inline.data}`;
+      }
+    }
+    return null;
   } catch (e) {
     console.error("Image gen error:", e);
     return null;
@@ -129,7 +138,7 @@ Deno.serve(async (req) => {
   const logPayload: any = { status: "started" };
 
   try {
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY missing");
     if (!FIRECRAWL_API_KEY) throw new Error("FIRECRAWL_API_KEY missing");
 
     // 0. Parse optional forced topic
@@ -194,14 +203,9 @@ Deno.serve(async (req) => {
       .map((s, i) => `### Source ${i + 1}: ${s.title}\nURL: ${s.url}\n${s.content}`)
       .join("\n\n---\n\n");
 
-    const writeRes = await callLovableAI([
-      {
-        role: "system",
-        content: `Tu es journaliste pour "Lettre de l'eau", la rubrique actualités d'InfoEau.fr (qualité de l'eau en France). Tu écris des articles factuels, fouillés, accessibles, en français, basés UNIQUEMENT sur les sources fournies. Date du jour: ${today}. Tu réponds STRICTEMENT en JSON valide, sans markdown autour.`,
-      },
-      {
-        role: "user",
-        content: `Rédige un article d'environ 1500 mots sur le sujet ci-dessous, en t'appuyant sur les sources.
+    const systemPrompt = `Tu es journaliste pour "Lettre de l'eau", la rubrique actualités d'InfoEau.fr (qualité de l'eau en France). Tu écris des articles factuels, fouillés, accessibles, en français, basés UNIQUEMENT sur les sources fournies. Date du jour: ${today}. Tu réponds STRICTEMENT en JSON valide, sans markdown autour.`;
+
+    const userPrompt = `Rédige un article d'environ 1500 mots sur le sujet ci-dessous, en t'appuyant sur les sources.
 
 Sujet principal: ${fresh.title}
 URL principale: ${fresh.url}
@@ -229,12 +233,9 @@ Si l'article contient des chiffres comparatifs intéressants (ex: contaminations
   "title": "Titre du graphique",
   "data": [{"label":"X","value":12},{"label":"Y","value":8}],
   "unit": "%"
-}`,
-      },
-    ], { response_format: { type: "json_object" } });
+}`;
 
-    const raw = writeRes.choices?.[0]?.message?.content;
-    if (!raw) throw new Error("Empty AI response");
+    const raw = await callGeminiText(systemPrompt, userPrompt);
     let article: any;
     try {
       article = JSON.parse(raw);
