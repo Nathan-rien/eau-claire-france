@@ -86,6 +86,101 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_articles: {
+        Row: {
+          category: string
+          content_md: string
+          cover_image_url: string | null
+          created_at: string
+          excerpt: string
+          id: string
+          infographic: Json | null
+          published_at: string
+          reading_time_min: number
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          sources: Json
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          content_md: string
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt: string
+          id?: string
+          infographic?: Json | null
+          published_at?: string
+          reading_time_min?: number
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          sources?: Json
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content_md?: string
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string
+          id?: string
+          infographic?: Json | null
+          published_at?: string
+          reading_time_min?: number
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          sources?: Json
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      blog_generation_log: {
+        Row: {
+          article_id: string | null
+          created_at: string
+          error: string | null
+          id: string
+          payload: Json | null
+          status: string
+          topic: string | null
+        }
+        Insert: {
+          article_id?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          payload?: Json | null
+          status: string
+          topic?: string | null
+        }
+        Update: {
+          article_id?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          payload?: Json | null
+          status?: string
+          topic?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_generation_log_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "blog_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brand_retailer_mapping: {
         Row: {
           brand_name: string
