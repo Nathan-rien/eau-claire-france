@@ -219,7 +219,7 @@ Réponds UNIQUEMENT avec un JSON valide de cette forme:
   "slug": "slug-court-en-tirets",
   "excerpt": "Chapeau de 2-3 phrases (max 280 caractères) qui donne envie de lire",
   "category": "scandale|reglementation|qualite|sante|environnement|economie",
-  "content_md": "Article complet en Markdown ~1500 mots. Structure: introduction, plusieurs sections avec ## titres, citations en blockquote si pertinent, conclusion. Pas de titre H1 au début (déjà affiché). Sois précis, cite les sources entre parenthèses (Source 1), (Source 2).",
+  "content_md": "Article complet en Markdown ~1500 mots. Structure: introduction, plusieurs sections avec ## titres, citations en blockquote si pertinent, conclusion. Pas de titre H1 au début (déjà affiché). Sois précis et factuel. IMPORTANT: n'ajoute AUCUNE mention de source inline du type (Source 1), (Source 2), (Sources 1 et 2), (source 1), etc. Les sources cliquables sont déjà affichées en bas de l'article — ne les répète pas dans le texte.",
   "seo_title": "Titre SEO (max 60 car)",
   "seo_description": "Méta-description (max 155 car)",
   "reading_time_min": 7,
