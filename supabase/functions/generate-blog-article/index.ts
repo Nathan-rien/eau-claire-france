@@ -164,16 +164,18 @@ Deno.serve(async (req) => {
 
     if (!results.length) throw new Error("No search results");
 
-    // 2. Dedupe against last 90 days
-    const { data: recent } = await supabase
-      .from("blog_articles")
-      .select("title")
-      .gte("published_at", new Date(Date.now() - 90 * 86400000).toISOString());
-
-    const usedTitles = new Set((recent ?? []).map((r: any) => r.title.toLowerCase()));
-    const fresh = results.find((r: any) =>
-      ![...usedTitles].some((t) => t.includes(r.title.toLowerCase().slice(0, 25)))
-    ) ?? results[0];
+    // 2. Dedupe against last 90 days (unless forced)
+    let fresh: any = results[0];
+    if (!skipDedupe) {
+      const { data: recent } = await supabase
+        .from("blog_articles")
+        .select("title")
+        .gte("published_at", new Date(Date.now() - 90 * 86400000).toISOString());
+      const usedTitles = new Set((recent ?? []).map((r: any) => r.title.toLowerCase()));
+      fresh = results.find((r: any) =>
+        ![...usedTitles].some((t) => t.includes(r.title.toLowerCase().slice(0, 25)))
+      ) ?? results[0];
+    }
 
     logPayload.topic = fresh.title;
     console.log("Selected topic:", fresh.title, fresh.url);
