@@ -128,7 +128,8 @@ export default function LettreEauArticle() {
           <div className="prose prose-lg prose-slate max-w-none prose-headings:text-foreground prose-headings:font-bold prose-h2:mt-12 prose-h2:mb-5 prose-h3:mt-10 prose-h3:mb-4 prose-p:my-5 prose-p:leading-[1.85] prose-p:text-foreground/90 prose-li:my-2 prose-blockquote:my-7 prose-strong:text-foreground prose-a:text-primary prose-blockquote:border-l-primary prose-blockquote:text-muted-foreground">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {article.content_md
-                .replace(/\s*\(\s*sources?\s*\d+(?:\s*(?:,|et)\s*\d+)*\s*\)/gi, "")
+                .replace(/\s*\(\s*sources?\s*\d+(?:\s*(?:,|et)\s*(?:sources?\s*)?\d+)*\s*\)/gi, "")
+                .replace(/\s*\[\s*sources?\s*\d+(?:\s*(?:,|et)\s*(?:sources?\s*)?\d+)*\s*\]/gi, "")
                 .replace(/[ \t]{2,}/g, " ")
                 .replace(/\s+([,.;:!?])/g, "$1")}
             </ReactMarkdown>
