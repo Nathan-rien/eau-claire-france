@@ -63,43 +63,61 @@ export default function LettreEau() {
           >
             <path d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L0,120Z" />
           </svg>
-          <div className="container mx-auto max-w-6xl px-4 py-12 md:py-20 relative">
-            <div className="inline-flex items-center gap-2 text-xs md:text-sm font-semibold uppercase tracking-widest text-blue-600 mb-4">
-              <Newspaper className="w-4 h-4" />
-              <span>Lettre de l'eau</span>
-              <span className="text-muted-foreground/60">·</span>
-              <span className="text-muted-foreground font-medium normal-case tracking-normal">
-                Le magazine d'InfoEau
-              </span>
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 tracking-tight max-w-4xl leading-[1.1]">
-              Tout ce qu'il faut savoir sur{" "}
-              <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                la qualité de l'eau
-              </span>
-            </h1>
-            <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl leading-relaxed">
-              Enquêtes, scandales, décisions réglementaires, alertes sanitaires : chaque article décrypte
-              une actualité récente sur l'eau en France.
-            </p>
+          <div className="container mx-auto max-w-6xl px-4 py-12 md:py-16 lg:py-20 relative">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center">
+              <div className="lg:col-span-3">
+                <div className="inline-flex flex-wrap items-center gap-2 text-xs md:text-sm font-semibold uppercase tracking-widest text-blue-600 mb-4">
+                  <Newspaper className="w-4 h-4" />
+                  <span>Lettre de l'eau</span>
+                  <span className="text-muted-foreground/60">·</span>
+                  <span className="text-muted-foreground font-medium normal-case tracking-normal">
+                    Le magazine d'InfoEau
+                  </span>
+                </div>
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 tracking-tight leading-[1.1]">
+                  Tout ce qu'il faut savoir sur{" "}
+                  <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                    la qualité de l'eau
+                  </span>
+                </h1>
+                <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+                  Enquêtes, scandales, décisions réglementaires, alertes sanitaires : chaque article décrypte
+                  une actualité récente sur l'eau en France.
+                </p>
 
-            {/* Stats inline */}
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-8 text-sm">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <FileText className="w-4 h-4 text-blue-600" />
-                <span>
-                  <strong className="text-foreground">{articles.length}</strong> article{articles.length > 1 ? "s" : ""}
-                </span>
+                {/* Stats inline */}
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-8 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <FileText className="w-4 h-4 text-blue-600" />
+                    <span>
+                      <strong className="text-foreground">{articles.length}</strong> article{articles.length > 1 ? "s" : ""}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Calendar className="w-4 h-4 text-green-600" />
+                    <span>
+                      Nouvel article <strong className="text-foreground">tous les 3 jours</strong>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Bell className="w-4 h-4 text-orange-500" />
+                    <span>{Math.max(categories.length - 1, 0)} thématiques couvertes</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Calendar className="w-4 h-4 text-green-600" />
-                <span>
-                  Nouvel article <strong className="text-foreground">tous les 3 jours</strong>
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Bell className="w-4 h-4 text-orange-500" />
-                <span>{categories.length - 1} thématiques couvertes</span>
+
+              {/* Image de couverture */}
+              <div className="lg:col-span-2 order-first lg:order-last">
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/5 aspect-[4/3] lg:aspect-[4/5]">
+                  <img
+                    src={lettreEauCover}
+                    alt="Goutte d'eau créant des ondulations — Lettre de l'eau"
+                    width={1536}
+                    height={864}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/20 via-transparent to-green-500/10 pointer-events-none" />
+                </div>
               </div>
             </div>
           </div>
