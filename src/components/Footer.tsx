@@ -29,6 +29,7 @@ const Footer = () => {
               <li><a href="/methodologie" className="hover:text-white transition-colors" rel="nofollow">{t('footer.methodology')}</a></li>
               <li><a href="/api-publique" className="hover:text-white transition-colors" rel="nofollow">{t('footer.publicApi')}</a></li>
               <li><a href="/parcours-eau" className="hover:text-white transition-colors">{t('footer.waterJourney')}</a></li>
+              <li><a href="/lettre-de-leau" className="hover:text-white transition-colors">Lettre de l'eau</a></li>
             </ul>
           </nav>
           
