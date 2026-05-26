@@ -1,67 +1,51 @@
-# Plan — Mise en avant + redesign de la Lettre de l'eau
+# Plan — Image de couverture pour /lettre-de-leau
 
-## 1. Navigation
+## Objectif
+Donner une vraie présence visuelle au hero éditorial de la page, qui est aujourd'hui uniquement texte sur dégradé bleu/vert.
 
-Le lien `/lettre-de-leau` existe déjà dans `src/components/Navigation.tsx` (dernier élément de `directNavigationItems`, pour FR et EU), mais il se perd en bout de barre.
+## Proposition retenue : hero split + image générée
 
-Proposition :
-- Le déplacer en tête des items directs (juste après les dropdowns Cartes/Prix), pour qu'il soit visible immédiatement.
-- Lui appliquer un style distinctif (badge "Nouveau" + petite icône `Newspaper`, accent primary) pour le différencier visuellement des autres liens.
-- Ajout dans le footer (section "Ressources") si pas déjà présent.
+### 1. Image de couverture du hero
+- Générer une image éditoriale en **16:9** (1536×864), enregistrée dans `src/assets/lettre-eau-cover.jpg`.
+- Direction artistique : photographie macro d'une **goutte d'eau cristalline avec ondulations**, lumière naturelle bleutée, légère touche verte (cohérent avec la palette `#3b82f6` / `#22c55e`), ambiance magazine / National Geographic. Style sobre, premium, pas de texte dans l'image.
+- Modèle : `standard` (assez de fidélité pour un hero, sans le coût premium).
 
-## 2. Redesign de `/lettre-de-leau`
-
-Le design actuel est fonctionnel mais générique (h1 + filtres + grille 3 colonnes uniforme). On vise un rendu plus éditorial type magazine.
-
-### Nouvelle structure de page
+### 2. Intégration dans le hero (`src/pages/LettreEau.tsx`)
+Refonte du hero en layout 2 colonnes desktop, 1 colonne mobile :
 
 ```
-┌─────────────────────────────────────────────────┐
-│  HERO éditorial                                  │
-│  - Eyebrow "Lettre de l'eau · N°XX"             │
-│  - Titre XL serif + sous-titre                  │
-│  - Stats inline (X articles · MAJ tous les 3j)  │
-│  - Dégradé bleu→vert subtil, motif vague SVG    │
-└─────────────────────────────────────────────────┘
-┌─────────────────────────────────────────────────┐
-│  ARTICLE À LA UNE (le plus récent)              │
-│  Layout 2 colonnes 60/40 : image large + texte  │
-│  Badge "À la une", titre 2xl, excerpt long      │
-└─────────────────────────────────────────────────┘
-┌─────────────────────────────────────────────────┐
-│  Filtres catégories (pills sticky en haut)      │
-│  + compteur résultats                           │
-└─────────────────────────────────────────────────┘
-┌─────────────────────────────────────────────────┐
-│  GRILLE éditoriale articles 2-6                 │
-│  Layout bento : 1 grand (col-span-2) + petits   │
-│  Skeleton loaders améliorés (image + texte)     │
-└─────────────────────────────────────────────────┘
-┌─────────────────────────────────────────────────┐
-│  GRILLE classique articles 7+                   │
-│  3 colonnes uniformes (BlogCard actuelle)       │
-└─────────────────────────────────────────────────┘
-┌─────────────────────────────────────────────────┐
-│  CTA abonnement / alertes (bandeau dégradé)     │
-└─────────────────────────────────────────────────┘
+Desktop (≥ lg)                       Mobile
+┌──────────────────┬──────────────┐  ┌──────────────────┐
+│ Eyebrow          │              │  │     IMAGE 16:9   │
+│ H1 titre XL      │   IMAGE      │  ├──────────────────┤
+│ Sous-titre       │   arrondie   │  │ Eyebrow          │
+│ Stats inline     │   shadow-xl  │  │ H1 + sous-titre  │
+└──────────────────┴──────────────┘  │ Stats            │
+                                     └──────────────────┘
 ```
 
-### Détails design
-- Tokens existants : primary blue `#3b82f6`, accent green `#22c55e`, fond `sky-50`
-- Typo : titres en `font-bold` + tracking-tight ; éventuellement classe `font-serif` pour l'eyebrow magazine
-- Cartes : `BlogCard` reçoit un variant `featured` (image plus grande, titre 2xl, excerpt 4 lignes)
-- Nouveau composant `BlogHeroCard` pour l'article à la une
-- Animations : `fade-in-up` sur scroll (déjà dispo via CSS), `hover:scale-[1.02]` sur images
-- États : skeleton avec ratio image préservé, état vide illustré
-- Responsive : bento → 1 col sur mobile, 2 cols sur tablette, 2 cols (1 grand + 1 petit) sur desktop
+- Image : `rounded-2xl shadow-xl`, légère rotation/scale au hover désactivée (statique), overlay subtil dégradé bleu pour fondre avec le fond.
+- Garder le dégradé `from-blue-50 via-sky-50 to-green-50` + le motif vague SVG en bas.
+- Le bloc texte garde sa hiérarchie actuelle, simplement contraint à `lg:col-span-3` sur 5 colonnes (image `lg:col-span-2`).
 
-## Détails techniques
+### 3. Image Open Graph (partage social)
+- Réutiliser la même image de couverture comme `og:image` via `SEOHead` (props `ogImage`) pour améliorer le rendu lors des partages LinkedIn / Twitter / WhatsApp.
+- Vérifier que `SEOHead` accepte une prop `ogImage` ; sinon, passer par `schemaData.image`.
 
-Fichiers modifiés :
-- `src/components/Navigation.tsx` : réordonner items, ajouter badge "Nouveau" sur "Lettre de l'eau"
-- `src/components/Footer.tsx` : vérifier/ajouter lien
-- `src/pages/LettreEau.tsx` : refonte structure (hero, à la une, bento, grille, CTA)
-- `src/components/blog/BlogCard.tsx` : ajouter variant `featured`
-- Nouveau `src/components/blog/BlogHeroCard.tsx` : carte article à la une
+### 4. Fallback visuel pour les articles sans `cover_image_url`
+- Dans `BlogCard` et `BlogHeroCard`, lorsque `article.cover_image_url` est `null`, afficher un bloc dégradé bleu→vert avec une grosse icône `Droplets` semi-transparente plutôt que de masquer la zone image (uniformise la grille).
 
-Aucune modification backend/API requise — `fetchArticles(50)` fournit déjà tout. Le premier article (`articles[0]`) sert pour la une, `[1..6]` pour le bento, `[7..]` pour la grille standard.
+## Fichiers modifiés
+- **Nouveau** : `src/assets/lettre-eau-cover.jpg` (généré via `imagegen--generate_image`)
+- `src/pages/LettreEau.tsx` : hero en 2 colonnes, import + intégration de l'image, ajout `ogImage` dans `SEOHead`
+- `src/components/blog/BlogCard.tsx` : fallback dégradé + icône quand pas d'image
+- `src/components/blog/BlogHeroCard.tsx` : même fallback
+
+Aucune modification backend ou de données.
+
+## À confirmer avant de lancer
+Une seule image de couverture suffit ou tu préfères que je génère aussi :
+- une bannière secondaire pour le bandeau CTA "alertes" en bas de page ?
+- des illustrations placeholder par catégorie (scandale, qualité, santé…) ?
+
+Si tu veux juste la cover du hero, je pars sur l'option ci-dessus telle quelle.

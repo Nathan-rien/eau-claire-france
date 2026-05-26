@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Clock, ArrowRight, Sparkles } from "lucide-react";
+import { Clock, ArrowRight, Sparkles, Droplets } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CATEGORY_LABELS, type BlogArticle } from "@/services/blogApi";
 
@@ -20,21 +20,25 @@ export default function BlogHeroCard({ article }: Props) {
       className="group block rounded-2xl overflow-hidden border border-border bg-card shadow-sm hover:shadow-xl transition-all duration-500"
     >
       <div className="grid grid-cols-1 lg:grid-cols-5">
-        {article.cover_image_url && (
-          <div className="lg:col-span-3 aspect-[16/10] lg:aspect-auto overflow-hidden bg-muted relative">
+        <div className="lg:col-span-3 aspect-[16/10] lg:aspect-auto overflow-hidden bg-muted relative">
+          {article.cover_image_url ? (
             <img
               src={article.cover_image_url}
               alt={article.title}
               loading="eager"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             />
-            <div className="absolute top-4 left-4">
-              <Badge className="bg-gradient-to-r from-blue-500 to-green-500 text-white border-0 shadow-md gap-1">
-                <Sparkles className="w-3 h-3" /> À la une
-              </Badge>
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-blue-500 via-sky-400 to-green-500 flex items-center justify-center">
+              <Droplets className="w-24 h-24 text-white/40" strokeWidth={1.5} />
             </div>
+          )}
+          <div className="absolute top-4 left-4">
+            <Badge className="bg-gradient-to-r from-blue-500 to-green-500 text-white border-0 shadow-md gap-1">
+              <Sparkles className="w-3 h-3" /> À la une
+            </Badge>
           </div>
-        )}
+        </div>
         <div className="lg:col-span-2 p-6 md:p-8 lg:p-10 flex flex-col justify-center">
           <div className="flex flex-wrap items-center gap-3 mb-4 text-xs text-muted-foreground">
             <Badge variant="secondary" className="text-xs">
