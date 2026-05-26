@@ -164,11 +164,18 @@ const Navigation = () => {
                       asChild
                       className={cn(
                         "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-2 py-2 text-xs md:text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+                        item.featured && "text-blue-600 hover:text-blue-700",
                         location.pathname === item.href && "bg-accent text-accent-foreground"
                       )}
                     >
-                      <Link to={item.href}>
+                      <Link to={item.href} className="flex items-center gap-1.5">
+                        {item.featured && <Newspaper className="h-3.5 w-3.5" />}
                         {item.label}
+                        {item.featured && (
+                          <Badge className="ml-0.5 h-4 px-1.5 text-[10px] bg-gradient-to-r from-blue-500 to-green-500 text-white border-0">
+                            Nouveau
+                          </Badge>
+                        )}
                       </Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
