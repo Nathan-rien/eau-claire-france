@@ -96,7 +96,7 @@ export default function LettreEau() {
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Calendar className="w-4 h-4 text-green-600" />
                     <span>
-                      Nouvel article <strong className="text-foreground">tous les 3 jours</strong>
+                      Nouvel article <strong className="text-foreground">toutes les semaines</strong>
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
