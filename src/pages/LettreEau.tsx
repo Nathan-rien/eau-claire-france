@@ -40,12 +40,14 @@ export default function LettreEau() {
         title="Lettre de l'eau — actualités sur la qualité de l'eau"
         description="Actualités, scandales, réglementation et enquêtes sur la qualité de l'eau en France. Un nouvel article tous les 3 jours par InfoEau."
         canonical="/lettre-de-leau"
+        ogImage={lettreEauCover}
         schemaData={{
           "@context": "https://schema.org",
           "@type": "Blog",
           name: "Lettre de l'eau",
           url: "https://infoeau.fr/lettre-de-leau",
           description: "Blog d'actualités sur la qualité de l'eau en France",
+          image: `https://infoeau.fr${lettreEauCover}`,
           publisher: { "@type": "Organization", name: "InfoEau.fr" },
         }}
       />
