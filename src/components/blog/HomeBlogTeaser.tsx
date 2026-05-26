@@ -31,7 +31,7 @@ export default function HomeBlogTeaser() {
               Dernières actualités sur l'eau
             </h2>
             <p className="text-muted-foreground mt-2 text-sm md:text-base">
-              Scandales, réglementation, qualité, santé : un nouvel article tous les 3 jours.
+              Scandales, réglementation, qualité, santé : un nouvel article toutes les semaines.
             </p>
           </div>
           <Link to="/lettre-de-leau">
