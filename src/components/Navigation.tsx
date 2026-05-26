@@ -44,24 +44,24 @@ const Navigation = () => {
         { href: '/cours-eau', label: "Cours de l'eau" },
       ];
 
-  const directNavigationItems = isEurope
+  const directNavigationItems: Array<{ href: string; label: string; featured?: boolean }> = isEurope
     ? [
+        { href: '/lettre-de-leau', label: "Lettre de l'eau", featured: true },
         { href: '/diagnostic-europe', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
         { href: '/classement-europe', label: t('nav.ranking') },
         { href: '/polluants-europe', label: t('nav.pollutants') },
         { href: '/alertes-europe', label: t('nav.alerts') },
         { href: '/parcours-eau', label: t('nav.journey') },
-        { href: '/lettre-de-leau', label: "Lettre de l'eau" },
       ]
     : [
+        { href: '/lettre-de-leau', label: "Lettre de l'eau", featured: true },
         { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
         { href: '/classement', label: t('nav.ranking') },
         { href: '/polluants', label: t('nav.pollutants') },
         { href: '/alertes', label: t('nav.alerts') },
         { href: '/parcours-eau', label: t('nav.journey') },
-        { href: '/lettre-de-leau', label: "Lettre de l'eau" },
       ];
 
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
