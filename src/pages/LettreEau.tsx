@@ -111,7 +111,7 @@ export default function LettreEau() {
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/5 aspect-[4/3] lg:aspect-[4/5]">
                   <img
                     src={lettreEauCover}
-                    alt="Goutte d'eau créant des ondulations — Lettre de l'eau"
+                    alt="Verre d'eau cristallin éclairé par la lumière naturelle — Lettre de l'eau"
                     width={1536}
                     height={864}
                     className="w-full h-full object-cover"
