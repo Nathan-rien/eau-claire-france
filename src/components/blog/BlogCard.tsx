@@ -18,16 +18,20 @@ export default function BlogCard({ article, variant = "default" }: Props) {
       to={`/lettre-de-leau/${article.slug}`}
       className="group flex flex-col bg-card rounded-xl overflow-hidden border border-border hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 h-full"
     >
-      {article.cover_image_url && (
-        <div className={`${isFeatured ? "aspect-[16/10]" : "aspect-[16/9]"} overflow-hidden bg-muted`}>
+      <div className={`${isFeatured ? "aspect-[16/10]" : "aspect-[16/9]"} overflow-hidden bg-muted relative`}>
+        {article.cover_image_url ? (
           <img
             src={article.cover_image_url}
             alt={article.title}
             loading="lazy"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
-        </div>
-      )}
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-blue-500 via-sky-400 to-green-500 flex items-center justify-center">
+            <Droplets className="w-16 h-16 text-white/40" strokeWidth={1.5} />
+          </div>
+        )}
+      </div>
       <div className={`flex flex-col flex-1 ${isFeatured ? "p-6" : "p-5"}`}>
         <div className="flex items-center gap-3 mb-3 text-xs text-muted-foreground">
           <Badge variant="secondary" className="text-xs">
