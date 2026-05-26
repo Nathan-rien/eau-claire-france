@@ -7,6 +7,7 @@ import BlogHeroCard from "@/components/blog/BlogHeroCard";
 import { Button } from "@/components/ui/button";
 import { Newspaper, Calendar, FileText, Bell, ArrowRight } from "lucide-react";
 import { fetchArticles, CATEGORY_LABELS, type BlogArticle } from "@/services/blogApi";
+import lettreEauCover from "@/assets/lettre-eau-cover.jpg";
 
 export default function LettreEau() {
   const [articles, setArticles] = useState<BlogArticle[]>([]);
