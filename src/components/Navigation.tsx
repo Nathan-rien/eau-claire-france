@@ -10,10 +10,11 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import { Droplets, ChevronDown } from 'lucide-react';
+import { Droplets, ChevronDown, Newspaper } from 'lucide-react';
 import RegionSwitcher from '@/components/RegionSwitcher';
 import { useRegion } from '@/contexts/RegionContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Badge } from '@/components/ui/badge';
 
 const Navigation = () => {
   const location = useLocation();
