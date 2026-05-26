@@ -38,7 +38,7 @@ export default function LettreEau() {
     <Layout>
       <SEOHead
         title="Lettre de l'eau — actualités sur la qualité de l'eau"
-        description="Actualités, scandales, réglementation et enquêtes sur la qualité de l'eau en France. Un nouvel article tous les 3 jours par InfoEau."
+        description="Actualités, scandales, réglementation et enquêtes sur la qualité de l'eau en France. Un nouvel article toutes les semaines par InfoEau."
         canonical="/lettre-de-leau"
         ogImage={lettreEauCover}
         schemaData={{
