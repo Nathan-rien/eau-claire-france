@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Clock, ArrowRight, Sparkles } from "lucide-react";
+import { Clock, ArrowRight, Sparkles, Droplets } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CATEGORY_LABELS, type BlogArticle } from "@/services/blogApi";
 
