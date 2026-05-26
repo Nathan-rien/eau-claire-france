@@ -5,20 +5,21 @@ import { CATEGORY_LABELS, type BlogArticle } from "@/services/blogApi";
 
 interface Props {
   article: BlogArticle;
-  variant?: "default" | "compact";
+  variant?: "default" | "compact" | "featured";
 }
 
 export default function BlogCard({ article, variant = "default" }: Props) {
   const date = new Date(article.published_at).toLocaleDateString("fr-FR", {
     day: "numeric", month: "long", year: "numeric",
   });
+  const isFeatured = variant === "featured";
   return (
     <Link
       to={`/lettre-de-leau/${article.slug}`}
-      className="group block bg-card rounded-xl overflow-hidden border border-border hover:shadow-lg transition-all duration-300"
+      className="group flex flex-col bg-card rounded-xl overflow-hidden border border-border hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 h-full"
     >
       {article.cover_image_url && (
-        <div className="aspect-[16/9] overflow-hidden bg-muted">
+        <div className={`${isFeatured ? "aspect-[16/10]" : "aspect-[16/9]"} overflow-hidden bg-muted`}>
           <img
             src={article.cover_image_url}
             alt={article.title}
@@ -27,7 +28,7 @@ export default function BlogCard({ article, variant = "default" }: Props) {
           />
         </div>
       )}
-      <div className="p-5">
+      <div className={`flex flex-col flex-1 ${isFeatured ? "p-6" : "p-5"}`}>
         <div className="flex items-center gap-3 mb-3 text-xs text-muted-foreground">
           <Badge variant="secondary" className="text-xs">
             {CATEGORY_LABELS[article.category] ?? article.category}
@@ -38,11 +39,13 @@ export default function BlogCard({ article, variant = "default" }: Props) {
             {article.reading_time_min} min
           </span>
         </div>
-        <h3 className={`font-bold text-foreground group-hover:text-primary transition-colors mb-2 ${variant === "compact" ? "text-base" : "text-lg md:text-xl"}`}>
+        <h3 className={`font-bold text-foreground group-hover:text-primary transition-colors mb-2 tracking-tight ${
+          variant === "compact" ? "text-base" : isFeatured ? "text-xl md:text-2xl" : "text-lg md:text-xl"
+        }`}>
           {article.title}
         </h3>
-        <p className="text-sm text-muted-foreground line-clamp-3 mb-3">{article.excerpt}</p>
-        <span className="inline-flex items-center text-sm font-medium text-primary">
+        <p className={`text-sm text-muted-foreground mb-3 ${isFeatured ? "line-clamp-4" : "line-clamp-3"}`}>{article.excerpt}</p>
+        <span className="inline-flex items-center text-sm font-medium text-primary mt-auto">
           Lire l'article <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
         </span>
       </div>
