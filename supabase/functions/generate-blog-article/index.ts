@@ -296,7 +296,7 @@ Si l'article contient des chiffres comparatifs intéressants (ex: contaminations
   "unit": "%"
 }`;
 
-    const raw = await callGeminiText(systemPrompt, userPrompt);
+    const raw = await callText(systemPrompt, userPrompt);
     let article: any;
     try {
       article = JSON.parse(raw);
