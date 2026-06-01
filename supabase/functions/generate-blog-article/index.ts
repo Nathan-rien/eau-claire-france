@@ -58,7 +58,7 @@ async function firecrawlScrape(url: string) {
   return r.json();
 }
 
-async function callGeminiText(systemInstruction: string, userPrompt: string): Promise<string> {
+async function callGeminiTextDirect(systemInstruction: string, userPrompt: string): Promise<string> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
   const r = await fetch(url, {
     method: "POST",
@@ -73,15 +73,74 @@ async function callGeminiText(systemInstruction: string, userPrompt: string): Pr
       },
     }),
   });
-  if (!r.ok) throw new Error(`Gemini text ${r.status}: ${await r.text()}`);
+  if (!r.ok) throw new Error(`Gemini direct ${r.status}: ${await r.text()}`);
   const data = await r.json();
   const text = data?.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join("") ?? "";
   if (!text) throw new Error("Empty Gemini response");
   return text;
 }
 
+async function callLovableAiText(systemInstruction: string, userPrompt: string): Promise<string> {
+  const r = await fetch(LOVABLE_AI_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${LOVABLE_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-2.5-flash",
+      messages: [
+        { role: "system", content: systemInstruction },
+        { role: "user", content: userPrompt },
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.7,
+    }),
+  });
+  if (!r.ok) {
+    const body = await r.text();
+    if (r.status === 429) throw new Error(`Lovable AI rate-limited (429): ${body}`);
+    if (r.status === 402) throw new Error(`Lovable AI credits exhausted (402): ${body}`);
+    throw new Error(`Lovable AI ${r.status}: ${body}`);
+  }
+  const data = await r.json();
+  const text = data?.choices?.[0]?.message?.content ?? "";
+  if (!text) throw new Error("Empty Lovable AI response");
+  return text;
+}
+
+async function callText(systemInstruction: string, userPrompt: string): Promise<string> {
+  if (LOVABLE_API_KEY) return callLovableAiText(systemInstruction, userPrompt);
+  if (GEMINI_API_KEY) return callGeminiTextDirect(systemInstruction, userPrompt);
+  throw new Error("No AI key configured (LOVABLE_API_KEY or GEMINI_API_KEY)");
+}
+
 async function generateCoverImage(prompt: string): Promise<string | null> {
   try {
+    if (LOVABLE_API_KEY) {
+      const r = await fetch(LOVABLE_AI_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-image-preview",
+          messages: [{ role: "user", content: prompt }],
+          modalities: ["image", "text"],
+        }),
+      });
+      if (!r.ok) {
+        console.error("Lovable AI image failed:", r.status, await r.text());
+        return null;
+      }
+      const data = await r.json();
+      const images = data?.choices?.[0]?.message?.images;
+      const url = images?.[0]?.image_url?.url;
+      if (typeof url === "string" && url.startsWith("data:")) return url;
+      return null;
+    }
+    // Fallback: direct Gemini
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${GEMINI_API_KEY}`;
     const r = await fetch(url, {
       method: "POST",
@@ -105,9 +164,7 @@ async function generateCoverImage(prompt: string): Promise<string | null> {
       }
     }
     return null;
-  } catch (e) {
-    console.error("Image gen error:", e);
-    return null;
+
   }
 }
 
