@@ -1,28 +1,23 @@
+## Objectif
+Remplacer le fallback dégradé bleu/vert par une vraie image d'illustration pour l'article à la une « Nestlé Waters sous le feu des perquisitions ».
 
-# Plan — Nouvelle cover + périodicité hebdomadaire
+## Étapes
 
-## 1. Nouvelle image de couverture
-- Regénérer `src/assets/lettre-eau-cover.jpg` (16:9, modèle `standard`) avec une nouvelle direction artistique :
-  - Photographie éditoriale d'un **verre d'eau cristallin** posé sur une surface claire, lumière naturelle latérale, jeux de réfraction bleutés, fines bulles, fond doux flou bleu/vert très désaturé.
-  - Style magazine premium, sans texte, palette cohérente avec `#3b82f6` / `#22c55e`.
-- Le fichier garde le même chemin → aucun import à modifier dans `LettreEau.tsx`.
-- L'`alt` de l'image sera mis à jour : "Verre d'eau cristallin éclairé par la lumière naturelle — Lettre de l'eau".
+1. **Générer l'image** (`src/assets/articles/nestle-perquisitions.jpg`, 1536×864, modèle `standard`) :
+   - Ligne d'embouteillage industrielle de bouteilles d'eau minérale en plastique transparent
+   - Ambiance reportage/enquête, éclairage neutre légèrement froid
+   - Pas de logo de marque visible (pour éviter problèmes de droits)
+   - Format 16:9 adapté au `BlogHeroCard`
 
-## 2. Périodicité hebdomadaire
-Dans `src/pages/LettreEau.tsx` :
-- Hero stats : remplacer `"Nouvel article tous les 3 jours"` par `"Nouvel article toutes les semaines"`.
+2. **Mettre à jour la BDD** via migration SQL : `UPDATE blog_articles SET cover_image_url = '/src/assets/articles/nestle-perquisitions.jpg' WHERE slug = '<slug-nestle>'`.
+   - Vérifier d'abord le slug exact de l'article à la une (le plus récent publié).
+   - Note : l'image étant un asset Vite, on l'importera plutôt côté code OU on copie l'image dans `public/articles/` pour pouvoir la référencer par URL stable depuis la BDD.
 
-Dans `SEOHead` (même fichier) :
-- Mettre à jour la description : `"Un nouvel article toutes les semaines par InfoEau."`
-
-Vérifier rapidement les autres occurrences à harmoniser :
-- `src/components/blog/HomeBlogTeaser.tsx`
-- `public/llms.txt` / `public/llms-full.txt`
-- toute autre mention "tous les 3 jours" dans le repo → remplacer par "toutes les semaines".
+## Décision technique
+Option retenue : **copier l'image dans `public/articles/nestle-perquisitions.jpg`** et stocker l'URL `/articles/nestle-perquisitions.jpg` dans `cover_image_url`. C'est cohérent avec le fait que `cover_image_url` est une URL string stockée en BDD (le composant fait `<img src={article.cover_image_url} />` sans import Vite).
 
 ## Fichiers touchés
-- `src/assets/lettre-eau-cover.jpg` (regénéré)
-- `src/pages/LettreEau.tsx`
-- Éventuellement `src/components/blog/HomeBlogTeaser.tsx`, `public/llms.txt`, `public/llms-full.txt` si la phrase y apparaît.
+- `public/articles/nestle-perquisitions.jpg` (nouveau)
+- Migration Supabase : update du champ `cover_image_url` pour l'article concerné
 
-Aucune modif backend ni de données.
+Aucun changement de composant nécessaire (`BlogHeroCard` gère déjà `cover_image_url`).
