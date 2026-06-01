@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Lettre de l'eau — InfoEau.fr</title>
+    <link>https://infoeau.fr/lettre-de-leau</link>
+    <atom:link href="https://infoeau.fr/lettre-de-leau/rss.xml" rel="self" type="application/rss+xml" />
+    <description>Actualités, scandales, réglementation et enquêtes sur la qualité de l'eau en France.</description>
+    <language>fr-FR</language>
+    <lastBuildDate>Mon, 01 Jun 2026 10:34:40 GMT</lastBuildDate>
+    <item>
+      <title>Eaux minérales : Nestlé Waters se &quot;met en règle&quot;, la question de la naturalité persiste</title>
+      <link>https://infoeau.fr/lettre-de-leau/eaux-minerales-perrier-vittel-hepar-en-regle-nestle-waters</link>
+      <guid isPermaLink="true">https://infoeau.fr/lettre-de-leau/eaux-minerales-perrier-vittel-hepar-en-regle-nestle-waters</guid>
+      <pubDate>Mon, 01 Jun 2026 10:00:24 GMT</pubDate>
+      <category>reglementation</category>
+      <description>Nestlé Waters a annoncé s&apos;être conformé aux réglementations sur le traitement des eaux minérales pour ses marques Perrier, Vittel et Hépar. Cependant, cette mise en conformité intervient dans un contexte de forte pression et ne clôt pas le débat sur la &quot;pureté originelle&quot; de ces eaux, essentielle à leur labellisation.</description>
+    </item>
+    <item>
+      <title>Nestlé Waters sous le feu des perquisitions : l&apos;intégrité de nos eaux en question</title>
+      <link>https://infoeau.fr/lettre-de-leau/nestle-waters-perquisitions-eaux-minerales-scandale</link>
+      <guid isPermaLink="true">https://infoeau.fr/lettre-de-leau/nestle-waters-perquisitions-eaux-minerales-scandale</guid>
+      <pubDate>Thu, 21 May 2026 12:31:43 GMT</pubDate>
+      <category>scandale</category>
+      <description>Les sites de production de Perrier et Vittel de Nestlé Waters ont été perquisitionnés le 19 mai 2026, marquant une nouvelle étape dans le scandale des eaux minérales. Une information judiciaire pour &quot;tromperie&quot; est ouverte suite à la plainte de l&apos;ONG Foodwatch, mettant en lumière des traitements non conformes appliqués à des eaux pourtant vendues comme naturellement pures.</description>
+      <enclosure url="/articles/nestle-perquisitions.jpg" type="image/jpeg" />
+    </item>
+  </channel>
+</rss>
