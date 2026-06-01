@@ -164,7 +164,9 @@ async function generateCoverImage(prompt: string): Promise<string | null> {
       }
     }
     return null;
-
+  } catch (e) {
+    console.error("Image gen error:", e);
+    return null;
   }
 }
 
