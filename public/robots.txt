@@ -65,6 +65,8 @@ Allow: /alertes
 Allow: /bouteilles
 Allow: /polluants
 Allow: /cours-eau
+Allow: /lettre-de-leau
+Allow: /lettre-de-leau/
 Allow: /images/
 Allow: /*.jpg$
 Allow: /*.jpeg$
