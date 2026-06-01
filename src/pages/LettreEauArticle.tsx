@@ -130,9 +130,9 @@ export default function LettreEauArticle() {
 
           <div className="flex items-center gap-3 mb-4 text-sm text-muted-foreground">
             <Badge variant="secondary">{CATEGORY_LABELS[article.category] ?? article.category}</Badge>
-            <span>{date}</span>
+            <time dateTime={article.published_at}>{date}</time>
             <span className="flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" /> {article.reading_time_min} min de lecture
+              <Clock className="w-3.5 h-3.5" aria-hidden="true" /> {article.reading_time_min} min de lecture
             </span>
           </div>
 
@@ -148,6 +148,10 @@ export default function LettreEauArticle() {
               <img
                 src={article.cover_image_url}
                 alt={article.title}
+                loading="eager"
+                decoding="async"
+                // @ts-expect-error fetchpriority is a valid HTML attribute
+                fetchpriority="high"
                 className="w-full h-full object-cover"
               />
             </div>
