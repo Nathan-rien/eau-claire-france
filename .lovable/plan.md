@@ -1,23 +1,39 @@
-## Objectif
-Remplacer le fallback dégradé bleu/vert par une vraie image d'illustration pour l'article à la une « Nestlé Waters sous le feu des perquisitions ».
+# Réparer la génération hebdomadaire de la Lettre de l'eau
 
-## Étapes
+## Diagnostic
 
-1. **Générer l'image** (`src/assets/articles/nestle-perquisitions.jpg`, 1536×864, modèle `standard`) :
-   - Ligne d'embouteillage industrielle de bouteilles d'eau minérale en plastique transparent
-   - Ambiance reportage/enquête, éclairage neutre légèrement froid
-   - Pas de logo de marque visible (pour éviter problèmes de droits)
-   - Format 16:9 adapté au `BlogHeroCard`
+- Dernier article publié : **21 mai 2026** (Nestlé Waters).
+- Tentative du 25 mai : échec `Gemini 429 — prepayment credits are depleted`.
+- Toutes les tentatives suivantes échoueraient pour la même raison (la clé `GEMINI_API_KEY` directe est à sec).
+- Le projet possède déjà le secret **`LOVABLE_API_KEY`** (Lovable AI Gateway), facturé via Lovable Cloud, qui expose les modèles Gemini sans gestion de quota séparée.
 
-2. **Mettre à jour la BDD** via migration SQL : `UPDATE blog_articles SET cover_image_url = '/src/assets/articles/nestle-perquisitions.jpg' WHERE slug = '<slug-nestle>'`.
-   - Vérifier d'abord le slug exact de l'article à la une (le plus récent publié).
-   - Note : l'image étant un asset Vite, on l'importera plutôt côté code OU on copie l'image dans `public/articles/` pour pouvoir la référencer par URL stable depuis la BDD.
+## Plan
 
-## Décision technique
-Option retenue : **copier l'image dans `public/articles/nestle-perquisitions.jpg`** et stocker l'URL `/articles/nestle-perquisitions.jpg` dans `cover_image_url`. C'est cohérent avec le fait que `cover_image_url` est une URL string stockée en BDD (le composant fait `<img src={article.cover_image_url} />` sans import Vite).
+### 1. Basculer l'edge function sur Lovable AI Gateway
+Fichier : `supabase/functions/generate-blog-article/index.ts`
+
+- Remplacer les appels directs à `generativelanguage.googleapis.com` par l'endpoint Lovable AI Gateway :
+  - Texte → `POST https://ai.gateway.lovable.dev/v1/chat/completions` avec `model: "google/gemini-2.5-flash"`, `response_format: { type: "json_object" }`, en utilisant `Authorization: Bearer ${LOVABLE_API_KEY}`.
+  - Image de couverture → `model: "google/gemini-2.5-flash-image-preview"` sur le même endpoint, extraction du `data:image/...;base64,...` depuis `choices[0].message.images[0].image_url.url`.
+- Garder le même contrat de sortie JSON (titre, slug, excerpt, content_md, image_prompt, etc.) pour ne rien casser en aval.
+- Gérer proprement les codes 429 (rate-limit) et 402 (crédits épuisés Lovable AI) avec un message d'erreur clair dans `blog_generation_log`.
+- Conserver `GEMINI_API_KEY` comme fallback optionnel uniquement si `LOVABLE_API_KEY` est absent (pour ne rien régresser).
+
+### 2. Relancer immédiatement un article
+Une fois la function redéployée (auto), invoquer manuellement `generate-blog-article` (sans topic forcé) via `curl` pour produire l'article de la semaine. Vérification ensuite via `SELECT` sur `blog_articles` et `blog_generation_log`.
+
+### 3. Vérifier le cron GitHub Actions
+Le workflow `.github/workflows/lettre-eau-weekly.yml` (tous les lundis 07:00 UTC) reste inchangé — il continuera à appeler la même URL, qui utilisera désormais Lovable AI.
+
+## Détails techniques
+
+```text
+Avant : edge function ──► Google Generative Language API (GEMINI_API_KEY) ✗ crédits 0
+Après : edge function ──► Lovable AI Gateway (LOVABLE_API_KEY) ──► Gemini 2.5 Flash ✓
+```
+
+Aucune migration DB nécessaire. Aucun changement front. Pas de nouveau secret à créer.
 
 ## Fichiers touchés
-- `public/articles/nestle-perquisitions.jpg` (nouveau)
-- Migration Supabase : update du champ `cover_image_url` pour l'article concerné
 
-Aucun changement de composant nécessaire (`BlogHeroCard` gère déjà `cover_image_url`).
+- `supabase/functions/generate-blog-article/index.ts` (refonte des deux helpers `callGeminiText` et `generateCoverImage`).
