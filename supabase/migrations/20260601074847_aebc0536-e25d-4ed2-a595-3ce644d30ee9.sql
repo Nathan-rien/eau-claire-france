@@ -1,0 +1,1 @@
+UPDATE public.blog_articles SET cover_image_url = '/articles/nestle-perquisitions.jpg' WHERE slug = 'nestle-waters-perquisitions-eaux-minerales-scandale';
