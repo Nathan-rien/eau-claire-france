@@ -4,6 +4,9 @@ Allow: /
 # Sitemap
 Sitemap: https://infoeau.fr/sitemap.xml
 
+# RSS feeds
+# Lettre de l'eau: https://infoeau.fr/lettre-de-leau/rss.xml
+
 # AI crawlers metadata
 # llms.txt: https://infoeau.fr/llms.txt
 # llms-full.txt: https://infoeau.fr/llms-full.txt
@@ -62,6 +65,8 @@ Allow: /alertes
 Allow: /bouteilles
 Allow: /polluants
 Allow: /cours-eau
+Allow: /lettre-de-leau
+Allow: /lettre-de-leau/
 Allow: /images/
 Allow: /*.jpg$
 Allow: /*.jpeg$

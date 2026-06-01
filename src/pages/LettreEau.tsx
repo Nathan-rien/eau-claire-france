@@ -41,15 +41,49 @@ export default function LettreEau() {
         description="Actualités, scandales, réglementation et enquêtes sur la qualité de l'eau en France. Un nouvel article toutes les semaines par InfoEau."
         canonical="/lettre-de-leau"
         ogImage={lettreEauCover}
-        schemaData={{
-          "@context": "https://schema.org",
-          "@type": "Blog",
-          name: "Lettre de l'eau",
-          url: "https://infoeau.fr/lettre-de-leau",
-          description: "Blog d'actualités sur la qualité de l'eau en France",
-          image: `https://infoeau.fr${lettreEauCover}`,
-          publisher: { "@type": "Organization", name: "InfoEau.fr" },
-        }}
+        rssUrl="/lettre-de-leau/rss.xml"
+        schemaData={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Blog",
+            name: "Lettre de l'eau",
+            url: "https://infoeau.fr/lettre-de-leau",
+            description: "Blog d'actualités sur la qualité de l'eau en France",
+            image: `https://infoeau.fr${lettreEauCover}`,
+            inLanguage: "fr-FR",
+            publisher: {
+              "@type": "Organization",
+              name: "InfoEau.fr",
+              logo: { "@type": "ImageObject", url: "https://infoeau.fr/favicon.svg" },
+            },
+            blogPost: articles.slice(0, 10).map((a) => ({
+              "@type": "BlogPosting",
+              headline: a.title,
+              url: `https://infoeau.fr/lettre-de-leau/${a.slug}`,
+              datePublished: a.published_at,
+              image: a.cover_image_url || undefined,
+              description: a.excerpt,
+            })),
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Accueil", item: "https://infoeau.fr/" },
+              { "@type": "ListItem", position: 2, name: "Lettre de l'eau", item: "https://infoeau.fr/lettre-de-leau" },
+            ],
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            itemListElement: filtered.slice(0, 20).map((a, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              url: `https://infoeau.fr/lettre-de-leau/${a.slug}`,
+              name: a.title,
+            })),
+          },
+        ]}
       />
       <div className="min-h-screen bg-background">
         {/* HERO éditorial */}

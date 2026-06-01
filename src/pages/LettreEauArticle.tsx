@@ -65,6 +65,9 @@ export default function LettreEauArticle() {
     day: "numeric", month: "long", year: "numeric",
   });
   const canonical = `/lettre-de-leau/${article.slug}`;
+  const categoryLabel = CATEGORY_LABELS[article.category] ?? article.category;
+  const wordCount = (article.content_md || "").trim().split(/\s+/).length;
+  const keywordList = [categoryLabel, "eau potable", "qualité de l'eau", "InfoEau"];
 
   return (
     <Layout>
@@ -74,22 +77,47 @@ export default function LettreEauArticle() {
         canonical={canonical}
         ogType="article"
         ogImage={article.cover_image_url || "/images/og-default.jpg"}
-        schemaData={{
-          "@context": "https://schema.org",
-          "@type": "Article",
-          headline: article.title,
-          description: article.seo_description || article.excerpt,
-          image: article.cover_image_url ? [article.cover_image_url] : undefined,
-          datePublished: article.published_at,
-          dateModified: article.published_at,
-          author: { "@type": "Organization", name: "InfoEau.fr" },
-          publisher: {
-            "@type": "Organization",
-            name: "InfoEau.fr",
-            logo: { "@type": "ImageObject", url: "https://infoeau.fr/favicon.svg" },
+        articlePublishedTime={article.published_at}
+        articleModifiedTime={article.published_at}
+        articleSection={categoryLabel}
+        articleTags={keywordList}
+        articleAuthor="Rédaction InfoEau"
+        keywords={keywordList.join(", ")}
+        schemaData={[
+          {
+            "@context": "https://schema.org",
+            "@type": "NewsArticle",
+            headline: article.title,
+            description: article.seo_description || article.excerpt,
+            image: article.cover_image_url ? [article.cover_image_url] : undefined,
+            datePublished: article.published_at,
+            dateModified: article.published_at,
+            articleSection: categoryLabel,
+            keywords: keywordList.join(", "),
+            wordCount,
+            inLanguage: "fr-FR",
+            author: {
+              "@type": "Organization",
+              name: "Rédaction InfoEau",
+              url: "https://infoeau.fr",
+            },
+            publisher: {
+              "@type": "Organization",
+              name: "InfoEau.fr",
+              logo: { "@type": "ImageObject", url: "https://infoeau.fr/favicon.svg" },
+            },
+            mainEntityOfPage: `https://infoeau.fr${canonical}`,
           },
-          mainEntityOfPage: `https://infoeau.fr${canonical}`,
-        }}
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Accueil", item: "https://infoeau.fr/" },
+              { "@type": "ListItem", position: 2, name: "Lettre de l'eau", item: "https://infoeau.fr/lettre-de-leau" },
+              { "@type": "ListItem", position: 3, name: article.title, item: `https://infoeau.fr${canonical}` },
+            ],
+          },
+        ]}
       />
       <article className="min-h-screen">
         <div className="container mx-auto max-w-3xl px-4 pt-6 pb-12">
@@ -102,9 +130,9 @@ export default function LettreEauArticle() {
 
           <div className="flex items-center gap-3 mb-4 text-sm text-muted-foreground">
             <Badge variant="secondary">{CATEGORY_LABELS[article.category] ?? article.category}</Badge>
-            <span>{date}</span>
+            <time dateTime={article.published_at}>{date}</time>
             <span className="flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" /> {article.reading_time_min} min de lecture
+              <Clock className="w-3.5 h-3.5" aria-hidden="true" /> {article.reading_time_min} min de lecture
             </span>
           </div>
 
@@ -120,6 +148,10 @@ export default function LettreEauArticle() {
               <img
                 src={article.cover_image_url}
                 alt={article.title}
+                loading="eager"
+                decoding="async"
+                // @ts-expect-error fetchpriority is a valid HTML attribute
+                fetchpriority="high"
                 className="w-full h-full object-cover"
               />
             </div>

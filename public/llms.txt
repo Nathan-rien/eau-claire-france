@@ -35,6 +35,8 @@
 - /sources-eau — Carte des sources d'eau minérale en France
 - /parcours-eau — Parcours de l'eau du robinet (captage → traitement → distribution)
 - /parcours-eau-bouteille — Parcours de l'eau en bouteille (source → embouteillage → distribution)
+- /lettre-de-leau — Lettre de l'eau : blog d'actualités hebdomadaires sur la qualité de l'eau (scandales, réglementation, santé, environnement). Flux RSS : /lettre-de-leau/rss.xml
+
 
 ## Pages Europe
 
