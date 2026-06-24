@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import BlogInfographic from "@/components/blog/BlogInfographic";
 import BlogCard from "@/components/blog/BlogCard";
+import InternalLinkHub from "@/components/InternalLinkHub";
 import {
   fetchArticleBySlug, fetchArticles, CATEGORY_LABELS, type BlogArticle,
 } from "@/services/blogApi";
