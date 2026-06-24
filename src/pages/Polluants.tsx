@@ -30,6 +30,13 @@ const Polluants = () => {
             <PollutantIndex />
           </div>
         </section>
+
+        <InternalLinkHub
+          heading="Explorer plus loin"
+          description="Cartes, comparateurs et ressources pour aller au-delà des polluants."
+          groups={["explore", "decide", "journey"]}
+          variant="muted"
+        />
       </div>
     </Layout>
   );
