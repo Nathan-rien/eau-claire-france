@@ -196,6 +196,13 @@ export default function LettreEauArticle() {
           </p>
         </div>
 
+        <InternalLinkHub
+          heading="Aller plus loin"
+          description="Outils et cartes pour vérifier la qualité de l'eau près de chez vous."
+          groups={["explore", "decide"]}
+          variant="muted"
+        />
+
         {related.length > 0 && (
           <section className="bg-muted/20 py-12 px-4 border-t border-border">
             <div className="container mx-auto max-w-6xl">
