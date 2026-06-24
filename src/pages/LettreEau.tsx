@@ -248,6 +248,14 @@ export default function LettreEau() {
           </div>
         </section>
 
+        {/* Maillage interne — pages clés */}
+        <InternalLinkHub
+          heading="Approfondir le sujet"
+          description="Ressources et outils complémentaires aux articles de la Lettre de l'eau."
+          groups={["explore", "decide"]}
+          variant="muted"
+        />
+
         {/* CTA bandeau alertes */}
         <section className="px-4 py-16 md:py-20 mt-12">
           <div className="container mx-auto max-w-5xl">
