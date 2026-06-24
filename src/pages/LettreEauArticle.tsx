@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import BlogInfographic from "@/components/blog/BlogInfographic";
 import BlogCard from "@/components/blog/BlogCard";
+import InternalLinkHub from "@/components/InternalLinkHub";
 import {
   fetchArticleBySlug, fetchArticles, CATEGORY_LABELS, type BlogArticle,
 } from "@/services/blogApi";
@@ -194,6 +195,13 @@ export default function LettreEauArticle() {
             Article rédigé avec l'aide de l'intelligence artificielle à partir de sources publiques, et publié par la rédaction d'InfoEau.fr.
           </p>
         </div>
+
+        <InternalLinkHub
+          heading="Aller plus loin"
+          description="Outils et cartes pour vérifier la qualité de l'eau près de chez vous."
+          groups={["explore", "decide"]}
+          variant="muted"
+        />
 
         {related.length > 0 && (
           <section className="bg-muted/20 py-12 px-4 border-t border-border">

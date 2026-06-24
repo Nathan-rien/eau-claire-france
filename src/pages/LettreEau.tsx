@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Newspaper, Calendar, FileText, Bell, ArrowRight } from "lucide-react";
 import { fetchArticles, CATEGORY_LABELS, type BlogArticle } from "@/services/blogApi";
 import lettreEauCover from "@/assets/lettre-eau-cover.jpg";
+import InternalLinkHub from "@/components/InternalLinkHub";
 
 export default function LettreEau() {
   const [articles, setArticles] = useState<BlogArticle[]>([]);
@@ -246,6 +247,14 @@ export default function LettreEau() {
             )}
           </div>
         </section>
+
+        {/* Maillage interne — pages clés */}
+        <InternalLinkHub
+          heading="Approfondir le sujet"
+          description="Ressources et outils complémentaires aux articles de la Lettre de l'eau."
+          groups={["explore", "decide"]}
+          variant="muted"
+        />
 
         {/* CTA bandeau alertes */}
         <section className="px-4 py-16 md:py-20 mt-12">

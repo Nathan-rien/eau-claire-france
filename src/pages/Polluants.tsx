@@ -4,6 +4,7 @@ import { AlertTriangle } from 'lucide-react';
 import PollutantIndex from '@/components/PollutantIndex';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
+import InternalLinkHub from '@/components/InternalLinkHub';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { seoData } from '@/utils/seoData';
 
@@ -29,6 +30,13 @@ const Polluants = () => {
             <PollutantIndex />
           </div>
         </section>
+
+        <InternalLinkHub
+          heading="Explorer plus loin"
+          description="Cartes, comparateurs et ressources pour aller au-delà des polluants."
+          groups={["explore", "decide", "journey"]}
+          variant="muted"
+        />
       </div>
     </Layout>
   );
