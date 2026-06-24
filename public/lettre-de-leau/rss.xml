@@ -6,7 +6,16 @@
     <atom:link href="https://infoeau.fr/lettre-de-leau/rss.xml" rel="self" type="application/rss+xml" />
     <description>Actualités, scandales, réglementation et enquêtes sur la qualité de l'eau en France.</description>
     <language>fr-FR</language>
-    <lastBuildDate>Mon, 01 Jun 2026 10:34:40 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 24 Jun 2026 13:06:27 GMT</lastBuildDate>
+    <item>
+      <title>Nestlé Waters sous le feu des perquisitions : l&apos;enquête pour tromperie s&apos;intensifie</title>
+      <link>https://infoeau.fr/lettre-de-leau/perquisitions-nestle-waters-perrier-vittel</link>
+      <guid isPermaLink="true">https://infoeau.fr/lettre-de-leau/perquisitions-nestle-waters-perrier-vittel</guid>
+      <pubDate>Mon, 15 Jun 2026 13:22:14 GMT</pubDate>
+      <category>scandale</category>
+      <description>Les sites de production de Perrier et le laboratoire de Vittel de Nestlé Waters ont été perquisitionnés le 19 mai 2026. Ces inspections interviennent dans le cadre d&apos;une enquête pour « tromperie » menée par le parquet de Paris, suite aux révélations sur les traitements illicites appliqués aux eaux minérales naturelles. Le scandale des eaux traitées continue de secouer l&apos;industrie.</description>
+      <enclosure url="https://xblogttmomuogdhmaztf.supabase.co/storage/v1/object/public/blog-images/2026-06-15/perquisitions-nestle-waters-perrier-vittel-1781529733076.png" type="image/jpeg" />
+    </item>
     <item>
       <title>Eaux minérales : Nestlé Waters se &quot;met en règle&quot;, la question de la naturalité persiste</title>
       <link>https://infoeau.fr/lettre-de-leau/eaux-minerales-perrier-vittel-hepar-en-regle-nestle-waters</link>
