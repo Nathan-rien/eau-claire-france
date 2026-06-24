@@ -11,6 +11,7 @@ import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
 import HomeBlogTeaser from '@/components/blog/HomeBlogTeaser';
+import InternalLinkHub from '@/components/InternalLinkHub';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Index = () => {
