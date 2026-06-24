@@ -4,6 +4,7 @@ import { AlertTriangle } from 'lucide-react';
 import PollutantIndex from '@/components/PollutantIndex';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
+import InternalLinkHub from '@/components/InternalLinkHub';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { seoData } from '@/utils/seoData';
 
