@@ -313,6 +313,8 @@ const Index = () => {
           </div>
         </section>
 
+        <InternalLinkHub />
+
         <HomeBlogTeaser />
       </div>
     </Layout>
