@@ -6,6 +6,8 @@ import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
 import { MapLoader, MapLoadingPlaceholder } from '@/components/ui/map-loader';
 import TasteWall from '@/components/TasteWall';
+import TasteReportForm from '@/components/TasteReportForm';
+
 
 const TasteMap = lazy(() => import('@/components/TasteMap'));
 
@@ -75,7 +77,13 @@ const GoutEau: React.FC = () => {
               />
             </div>
 
+            {/* Contribution form */}
+            <div className="mb-10 max-w-3xl mx-auto">
+              <TasteReportForm />
+            </div>
+
             {/* Cross-links */}
+
             <div className="mt-8 bg-white rounded-lg p-4 md:p-6 shadow-lg max-w-3xl mx-auto">
               <h3 className="text-base md:text-lg font-semibold mb-3 text-gray-900">
                 Aller plus loin

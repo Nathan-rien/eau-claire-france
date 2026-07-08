@@ -611,6 +611,51 @@ export type Database = {
           },
         ]
       }
+      taste_reports_submissions: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          location_label: string | null
+          moderated_at: string | null
+          moderated_by: string | null
+          moderator_note: string | null
+          quote: string
+          region: string | null
+          status: string
+          tag: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          location_label?: string | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderator_note?: string | null
+          quote: string
+          region?: string | null
+          status?: string
+          tag: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          location_label?: string | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderator_note?: string | null
+          quote?: string
+          region?: string | null
+          status?: string
+          tag?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
