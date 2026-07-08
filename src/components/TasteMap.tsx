@@ -40,21 +40,28 @@ const TasteMap: React.FC<TasteMapProps> = ({ onSelectRegion, selectedRegion }) =
 
       const el = document.createElement('div');
       el.style.cssText = `
-        width:34px;height:34px;border-radius:50%;
+        width:34px;height:34px;cursor:pointer;
+      `;
+      const inner = document.createElement('div');
+      inner.className = 'marker-inner';
+      inner.style.cssText = `
+        width:100%;height:100%;border-radius:50%;
         background:${color};
         border:3px solid white;
         box-shadow:0 2px 8px rgba(0,0,0,0.25);
-        cursor:pointer;display:flex;align-items:center;justify-content:center;
+        display:flex;align-items:center;justify-content:center;
         color:white;font-weight:700;font-size:12px;
         transition:transform .15s;
       `;
-      el.textContent = String(reports.length || '·');
+      inner.textContent = String(reports.length || '·');
+      el.appendChild(inner);
       el.addEventListener('mouseenter', () => {
-        el.style.transform = 'scale(1.15)';
+        inner.style.transform = 'scale(1.15)';
       });
       el.addEventListener('mouseleave', () => {
-        el.style.transform = 'scale(1)';
+        inner.style.transform = 'scale(1)';
       });
+
 
       const popupContent = `
         <div style="padding:8px;min-width:200px">
