@@ -89,12 +89,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://infoeau.fr/comparateur-prix</loc>
-    <lastmod>2026-07-08</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://infoeau.fr/sources-eau</loc>
     <lastmod>2026-07-08</lastmod>
     <changefreq>monthly</changefreq>
