@@ -210,6 +210,10 @@ export default function Admin() {
         <QuickStartGuard>
           <AdminQuickStart />
         </QuickStartGuard>
+
+        <TasteSubmissionsAdmin />
+
+
       
       {/* Database Stats */}
       {stats && (
