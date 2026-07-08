@@ -51,7 +51,7 @@ const Index = () => {
 
               {/* Stats */}
               <div className="mb-4 md:mb-6">
-                <h3 className="text-lg font-semibold text-foreground mb-4 text-center">{t('home.stats.title')}</h3>
+                <h2 className="text-lg font-semibold text-foreground mb-4 text-center">{t('home.stats.title')}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-2">
                   <div className="bg-card rounded-lg p-3 md:p-4 border border-border shadow-sm">
                     <div className="text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#22c55e] bg-clip-text text-transparent">35,000+</div>
