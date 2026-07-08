@@ -288,6 +288,22 @@ export const seoData = {
     }
   },
 
+  goutEau: {
+    title: "Goût de l'eau du robinet par région en France",
+    description: "Découvrez ce que les Français disent du goût de leur eau du robinet : témoignages, sondages et presse, cartographiés par région (chlore, minéral, métallique).",
+    keywords: "goût eau robinet France, chlore eau robinet, eau minérale goût, perception eau robinet région",
+    canonical: "/gout-eau",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Goût de l'eau du robinet par région",
+      "description": "Perceptions qualitatives du goût de l'eau du robinet en France, par région, issues de la presse, sondages et témoignages.",
+      "url": "https://infoeau.fr/gout-eau"
+    }
+  },
+
+
+
   // === Pages prix ===
 
   prixEaux: {
