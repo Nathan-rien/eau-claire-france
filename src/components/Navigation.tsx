@@ -31,9 +31,11 @@ const Navigation = () => {
         { href: '/carte', label: t('nav.maps.tap') },
         { href: '/sources-eau', label: t('nav.maps.bottles') },
         { href: '/carte-polluants', label: t('nav.maps.pollutants') },
+        { href: '/gout-eau', label: "Goût de l'eau par région" },
         { href: '/carte-parcours-eau', label: t('nav.maps.bottleJourney') },
         { href: '/carte-parcours-robinet', label: t('nav.maps.tapJourney') },
       ];
+
 
   const pricesItems = isEurope
     ? [
