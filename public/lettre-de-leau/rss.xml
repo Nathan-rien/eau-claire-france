@@ -6,7 +6,24 @@
     <atom:link href="https://infoeau.fr/lettre-de-leau/rss.xml" rel="self" type="application/rss+xml" />
     <description>Actualités, scandales, réglementation et enquêtes sur la qualité de l'eau en France.</description>
     <language>fr-FR</language>
-    <lastBuildDate>Wed, 24 Jun 2026 13:06:27 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 08 Jul 2026 13:59:15 GMT</lastBuildDate>
+    <item>
+      <title>La Guerre de l&apos;Eau: Danone et Nestlé Waters, un duel sans fin</title>
+      <link>https://infoeau.fr/lettre-de-leau/guerre-eau-danone-nestle-waters-duel-sans-fin</link>
+      <guid isPermaLink="true">https://infoeau.fr/lettre-de-leau/guerre-eau-danone-nestle-waters-duel-sans-fin</guid>
+      <pubDate>Mon, 06 Jul 2026 11:41:18 GMT</pubDate>
+      <category>economie</category>
+      <description>Le marché des eaux embouteillées est le théâtre d&apos;une rivalité acharnée entre deux géants, Danone et Nestlé Waters. Perrier, Volvic, San Pellegrino... derrière ces marques iconiques se cache une lutte stratégique pour la domination d&apos;un secteur en constante évolution. Plongée au cœur de cette compétition intense.</description>
+      <enclosure url="https://xblogttmomuogdhmaztf.supabase.co/storage/v1/object/public/blog-images/2026-07-06/guerre-eau-danone-nestle-waters-duel-sans-fin-1783338076572.png" type="image/jpeg" />
+    </item>
+    <item>
+      <title>Crise de l&apos;eau en France : quand la sécheresse assèche nos robinets</title>
+      <link>https://infoeau.fr/lettre-de-leau/crise-eau-france-secheresse-robinets</link>
+      <guid isPermaLink="true">https://infoeau.fr/lettre-de-leau/crise-eau-france-secheresse-robinets</guid>
+      <pubDate>Mon, 29 Jun 2026 12:03:40 GMT</pubDate>
+      <category>environnement</category>
+      <description>Alors que la France subit une vague de chaleur intense, de nombreuses préfectures sont contraintes de restreindre la consommation d&apos;eau potable. Sécheresse, pollution et réserves insuffisantes menacent l&apos;accès à cette ressource essentielle pour une partie des habitants.</description>
+    </item>
     <item>
       <title>Nestlé Waters sous le feu des perquisitions : l&apos;enquête pour tromperie s&apos;intensifie</title>
       <link>https://infoeau.fr/lettre-de-leau/perquisitions-nestle-waters-perrier-vittel</link>
