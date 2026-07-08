@@ -62,7 +62,7 @@ export const translations = {
     'home.quickAccess.bottlesSub': 'Trouvez l\'eau qui vous convient',
     'home.quickAccess.pollutants': 'Polluants',
     'home.quickAccess.pollutantsSub': 'Index',
-    'home.quickAccess.clickHere': 'Cliquez ici',
+    'home.quickAccess.clickHere': 'Découvrir nos services',
     'home.stats.title': 'Nos chiffres clés',
     'home.stats.communes': 'Communes analysées',
     'home.stats.pollutants': 'Polluants surveillés',
