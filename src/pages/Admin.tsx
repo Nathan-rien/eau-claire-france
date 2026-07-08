@@ -13,6 +13,8 @@ import { AdminGuard, QuickStartGuard } from '@/components/SecurityGuard';
 import { getMetaSecurityTags } from '@/utils/securityHeaders';
 import { Helmet } from 'react-helmet-async';
 import { ExternalLink } from 'lucide-react';
+import TasteSubmissionsAdmin from '@/components/TasteSubmissionsAdmin';
+
 
 export default function Admin() {
   const [runs, setRuns] = useState<(Run & { retailers: Retailer })[]>([]);
