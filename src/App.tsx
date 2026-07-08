@@ -62,6 +62,8 @@ const CarteParcoursRobinet = React.lazy(() => import("./pages/CarteParcoursRobin
 const DiagnosticPrix = React.lazy(() => import("./pages/DiagnosticPrix"));
 const LettreEau = React.lazy(() => import("./pages/LettreEau"));
 const LettreEauArticle = React.lazy(() => import("./pages/LettreEauArticle"));
+const GoutEau = React.lazy(() => import("./pages/GoutEau"));
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
