@@ -29,10 +29,16 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://infoeau.fr/quelle-eau-boire</loc>
+    <loc>https://infoeau.fr/quelle-eau-boire/rapide</loc>
     <lastmod>2026-07-08</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/quelle-eau-boire/complet</loc>
+    <lastmod>2026-07-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/polluants</loc>
