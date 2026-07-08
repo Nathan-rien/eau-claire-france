@@ -88,7 +88,7 @@ const Diagnostic = () => {
 
             <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-center sm:text-left">{t('diagnostic.searchTitle')}</h3>
+                <h2 className="text-lg font-semibold text-center sm:text-left">{t('diagnostic.searchTitle')}</h2>
                 <Button
                   onClick={handleGeolocationClick}
                   disabled={geoLoading || reverseGeoLoading}

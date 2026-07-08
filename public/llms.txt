@@ -20,42 +20,43 @@
 
 ## Pages principales
 
-- / — Accueil avec diagnostic rapide par commune
-- /carte — Carte interactive de la qualité de l'eau en France
-- /diagnostic — Diagnostic personnalisé de la qualité de l'eau par commune
-- /classement — Comparateur et classement des eaux en bouteille : +50 eaux notées sur 80 points selon 11 critères (résidu sec, calcium, magnésium, sodium, nitrates, fluor, pH…) et 12 profils santé (Général, Pureté, Os & calcium, Sport, Bébé, Senior, Grossesse, Quotidien, Thé, Transit, Digestion, Régime pauvre en sodium). Permet de comparer Evian, Contrex, Hépar, Volvic, Mont Roucous, Badoit, Vittel, Cristaline, etc. (remplace l'ancienne URL /comparatif-bouteilles)
-- /quelle-eau-boire — Recommandation d'eau selon le profil (bébé, sport, senior, grossesse...)
-- /prix-eaux — Suivi des prix des eaux en bouteille par enseigne
-- /comparateur-prix — Comparateur de prix entre enseignes
-- /cours-eau — Évolution historique des prix (eau du robinet vs eau en bouteille)
-- /marque/:slug — Fiche détaillée par marque (ex: /marque/evian, /marque/volvic)
-- /carte-polluants — Carte des polluants détectés dans l'eau potable
-- /polluants — Index des polluants avec seuils réglementaires
-- /alertes — Alertes qualité en temps réel
-- /sources-eau — Carte des sources d'eau minérale en France
-- /parcours-eau — Parcours de l'eau du robinet (captage → traitement → distribution)
-- /parcours-eau-bouteille — Parcours de l'eau en bouteille (source → embouteillage → distribution)
-- /lettre-de-leau — Lettre de l'eau : blog d'actualités hebdomadaires sur la qualité de l'eau (scandales, réglementation, santé, environnement). Flux RSS : /lettre-de-leau/rss.xml
-
+- [Accueil](/): Diagnostic rapide de la qualité de l'eau par commune.
+- [Carte de la qualité de l'eau](/carte): Carte interactive de l'eau du robinet en France.
+- [Diagnostic](/diagnostic): Diagnostic personnalisé par commune.
+- [Classement des eaux en bouteille](/classement): +50 eaux notées sur 80 points selon 11 critères et 12 profils santé.
+- [Quelle eau boire](/quelle-eau-boire): Recommandation d'eau selon le profil (bébé, sport, senior, grossesse).
+- [Prix des eaux](/prix-eaux): Suivi des prix des eaux en bouteille par enseigne.
+- [Cours de l'eau](/cours-eau): Évolution historique des prix (robinet vs bouteille).
+- [Carte des polluants](/carte-polluants): Polluants détectés dans l'eau potable.
+- [Index des polluants](/polluants): Polluants et seuils réglementaires.
+- [Alertes qualité](/alertes): Alertes qualité en temps réel.
+- [Sources d'eau](/sources-eau): Carte des sources d'eau minérale en France.
+- [Parcours de l'eau du robinet](/parcours-eau): Captage → traitement → distribution.
+- [Parcours de l'eau en bouteille](/parcours-eau-bouteille): Source → embouteillage → distribution.
+- [Lettre de l'eau](/lettre-de-leau): Blog hebdomadaire sur la qualité de l'eau. RSS : /lettre-de-leau/rss.xml.
+- [Marque Evian](/marque/evian): Fiche détaillée de la marque Evian.
+- [Marque Volvic](/marque/volvic): Fiche détaillée de la marque Volvic.
 
 ## Pages Europe
 
-- /carte-europe — Qualité de l'eau en Europe
-- /carte-polluants-europe — Polluants par pays européen
-- /classement-europe — Classement des pays par qualité de l'eau
-- /diagnostic-europe — Diagnostic par pays
-- /composition-europe — Composition de l'eau par pays
-- /alertes-europe — Alertes européennes
-- /prix-eaux-europe — Comparaison des prix en Europe
+- [Carte Europe](/carte-europe): Qualité de l'eau en Europe.
+- [Polluants Europe](/carte-polluants-europe): Polluants par pays européen.
+- [Classement Europe](/classement-europe): Classement des pays par qualité de l'eau.
+- [Diagnostic Europe](/diagnostic-europe): Diagnostic par pays.
+- [Composition Europe](/composition-europe): Composition de l'eau par pays.
+- [Alertes Europe](/alertes-europe): Alertes européennes.
+- [Prix Europe](/prix-eaux-europe): Comparaison des prix en Europe.
 
 ## Méthodologie
 
-- /methodologie — Méthodologie détaillée de scoring et d'analyse
-- /sources — Sources de données utilisées
-- /api-publique — Documentation de l'API publique
-- /open-data — Accès aux données ouvertes
+- [Méthodologie](/methodologie): Méthodologie détaillée de scoring et d'analyse.
+- [Sources](/sources): Sources de données utilisées.
+- [API publique](/api-publique): Documentation de l'API publique.
+- [Open data](/open-data): Accès aux données ouvertes.
 
 ## Contact
 
-- Site web : https://infoeau.fr
+- [Contact](/contact): Nous contacter.
+- [À propos](/a-propos): À propos d'InfoEau.fr.
+
 - Page contact : https://infoeau.fr/contact
