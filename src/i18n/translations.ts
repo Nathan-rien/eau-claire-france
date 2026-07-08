@@ -1120,7 +1120,7 @@ export const translations = {
     'home.quickAccess.bottlesSub': 'Find the water that suits you',
     'home.quickAccess.pollutants': 'Pollutants',
     'home.quickAccess.pollutantsSub': 'Index',
-    'home.quickAccess.clickHere': 'Click here',
+    'home.quickAccess.clickHere': 'Discover our services',
     'home.stats.title': 'Key figures',
     'home.stats.communes': 'Municipalities analyzed',
     'home.stats.pollutants': 'Pollutants monitored',
