@@ -611,6 +611,42 @@ export type Database = {
           },
         ]
       }
+      taste_partner_submissions: {
+        Row: {
+          company_name: string
+          contact_name: string
+          created_at: string
+          email: string
+          id: string
+          message: string
+          product_category: string | null
+          status: string
+          website: string | null
+        }
+        Insert: {
+          company_name: string
+          contact_name: string
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          product_category?: string | null
+          status?: string
+          website?: string | null
+        }
+        Update: {
+          company_name?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          product_category?: string | null
+          status?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       taste_reports_submissions: {
         Row: {
           created_at: string
