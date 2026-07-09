@@ -7,6 +7,7 @@ import { seoData } from '@/utils/seoData';
 import { MapLoader, MapLoadingPlaceholder } from '@/components/ui/map-loader';
 import TasteWall from '@/components/TasteWall';
 import TasteReportForm from '@/components/TasteReportForm';
+import TastePartnerForm from '@/components/TastePartnerForm';
 
 
 const TasteMap = lazy(() => import('@/components/TasteMap'));
