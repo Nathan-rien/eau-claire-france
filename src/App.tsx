@@ -160,6 +160,8 @@ const App = () => {
                 <Route path="/gout-eau" element={<GoutEau />} />
                 <Route path="/qualite-eau" element={<QualiteEauIndex />} />
                 <Route path="/qualite-eau/:slug" element={<QualiteEauCommune />} />
+                <Route path="/guide/eaux-riches-magnesium" element={<GuideEauxMagnesium />} />
+
 
                 <Route 
                   path="/admin/security" 
