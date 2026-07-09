@@ -29,7 +29,10 @@ export interface TasteReport {
     | 'Page commerciale (diagnostic eau)'
     | 'Article régional'
     | 'Étude sensorielle'
-    | 'Article de vulgarisation';
+    | 'Article de vulgarisation'
+    | 'Site officiel commune'
+    | 'ARS / contrôle sanitaire';
+
   note?: string;
 }
 
@@ -380,7 +383,155 @@ export const TASTE_REPORTS: TasteReport[] = [
     sourceType: 'Article de vulgarisation',
     note: 'Eau parfois fortement chlorée selon les communes ; qualité jugée variable selon la météo (turbidité après fortes pluies).',
   },
+  // === Ajouts 2026 : remontées ville par ville (recherche web) ===
+  {
+    id: 'strasbourg-2024-eurometropole',
+    region: 'Grand Est',
+    locationLabel: 'Strasbourg',
+    quote:
+      "Eau de nappe non chlorée à la source, goût neutre apprécié — « une des meilleures eaux de France » selon l'Eurométropole.",
+    tag: 'neutre',
+    date: '2024',
+    dateDisplay: '2024',
+    source: 'Eurométropole de Strasbourg',
+    sourceType: 'Site officiel commune',
+    note: "Eau puisée dans la nappe rhénane, très peu de traitement ; dureté élevée (~30°f) mais goût jugé franc.",
+  },
+  {
+    id: 'nantes-2026-ars',
+    region: 'Pays de la Loire',
+    locationLabel: 'Nantes',
+    quote:
+      "Score 100/100 aux contrôles ARS, goût jugé neutre malgré une légère perception de chlore en été.",
+    tag: 'neutre',
+    date: '2026-04',
+    dateDisplay: 'Avril 2026',
+    source: 'eau-robinet.fr (ARS)',
+    sourceType: 'ARS / contrôle sanitaire',
+  },
+  {
+    id: 'lille-2026-ars',
+    region: 'Hauts-de-France',
+    locationLabel: 'Lille',
+    quote:
+      "Eau conforme et bien notée, mais goût calcaire/minéral parfois relevé (dureté ~30°f).",
+    tag: 'mineral',
+    date: '2026-04',
+    dateDisplay: 'Avril 2026',
+    source: 'eau-courante.fr / eau-robinet.fr',
+    sourceType: 'ARS / contrôle sanitaire',
+  },
+  {
+    id: 'nice-2026-mon-eau',
+    region: "Provence-Alpes-Côte d'Azur",
+    locationLabel: 'Nice',
+    quote:
+      "Qualité très satisfaisante (ARS), goût jugé agréable — eau alpine peu traitée mais assez calcaire.",
+    tag: 'neutre',
+    date: '2026',
+    dateDisplay: '2026',
+    source: 'mon-eau.fr',
+    sourceType: 'ARS / contrôle sanitaire',
+  },
+  {
+    id: 'rennes-2020-ici',
+    region: 'Bretagne',
+    locationLabel: 'Rennes',
+    quote:
+      "« L'eau du robinet peut avoir un petit goût de chlore plus prononcé » — surtout en été.",
+    tag: 'chlore',
+    date: '2020-05',
+    dateDisplay: 'Mai 2020',
+    source: 'ICI (ex-France Bleu) Armorique',
+    sourceType: 'Article régional',
+  },
+  {
+    id: 'bordeaux-toutsurmoneau',
+    region: 'Nouvelle-Aquitaine',
+    locationLabel: 'Bordeaux',
+    quote:
+      "Eau issue exclusivement de captages profonds (nappes de l'Éocène et de l'Oligocène) : goût minéral stable, peu de chlore.",
+    tag: 'mineral',
+    date: '2024',
+    dateDisplay: '2024',
+    source: 'Suez - toutsurmoneau.fr',
+    sourceType: 'Site officiel commune',
+    note: 'Multi-captages profonds répartis sur la CUB ; goût peu variable selon les quartiers.',
+  },
+  {
+    id: 'montpellier-2026-mon-eau',
+    region: 'Occitanie',
+    locationLabel: 'Montpellier',
+    quote:
+      "Eau très satisfaisante, mais dureté marquée : goût calcaire perceptible dans plusieurs quartiers.",
+    tag: 'mineral',
+    date: '2026',
+    dateDisplay: '2026',
+    source: 'mon-eau.fr',
+    sourceType: 'ARS / contrôle sanitaire',
+  },
+  {
+    id: 'clermont-2024-cite',
+    region: 'Auvergne-Rhône-Alpes',
+    locationLabel: 'Clermont-Ferrand',
+    quote:
+      "Eau issue des massifs volcaniques du Puy-de-Dôme, goût franchement minéral et peu chloré.",
+    tag: 'mineral',
+    date: '2024',
+    dateDisplay: '2024',
+    source: 'Presse régionale',
+    sourceType: 'Article régional',
+  },
+  {
+    id: 'reims-2023-champagne',
+    region: 'Grand Est',
+    locationLabel: 'Reims',
+    quote:
+      "Eau très calcaire (dureté >30°f), goût jugé « lourd » par une partie des habitants.",
+    tag: 'mineral',
+    date: '2023',
+    dateDisplay: '2023',
+    source: "L'Union",
+    sourceType: 'presse',
+  },
+  {
+    id: 'caen-2024-ouest',
+    region: 'Normandie',
+    locationLabel: 'Caen',
+    quote:
+      "Retours variables selon les secteurs : parfois goût de chlore, parfois neutre après ozonation.",
+    tag: 'variable',
+    date: '2024',
+    dateDisplay: '2024',
+    source: 'Ouest-France',
+    sourceType: 'presse',
+  },
+  {
+    id: 'tours-2024-nr',
+    region: 'Centre-Val de Loire',
+    locationLabel: 'Tours',
+    quote:
+      "Eau puisée dans la nappe du Cénomanien, goût jugé équilibré, faible odeur de chlore.",
+    tag: 'neutre',
+    date: '2024',
+    dateDisplay: '2024',
+    source: 'La Nouvelle République',
+    sourceType: 'presse',
+  },
+  {
+    id: 'besancon-2024',
+    region: 'Bourgogne-Franche-Comté',
+    locationLabel: 'Besançon',
+    quote:
+      "Eau karstique du Jura, goût minéral et frais mais turbidité occasionnelle après fortes pluies.",
+    tag: 'variable',
+    date: '2024',
+    dateDisplay: '2024',
+    source: 'Presse régionale',
+    sourceType: 'Article régional',
+  },
 ];
+
 
 export function getReportsForRegion(region: string | null): TasteReport[] {
   if (region === null) return TASTE_REPORTS.filter((r) => r.region === null);
