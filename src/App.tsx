@@ -63,6 +63,8 @@ const DiagnosticPrix = React.lazy(() => import("./pages/DiagnosticPrix"));
 const LettreEau = React.lazy(() => import("./pages/LettreEau"));
 const LettreEauArticle = React.lazy(() => import("./pages/LettreEauArticle"));
 const GoutEau = React.lazy(() => import("./pages/GoutEau"));
+const QualiteEauIndex = React.lazy(() => import("./pages/QualiteEauIndex"));
+const QualiteEauCommune = React.lazy(() => import("./pages/QualiteEauCommune"));
 
 
 const queryClient = new QueryClient({
@@ -155,6 +157,8 @@ const App = () => {
                 <Route path="/lettre-de-leau" element={<LettreEau />} />
                 <Route path="/lettre-de-leau/:slug" element={<LettreEauArticle />} />
                 <Route path="/gout-eau" element={<GoutEau />} />
+                <Route path="/qualite-eau" element={<QualiteEauIndex />} />
+                <Route path="/qualite-eau/:slug" element={<QualiteEauCommune />} />
 
                 <Route 
                   path="/admin/security" 
