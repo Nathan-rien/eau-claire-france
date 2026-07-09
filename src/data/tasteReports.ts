@@ -19,7 +19,17 @@ export interface TasteReport {
   date: string; // ISO ou libre
   dateDisplay: string;
   source: string;
-  sourceType: 'presse' | 'sondage' | 'rapport' | 'temoignage' | 'officiel';
+  sourceType:
+    | 'presse'
+    | 'sondage'
+    | 'rapport'
+    | 'temoignage'
+    | 'officiel'
+    | 'Article local'
+    | 'Page commerciale (diagnostic eau)'
+    | 'Article régional'
+    | 'Étude sensorielle'
+    | 'Article de vulgarisation';
   note?: string;
 }
 
@@ -281,6 +291,94 @@ export const TASTE_REPORTS: TasteReport[] = [
     dateDisplay: 'Février 2025',
     source: 'sante.gouv.fr',
     sourceType: 'officiel',
+  },
+  {
+    id: 'lyon-equilibree-2024',
+    region: 'Auvergne-Rhône-Alpes',
+    locationLabel: 'Lyon',
+    quote:
+      'Eau moyennement minéralisée et équilibrée, très faible teneur en chlore',
+    tag: 'neutre',
+    date: '2024',
+    dateDisplay: '2024',
+    source: 'Toolyon (Eau du Grand Lyon)',
+    sourceType: 'Article local',
+    note: "Dureté d'environ 18°f (moyennement dure), sans référence chiffrée au goût perçu par les usagers.",
+  },
+  {
+    id: 'toulouse-chlore-culligan',
+    region: 'Occitanie',
+    locationLabel: 'Toulouse',
+    quote:
+      "Taux de chlore jugé médiocre, pouvant donner un goût ou une odeur de javel",
+    tag: 'chlore',
+    date: '2025',
+    dateDisplay: '2025',
+    source: 'Culligan',
+    sourceType: 'Page commerciale (diagnostic eau)',
+    note: "Eau par ailleurs douce et peu calcaire (~6°f).",
+  },
+  {
+    id: 'marseille-reputee-2025',
+    region: "Provence-Alpes-Côte d'Azur",
+    locationLabel: 'Marseille',
+    quote:
+      "Réputée meilleure eau de France depuis l'adoption de l'ozone à la place du chlore",
+    tag: 'neutre',
+    date: '2025-05-28',
+    dateDisplay: 'Mai 2025',
+    source: 'ICI (ex-France Bleu) Provence',
+    sourceType: 'Article régional',
+    note: "Reste assez calcaire (20 à 28°f selon les secteurs), ce qui nuance la perception en bouche.",
+  },
+  {
+    id: 'rouen-chlore-culligan',
+    region: 'Normandie',
+    locationLabel: 'Rouen',
+    quote: 'Goût pouvant être influencé par le chlore de désinfection',
+    tag: 'chlore',
+    date: '2025',
+    dateDisplay: '2025',
+    source: 'Culligan',
+    sourceType: 'Page commerciale (diagnostic eau)',
+    note: 'Eau modérément calcaire ; variations de goût selon les 4 réseaux de distribution de la ville.',
+  },
+  {
+    id: 'dijon-neutre-suez',
+    region: 'Bourgogne-Franche-Comté',
+    locationLabel: 'Dijon',
+    quote: 'Minéralité moyenne, goût qualifié de neutre et rafraîchissant',
+    tag: 'neutre',
+    date: '2023',
+    dateDisplay: "Non daté (étude SUEZ/CIRSEE-CSGA)",
+    source: "SUEZ / Centre des Sciences du Goût et de l'Alimentation (Dijon)",
+    sourceType: 'Étude sensorielle',
+    note: "Issu d'un partenariat de recherche de 4 ans sur la perception sensorielle de l'eau du robinet.",
+  },
+  {
+    id: 'orleans-neutre-suez',
+    region: 'Centre-Val de Loire',
+    locationLabel: 'Orléans',
+    quote: 'Minéralité moyenne, goût qualifié de neutre et rafraîchissant',
+    tag: 'neutre',
+    date: '2023',
+    dateDisplay: "Non daté (étude SUEZ/CIRSEE-CSGA)",
+    source: "SUEZ / Centre des Sciences du Goût et de l'Alimentation (Dijon)",
+    sourceType: 'Étude sensorielle',
+    note: 'Même classification que Dijon et Vigneux dans cette étude (résidu à sec 300–500 mg/L).',
+  },
+  {
+    id: 'corse-variable-2025',
+    region: 'Corse',
+    locationLabel: 'Corse',
+    quote:
+      'Goût prononcé, calcaire et minéraux plus marqués que sur le continent',
+    tag: 'variable',
+    date: '2025-06-04',
+    dateDisplay: 'Juin 2025',
+    source: 'Le Robinet',
+    sourceType: 'Article de vulgarisation',
+    note: 'Eau parfois fortement chlorée selon les communes ; qualité jugée variable selon la météo (turbidité après fortes pluies).',
   },
 ];
 
