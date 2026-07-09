@@ -205,9 +205,19 @@ function buildRss(articles: BlogArticle[]): string {
 
 (async () => {
   const articles = await fetchBlogArticles();
-  const sitemap = buildSitemap(staticEntries, articles);
+
+  // Commune SEO pages
+  const communeEntries: SitemapEntry[] = FRENCH_CITIES.map((c) => ({
+    path: `/qualite-eau/${communeSlug(c.name, c.postcode)}`,
+    lastmod: today,
+    changefreq: "monthly",
+    priority: "0.7",
+  }));
+
+  const allEntries = [...staticEntries, ...communeEntries];
+  const sitemap = buildSitemap(allEntries, articles);
   writeFileSync(resolve("public/sitemap.xml"), sitemap);
-  console.log(`[sitemap] ${staticEntries.length} static + ${articles.length} blog entries`);
+  console.log(`[sitemap] ${staticEntries.length} static + ${communeEntries.length} communes + ${articles.length} blog entries`);
 
   mkdirSync(resolve("public/lettre-de-leau"), { recursive: true });
   writeFileSync(resolve("public/lettre-de-leau/rss.xml"), buildRss(articles));
