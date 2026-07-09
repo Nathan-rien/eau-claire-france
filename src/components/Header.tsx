@@ -90,6 +90,7 @@ const Header = () => {
     '/diagnostic': Stethoscope,
     '/diagnostic-europe': Stethoscope,
     '/quelle-eau-boire': HelpCircle,
+    '/gout-eau': GlassWater,
     '/classement': Trophy,
     '/classement-europe': Trophy,
     '/polluants': AlertTriangle,
