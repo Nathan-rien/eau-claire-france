@@ -8,6 +8,11 @@
  */
 import { writeFileSync, mkdirSync } from "fs";
 import { resolve } from "path";
+import { FRENCH_CITIES } from "../src/data/frenchCities";
+
+const stripAccents = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const communeSlug = (name: string, postcode: string) =>
+  `${stripAccents(name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${postcode}`;
 
 const BASE_URL = "https://infoeau.fr";
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "https://xblogttmomuogdhmaztf.supabase.co";
@@ -57,6 +62,8 @@ const staticEntries: SitemapEntry[] = [
   { path: "/lettre-de-leau", lastmod: today, changefreq: "weekly", priority: "0.85" },
   // Goût de l'eau
   { path: "/gout-eau", lastmod: today, changefreq: "weekly", priority: "0.75" },
+  // Qualité de l'eau par commune (hub)
+  { path: "/qualite-eau", lastmod: today, changefreq: "weekly", priority: "0.85" },
   // Europe
   { path: "/carte-europe", lastmod: today, changefreq: "weekly", priority: "0.8" },
   { path: "/carte-polluants-europe", lastmod: today, changefreq: "weekly", priority: "0.8" },
