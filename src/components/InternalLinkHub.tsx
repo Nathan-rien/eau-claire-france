@@ -12,6 +12,7 @@ import {
   Beaker,
   Route,
   Factory,
+  GlassWater,
 } from "lucide-react";
 
 type LinkItem = {
