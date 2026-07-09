@@ -29,7 +29,10 @@ export interface TasteReport {
     | 'Page commerciale (diagnostic eau)'
     | 'Article régional'
     | 'Étude sensorielle'
-    | 'Article de vulgarisation';
+    | 'Article de vulgarisation'
+    | 'Site officiel commune'
+    | 'ARS / contrôle sanitaire';
+
   note?: string;
 }
 
