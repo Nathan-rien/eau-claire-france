@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import {
   Map,
+  MapPin,
   Droplets,
   AlertTriangle,
   Bell,
@@ -27,6 +28,7 @@ const LINK_GROUPS: Record<string, { title: string; items: LinkItem[] }> = {
     title: "Explorer la qualité de l'eau",
     items: [
       { to: "/carte", label: "Carte de l'eau du robinet", description: "Qualité commune par commune en France", icon: Map },
+      { to: "/qualite-eau", label: "Qualité de l'eau par commune", description: "Analyse eau potable dans votre ville", icon: MapPin },
       { to: "/carte-polluants", label: "Carte des polluants", description: "PFAS, pesticides, nitrates par ville", icon: AlertTriangle },
       { to: "/polluants", label: "Index des polluants", description: "Tous les contaminants surveillés", icon: Beaker },
       { to: "/gout-eau", label: "Goût de l'eau par région", description: "Perceptions et témoignages par région", icon: GlassWater },
