@@ -29,6 +29,7 @@ const LINK_GROUPS: Record<string, { title: string; items: LinkItem[] }> = {
       { to: "/carte", label: "Carte de l'eau du robinet", description: "Qualité commune par commune en France", icon: Map },
       { to: "/carte-polluants", label: "Carte des polluants", description: "PFAS, pesticides, nitrates par ville", icon: AlertTriangle },
       { to: "/polluants", label: "Index des polluants", description: "Tous les contaminants surveillés", icon: Beaker },
+      { to: "/gout-eau", label: "Goût de l'eau par région", description: "Perceptions et témoignages par région", icon: GlassWater },
       { to: "/cours-eau", label: "Cours d'eau", description: "État écologique des rivières françaises", icon: Droplets },
     ],
   },
