@@ -148,6 +148,24 @@ const TasteMap: React.FC<TasteMapProps> = ({ onSelectRegion, selectedRegion }) =
         </div>
       )}
 
+      {(() => {
+        const nationalCount = TASTE_REPORTS.filter((r) => r.region === null).length;
+        const regionalCount = TASTE_REPORTS.filter((r) => r.region !== null).length;
+        return (
+          <div className="absolute top-3 right-14 bg-white/95 backdrop-blur rounded-lg shadow-lg px-3 py-2 text-xs max-w-[220px]">
+            <p className="font-semibold text-gray-800 mb-1">
+              {TASTE_REPORTS.length} retours référencés
+            </p>
+            <p className="text-gray-600">
+              {regionalCount} régionaux · {nationalCount} études nationales
+            </p>
+            <p className="text-gray-400 mt-1 text-[10px] leading-tight">
+              Les études nationales apparaissent dans le mur ci-dessous.
+            </p>
+          </div>
+        );
+      })()}
+
       {!ready && (
         <div className="absolute inset-0 flex items-center justify-center bg-white/50 pointer-events-none">
           <span className="text-sm text-gray-500">Chargement…</span>
@@ -156,5 +174,6 @@ const TasteMap: React.FC<TasteMapProps> = ({ onSelectRegion, selectedRegion }) =
     </div>
   );
 };
+
 
 export default TasteMap;
