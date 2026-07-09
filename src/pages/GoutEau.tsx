@@ -20,7 +20,7 @@ const GoutEau: React.FC = () => {
       <SEOHead {...seoData.goutEau} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <section className="py-6 md:py-12 px-4">
-          <div className="container mx-auto max-w-6xl">
+          <div className="container mx-auto max-w-7xl lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-8"><div>
             <div className="text-center mb-6 md:mb-8">
               <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-2">
                 <Droplets className="w-7 h-7 md:w-9 md:h-9 text-blue-600" />
