@@ -24,9 +24,9 @@ const FavoritesTab: React.FC<FavoritesTabProps> = ({
   if (favorites.length === 0) {
     return (
       <div className="text-center py-12">
-        <Star className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <p className="text-lg text-gray-500 mb-2">Aucune bouteille en favori pour le moment.</p>
-        <p className="text-sm text-gray-400">
+        <Star className="w-16 h-16 text-muted-foreground mx-auto mb-4" aria-hidden="true" />
+        <p className="text-lg text-foreground mb-2">Aucune bouteille en favori pour le moment.</p>
+        <p className="text-sm text-muted-foreground">
           Ajoutez des bouteilles en favoris depuis l'onglet Comparaison.
         </p>
       </div>
