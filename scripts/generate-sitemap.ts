@@ -55,6 +55,8 @@ const staticEntries: SitemapEntry[] = [
   { path: "/alertes", lastmod: today, changefreq: "daily", priority: "0.7" },
   // Blog index
   { path: "/lettre-de-leau", lastmod: today, changefreq: "weekly", priority: "0.85" },
+  // Goût de l'eau
+  { path: "/gout-eau", lastmod: today, changefreq: "weekly", priority: "0.75" },
   // Europe
   { path: "/carte-europe", lastmod: today, changefreq: "weekly", priority: "0.8" },
   { path: "/carte-polluants-europe", lastmod: today, changefreq: "weekly", priority: "0.8" },
