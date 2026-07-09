@@ -57,6 +57,7 @@ const Header = () => {
     : [
         { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
+        { href: '/gout-eau', label: "Goût de l'eau" },
         { href: '/classement', label: t('nav.ranking') },
         { href: '/polluants', label: t('nav.pollutants') },
         { href: '/alertes', label: t('nav.alerts') },
