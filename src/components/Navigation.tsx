@@ -58,7 +58,6 @@ const Navigation = () => {
       ]
     : [
         { href: '/lettre-de-leau', label: "Lettre de l'eau", featured: true },
-        { href: '/gout-eau', label: "Goût de l'eau" },
         { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
         { href: '/classement', label: t('nav.ranking') },
