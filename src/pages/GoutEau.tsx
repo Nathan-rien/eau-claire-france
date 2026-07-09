@@ -110,6 +110,12 @@ const GoutEau: React.FC = () => {
                 </Link>
               </div>
             </div>
+            </div>
+            <aside className="mt-8 lg:mt-0">
+              <div className="lg:sticky lg:top-24">
+                <TastePartnerForm />
+              </div>
+            </aside>
           </div>
         </section>
       </div>
