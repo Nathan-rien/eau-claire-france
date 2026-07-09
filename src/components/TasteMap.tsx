@@ -8,7 +8,9 @@ import {
   TasteTag,
   getDominantTag,
   getReportsForRegion,
+  TASTE_REPORTS,
 } from '@/data/tasteReports';
+
 
 interface TasteMapProps {
   onSelectRegion?: (region: string | null) => void;
