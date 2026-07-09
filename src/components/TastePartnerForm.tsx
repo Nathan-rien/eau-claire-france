@@ -62,19 +62,25 @@ const TastePartnerForm: React.FC = () => {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from('taste_partner_submissions').insert({
+    const payload = {
       company_name: parsed.data.company_name,
       contact_name: parsed.data.contact_name,
       email: parsed.data.email,
       website: parsed.data.website || null,
       product_category: parsed.data.product_category || null,
       message: parsed.data.message,
-    });
-    setLoading(false);
+    };
+    const { error } = await supabase.from('taste_partner_submissions').insert(payload);
     if (error) {
+      setLoading(false);
       toast.error("Impossible d'envoyer votre demande. Réessayez plus tard.");
       return;
     }
+    // Fire-and-forget email notification (does not block success UX)
+    supabase.functions
+      .invoke('notify-partner-submission', { body: payload })
+      .catch((e) => console.error('notify-partner-submission failed', e));
+    setLoading(false);
     setSent(true);
     toast.success('Demande envoyée. Nous revenons vers vous rapidement.');
   };
