@@ -15,6 +15,7 @@ import PageLoader from "@/components/PageLoader";
 import SecurityHeaders from "@/components/SecurityHeaders";
 import { EnhancedSecurityService } from "@/services/enhancedSecurityService";
 import OndineChat from "@/components/OndineChat";
+import NewsTicker from "@/components/NewsTicker";
 
 // Lazy load all pages for code splitting
 const Index = React.lazy(() => import("./pages/Index"));
@@ -102,6 +103,7 @@ const App = () => {
             <Toaster />
             <Sonner />
             <BrowserRouter>
+            <NewsTicker />
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
