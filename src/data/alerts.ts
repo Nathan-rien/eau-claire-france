@@ -1,22 +1,20 @@
-export interface NewsAlert {
+export interface SiteAlert {
   id: string;
-  slug: string;
   title: string;
   status: 'active' | 'resolved';
-  active: boolean;
+  articleSlug: string;
   publishedAt: string; // ISO date
-  displayUntil: string; // ISO date
+  displayUntil?: string; // ISO date (optional)
 }
 
-export const NEWS_ALERTS: NewsAlert[] = [
+export const SITE_ALERTS: SiteAlert[] = [
   {
-    id: 'alerte-manganese-vendee-2026-07',
-    slug: 'pollution-manganese-vendee-juillet-2026',
+    id: 'pollution-manganese-vendee-2026',
     title:
-      "Vendée — Pollution au manganèse détectée à l'usine du Moulin Papon (8 juillet 2026), alerte levée le 9 juillet 2026 par l'ARS et Vendée Eau",
+      "Pollution au manganèse en Vendée : situation maîtrisée — cliquez pour voir toutes les infos",
     status: 'resolved',
-    active: true,
-    publishedAt: '2026-07-08T08:00:00Z',
+    articleSlug: 'pollution-manganese-vendee-juillet-2026',
+    publishedAt: '2026-07-09',
     displayUntil: '2026-07-20T23:59:59Z',
   },
 ];

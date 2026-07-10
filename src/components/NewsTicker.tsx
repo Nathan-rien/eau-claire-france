@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AlertTriangle, CheckCircle2, X } from 'lucide-react';
-import { NEWS_ALERTS, type NewsAlert } from '@/data/alerts';
+import { SITE_ALERTS, type SiteAlert } from '@/data/alerts';
 
 const DISMISS_PREFIX = 'ticker-dismissed-';
 
@@ -23,12 +23,11 @@ const NewsTicker = () => {
     setDismissedIds(dismissed);
   }, []);
 
-  const alert: NewsAlert | null = useMemo(() => {
+  const alert: SiteAlert | null = useMemo(() => {
     const now = Date.now();
-    const eligible = NEWS_ALERTS.filter(
+    const eligible = SITE_ALERTS.filter(
       (a) =>
-        a.active &&
-        new Date(a.displayUntil).getTime() >= now &&
+        (!a.displayUntil || new Date(a.displayUntil).getTime() >= now) &&
         !dismissedIds.has(a.id),
     );
     if (eligible.length === 0) return null;
@@ -68,7 +67,7 @@ const NewsTicker = () => {
 
         {/* Scrolling clickable area */}
         <Link
-          to={`/actualites/${alert.slug}`}
+          to={`/actualites/${alert.articleSlug}`}
           className="flex-1 overflow-hidden group h-full flex items-center"
           aria-label={alert.title}
         >
