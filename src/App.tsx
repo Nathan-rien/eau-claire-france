@@ -67,6 +67,7 @@ const GoutEau = React.lazy(() => import("./pages/GoutEau"));
 const QualiteEauIndex = React.lazy(() => import("./pages/QualiteEauIndex"));
 const QualiteEauCommune = React.lazy(() => import("./pages/QualiteEauCommune"));
 const GuideEauxMagnesium = React.lazy(() => import("./pages/GuideEauxMagnesium"));
+const AlerteEauVendee = React.lazy(() => import("./pages/actualites/AlerteEauVendee"));
 
 
 const queryClient = new QueryClient({
@@ -163,6 +164,7 @@ const App = () => {
                 <Route path="/qualite-eau" element={<QualiteEauIndex />} />
                 <Route path="/qualite-eau/:slug" element={<QualiteEauCommune />} />
                 <Route path="/guide/eaux-riches-magnesium" element={<GuideEauxMagnesium />} />
+                <Route path="/actualites/pollution-manganese-vendee-juillet-2026" element={<AlerteEauVendee />} />
 
 
                 <Route 
