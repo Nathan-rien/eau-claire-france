@@ -66,6 +66,8 @@ const staticEntries: SitemapEntry[] = [
   { path: "/qualite-eau", lastmod: today, changefreq: "weekly", priority: "0.85" },
   // Guides thématiques
   { path: "/guide/eaux-riches-magnesium", lastmod: today, changefreq: "monthly", priority: "0.75" },
+  // Actualités / alertes détaillées
+  { path: "/actualites/pollution-manganese-vendee-juillet-2026", lastmod: "2026-07-09", changefreq: "monthly", priority: "0.7" },
   // Europe
   { path: "/carte-europe", lastmod: today, changefreq: "weekly", priority: "0.8" },
   { path: "/carte-polluants-europe", lastmod: today, changefreq: "weekly", priority: "0.8" },
