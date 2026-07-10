@@ -84,7 +84,7 @@ export default function AlerteEauVendee() {
         title="Pollution manganèse Vendée (juillet 2026) — alerte levée | InfoEau.fr"
         description="Détection de manganèse à l'usine du Moulin Papon le 8 juillet 2026, consignes émises pour La Roche-sur-Yon et communes voisines, alerte levée le 9 juillet par l'ARS et Vendée Eau."
         canonical={CANONICAL}
-        structuredData={schema}
+        schemaData={schema}
       />
 
       <article className="container mx-auto max-w-3xl px-4 py-8 sm:py-12">
@@ -236,7 +236,7 @@ export default function AlerteEauVendee() {
         </section>
 
         <div className="mt-12">
-          <InternalLinkHub context="article" />
+          <InternalLinkHub />
         </div>
       </article>
     </Layout>
