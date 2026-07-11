@@ -68,6 +68,7 @@ const GoutEau = React.lazy(() => import("./pages/GoutEau"));
 const QualiteEauIndex = React.lazy(() => import("./pages/QualiteEauIndex"));
 const QualiteEauCommune = React.lazy(() => import("./pages/QualiteEauCommune"));
 const GuideEauxMagnesium = React.lazy(() => import("./pages/GuideEauxMagnesium"));
+const GuideMaCommune = React.lazy(() => import("./pages/GuideMaCommune"));
 const AlerteEauVendee = React.lazy(() => import("./pages/actualites/AlerteEauVendee"));
 
 
