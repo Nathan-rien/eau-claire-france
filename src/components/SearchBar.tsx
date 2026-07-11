@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { searchAddresses, AddressSuggestion } from '@/services/addressApi';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { trackEvent } from '@/utils/ga';
 
 interface SearchBarProps {
   onCitySelect: (city: string) => void;
