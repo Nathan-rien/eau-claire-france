@@ -177,7 +177,17 @@ const QualiteEauCommune: React.FC = () => {
             {title}
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-3xl">
-            Score de qualité, conformité sanitaire, polluants surveillés et dernier prélèvement officiel pour l'eau du robinet à {commune.name} ({commune.postcode}).
+            {hasData ? (
+              <>
+                Eau du robinet à <strong>{commune.name}</strong> ({commune.postcode}) :{' '}
+                {nonConforme.length === 0 ? 'conforme aux limites réglementaires' : `${nonConforme.length} non-conformité(s) relevée(s)`}
+                {dureteText && <>, dureté <strong>{dureteText}</strong></>}
+                {nitratesText && <>, nitrates <strong>{nitratesText}</strong></>}
+                {lastAnalysis && <> — dernier prélèvement ARS du {new Date(lastAnalysis).toLocaleDateString('fr-FR')}</>}.
+              </>
+            ) : (
+              <>Score de qualité, conformité sanitaire, polluants surveillés et dernier prélèvement officiel pour l'eau du robinet à {commune.name} ({commune.postcode}).</>
+            )}
           </p>
         </section>
 
