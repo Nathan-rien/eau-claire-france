@@ -2,6 +2,7 @@
 import React, { lazy, Suspense } from 'react';
 import { MapPin, AlertTriangle } from 'lucide-react';
 import Layout from '@/components/Layout';
+import TrackMapView from '@/components/TrackMapView';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
 import { useLanguage } from '@/contexts/LanguageContext';
