@@ -166,6 +166,7 @@ const App = () => {
                 <Route path="/qualite-eau" element={<QualiteEauIndex />} />
                 <Route path="/qualite-eau/:slug" element={<QualiteEauCommune />} />
                 <Route path="/guide/eaux-riches-magnesium" element={<GuideEauxMagnesium />} />
+                <Route path="/guide/ma-commune" element={<GuideMaCommune />} />
                 <Route path="/actualites/pollution-manganese-vendee-juillet-2026" element={<AlerteEauVendee />} />
 
 
