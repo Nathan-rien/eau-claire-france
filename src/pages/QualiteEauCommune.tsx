@@ -293,7 +293,10 @@ const QualiteEauCommune: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {results.slice(0, 10).map((r, i) => (
+                  {[...results].sort((a, b) => {
+                    const rank = (c: string) => c === 'Non conforme' ? 0 : c === 'Non déterminé' ? 2 : 1;
+                    return rank(a.conformite) - rank(b.conformite);
+                  }).slice(0, 15).map((r, i) => (
                     <tr key={i} className="border-t border-border">
                       <td className="px-3 py-2 whitespace-nowrap">{new Date(r.datePrelevement).toLocaleDateString('fr-FR')}</td>
                       <td className="px-3 py-2">{r.parametreAnalyse}</td>

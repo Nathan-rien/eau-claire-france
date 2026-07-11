@@ -102,11 +102,22 @@ export const getWaterQualityByCommune = async (commune: string): Promise<ApiResp
       const isQualitative = unite.toUpperCase() === 'SANS OBJET' || unite.toUpperCase() === 'N/A';
 
       // Conformité individuelle par paramètre
+      // Priorité au champ officiel Hub'Eau si disponible
       let conformite: 'Conforme' | 'Non conforme' | 'Non déterminé';
-      if (isQualitative || limite === 0) {
-        conformite = valeur === 0 ? 'Conforme' : 'Non conforme';
-      } else {
+      const officiel = (item as any).conformite_limites_pc_parametre
+        || (item as any).conformite_reference_pc_parametre
+        || (item as any).conformite_parametre;
+      if (typeof officiel === 'string' && officiel.length > 0) {
+        const c = officiel.toUpperCase();
+        conformite = c === 'C' ? 'Conforme' : c === 'N' ? 'Non conforme' : 'Non déterminé';
+      } else if (isQualitative) {
+        // Paramètres qualitatifs (odeur, saveur…) : 0 = Conforme, sinon indéterminé faute de barème
+        conformite = valeur === 0 ? 'Conforme' : 'Non déterminé';
+      } else if (limite && limite > 0) {
         conformite = valeur <= limite ? 'Conforme' : 'Non conforme';
+      } else {
+        // Pas de limite réglementaire fournie → ne pas conclure
+        conformite = 'Non déterminé';
       }
 
       return {
