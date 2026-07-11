@@ -21,15 +21,15 @@ export const seoData = {
   },
 
   carte: {
-    title: "Carte interactive de la qualité de l'eau en France",
-    description: "Explorez la carte interactive de la qualité de l'eau potable en France. Visualisez les données par région et découvrez la qualité de l'eau près de chez vous.",
-    keywords: "carte qualité eau France, visualisation données eau potable, régions qualité eau, carte interactive eau robinet",
+    title: "Carte qualité eau du robinet par commune - France",
+    description: "Carte interactive de la qualité de l'eau du robinet en France : recherchez votre commune et consultez les analyses officielles ARS (pesticides, nitrates, PFAS, dureté).",
+    keywords: "carte qualité eau France, qualité eau robinet commune, analyse eau potable ville, carte eau potable ARS, dureté eau France",
     ogImage: "/images/og-carte.jpg",
     schemaData: {
       "@context": "https://schema.org",
       "@type": "WebPage",
       "name": "Carte des eaux - Qualité nationale",
-      "description": "Carte interactive de la qualité de l'eau potable en France par région",
+      "description": "Carte interactive de la qualité de l'eau potable en France par commune",
       "url": "https://infoeau.fr/carte",
       "isPartOf": { "@type": "WebSite", "url": "https://infoeau.fr" }
     }
@@ -66,16 +66,16 @@ export const seoData = {
   // Conservé pour compatibilité — la route /comparatif-bouteilles redirige désormais vers /classement.
   // Canonical pointe vers /classement pour consolider l'autorité SEO.
   comparatifBouteilles: {
-    title: "Comparateur & classement des eaux en bouteille | InfoEau",
-    description: "Comparez et classez +50 eaux en bouteille selon votre profil santé : composition minérale, prix, nitrates, sodium. Trouvez la meilleure eau pour vous.",
-    keywords: "comparateur eaux bouteille, classement eaux minérales, meilleure eau bouteille, comparer Evian Contrex Hépar Volvic, composition minérale eau, score eau santé, prix eau minérale",
+    title: "Tableau comparatif eau minérale : pH, résidu sec, minéraux",
+    description: "Tableau comparatif complet des eaux minérales et de source : pH, résidu à sec, calcium, magnésium, sodium, nitrates. Comparez Evian, Contrex, Hépar, Volvic, Mont Roucous.",
+    keywords: "tableau comparatif eau minérale, ph eau minérale comparatif, résidu sec eau minérale, comparer eaux bouteille, composition eau Evian Contrex Volvic",
     ogImage: "/images/og-comparatif.jpg",
     canonical: "/classement",
     schemaData: {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      "name": "Comparateur et classement des eaux en bouteille",
-      "description": "Comparez et classez plus de 50 eaux en bouteille selon votre profil santé",
+      "name": "Tableau comparatif des eaux en bouteille",
+      "description": "Tableau comparatif détaillé des eaux minérales : pH, résidu sec, composition minérale",
       "url": "https://infoeau.fr/classement",
       "isPartOf": { "@type": "WebSite", "url": "https://infoeau.fr" }
     }
@@ -126,9 +126,9 @@ export const seoData = {
   },
 
   quelleEauBoire: {
-    title: "Quelle eau boire ? Recommandations personnalisées",
-    description: "Obtenez des recommandations d'eaux en bouteille adaptées à votre profil : femme enceinte, sportif, problèmes rénaux. Conseils personnalisés et scientifiques.",
-    keywords: "quelle eau boire, recommandations eau personnalisées, eau femme enceinte, eau sportif, eau problèmes rénaux",
+    title: "Quelle eau boire ? Meilleure eau en bouteille selon votre profil",
+    description: "Quelle est la meilleure eau en bouteille pour vous ? Diagnostic personnalisé selon votre profil : femme enceinte, sportif, nourrisson, reins, hypertension. Résultat en 30 secondes.",
+    keywords: "quelle eau boire, meilleure eau en bouteille, meilleur eau bouteille santé, eau femme enceinte, eau sportif, eau nourrisson, eau hypertension",
     ogImage: "/images/og-recommandations.jpg",
     schemaData: {
       "@context": "https://schema.org",
@@ -307,9 +307,9 @@ export const seoData = {
   // === Pages prix ===
 
   prixEaux: {
-    title: "Prix des eaux en bouteille - Comparateur par enseigne",
-    description: "Comparez les prix des eaux en bouteille dans toutes les enseignes françaises. Trouvez les meilleures offres pour Evian, Cristaline, Volvic et plus.",
-    keywords: "prix eau bouteille, comparateur prix eau minérale, eau moins chère enseigne, prix Evian Cristaline Volvic",
+    title: "Prix eau en bouteille : comparateur Leclerc, Carrefour, Auchan",
+    description: "Comparateur de prix des eaux en bouteille en France : Cristaline, Mont Roucous, Evian, Volvic dans les enseignes Leclerc, Carrefour, Auchan. Trouvez l'eau la moins chère.",
+    keywords: "prix eau bouteille, comparaison prix eau en bouteille, eau la moins chere, prix cristaline leclerc, prix eau mont roucous leclerc, comparateur eau",
     canonical: "/prix-eaux",
     schemaData: {
       "@context": "https://schema.org",
@@ -455,9 +455,9 @@ export const seoData = {
   // === Pages classement, parcours carte, diagnostic prix ===
 
   classement: {
-    title: "Comparateur & classement des eaux en bouteille | InfoEau",
-    description: "Comparez et classez +50 eaux en bouteille (Evian, Contrex, Volvic, Hépar, Mont Roucous…) selon votre profil santé : composition minérale, nitrates, sodium, pH, prix.",
-    keywords: "comparateur eaux bouteille, classement eaux minérales, meilleure eau en bouteille, comparer Evian Contrex Hépar Volvic, composition minérale eau, score eau santé, top eau France, prix eau minérale",
+    title: "Classement des eaux minérales en bouteille 2026 (résidu sec, pH)",
+    description: "Classement des meilleures eaux en bouteille en France : résidu à sec, pH, calcium, magnésium, nitrates. Comparez Evian, Contrex, Hépar, Volvic, Mont Roucous et 50+ marques.",
+    keywords: "classement eau bouteille, classement des eaux minérales, classement eau résidu à sec, meilleur eau en bouteille, ph eau minérale comparatif, tableau comparatif eau minérale, classement eaux minérales résidus secs",
     canonical: "/classement",
     schemaData: {
       "@context": "https://schema.org",
