@@ -8,6 +8,7 @@ import NavigationCTA from '@/components/NavigationCTA';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { trackEvent } from '@/utils/ga';
 
 const Sources = () => {
   const { t } = useLanguage();
