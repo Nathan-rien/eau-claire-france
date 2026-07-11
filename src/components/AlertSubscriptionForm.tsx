@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import SearchBar from './SearchBar';
 import { z } from 'zod';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { trackEvent } from '@/utils/ga';
 
 const AlertSubscriptionForm = () => {
   const { t } = useLanguage();
