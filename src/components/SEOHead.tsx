@@ -35,6 +35,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   articleTags,
   articleAuthor,
   rssUrl,
+  noindex = false,
 }) => {
   const siteUrl = "https://infoeau.fr";
   const fullTitle = title.includes('InfoEau') ? title : `${title} | InfoEau.fr - Qualité de l'eau potable en France`;
@@ -47,7 +48,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
-      <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+      <meta name="robots" content={noindex ? "noindex, follow" : "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"} />
       <meta name="author" content={articleAuthor || "InfoEau.fr"} />
       <meta name="language" content="fr" />
 
