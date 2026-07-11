@@ -66,16 +66,16 @@ export const seoData = {
   // Conservé pour compatibilité — la route /comparatif-bouteilles redirige désormais vers /classement.
   // Canonical pointe vers /classement pour consolider l'autorité SEO.
   comparatifBouteilles: {
-    title: "Comparateur & classement des eaux en bouteille | InfoEau",
-    description: "Comparez et classez +50 eaux en bouteille selon votre profil santé : composition minérale, prix, nitrates, sodium. Trouvez la meilleure eau pour vous.",
-    keywords: "comparateur eaux bouteille, classement eaux minérales, meilleure eau bouteille, comparer Evian Contrex Hépar Volvic, composition minérale eau, score eau santé, prix eau minérale",
+    title: "Tableau comparatif eau minérale : pH, résidu sec, minéraux",
+    description: "Tableau comparatif complet des eaux minérales et de source : pH, résidu à sec, calcium, magnésium, sodium, nitrates. Comparez Evian, Contrex, Hépar, Volvic, Mont Roucous.",
+    keywords: "tableau comparatif eau minérale, ph eau minérale comparatif, résidu sec eau minérale, comparer eaux bouteille, composition eau Evian Contrex Volvic",
     ogImage: "/images/og-comparatif.jpg",
     canonical: "/classement",
     schemaData: {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      "name": "Comparateur et classement des eaux en bouteille",
-      "description": "Comparez et classez plus de 50 eaux en bouteille selon votre profil santé",
+      "name": "Tableau comparatif des eaux en bouteille",
+      "description": "Tableau comparatif détaillé des eaux minérales : pH, résidu sec, composition minérale",
       "url": "https://infoeau.fr/classement",
       "isPartOf": { "@type": "WebSite", "url": "https://infoeau.fr" }
     }
