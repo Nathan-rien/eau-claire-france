@@ -103,17 +103,49 @@
     <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://www.google-analytics.com" />
 
-    <!-- Google tag (gtag.js) — loaded after page is interactive to protect LCP -->
+    <!-- Google tag (gtag.js) — Consent Mode v2, gated by user choice -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      // Default: everything denied until user consents (RGPD)
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        functionality_storage: 'granted',
+        security_storage: 'granted',
+        wait_for_update: 500
+      });
       gtag('js', new Date());
-      gtag('config', 'G-2DE2LT87EY');
-      window.addEventListener('load', function () {
+      gtag('config', 'G-2DE2LT87EY', { anonymize_ip: true });
+
+      // Restore previously stored consent choice
+      try {
+        var stored = localStorage.getItem('cookie_consent');
+        if (stored === 'granted') {
+          gtag('consent', 'update', {
+            ad_storage: 'granted',
+            ad_user_data: 'granted',
+            ad_personalization: 'granted',
+            analytics_storage: 'granted'
+          });
+        }
+      } catch (e) {}
+
+      // Load GA script only if consent already granted; otherwise the banner will trigger it
+      window.__loadGA = function () {
+        if (window.__gaLoaded) return;
+        window.__gaLoaded = true;
         var s = document.createElement('script');
         s.async = true;
         s.src = 'https://www.googletagmanager.com/gtag/js?id=G-2DE2LT87EY';
         document.head.appendChild(s);
+      };
+      window.addEventListener('load', function () {
+        try {
+          if (localStorage.getItem('cookie_consent') === 'granted') window.__loadGA();
+        } catch (e) {}
       });
     </script>
 
