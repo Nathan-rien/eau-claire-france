@@ -3,6 +3,7 @@ import React from 'react';
 import { MapPin } from 'lucide-react';
 import QualityMap from '@/components/QualityMap';
 import Layout from '@/components/Layout';
+import TrackMapView from '@/components/TrackMapView';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
 import { seoData } from '@/utils/seoData';
@@ -13,6 +14,7 @@ const Carte = () => {
   
   return (
     <Layout>
+      <TrackMapView name=\"carte_france" />
       <SEOHead 
         title={seoData.carte.title}
         description={seoData.carte.description}

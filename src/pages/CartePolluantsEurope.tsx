@@ -2,6 +2,7 @@ import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 import PollutantMapEurope from '@/components/PollutantMapEurope';
 import Layout from '@/components/Layout';
+import TrackMapView from '@/components/TrackMapView';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -11,6 +12,7 @@ const CartePolluantsEurope = () => {
 
   return (
     <Layout>
+      <TrackMapView name=\"carte_polluants_europe" />
       <SEOHead
         {...seoData.cartePolluantsEurope}
       />

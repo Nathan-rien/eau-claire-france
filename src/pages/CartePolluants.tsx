@@ -2,6 +2,7 @@
 import React, { lazy, Suspense } from 'react';
 import { MapPin, AlertTriangle } from 'lucide-react';
 import Layout from '@/components/Layout';
+import TrackMapView from '@/components/TrackMapView';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -14,6 +15,7 @@ const CartePolluants = () => {
 
   return (
     <Layout>
+      <TrackMapView name=\"carte_polluants_france" />
       <SEOHead {...seoData.cartePolluants} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <section className="py-6 md:py-12 px-4">

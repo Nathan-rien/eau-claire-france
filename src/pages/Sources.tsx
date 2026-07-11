@@ -8,6 +8,7 @@ import NavigationCTA from '@/components/NavigationCTA';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { trackEvent } from '@/utils/ga';
 
 const Sources = () => {
   const { t } = useLanguage();
@@ -78,7 +79,13 @@ const Sources = () => {
                         <span className="font-medium">{source.coverage}</span>
                       </div>
                     </div>
-                    <a href={source.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center space-x-1 text-blue-600 hover:text-blue-800 mt-4">
+                    <a
+                      href={source.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => trackEvent('official_source_click', { source: source.name, url: source.url, location: 'sources_page' })}
+                      className="inline-flex items-center space-x-1 text-blue-600 hover:text-blue-800 mt-4"
+                    >
                       <span>{t('sources.viewSource')}</span>
                       <ExternalLink className="w-4 h-4" />
                     </a>

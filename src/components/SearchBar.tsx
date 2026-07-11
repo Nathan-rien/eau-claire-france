@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { searchAddresses, AddressSuggestion } from '@/services/addressApi';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { trackEvent } from '@/utils/ga';
 
 interface SearchBarProps {
   onCitySelect: (city: string) => void;
@@ -64,6 +65,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
     setQuery(suggestion.label);
     setSuggestions([]);
     setShowSuggestions(false);
+    trackEvent('address_search_select', {
+      commune: suggestion.city,
+      postcode: suggestion.postcode,
+      method: 'suggestion',
+    });
     onCitySelect(suggestion.city);
   };
 
@@ -86,6 +92,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         cityName = suggestions[0].city;
       }
       
+      trackEvent('address_search_submit', { commune: cityName, method: 'submit' });
       onCitySelect(cityName);
       setShowSuggestions(false);
     }

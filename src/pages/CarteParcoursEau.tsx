@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { Droplets } from 'lucide-react';
 import Layout from '@/components/Layout';
+import TrackMapView from '@/components/TrackMapView';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -14,6 +15,7 @@ const CarteParcoursEau = () => {
 
   return (
     <Layout>
+      <TrackMapView name=\"parcours_eau_bouteille" />
       <SEOHead {...seoData.carteParcoursEau} />
 
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-green-50">
