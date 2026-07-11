@@ -21,15 +21,15 @@ export const seoData = {
   },
 
   carte: {
-    title: "Carte interactive de la qualité de l'eau en France",
-    description: "Explorez la carte interactive de la qualité de l'eau potable en France. Visualisez les données par région et découvrez la qualité de l'eau près de chez vous.",
-    keywords: "carte qualité eau France, visualisation données eau potable, régions qualité eau, carte interactive eau robinet",
+    title: "Carte qualité eau du robinet par commune - France",
+    description: "Carte interactive de la qualité de l'eau du robinet en France : recherchez votre commune et consultez les analyses officielles ARS (pesticides, nitrates, PFAS, dureté).",
+    keywords: "carte qualité eau France, qualité eau robinet commune, analyse eau potable ville, carte eau potable ARS, dureté eau France",
     ogImage: "/images/og-carte.jpg",
     schemaData: {
       "@context": "https://schema.org",
       "@type": "WebPage",
       "name": "Carte des eaux - Qualité nationale",
-      "description": "Carte interactive de la qualité de l'eau potable en France par région",
+      "description": "Carte interactive de la qualité de l'eau potable en France par commune",
       "url": "https://infoeau.fr/carte",
       "isPartOf": { "@type": "WebSite", "url": "https://infoeau.fr" }
     }
