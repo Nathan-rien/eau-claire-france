@@ -149,9 +149,10 @@ const QualiteEauCommune: React.FC = () => {
       <SEOHead
         title={title}
         description={description}
-        keywords={`qualité eau ${commune.name}, eau du robinet ${commune.name}, analyse eau potable ${commune.name}, ${commune.postcode}, polluants ${commune.name}`}
+        keywords={`qualité eau ${commune.name}, eau du robinet ${commune.name}, analyse eau potable ${commune.name}, dureté eau ${commune.name}, nitrates ${commune.name}, ${commune.postcode}, polluants ${commune.name}, contrôle sanitaire ARS`}
         canonical={canonical}
-        schemaData={[faqSchema, breadcrumbSchema, placeSchema]}
+        noindex={!hasData && !isLoading}
+        schemaData={[faqSchema, breadcrumbSchema, placeSchema, ...(datasetSchema ? [datasetSchema] : [])]}
       />
       <Header />
       <main className="flex-1">
