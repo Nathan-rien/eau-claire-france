@@ -169,7 +169,7 @@ const CarteEurope: React.FC = () => {
 
   return (
     <Layout>
-      <TrackMapView name=\"carte_europe" />
+      <TrackMapView name="carte_europe" />
       <SEOHead
         {...seoData.carteEurope}
       />
