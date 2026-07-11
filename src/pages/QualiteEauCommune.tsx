@@ -27,13 +27,33 @@ const QualiteEauCommune: React.FC = () => {
   const nonConforme = results.filter((r) => r.conformite === 'Non conforme');
   const params = Array.from(new Set(results.map((r) => r.parametreAnalyse))).slice(0, 20);
 
+  // Extract real values for dureté (TH), nitrates, chlore — for keyword-rich SEO copy
+  const findLatest = (regex: RegExp) => results.find((r) => regex.test(r.parametreAnalyse ?? ''));
+  const durete = findLatest(/dureté|titre hydrotim|TH\b/i);
+  const nitrates = findLatest(/nitrate/i);
+  const chlore = findLatest(/chlore/i);
+  const pH = findLatest(/^pH|potentiel hydrog/i);
+
+  const dureteText = durete
+    ? `${Number(durete.valeurParametre).toFixed(1)} °f (${Number(durete.valeurParametre) < 15 ? 'douce' : Number(durete.valeurParametre) < 30 ? 'moyennement dure' : 'dure'})`
+    : null;
+  const nitratesText = nitrates
+    ? `${Number(nitrates.valeurParametre).toFixed(1)} mg/L (limite 50 mg/L)`
+    : null;
+
   // Neighbors: same region, up to 5
   const neighbors = FRENCH_CITIES
     .filter((c) => c.context === commune.context && c.citycode !== commune.citycode)
     .slice(0, 6);
 
+  // Thin content protection: no data yet → soft noindex to avoid low-quality pages in index
+  const hasData = results.length > 0;
+
+  // Shorter title (<60 chars target) — Google truncates otherwise
   const title = `Qualité de l'eau à ${commune.name} (${commune.postcode})`;
-  const description = `Analyse officielle de l'eau du robinet à ${commune.name} : score, polluants, dureté et dernier prélèvement ARS. Consultez le contrôle sanitaire Hub'Eau pour ${commune.name}.`;
+  const description = hasData
+    ? `Analyse eau potable ${commune.name} : ${nonConforme.length === 0 ? 'conforme' : `${nonConforme.length} non-conformité(s)`}${dureteText ? `, dureté ${dureteText}` : ''}${nitratesText ? `, nitrates ${nitratesText}` : ''}. Dernier prélèvement ARS ${lastAnalysis ? new Date(lastAnalysis).toLocaleDateString('fr-FR') : ''}.`.slice(0, 158)
+    : `Analyse officielle de l'eau du robinet à ${commune.name} (${commune.postcode}) : conformité, polluants, dureté et derniers prélèvements ARS via Hub'Eau.`;
   const canonical = `/qualite-eau/${slug}`;
 
   const faqSchema = {
@@ -45,7 +65,7 @@ const QualiteEauCommune: React.FC = () => {
         name: `L'eau du robinet est-elle potable à ${commune.name} ?`,
         acceptedAnswer: {
           '@type': 'Answer',
-          text: `Oui, l'eau distribuée à ${commune.name} fait l'objet d'un contrôle sanitaire régulier par l'ARS. ${nonConforme.length === 0 ? "Les derniers prélèvements sont conformes aux limites réglementaires." : `${nonConforme.length} paramètre(s) non conforme(s) ont été relevés sur les derniers prélèvements — consultez le détail ci-dessous.`}`,
+          text: `${nonConforme.length === 0 ? `Oui, l'eau distribuée à ${commune.name} (${commune.postcode}) est conforme aux limites réglementaires du contrôle sanitaire ARS sur les derniers prélèvements officiels Hub'Eau.` : `L'eau de ${commune.name} présente ${nonConforme.length} paramètre(s) non conforme(s) sur les derniers prélèvements ARS : ${Array.from(new Set(nonConforme.map((n) => n.parametreAnalyse))).slice(0, 3).join(', ')}. Elle reste distribuée sous surveillance renforcée.`}`,
         },
       },
       {
@@ -53,7 +73,9 @@ const QualiteEauCommune: React.FC = () => {
         name: `Quelle est la dureté de l'eau à ${commune.name} ?`,
         acceptedAnswer: {
           '@type': 'Answer',
-          text: `La dureté de l'eau (calcium + magnésium) varie selon la source. Consultez la fiche détaillée sur cette page pour la valeur du dernier prélèvement à ${commune.name}.`,
+          text: dureteText
+            ? `La dureté de l'eau à ${commune.name} est de ${dureteText} au dernier prélèvement officiel. Elle mesure la teneur en calcium et magnésium (titre hydrotimétrique).`
+            : `La dureté de l'eau (titre hydrotimétrique TH) à ${commune.name} varie selon la ressource. Consultez le tableau des derniers prélèvements ARS ci-dessus pour la valeur exacte.`,
         },
       },
       {
@@ -61,7 +83,7 @@ const QualiteEauCommune: React.FC = () => {
         name: `Y a-t-il des polluants dans l'eau à ${commune.name} ?`,
         acceptedAnswer: {
           '@type': 'Answer',
-          text: `Le contrôle sanitaire surveille nitrates, pesticides, PFAS, métaux lourds et paramètres microbiologiques. Les derniers résultats officiels pour ${commune.name} sont affichés ci-dessus.`,
+          text: `Le contrôle sanitaire de l'eau à ${commune.name} surveille nitrates${nitratesText ? ` (${nitratesText})` : ''}, pesticides, PFAS, métaux lourds (plomb, arsenic) et paramètres microbiologiques. ${nonConforme.length === 0 ? 'Aucun dépassement de seuil n\'a été relevé sur les derniers prélèvements.' : `Dépassements récents : ${Array.from(new Set(nonConforme.map((n) => n.parametreAnalyse))).slice(0, 3).join(', ')}.`}`,
         },
       },
       {
@@ -69,7 +91,7 @@ const QualiteEauCommune: React.FC = () => {
         name: `Où trouver le rapport officiel d'analyse de l'eau à ${commune.name} ?`,
         acceptedAnswer: {
           '@type': 'Answer',
-          text: `Le rapport officiel est publié par le Ministère de la Santé sur orobnat.sante.gouv.fr et via l'API Hub'Eau. InfoEau.fr agrège ces données pour ${commune.name} sur cette page.`,
+          text: `Le rapport officiel d'analyse de l'eau à ${commune.name} est publié par le Ministère de la Santé sur orobnat.sante.gouv.fr et exposé via l'API Hub'Eau. InfoEau.fr agrège ces données ARS sur cette page.`,
         },
       },
     ],
@@ -102,6 +124,25 @@ const QualiteEauCommune: React.FC = () => {
       longitude: commune.coordinates[0],
     },
   };
+
+  // Dataset schema — freshness + provenance signal for Google Dataset Search
+  const datasetSchema = hasData ? {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    name: `Contrôle sanitaire de l'eau potable à ${commune.name} (${commune.postcode})`,
+    description: `Résultats officiels du contrôle sanitaire de l'eau du robinet à ${commune.name} : conformité, polluants, dureté, nitrates. Source Hub'Eau / ARS.`,
+    url: `https://infoeau.fr${canonical}`,
+    keywords: [`qualité eau ${commune.name}`, `eau du robinet ${commune.name}`, 'contrôle sanitaire ARS', 'Hub\'Eau'],
+    creator: { '@type': 'Organization', name: 'Ministère de la Santé' },
+    publisher: { '@type': 'Organization', name: 'InfoEau.fr', url: 'https://infoeau.fr' },
+    license: 'https://www.etalab.gouv.fr/licence-ouverte-open-licence',
+    spatialCoverage: {
+      '@type': 'Place',
+      geo: { '@type': 'GeoCoordinates', latitude: commune.coordinates[1], longitude: commune.coordinates[0] },
+    },
+    ...(lastAnalysis && { temporalCoverage: `${lastAnalysis}/..`, dateModified: lastAnalysis }),
+    isBasedOn: 'https://hubeau.eaufrance.fr/page/api-qualite-eau-potable',
+  } : null;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
