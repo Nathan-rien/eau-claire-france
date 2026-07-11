@@ -455,9 +455,9 @@ export const seoData = {
   // === Pages classement, parcours carte, diagnostic prix ===
 
   classement: {
-    title: "Comparateur & classement des eaux en bouteille | InfoEau",
-    description: "Comparez et classez +50 eaux en bouteille (Evian, Contrex, Volvic, Hépar, Mont Roucous…) selon votre profil santé : composition minérale, nitrates, sodium, pH, prix.",
-    keywords: "comparateur eaux bouteille, classement eaux minérales, meilleure eau en bouteille, comparer Evian Contrex Hépar Volvic, composition minérale eau, score eau santé, top eau France, prix eau minérale",
+    title: "Classement des eaux minérales en bouteille 2026 (résidu sec, pH)",
+    description: "Classement des meilleures eaux en bouteille en France : résidu à sec, pH, calcium, magnésium, nitrates. Comparez Evian, Contrex, Hépar, Volvic, Mont Roucous et 50+ marques.",
+    keywords: "classement eau bouteille, classement des eaux minérales, classement eau résidu à sec, meilleur eau en bouteille, ph eau minérale comparatif, tableau comparatif eau minérale, classement eaux minérales résidus secs",
     canonical: "/classement",
     schemaData: {
       "@context": "https://schema.org",
