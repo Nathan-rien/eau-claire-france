@@ -14,6 +14,7 @@ const Carte = () => {
   
   return (
     <Layout>
+      <TrackMapView name=\"carte_france" />
       <SEOHead 
         title={seoData.carte.title}
         description={seoData.carte.description}

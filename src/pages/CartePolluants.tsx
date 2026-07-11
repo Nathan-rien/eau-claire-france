@@ -15,6 +15,7 @@ const CartePolluants = () => {
 
   return (
     <Layout>
+      <TrackMapView name=\"carte_polluants_france" />
       <SEOHead {...seoData.cartePolluants} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <section className="py-6 md:py-12 px-4">

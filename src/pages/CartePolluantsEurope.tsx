@@ -12,6 +12,7 @@ const CartePolluantsEurope = () => {
 
   return (
     <Layout>
+      <TrackMapView name=\"carte_polluants_europe" />
       <SEOHead
         {...seoData.cartePolluantsEurope}
       />
