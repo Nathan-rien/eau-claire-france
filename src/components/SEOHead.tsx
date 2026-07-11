@@ -17,6 +17,7 @@ interface SEOHeadProps {
   articleTags?: string[];
   articleAuthor?: string;
   rssUrl?: string;
+  noindex?: boolean;
 }
 
 const SEOHead: React.FC<SEOHeadProps> = ({
