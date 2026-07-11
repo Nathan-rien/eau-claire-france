@@ -126,9 +126,9 @@ export const seoData = {
   },
 
   quelleEauBoire: {
-    title: "Quelle eau boire ? Recommandations personnalisées",
-    description: "Obtenez des recommandations d'eaux en bouteille adaptées à votre profil : femme enceinte, sportif, problèmes rénaux. Conseils personnalisés et scientifiques.",
-    keywords: "quelle eau boire, recommandations eau personnalisées, eau femme enceinte, eau sportif, eau problèmes rénaux",
+    title: "Quelle eau boire ? Meilleure eau en bouteille selon votre profil",
+    description: "Quelle est la meilleure eau en bouteille pour vous ? Diagnostic personnalisé selon votre profil : femme enceinte, sportif, nourrisson, reins, hypertension. Résultat en 30 secondes.",
+    keywords: "quelle eau boire, meilleure eau en bouteille, meilleur eau bouteille santé, eau femme enceinte, eau sportif, eau nourrisson, eau hypertension",
     ogImage: "/images/og-recommandations.jpg",
     schemaData: {
       "@context": "https://schema.org",
