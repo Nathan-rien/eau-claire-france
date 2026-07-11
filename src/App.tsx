@@ -180,6 +180,7 @@ const App = () => {
               </Routes>
             </Suspense>
             <OndineChat />
+            <CookieConsent />
             </BrowserRouter>
             </TooltipProvider>
             </RegionProvider>
