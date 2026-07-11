@@ -92,6 +92,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         cityName = suggestions[0].city;
       }
       
+      trackEvent('address_search_submit', { commune: cityName, method: 'submit' });
       onCitySelect(cityName);
       setShowSuggestions(false);
     }
