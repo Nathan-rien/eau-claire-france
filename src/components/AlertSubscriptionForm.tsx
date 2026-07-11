@@ -88,6 +88,10 @@ const AlertSubscriptionForm = () => {
         });
       } else {
         setIsSubmitted(true);
+        trackEvent('alert_subscribe', {
+          commune: validated.data.commune,
+          method: 'form',
+        });
         toast({
           title: t('comp.alertForm.confirmed'),
           description: t('comp.alertForm.confirmedDesc'),
