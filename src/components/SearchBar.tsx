@@ -65,6 +65,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
     setQuery(suggestion.label);
     setSuggestions([]);
     setShowSuggestions(false);
+    trackEvent('address_search_select', {
+      commune: suggestion.city,
+      postcode: suggestion.postcode,
+      method: 'suggestion',
+    });
     onCitySelect(suggestion.city);
   };
 
