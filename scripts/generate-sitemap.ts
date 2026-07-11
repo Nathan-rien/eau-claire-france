@@ -65,7 +65,8 @@ const staticEntries: SitemapEntry[] = [
   // Qualité de l'eau par commune (hub)
   { path: "/qualite-eau", lastmod: today, changefreq: "weekly", priority: "0.85" },
   // Guides thématiques
-  { path: "/guide/eaux-riches-magnesium", lastmod: today, changefreq: "monthly", priority: "0.75" },
+ { path: "/guide/eaux-riches-magnesium", lastmod: today, changefreq: "monthly", priority: "0.75" },
+ { path: "/guide/ma-commune", lastmod: today, changefreq: "monthly", priority: "0.85" },
   // Actualités / alertes détaillées
   { path: "/actualites/pollution-manganese-vendee-juillet-2026", lastmod: "2026-07-09", changefreq: "monthly", priority: "0.7" },
   // Europe
