@@ -16,6 +16,7 @@ import SecurityHeaders from "@/components/SecurityHeaders";
 import { EnhancedSecurityService } from "@/services/enhancedSecurityService";
 import OndineChat from "@/components/OndineChat";
 import NewsTicker from "@/components/NewsTicker";
+import CookieConsent from "@/components/CookieConsent";
 
 // Lazy load all pages for code splitting
 const Index = React.lazy(() => import("./pages/Index"));
