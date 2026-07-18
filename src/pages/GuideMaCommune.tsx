@@ -84,6 +84,16 @@ const GuideMaCommune: React.FC = () => {
     })),
   };
 
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://infoeau.fr/' },
+      { '@type': 'ListItem', position: 2, name: 'Guides', item: 'https://infoeau.fr/guide/ma-commune' },
+      { '@type': 'ListItem', position: 3, name: 'Ma commune', item: 'https://infoeau.fr/guide/ma-commune' },
+    ],
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <SEOHead
@@ -91,8 +101,9 @@ const GuideMaCommune: React.FC = () => {
         description="Le guide complet pour comprendre l'eau du robinet dans votre commune : potabilité, polluants (PFAS, nitrates, plomb), dureté, goût, filtration. Données officielles Hub'Eau / ARS."
         keywords="qualité eau ma commune, eau du robinet commune, guide eau potable, PFAS commune, dureté eau commune, analyse eau ARS"
         canonical="/guide/ma-commune"
-        schemaData={faqSchema}
+        schemaData={[faqSchema, breadcrumbSchema]}
       />
+
       <Header />
       <main className="flex-1">
         {/* Hero */}
