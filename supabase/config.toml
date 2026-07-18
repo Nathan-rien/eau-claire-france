@@ -68,3 +68,6 @@ verify_jwt = false
 
 [functions.ondine-chat]
 verify_jwt = false
+
+[functions.submit-sitemap]
+verify_jwt = false
