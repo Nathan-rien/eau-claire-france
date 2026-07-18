@@ -47,6 +47,17 @@
 - [Alertes Europe](/alertes-europe): Alertes européennes.
 - [Prix Europe](/prix-eaux-europe): Comparaison des prix en Europe.
 
+## Guides & Actualités
+
+- [Guide « Ma commune »](/guide/ma-commune): 5 questions clés sur l'eau du robinet dans sa commune, recherche instantanée par code postal.
+- [Guide des eaux riches en magnésium](/guide/eaux-riches-magnesium): Comparatif des eaux minérales riches en magnésium, avec teneurs et bienfaits.
+- [Lettre de l'eau](/lettre-de-leau): Blog hebdomadaire. RSS : /lettre-de-leau/rss.xml.
+- [Alerte pollution manganèse Vendée (juillet 2026)](/actualites/pollution-manganese-vendee-juillet-2026): Actualité — épisode de pollution au manganèse en Vendée.
+
+## Pages commune (dynamiques)
+
+- Pattern : `/qualite-eau/:slug` — Fiche détaillée par commune française (conformité, dureté, nitrates, pesticides). Exemples : `/qualite-eau/paris`, `/qualite-eau/brest`, `/qualite-eau/lyon`, `/qualite-eau/marseille`, `/qualite-eau/toulouse`.
+
 ## Méthodologie
 
 - [Méthodologie](/methodologie): Méthodologie détaillée de scoring et d'analyse.
@@ -58,5 +69,6 @@
 
 - [Contact](/contact): Nous contacter.
 - [À propos](/a-propos): À propos d'InfoEau.fr.
+
 
 - Page contact : https://infoeau.fr/contact
