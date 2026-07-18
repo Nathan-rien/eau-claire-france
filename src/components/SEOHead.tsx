@@ -39,9 +39,19 @@ const SEOHead: React.FC<SEOHeadProps> = ({
 }) => {
   const siteUrl = "https://infoeau.fr";
   const fullTitle = title.includes('InfoEau') ? title : `${title} | InfoEau.fr - Qualité de l'eau potable en France`;
-  const canonicalUrl = canonical ? `${siteUrl}${canonical}` : (typeof window !== 'undefined' ? window.location.origin + window.location.pathname : siteUrl);
+  // Canonical must always point to the production domain infoeau.fr — never to
+  // preview/lovable.app hosts. When no explicit canonical prop is given, we
+  // build it from the current pathname but force the infoeau.fr origin.
+  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
+  const canonicalUrl = canonical ? `${siteUrl}${canonical}` : `${siteUrl}${currentPath}`;
   const ogImageUrl = ogImage?.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
   const schemas = schemaData ? (Array.isArray(schemaData) ? schemaData : [schemaData]) : [];
+
+  // Force noindex on non-production hosts (lovable.app previews) to avoid
+  // duplicate content between infoeau.fr and *.lovable.app in Google index.
+  const isNonProdHost = typeof window !== 'undefined' &&
+    /(^|\.)lovable\.app$/.test(window.location.hostname);
+  const effectiveNoindex = noindex || isNonProdHost;
 
   return (
     <Helmet>
