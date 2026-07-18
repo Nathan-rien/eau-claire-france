@@ -1,51 +1,53 @@
-## Diagnostic (vérifié via l'API Search Console)
+## Objectif
 
-J'ai inspecté un échantillon de 21 URLs de `sc-domain:infoeau.fr` pour comprendre les 65 pages non indexées. Voici l'état réel :
+Auditer et renforcer la visibilité du site sur **les moteurs classiques (Google/Bing) ET les IA conversationnelles** (ChatGPT Search, Perplexity, Claude, Gemini, Copilot, You.com, Arc Search, Brave), qui utilisent d'autres signaux que le SEO traditionnel.
 
-| Statut GSC | Signification | Exemples observés |
-|---|---|---|
-| ✅ **Submitted and indexed** | OK | `/`, `/carte`, `/qualite-eau`, `/prix-eaux`, `/comparatif-bouteilles`, `/quelle-eau-boire`, `/classement`, `/polluants`, `/sources-eau`, `/carte-europe`, `/actualites/pollution-manganese-vendee` |
-| 🟡 **Discovered – currently not indexed** | Google connaît l'URL mais a choisi de ne pas la crawler/indexer (signal qualité/priorité faible) | `/gout-eau`, `/guide/ma-commune`, `/alertes`, `/marque/cristaline` |
-| ⚪ **URL is unknown to Google** | Jamais découverte (sitemap trop récent : soumis le 10 juillet 2026) | `/lettre-de-leau`, `/qualite-eau/paris-75001`, `/marque/evian`, `/marque/mont-roucous`, `/cours-eau`, `/parcours-eau` |
+## 1. Audit (lecture seule)
 
-**Contexte chiffré** : 88 URLs soumises dans le sitemap, ~23 indexées, **65 en attente** — ce qui correspond exactement au chiffre remonté. Le sitemap indique aussi **1 erreur** (non détaillée par l'API).
+- Relancer un scan SEO (`seo--trigger_scan`) et lister les findings en cours.
+- Vérifier l'état actuel de :
+  - `index.html` → title, meta description, canonical, og:*, JSON-LD sitewide.
+  - `public/robots.txt` → autorisation explicite des bots IA (GPTBot, OAI-SearchBot, ChatGPT-User, PerplexityBot, Perplexity-User, ClaudeBot, Claude-SearchBot, Claude-User, Google-Extended, Applebot-Extended, Bytespider, Amazonbot, CCBot, DuckAssistBot, Meta-ExternalAgent, cohere-ai, YouBot, Bravebot).
+  - `public/llms.txt` → présence, format spec (H1 + résumé + sections `## Docs`, `## Pages`, `## Optional`), fraîcheur des liens vs `src/App.tsx`.
+  - `public/sitemap.xml` + `scripts/generate-sitemap.ts` → couverture des routes récentes (`/gout-eau`, `/guide/ma-commune`, `/guide/eaux-riches-magnesium`, `/actualites/pollution-manganese-vendee-juillet-2026`, communes, articles blog dynamiques).
+  - Schémas JSON-LD par page : `Article`, `NewsArticle`, `FAQPage`, `Dataset`, `BreadcrumbList`, `Organization`, `WebSite` + `SearchAction`.
+  - Search Console (via connecteur) : couverture, sitemaps soumis, erreurs.
+- Vérifier via Playwright headless que le HTML statique (sans JS) contient bien les meta essentielles — les crawlers IA n'exécutent pas tous le JS.
 
-## Causes racines
+## 2. Optimisations "AI-search"
 
-1. **Sitemap récent (8 jours)** : Google n'a pas encore crawlé la majorité des URLs. C'est le facteur principal — beaucoup de "URL unknown" se résoudront naturellement en 2-4 semaines.
-2. **Canonicals cassés sur `infoeau.lovable.app`** : `SEOHead.tsx` fait un fallback `window.location.origin + pathname` quand la prop `canonical` n'est pas fournie. Sur le domaine `lovable.app` (aussi vérifié dans GSC), les pages s'auto-canonisent vers `lovable.app` au lieu de `infoeau.fr` → duplicate content perçu par Google → pages "Discovered not indexed".
-3. **Contenu perçu comme faible/dupliqué** sur `/alertes`, `/marque/cristaline`, `/gout-eau` : peu de contenu texte unique côté SSR (SPA React → crawlers non-JS voient une coquille vide).
-4. **Maillage interne faible** vers `/lettre-de-leau`, `/guide/ma-commune`, `/marque/*` et les pages commune.
+Renforcer les signaux spécifiques aux IA :
 
-## Plan d'action
+- **`robots.txt`** : ajouter des blocs `User-agent` explicites `Allow: /` pour les 15+ crawlers IA listés, plus `Sitemap:` + référence `llms.txt`.
+- **`llms.txt` / `llms-full.txt`** :
+  - Aligner sur les nouvelles routes (guides, actus, gout-eau, communes phares).
+  - Créer un `llms-full.txt` optionnel avec un résumé consolidé du contenu (utilisé par certains crawlers pour ingestion).
+- **Schémas Schema.org additionnels** :
+  - `WebSite` + `SearchAction` (SiteLinks Searchbox) dans `index.html`.
+  - `BreadcrumbList` sur les pages guides / commune / article.
+  - `Dataset` sur `/carte`, `/carte-polluants`, `/prix-eaux` (recherché par Google Dataset et Perplexity).
+  - `SpeakableSpecification` sur les FAQ (Assistants vocaux).
+- **Head par route** : vérifier que `react-helmet-async` couvre `og:url`, `canonical`, `og:type=article` sur les articles/guides.
+- **Ancres et FAQ** : compléter les Q/R en langage naturel (les IA privilégient ce format).
 
-### 1. Canonical toujours vers `infoeau.fr` (correction bug)
-Modifier `src/components/SEOHead.tsx` : quand `canonical` n'est pas fourni, utiliser `siteUrl + window.location.pathname` (jamais `window.location.origin`). Ça neutralise le duplicate infoeau.fr ↔ lovable.app pour toutes les pages.
+## 3. Vérification & suivi
 
-### 2. Ajouter `noindex` au domaine preview lovable.app
-Dans `SEOHead.tsx`, si `window.location.hostname` = `infoeau.lovable.app` ou `id-preview--*.lovable.app`, forcer `noindex, follow`. Empêche définitivement Google d'indexer les doublons.
+- Rejouer `submit-sitemap` (edge function déjà en place) après les modifications.
+- Utiliser l'inspection URL Search Console sur 5 pages clés (home, `/gout-eau`, `/guide/ma-commune`, `/qualite-eau/brest`, article Vendée).
+- Marquer les findings SEO corrigés via `seo_chat--update_findings`.
+- Fournir au user un mini tableau récapitulatif : bot par bot (Google, Bing, GPTBot, PerplexityBot, ClaudeBot, Google-Extended, Applebot-Extended…) → statut autorisé + signal envoyé (sitemap, llms.txt, JSON-LD).
 
-### 3. Corriger l'erreur sitemap et compléter les URLs manquantes
-- Ajouter au `scripts/generate-sitemap.ts` les routes actuellement absentes mais qui existent : `/bouteilles`, `/composition-europe`, blog articles publiés (déjà présent — vérifier fetch).
-- Vérifier que toutes les URLs listées dans `sitemap.xml` renvoient un `200` (pas de `/marque/*` orphelin).
+## Livrables
 
-### 4. Renforcer le contenu SSR / statique des pages à faible signal
-Pour les 4 pages "Discovered – not indexed" (`/gout-eau`, `/guide/ma-commune`, `/alertes`, `/marque/cristaline`), ajouter dans `index.html` un noscript ou du texte visible lors du rendu initial (H1 + intro + 2-3 paragraphes) pour que les crawlers non-JS aient du contenu à indexer.
-
-### 5. Améliorer le maillage interne
-- Depuis la home et `/qualite-eau` : liens vers `/lettre-de-leau`, `/gout-eau`, `/guide/ma-commune`, `/alertes`, `/marque/{evian,cristaline,volvic,vittel,perrier}` via `InternalLinkHub` déjà en place → ajouter ces cibles.
-- Depuis le footer : bloc "Marques populaires" avec les 8 pages marque.
-
-### 6. Demander l'indexation manuelle des 10 pages prioritaires
-Via l'API Search Console (`urlNotifications:publish` n'est plus disponible depuis 2023) → alternative : re-soumettre le sitemap une fois les corrections déployées, ce qui accélère le crawl.
-
-### 7. Vérification post-déploiement
-Après publish, relancer `urlInspection` sur 5 URLs cibles pour confirmer que `googleCanonical` = `https://infoeau.fr/...` et que le statut passe de "URL unknown" à "Crawled" sous 7-14 jours.
+- `public/robots.txt` mis à jour (bots IA explicites).
+- `public/llms.txt` + `public/llms-full.txt` rafraîchis.
+- `index.html` : JSON-LD `WebSite`+`SearchAction` ajouté.
+- Schémas `BreadcrumbList` / `Dataset` sur pages ciblées.
+- Sitemap à jour + resoumis à Search Console.
+- Rapport final dans le chat avec matrice bots ↔ signaux ↔ statut.
 
 ## Détails techniques
 
-- **Fichiers touchés** : `src/components/SEOHead.tsx` (2 modifs), `scripts/generate-sitemap.ts` (ajout routes), `index.html` (aucun changement — canonical déjà OK), pages "thin" à enrichir en SSR statique.
-- **Ce qui NE sera PAS fait** : suppression de la propriété `https://infoeau.lovable.app/` de GSC (à la main dans l'UI si souhaité), ni ajout de SSR global (hors scope — Vite CSR conservé, on ne fait qu'ajouter du fallback statique).
-- **Délai attendu** : correctifs actifs immédiatement, mais Google recrawle sous 7 à 21 jours. Les pages "URL unknown" apparaîtront progressivement.
-
-Souhaites-tu que je démarre l'implémentation ?
+- Les crawlers IA (GPTBot, PerplexityBot, ClaudeBot) ne lisent **pas** le JS : toute donnée critique doit être dans le HTML statique `index.html` ou pré-rendue. `react-helmet-async` couvre uniquement Googlebot.
+- `llms.txt` respecte strictement la spec https://llmstxt.org (H1 unique, `>` résumé, sections `##` avec listes de liens).
+- Les `Allow: /` par User-agent doivent précéder tout `Disallow` par bot pour être respectés.

@@ -44,6 +44,79 @@ User-agent: Applebot-Extended
 Allow: /
 Crawl-delay: 2
 
+# OpenAI search index (distinct from GPTBot training crawler)
+User-agent: OAI-SearchBot
+Allow: /
+Crawl-delay: 2
+
+# Anthropic (Claude): training + search + on-demand user fetch
+User-agent: ClaudeBot
+Allow: /
+Crawl-delay: 2
+
+User-agent: Claude-SearchBot
+Allow: /
+Crawl-delay: 2
+
+User-agent: Claude-User
+Allow: /
+Crawl-delay: 2
+
+# Google Gemini / AI Overviews (separate from Googlebot)
+User-agent: Google-Extended
+Allow: /
+Crawl-delay: 2
+
+# Perplexity on-demand user fetch
+User-agent: Perplexity-User
+Allow: /
+Crawl-delay: 2
+
+# DuckDuckGo Assist
+User-agent: DuckAssistBot
+Allow: /
+Crawl-delay: 2
+
+# Meta AI (Llama)
+User-agent: Meta-ExternalAgent
+Allow: /
+Crawl-delay: 2
+
+User-agent: Meta-ExternalFetcher
+Allow: /
+Crawl-delay: 2
+
+# Amazon (Alexa / Rufus / Nova)
+User-agent: Amazonbot
+Allow: /
+Crawl-delay: 2
+
+# ByteDance (Doubao / TikTok search)
+User-agent: Bytespider
+Allow: /
+Crawl-delay: 2
+
+# Common Crawl (used by many LLMs as training corpus)
+User-agent: CCBot
+Allow: /
+Crawl-delay: 2
+
+# Cohere
+User-agent: cohere-ai
+Allow: /
+Crawl-delay: 2
+
+# You.com
+User-agent: YouBot
+Allow: /
+Crawl-delay: 2
+
+# Mistral
+User-agent: MistralAI-User
+Allow: /
+Crawl-delay: 2
+
+
 # Block sensitive areas and admin access
 Disallow: /login
 Disallow: /dashboard
