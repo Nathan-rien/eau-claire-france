@@ -17,6 +17,7 @@ import {
 
 export default function LettreEauArticle() {
   const { slug } = useParams<{ slug: string }>();
+  const { t, language } = useLanguage();
   const [article, setArticle] = useState<BlogArticle | null>(null);
   const [related, setRelated] = useState<BlogArticle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,23 +54,23 @@ export default function LettreEauArticle() {
     return (
       <Layout>
         <div className="container mx-auto max-w-2xl py-20 px-4 text-center">
-          <h1 className="text-2xl font-bold mb-3">Article introuvable</h1>
-          <p className="text-muted-foreground mb-6">Cet article n'existe pas ou a été retiré.</p>
+          <h1 className="text-2xl font-bold mb-3">{t('article.notFound.title')}</h1>
+          <p className="text-muted-foreground mb-6">{t('article.notFound.desc')}</p>
           <Link to="/lettre-de-leau">
-            <Button>Voir tous les articles</Button>
+            <Button>{t('article.notFound.cta')}</Button>
           </Link>
         </div>
       </Layout>
     );
   }
 
-  const date = new Date(article.published_at).toLocaleDateString("fr-FR", {
+  const date = new Date(article.published_at).toLocaleDateString(t('article.dateLocale'), {
     day: "numeric", month: "long", year: "numeric",
   });
   const canonical = `/lettre-de-leau/${article.slug}`;
   const categoryLabel = CATEGORY_LABELS[article.category] ?? article.category;
   const wordCount = (article.content_md || "").trim().split(/\s+/).length;
-  const keywordList = [categoryLabel, "eau potable", "qualité de l'eau", "InfoEau"];
+  const keywordList = [categoryLabel, t('article.keyword.water'), t('article.keyword.quality'), "InfoEau"];
 
   return (
     <Layout>
