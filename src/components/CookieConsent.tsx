@@ -46,6 +46,7 @@ export function getConsent(): Choice | null {
 }
 
 const CookieConsent = () => {
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -66,13 +67,13 @@ const CookieConsent = () => {
     <div
       role="dialog"
       aria-live="polite"
-      aria-label="Consentement aux cookies"
+      aria-label={t('consent.ariaLabel')}
       className="fixed inset-x-3 bottom-3 z-[9999] md:inset-x-auto md:right-4 md:bottom-4 md:max-w-md"
     >
       <div className="relative rounded-xl border bg-background/95 backdrop-blur shadow-lg p-4">
         <button
           type="button"
-          aria-label="Fermer"
+          aria-label={t('consent.close')}
           onClick={() => handle("denied")}
           className="absolute right-2 top-2 rounded-md p-1 text-muted-foreground hover:text-foreground"
         >
@@ -81,12 +82,11 @@ const CookieConsent = () => {
         <div className="flex items-start gap-3">
           <Cookie className="h-5 w-5 mt-0.5 text-primary shrink-0" />
           <div className="text-sm text-foreground">
-            <p className="font-semibold mb-1">Votre vie privée</p>
+            <p className="font-semibold mb-1">{t('consent.title')}</p>
             <p className="text-muted-foreground">
-              Nous utilisons des cookies de mesure d'audience (Google Analytics) pour améliorer InfoEau.fr. Vous
-              pouvez accepter, refuser, ou modifier votre choix depuis la page{" "}
+              {t('consent.body')}{" "}
               <Link to="/rgpd" className="underline hover:text-foreground">
-                RGPD
+                {t('consent.rgpdLink')}
               </Link>
               .
             </p>
@@ -94,10 +94,10 @@ const CookieConsent = () => {
         </div>
         <div className="mt-3 flex flex-wrap gap-2 justify-end">
           <Button variant="outline" size="sm" onClick={() => handle("denied")}>
-            Refuser
+            {t('consent.decline')}
           </Button>
           <Button size="sm" onClick={() => handle("granted")}>
-            Accepter
+            {t('consent.accept')}
           </Button>
         </div>
       </div>
