@@ -84,7 +84,7 @@ export default function LettreEauArticle() {
         articleModifiedTime={article.published_at}
         articleSection={categoryLabel}
         articleTags={keywordList}
-        articleAuthor="Rédaction InfoEau"
+        articleAuthor={t('article.author')}
         keywords={keywordList.join(", ")}
         schemaData={[
           {
