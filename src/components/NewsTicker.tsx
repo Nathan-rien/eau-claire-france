@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AlertTriangle, CheckCircle2, X } from 'lucide-react';
 import { SITE_ALERTS, type SiteAlert } from '@/data/alerts';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const DISMISS_PREFIX = 'ticker-dismissed-';
 
 const NewsTicker = () => {
+  const { t } = useLanguage();
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
