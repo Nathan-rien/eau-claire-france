@@ -1963,6 +1963,13 @@ export const translations = {
     'europeAlerts.noExceedance': 'No significant exceedance identified.',
     'europeAlerts.exceedance': 'exceedance',
     'europeAlerts.limit': 'limit',
+    'europeAlerts.pesticides': 'Pesticides',
+    'europeAlerts.lead': 'Lead',
+    'europeAlerts.bacteria': 'Bacteria',
+    'europeAlerts.score': 'Score',
+    'alerts.vendee.badge': 'Resolved',
+    'alerts.vendee.title': 'Manganese pollution in Vendée — Moulin Papon plant (July 2026)',
+    'alerts.vendee.description': 'Factual timeline 8→9 July 2026, affected communes, alert lifted by ARS and Vendée Eau. Read the full article →',
 
     // Europe Prices
     'europePrices.title': 'Tap water prices — Europe',
