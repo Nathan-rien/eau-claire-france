@@ -9,8 +9,10 @@ import { Newspaper, Calendar, FileText, Bell, ArrowRight } from "lucide-react";
 import { fetchArticles, CATEGORY_LABELS, type BlogArticle } from "@/services/blogApi";
 import lettreEauCover from "@/assets/lettre-eau-cover.jpg";
 import InternalLinkHub from "@/components/InternalLinkHub";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function LettreEau() {
+  const { t } = useLanguage();
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
@@ -103,21 +105,20 @@ export default function LettreEau() {
               <div className="lg:col-span-3">
                 <div className="inline-flex flex-wrap items-center gap-2 text-xs md:text-sm font-semibold uppercase tracking-widest text-blue-600 mb-4">
                   <Newspaper className="w-4 h-4" />
-                  <span>Lettre de l'eau</span>
+                  <span>{t('lettre.badge')}</span>
                   <span className="text-muted-foreground/60">·</span>
                   <span className="text-muted-foreground font-medium normal-case tracking-normal">
-                    Le magazine d'InfoEau
+                    {t('lettre.tagline')}
                   </span>
                 </div>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 tracking-tight leading-[1.1]">
-                  Tout ce qu'il faut savoir sur{" "}
+                  {t('lettre.h1.part1')}{" "}
                   <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                    la qualité de l'eau
+                    {t('lettre.h1.part2')}
                   </span>
                 </h1>
                 <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-                  Enquêtes, scandales, décisions réglementaires, alertes sanitaires : chaque article décrypte
-                  une actualité récente sur l'eau en France.
+                  {t('lettre.intro')}
                 </p>
 
                 {/* Stats inline */}
@@ -125,18 +126,19 @@ export default function LettreEau() {
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <FileText className="w-4 h-4 text-blue-600" />
                     <span>
-                      <strong className="text-foreground">{articles.length}</strong> article{articles.length > 1 ? "s" : ""}
+                      <strong className="text-foreground">{articles.length}</strong>{" "}
+                      {articles.length > 1 ? t('lettre.stat.articles.plural') : t('lettre.stat.articles')}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Calendar className="w-4 h-4 text-green-600" />
                     <span>
-                      Nouvel article <strong className="text-foreground">toutes les semaines</strong>
+                      {t('lettre.stat.weekly')} <strong className="text-foreground">{t('lettre.stat.weekly.strong')}</strong>
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Bell className="w-4 h-4 text-orange-500" />
-                    <span>{Math.max(categories.length - 1, 0)} thématiques couvertes</span>
+                    <span>{Math.max(categories.length - 1, 0)} {t('lettre.stat.topics')}</span>
                   </div>
                 </div>
               </div>
@@ -146,7 +148,7 @@ export default function LettreEau() {
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/5 aspect-[4/3] lg:aspect-[4/5]">
                   <img
                     src={lettreEauCover}
-                    alt="Verre d'eau cristallin éclairé par la lumière naturelle — Lettre de l'eau"
+                    alt={t('lettre.coverAlt')}
                     width={1536}
                     height={864}
                     className="w-full h-full object-cover"
@@ -181,12 +183,12 @@ export default function LettreEau() {
                       onClick={() => setFilter(c)}
                       className="rounded-full"
                     >
-                      {c === "all" ? "Tous les articles" : CATEGORY_LABELS[c] ?? c}
+                      {c === "all" ? t('lettre.filter.all') : CATEGORY_LABELS[c] ?? c}
                     </Button>
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground whitespace-nowrap">
-                  {filtered.length} article{filtered.length > 1 ? "s" : ""}
+                  {filtered.length} {filtered.length > 1 ? t('lettre.count.suffix.plural') : t('lettre.count.suffix')}
                 </p>
               </div>
             )}
@@ -209,7 +211,7 @@ export default function LettreEau() {
               <div className="text-center py-20 border-2 border-dashed border-border rounded-2xl">
                 <Newspaper className="w-12 h-12 mx-auto text-muted-foreground/40 mb-4" />
                 <p className="text-muted-foreground">
-                  Aucun article pour le moment. Les premières publications arrivent très bientôt.
+                  {t('lettre.empty')}
                 </p>
               </div>
             ) : (
@@ -233,7 +235,7 @@ export default function LettreEau() {
                   <>
                     {isUnfiltered && bentoArticles.length > 0 && (
                       <h2 className="text-2xl font-bold text-foreground mb-6 tracking-tight">
-                        Tous les articles
+                        {t('lettre.section.all')}
                       </h2>
                     )}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -250,8 +252,8 @@ export default function LettreEau() {
 
         {/* Maillage interne — pages clés */}
         <InternalLinkHub
-          heading="Approfondir le sujet"
-          description="Ressources et outils complémentaires aux articles de la Lettre de l'eau."
+          heading={t('lettre.hub.heading')}
+          description={t('lettre.hub.description')}
           groups={["explore", "decide"]}
           variant="muted"
         />
@@ -269,14 +271,13 @@ export default function LettreEau() {
               <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
                 <div className="md:col-span-2">
                   <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest mb-3 opacity-90">
-                    <Bell className="w-4 h-4" /> Restez informé
+                    <Bell className="w-4 h-4" /> {t('lettre.cta.tag')}
                   </div>
                   <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 tracking-tight">
-                    Recevez les alertes qualité de votre eau
+                    {t('lettre.cta.title')}
                   </h2>
                   <p className="text-white/90 text-base md:text-lg max-w-2xl">
-                    Soyez prévenu dès qu'un polluant dépasse les seuils dans votre commune ou
-                    dès qu'un nouvel article est publié.
+                    {t('lettre.cta.body')}
                   </p>
                 </div>
                 <div className="md:text-right">
@@ -286,7 +287,7 @@ export default function LettreEau() {
                       variant="secondary"
                       className="bg-white text-blue-600 hover:bg-white/90 font-semibold shadow-md"
                     >
-                      Activer les alertes
+                      {t('lettre.cta.button')}
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>
