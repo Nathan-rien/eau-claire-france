@@ -10,12 +10,14 @@ import { Button } from "@/components/ui/button";
 import BlogInfographic from "@/components/blog/BlogInfographic";
 import BlogCard from "@/components/blog/BlogCard";
 import InternalLinkHub from "@/components/InternalLinkHub";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   fetchArticleBySlug, fetchArticles, CATEGORY_LABELS, type BlogArticle,
 } from "@/services/blogApi";
 
 export default function LettreEauArticle() {
   const { slug } = useParams<{ slug: string }>();
+  const { t, language } = useLanguage();
   const [article, setArticle] = useState<BlogArticle | null>(null);
   const [related, setRelated] = useState<BlogArticle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,23 +54,23 @@ export default function LettreEauArticle() {
     return (
       <Layout>
         <div className="container mx-auto max-w-2xl py-20 px-4 text-center">
-          <h1 className="text-2xl font-bold mb-3">Article introuvable</h1>
-          <p className="text-muted-foreground mb-6">Cet article n'existe pas ou a été retiré.</p>
+          <h1 className="text-2xl font-bold mb-3">{t('article.notFound.title')}</h1>
+          <p className="text-muted-foreground mb-6">{t('article.notFound.desc')}</p>
           <Link to="/lettre-de-leau">
-            <Button>Voir tous les articles</Button>
+            <Button>{t('article.notFound.cta')}</Button>
           </Link>
         </div>
       </Layout>
     );
   }
 
-  const date = new Date(article.published_at).toLocaleDateString("fr-FR", {
+  const date = new Date(article.published_at).toLocaleDateString(t('article.dateLocale'), {
     day: "numeric", month: "long", year: "numeric",
   });
   const canonical = `/lettre-de-leau/${article.slug}`;
   const categoryLabel = CATEGORY_LABELS[article.category] ?? article.category;
   const wordCount = (article.content_md || "").trim().split(/\s+/).length;
-  const keywordList = [categoryLabel, "eau potable", "qualité de l'eau", "InfoEau"];
+  const keywordList = [categoryLabel, t('article.keyword.water'), t('article.keyword.quality'), "InfoEau"];
 
   return (
     <Layout>
@@ -82,7 +84,7 @@ export default function LettreEauArticle() {
         articleModifiedTime={article.published_at}
         articleSection={categoryLabel}
         articleTags={keywordList}
-        articleAuthor="Rédaction InfoEau"
+        articleAuthor={t('article.author')}
         keywords={keywordList.join(", ")}
         schemaData={[
           {
@@ -96,10 +98,10 @@ export default function LettreEauArticle() {
             articleSection: categoryLabel,
             keywords: keywordList.join(", "),
             wordCount,
-            inLanguage: "fr-FR",
+            inLanguage: language === 'en' ? 'en-US' : 'fr-FR',
             author: {
               "@type": "Organization",
-              name: "Rédaction InfoEau",
+              name: t('article.author'),
               url: "https://infoeau.fr",
             },
             publisher: {
@@ -113,8 +115,8 @@ export default function LettreEauArticle() {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Accueil", item: "https://infoeau.fr/" },
-              { "@type": "ListItem", position: 2, name: "Lettre de l'eau", item: "https://infoeau.fr/lettre-de-leau" },
+              { "@type": "ListItem", position: 1, name: t('common.breadcrumb.home'), item: "https://infoeau.fr/" },
+              { "@type": "ListItem", position: 2, name: t('article.back'), item: "https://infoeau.fr/lettre-de-leau" },
               { "@type": "ListItem", position: 3, name: article.title, item: `https://infoeau.fr${canonical}` },
             ],
           },
@@ -126,14 +128,14 @@ export default function LettreEauArticle() {
             to="/lettre-de-leau"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6"
           >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Lettre de l'eau
+            <ArrowLeft className="w-4 h-4 mr-1" /> {t('article.back')}
           </Link>
 
           <div className="flex items-center gap-3 mb-4 text-sm text-muted-foreground">
             <Badge variant="secondary">{CATEGORY_LABELS[article.category] ?? article.category}</Badge>
             <time dateTime={article.published_at}>{date}</time>
             <span className="flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" aria-hidden="true" /> {article.reading_time_min} min de lecture
+              <Clock className="w-3.5 h-3.5" aria-hidden="true" /> {article.reading_time_min} {t('article.readingTime')}
             </span>
           </div>
 
@@ -172,7 +174,7 @@ export default function LettreEauArticle() {
 
           {article.sources?.length > 0 && (
             <section className="mt-10 pt-6 border-t border-border">
-              <h2 className="text-base font-semibold mb-3">Sources</h2>
+              <h2 className="text-base font-semibold mb-3">{t('article.sources')}</h2>
               <ul className="space-y-2">
                 {article.sources.map((s, i) => (
                   <li key={i}>
@@ -192,13 +194,13 @@ export default function LettreEauArticle() {
           )}
 
           <p className="mt-6 text-xs text-muted-foreground italic">
-            Article rédigé avec l'aide de l'intelligence artificielle à partir de sources publiques, et publié par la rédaction d'InfoEau.fr.
+            {t('article.aiDisclaimer')}
           </p>
         </div>
 
         <InternalLinkHub
-          heading="Aller plus loin"
-          description="Outils et cartes pour vérifier la qualité de l'eau près de chez vous."
+          heading={t('article.hub.heading')}
+          description={t('article.hub.description')}
           groups={["explore", "decide"]}
           variant="muted"
         />
@@ -206,7 +208,7 @@ export default function LettreEauArticle() {
         {related.length > 0 && (
           <section className="bg-muted/20 py-12 px-4 border-t border-border">
             <div className="container mx-auto max-w-6xl">
-              <h2 className="text-xl md:text-2xl font-bold mb-6">À lire aussi</h2>
+              <h2 className="text-xl md:text-2xl font-bold mb-6">{t('article.alsoRead')}</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {related.map((a) => (
                   <BlogCard key={a.id} article={a} variant="compact" />
