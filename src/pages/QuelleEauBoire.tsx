@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -66,6 +66,11 @@ const QuelleEauBoire: React.FC<QuelleEauBoireProps> = ({ initialMode }) => {
   const [quickProfile, setQuickProfile] = useState<string | null>(null);
   const [quickObjective, setQuickObjective] = useState<string | null>(null);
   const { composition, catalog, mdd: mddData, loading, error } = useBottleData();
+
+  useEffect(() => {
+    setMode(initialMode ?? null);
+    setShowResults(false);
+  }, [initialMode]);
 
   const handleProfileToggle = (profileId: string) => {
     setSelectedProfiles(prev => 
