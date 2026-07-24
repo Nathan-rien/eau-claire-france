@@ -98,10 +98,10 @@ export default function LettreEauArticle() {
             articleSection: categoryLabel,
             keywords: keywordList.join(", "),
             wordCount,
-            inLanguage: "fr-FR",
+            inLanguage: language === 'en' ? 'en-US' : 'fr-FR',
             author: {
               "@type": "Organization",
-              name: "Rédaction InfoEau",
+              name: t('article.author'),
               url: "https://infoeau.fr",
             },
             publisher: {
@@ -115,8 +115,8 @@ export default function LettreEauArticle() {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Accueil", item: "https://infoeau.fr/" },
-              { "@type": "ListItem", position: 2, name: "Lettre de l'eau", item: "https://infoeau.fr/lettre-de-leau" },
+              { "@type": "ListItem", position: 1, name: t('common.breadcrumb.home'), item: "https://infoeau.fr/" },
+              { "@type": "ListItem", position: 2, name: t('article.back'), item: "https://infoeau.fr/lettre-de-leau" },
               { "@type": "ListItem", position: 3, name: article.title, item: `https://infoeau.fr${canonical}` },
             ],
           },
