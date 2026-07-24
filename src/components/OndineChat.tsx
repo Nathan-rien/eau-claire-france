@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { X, Send, Droplets, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const ChatLink = ({ href, children, onNavigate, ...props }: any) => {
   const isInternal = href?.startsWith('/');
@@ -20,10 +21,7 @@ type Msg = { role: 'user' | 'assistant'; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ondine-chat`;
 
-const WELCOME_MESSAGE: Msg = {
-  role: 'assistant',
-  content: "Bonjour ! 💧 Je suis **Ondine**, votre assistante eau.\n\nPosez-moi vos questions sur :\n- La **qualité de l'eau du robinet** de votre commune\n- La **composition** des eaux en bouteille\n- Les **prix** comparés\n- Les **polluants** et seuils réglementaires\n- Quelle eau choisir selon votre **profil santé**",
-};
+const WELCOME_FR = "Bonjour ! 💧 Je suis **Ondine**, votre assistante eau.\n\nPosez-moi vos questions sur :\n- La **qualité de l'eau du robinet** de votre commune\n- La **composition** des eaux en bouteille\n- Les **prix** comparés\n- Les **polluants** et seuils réglementaires\n- Quelle eau choisir selon votre **profil santé**";
 
 // Simple commune detection in user text
 function detectCommune(text: string): string | undefined {
@@ -40,14 +38,21 @@ function detectCommune(text: string): string | undefined {
 }
 
 const OndineChat: React.FC = () => {
+  const { t } = useLanguage();
+  const welcomeMessage = useMemo<Msg>(() => ({ role: 'assistant', content: t('ondine.welcome') }), [t]);
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Msg[]>([WELCOME_MESSAGE]);
+  const [messages, setMessages] = useState<Msg[]>([welcomeMessage]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [lastMessageId, setLastMessageId] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const lastMessageRef = useRef<HTMLDivElement>(null);
+
+  // Refresh welcome message when language changes and no user has replied yet
+  useEffect(() => {
+    setMessages(prev => (prev.length <= 1 ? [welcomeMessage] : prev));
+  }, [welcomeMessage]);
 
   useEffect(() => {
     if (lastMessageRef.current) {
@@ -86,7 +91,7 @@ const OndineChat: React.FC = () => {
     };
 
     try {
-      const allMessages = [...messages.filter(m => m !== WELCOME_MESSAGE || messages.indexOf(m) > 0), userMsg]
+      const allMessages = [...messages.filter(m => m !== welcomeMessage || messages.indexOf(m) > 0), userMsg]
         .map(m => ({ role: m.role, content: m.content }));
 
       // Only send last 20 messages for context window
@@ -102,8 +107,8 @@ const OndineChat: React.FC = () => {
       });
 
       if (!resp.ok) {
-        const err = await resp.json().catch(() => ({ error: 'Erreur réseau' }));
-        upsertAssistant(`⚠️ ${err.error || 'Une erreur est survenue. Réessayez.'}`);
+        const err = await resp.json().catch(() => ({ error: t('ondine.networkError') }));
+        upsertAssistant(`⚠️ ${err.error || t('ondine.genericError')}`);
         setIsLoading(false);
         return;
       }
@@ -139,11 +144,11 @@ const OndineChat: React.FC = () => {
       }
     } catch (e) {
       console.error('Ondine chat error:', e);
-      upsertAssistant("⚠️ Impossible de me connecter pour le moment. Réessayez dans quelques instants.");
+      upsertAssistant(t('ondine.connectionError'));
     }
 
     setIsLoading(false);
-  }, [input, isLoading, messages]);
+  }, [input, isLoading, messages, t, welcomeMessage]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -158,12 +163,12 @@ const OndineChat: React.FC = () => {
       {!isOpen && (
         <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
           <span className="bg-background text-foreground text-xs font-medium px-3 py-1.5 rounded-full shadow-md border border-border animate-in fade-in slide-in-from-bottom-2 duration-500">
-            Une question ?
+            {t('ondine.badge')}
           </span>
           <button
             onClick={() => setIsOpen(true)}
             className="w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center hover:scale-110"
-            aria-label="Ouvrir le chat Ondine"
+            aria-label={t('ondine.open')}
           >
             <Droplets className="w-6 h-6" />
           </button>
@@ -180,12 +185,12 @@ const OndineChat: React.FC = () => {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-sm">Ondine</h3>
-              <p className="text-xs opacity-80">Assistante eau • InfoEau.fr</p>
+              <p className="text-xs opacity-80">{t('ondine.role')}</p>
             </div>
             <button
               onClick={() => setIsOpen(false)}
               className="w-8 h-8 rounded-full hover:bg-primary-foreground/20 flex items-center justify-center transition-colors"
-              aria-label="Fermer le chat"
+              aria-label={t('ondine.close')}
             >
               <X className="w-4 h-4" />
             </button>
@@ -237,7 +242,7 @@ const OndineChat: React.FC = () => {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Posez votre question sur l'eau..."
+                placeholder={t('ondine.placeholder')}
                 rows={1}
                 className="flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 max-h-24"
                 disabled={isLoading}
@@ -246,7 +251,7 @@ const OndineChat: React.FC = () => {
                 onClick={sendMessage}
                 disabled={!input.trim() || isLoading}
                 className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-50 hover:bg-primary/90 transition-colors shrink-0"
-                aria-label="Envoyer"
+                aria-label={t('ondine.send')}
               >
                 <Send className="w-4 h-4" />
               </button>

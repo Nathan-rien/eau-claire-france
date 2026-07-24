@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AlertTriangle, CheckCircle2, X } from 'lucide-react';
 import { SITE_ALERTS, type SiteAlert } from '@/data/alerts';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const DISMISS_PREFIX = 'ticker-dismissed-';
 
 const NewsTicker = () => {
+  const { t } = useLanguage();
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -57,7 +59,7 @@ const NewsTicker = () => {
     <div
       className="sticky top-0 z-[100] w-full bg-slate-900 text-white shadow-sm hidden md:block"
       role="region"
-      aria-label="Alerte d'actualité"
+      aria-label={t('ticker.ariaLabel')}
     >
       <div className="relative flex items-center h-9 sm:h-10">
         {/* Static status icon */}
@@ -89,7 +91,7 @@ const NewsTicker = () => {
           type="button"
           onClick={handleDismiss}
           className="flex items-center justify-center px-3 shrink-0 border-l border-white/10 h-full hover:bg-white/10 transition-colors"
-          aria-label="Fermer l'alerte"
+          aria-label={t('ticker.close')}
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
