@@ -91,7 +91,7 @@ const OndineChat: React.FC = () => {
     };
 
     try {
-      const allMessages = [...messages.filter(m => m !== WELCOME_MESSAGE || messages.indexOf(m) > 0), userMsg]
+      const allMessages = [...messages.filter(m => m !== welcomeMessage || messages.indexOf(m) > 0), userMsg]
         .map(m => ({ role: m.role, content: m.content }));
 
       // Only send last 20 messages for context window
