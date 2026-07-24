@@ -144,11 +144,11 @@ const OndineChat: React.FC = () => {
       }
     } catch (e) {
       console.error('Ondine chat error:', e);
-      upsertAssistant("⚠️ Impossible de me connecter pour le moment. Réessayez dans quelques instants.");
+      upsertAssistant(t('ondine.connectionError'));
     }
 
     setIsLoading(false);
-  }, [input, isLoading, messages]);
+  }, [input, isLoading, messages, t, welcomeMessage]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
