@@ -185,12 +185,12 @@ const OndineChat: React.FC = () => {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-sm">Ondine</h3>
-              <p className="text-xs opacity-80">Assistante eau • InfoEau.fr</p>
+              <p className="text-xs opacity-80">{t('ondine.role')}</p>
             </div>
             <button
               onClick={() => setIsOpen(false)}
               className="w-8 h-8 rounded-full hover:bg-primary-foreground/20 flex items-center justify-center transition-colors"
-              aria-label="Fermer le chat"
+              aria-label={t('ondine.close')}
             >
               <X className="w-4 h-4" />
             </button>
