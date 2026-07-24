@@ -91,7 +91,7 @@ const NewsTicker = () => {
           type="button"
           onClick={handleDismiss}
           className="flex items-center justify-center px-3 shrink-0 border-l border-white/10 h-full hover:bg-white/10 transition-colors"
-          aria-label="Fermer l'alerte"
+          aria-label={t('ticker.close')}
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
