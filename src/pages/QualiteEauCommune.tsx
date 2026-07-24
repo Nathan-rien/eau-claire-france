@@ -10,10 +10,13 @@ import { MapPin, Droplets, ShieldCheck, AlertTriangle, ArrowRight, ExternalLink 
 import { useWaterQuality } from '@/hooks/useWaterQuality';
 import { FRENCH_CITIES } from '@/data/frenchCities';
 import { communeToSlug, findCommuneBySlug } from '@/utils/communeSlug';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const QualiteEauCommune: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { t } = useLanguage();
   const commune = slug ? findCommuneBySlug(slug) : undefined;
+
 
   if (!commune) return <Navigate to="/qualite-eau" replace />;
 
@@ -159,13 +162,14 @@ const QualiteEauCommune: React.FC = () => {
         {/* Breadcrumb */}
         <nav aria-label="Fil d'Ariane" className="container mx-auto max-w-5xl px-4 pt-4">
           <ol className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-            <li><Link to="/" className="hover:text-primary">Accueil</Link></li>
+            <li><Link to="/" className="hover:text-primary">{t('common.breadcrumb.home')}</Link></li>
             <li>›</li>
-            <li><Link to="/qualite-eau" className="hover:text-primary">Qualité de l'eau par commune</Link></li>
+            <li><Link to="/qualite-eau" className="hover:text-primary">{t('commune.breadcrumb.list')}</Link></li>
             <li>›</li>
             <li className="text-foreground font-medium">{commune.name}</li>
           </ol>
         </nav>
+
 
         {/* Hero */}
         <section className="container mx-auto max-w-5xl px-4 py-8 md:py-12">
@@ -196,7 +200,7 @@ const QualiteEauCommune: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground font-medium">Score qualité</CardTitle>
+                <CardTitle className="text-sm text-muted-foreground font-medium">{t('commune.card.score')}</CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoading ? (
@@ -204,7 +208,7 @@ const QualiteEauCommune: React.FC = () => {
                 ) : (
                   <div className="flex items-baseline gap-3">
                     <span className="text-4xl font-bold text-primary">{score ?? '—'}</span>
-                    {grade && <Badge variant="secondary">Note {grade}</Badge>}
+                    {grade && <Badge variant="secondary">{t('commune.card.grade', { grade })}</Badge>}
                   </div>
                 )}
               </CardContent>
@@ -212,7 +216,7 @@ const QualiteEauCommune: React.FC = () => {
 
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground font-medium">Conformité</CardTitle>
+                <CardTitle className="text-sm text-muted-foreground font-medium">{t('commune.card.compliance')}</CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoading ? (
@@ -220,12 +224,12 @@ const QualiteEauCommune: React.FC = () => {
                 ) : nonConforme.length === 0 ? (
                   <div className="flex items-center gap-2 text-green-700">
                     <ShieldCheck className="w-5 h-5" />
-                    <span className="font-semibold">Conforme</span>
+                    <span className="font-semibold">{t('commune.card.compliant')}</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 text-amber-700">
                     <AlertTriangle className="w-5 h-5" />
-                    <span className="font-semibold">{nonConforme.length} non-conformité(s)</span>
+                    <span className="font-semibold">{t('commune.card.nonCompliant', { count: String(nonConforme.length) })}</span>
                   </div>
                 )}
               </CardContent>
@@ -233,7 +237,7 @@ const QualiteEauCommune: React.FC = () => {
 
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground font-medium">Dernier prélèvement</CardTitle>
+                <CardTitle className="text-sm text-muted-foreground font-medium">{t('commune.card.lastSample')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
@@ -244,52 +248,51 @@ const QualiteEauCommune: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
+
           </div>
         </section>
 
         {/* Analyse content */}
         <section className="container mx-auto max-w-5xl px-4 py-6">
-          <h2 className="text-2xl font-bold mb-4">Analyse de l'eau potable à {commune.name}</h2>
+          <h2 className="text-2xl font-bold mb-4">{t('commune.analysis.title', { name: commune.name })}</h2>
           <div className="prose prose-slate max-w-none">
             <p>
-              L'eau distribuée à <strong>{commune.name}</strong> ({commune.postcode}, {commune.context}) est surveillée
-              par l'Agence Régionale de Santé (ARS) via le contrôle sanitaire officiel. Les paramètres analysés couvrent
-              la qualité microbiologique (Escherichia coli, entérocoques), physico-chimique (pH, conductivité, dureté),
-              les nitrates, pesticides, PFAS, métaux lourds (plomb, arsenic, cuivre) et paramètres organoleptiques.
+              {t('commune.analysis.intro', { name: commune.name, postcode: commune.postcode, context: commune.context })}
             </p>
             {params.length > 0 && (
               <>
-                <h3>Paramètres analysés récemment</h3>
-                <p>Les derniers prélèvements à {commune.name} incluent : {params.join(', ')}.</p>
+                <h3>{t('commune.analysis.recentTitle')}</h3>
+                <p>{t('commune.analysis.recentBody', { name: commune.name, params: params.join(', ') })}</p>
               </>
             )}
             {nonConforme.length > 0 && (
               <>
-                <h3>Points de vigilance</h3>
+                <h3>{t('commune.analysis.watchTitle')}</h3>
                 <p>
-                  {nonConforme.length} mesure(s) au-dessus des limites réglementaires ont été relevées lors des derniers
-                  contrôles :{' '}
-                  {Array.from(new Set(nonConforme.map((n) => n.parametreAnalyse))).join(', ')}. Consultez le tableau
-                  détaillé ci-dessous.
+                  {t('commune.analysis.watchBody', {
+                    count: String(nonConforme.length),
+                    list: Array.from(new Set(nonConforme.map((n) => n.parametreAnalyse))).join(', '),
+                  })}
                 </p>
               </>
             )}
           </div>
         </section>
 
+
         {/* Last samples table */}
         {results.length > 0 && (
           <section className="container mx-auto max-w-5xl px-4 py-6">
-            <h2 className="text-2xl font-bold mb-4">Derniers prélèvements officiels</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('commune.table.title')}</h2>
             <div className="overflow-x-auto rounded-xl border border-border">
               <table className="w-full text-sm">
                 <thead className="bg-muted/60">
                   <tr>
-                    <th className="text-left px-3 py-2 font-semibold">Date</th>
-                    <th className="text-left px-3 py-2 font-semibold">Paramètre</th>
-                    <th className="text-right px-3 py-2 font-semibold">Valeur</th>
-                    <th className="text-right px-3 py-2 font-semibold">Limite</th>
-                    <th className="text-left px-3 py-2 font-semibold">Conformité</th>
+                    <th className="text-left px-3 py-2 font-semibold">{t('commune.table.date')}</th>
+                    <th className="text-left px-3 py-2 font-semibold">{t('commune.table.param')}</th>
+                    <th className="text-right px-3 py-2 font-semibold">{t('commune.table.value')}</th>
+                    <th className="text-right px-3 py-2 font-semibold">{t('commune.table.limit')}</th>
+                    <th className="text-left px-3 py-2 font-semibold">{t('commune.table.conformity')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -304,11 +307,11 @@ const QualiteEauCommune: React.FC = () => {
                       <td className="px-3 py-2 text-right tabular-nums text-muted-foreground">{r.limiteQualite || '—'}</td>
                       <td className="px-3 py-2">
                         {r.conformite === 'Conforme' ? (
-                          <Badge variant="secondary" className="bg-green-100 text-green-800">Conforme</Badge>
+                          <Badge variant="secondary" className="bg-green-100 text-green-800">{t('commune.card.compliant')}</Badge>
                         ) : r.conformite === 'Non conforme' ? (
                           <Badge variant="secondary" className="bg-amber-100 text-amber-800">Non conforme</Badge>
                         ) : (
-                          <Badge variant="outline">Indéterminé</Badge>
+                          <Badge variant="outline">{t('commune.table.undetermined')}</Badge>
                         )}
                       </td>
                     </tr>
@@ -317,14 +320,15 @@ const QualiteEauCommune: React.FC = () => {
               </table>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Source : Hub'Eau (Ministère de la Santé) — <a href={`https://orobnat.sante.gouv.fr/orobnat/rechercherResultatQualite.do?methode=menu&usd=AEP&idRegion=&departement=&communeDepartement=&commune=${encodeURIComponent(commune.name)}`} target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">rapport officiel <ExternalLink className="w-3 h-3" /></a>
+              {t('commune.table.source')} <a href={`https://orobnat.sante.gouv.fr/orobnat/rechercherResultatQualite.do?methode=menu&usd=AEP&idRegion=&departement=&communeDepartement=&commune=${encodeURIComponent(commune.name)}`} target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">{t('commune.table.officialReport')} <ExternalLink className="w-3 h-3" /></a>
             </p>
           </section>
         )}
 
+
         {/* FAQ */}
         <section className="container mx-auto max-w-5xl px-4 py-8">
-          <h2 className="text-2xl font-bold mb-4">Questions fréquentes sur l'eau à {commune.name}</h2>
+          <h2 className="text-2xl font-bold mb-4">{t('commune.faq.title', { name: commune.name })}</h2>
           <div className="space-y-4">
             {(faqSchema.mainEntity as any[]).map((q, i) => (
               <div key={i} className="bg-card border border-border rounded-lg p-4">
@@ -338,19 +342,19 @@ const QualiteEauCommune: React.FC = () => {
         {/* CTAs */}
         <section className="container mx-auto max-w-5xl px-4 py-6">
           <div className="bg-gradient-to-br from-sky-50 to-green-50 rounded-2xl p-6 md:p-8 border border-border">
-            <h2 className="text-xl md:text-2xl font-bold mb-2">Aller plus loin</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-2">{t('commune.cta.title')}</h2>
             <p className="text-muted-foreground text-sm mb-4">
-              Trouvez l'eau la mieux adaptée à votre santé, ou explorez la carte interactive nationale.
+              {t('commune.cta.body')}
             </p>
             <div className="flex flex-wrap gap-3">
               <Button asChild>
-                <Link to="/diagnostic">Faire mon diagnostic <ArrowRight className="w-4 h-4 ml-1" /></Link>
+                <Link to="/diagnostic">{t('commune.cta.diagnostic')} <ArrowRight className="w-4 h-4 ml-1" /></Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/quelle-eau-boire">Quelle eau boire ?</Link>
+                <Link to="/quelle-eau-boire">{t('commune.cta.which')}</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/carte">Carte de France</Link>
+                <Link to="/carte">{t('commune.cta.map')}</Link>
               </Button>
             </div>
           </div>
@@ -359,7 +363,7 @@ const QualiteEauCommune: React.FC = () => {
         {/* Neighboring communes */}
         {neighbors.length > 0 && (
           <section className="container mx-auto max-w-5xl px-4 py-8">
-            <h2 className="text-xl font-bold mb-4">Autres communes en {commune.context}</h2>
+            <h2 className="text-xl font-bold mb-4">{t('commune.neighbors.title', { context: commune.context })}</h2>
             <div className="flex flex-wrap gap-2">
               {neighbors.map((n) => (
                 <Link
@@ -375,11 +379,12 @@ const QualiteEauCommune: React.FC = () => {
                 to="/qualite-eau"
                 className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm text-primary hover:underline"
               >
-                Toutes les communes <ArrowRight className="w-3.5 h-3.5" />
+                {t('commune.neighbors.all')} <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </section>
         )}
+
       </main>
       <Footer />
     </div>
