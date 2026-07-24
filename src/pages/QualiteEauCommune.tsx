@@ -283,16 +283,16 @@ const QualiteEauCommune: React.FC = () => {
         {/* Last samples table */}
         {results.length > 0 && (
           <section className="container mx-auto max-w-5xl px-4 py-6">
-            <h2 className="text-2xl font-bold mb-4">Derniers prélèvements officiels</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('commune.table.title')}</h2>
             <div className="overflow-x-auto rounded-xl border border-border">
               <table className="w-full text-sm">
                 <thead className="bg-muted/60">
                   <tr>
-                    <th className="text-left px-3 py-2 font-semibold">Date</th>
-                    <th className="text-left px-3 py-2 font-semibold">Paramètre</th>
-                    <th className="text-right px-3 py-2 font-semibold">Valeur</th>
-                    <th className="text-right px-3 py-2 font-semibold">Limite</th>
-                    <th className="text-left px-3 py-2 font-semibold">Conformité</th>
+                    <th className="text-left px-3 py-2 font-semibold">{t('commune.table.date')}</th>
+                    <th className="text-left px-3 py-2 font-semibold">{t('commune.table.param')}</th>
+                    <th className="text-right px-3 py-2 font-semibold">{t('commune.table.value')}</th>
+                    <th className="text-right px-3 py-2 font-semibold">{t('commune.table.limit')}</th>
+                    <th className="text-left px-3 py-2 font-semibold">{t('commune.table.conformity')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -307,11 +307,11 @@ const QualiteEauCommune: React.FC = () => {
                       <td className="px-3 py-2 text-right tabular-nums text-muted-foreground">{r.limiteQualite || '—'}</td>
                       <td className="px-3 py-2">
                         {r.conformite === 'Conforme' ? (
-                          <Badge variant="secondary" className="bg-green-100 text-green-800">Conforme</Badge>
+                          <Badge variant="secondary" className="bg-green-100 text-green-800">{t('commune.card.compliant')}</Badge>
                         ) : r.conformite === 'Non conforme' ? (
                           <Badge variant="secondary" className="bg-amber-100 text-amber-800">Non conforme</Badge>
                         ) : (
-                          <Badge variant="outline">Indéterminé</Badge>
+                          <Badge variant="outline">{t('commune.table.undetermined')}</Badge>
                         )}
                       </td>
                     </tr>
@@ -320,10 +320,11 @@ const QualiteEauCommune: React.FC = () => {
               </table>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Source : Hub'Eau (Ministère de la Santé) — <a href={`https://orobnat.sante.gouv.fr/orobnat/rechercherResultatQualite.do?methode=menu&usd=AEP&idRegion=&departement=&communeDepartement=&commune=${encodeURIComponent(commune.name)}`} target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">rapport officiel <ExternalLink className="w-3 h-3" /></a>
+              {t('commune.table.source')} <a href={`https://orobnat.sante.gouv.fr/orobnat/rechercherResultatQualite.do?methode=menu&usd=AEP&idRegion=&departement=&communeDepartement=&commune=${encodeURIComponent(commune.name)}`} target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">{t('commune.table.officialReport')} <ExternalLink className="w-3 h-3" /></a>
             </p>
           </section>
         )}
+
 
         {/* FAQ */}
         <section className="container mx-auto max-w-5xl px-4 py-8">
