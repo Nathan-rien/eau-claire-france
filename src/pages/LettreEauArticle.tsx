@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import BlogInfographic from "@/components/blog/BlogInfographic";
 import BlogCard from "@/components/blog/BlogCard";
 import InternalLinkHub from "@/components/InternalLinkHub";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   fetchArticleBySlug, fetchArticles, CATEGORY_LABELS, type BlogArticle,
 } from "@/services/blogApi";
