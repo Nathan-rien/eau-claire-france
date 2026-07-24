@@ -107,8 +107,8 @@ const OndineChat: React.FC = () => {
       });
 
       if (!resp.ok) {
-        const err = await resp.json().catch(() => ({ error: 'Erreur réseau' }));
-        upsertAssistant(`⚠️ ${err.error || 'Une erreur est survenue. Réessayez.'}`);
+        const err = await resp.json().catch(() => ({ error: t('ondine.networkError') }));
+        upsertAssistant(`⚠️ ${err.error || t('ondine.genericError')}`);
         setIsLoading(false);
         return;
       }
