@@ -6,7 +6,16 @@
     <atom:link href="https://infoeau.fr/lettre-de-leau/rss.xml" rel="self" type="application/rss+xml" />
     <description>Actualités, scandales, réglementation et enquêtes sur la qualité de l'eau en France.</description>
     <language>fr-FR</language>
-    <lastBuildDate>Sat, 18 Jul 2026 13:46:50 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 24 Jul 2026 09:58:43 GMT</lastBuildDate>
+    <item>
+      <title>Plages françaises 2026 : la carte des zones à éviter cet été dévoilée</title>
+      <link>https://infoeau.fr/lettre-de-leau/plages-francaises-2026-zones-a-eviter-bacteries-fecales</link>
+      <guid isPermaLink="true">https://infoeau.fr/lettre-de-leau/plages-francaises-2026-zones-a-eviter-bacteries-fecales</guid>
+      <pubDate>Mon, 20 Jul 2026 10:17:21 GMT</pubDate>
+      <category>qualite</category>
+      <description>L&apos;association Eau &amp; Rivières de Bretagne vient de publier sa carte actualisée des plages françaises pour 2026, révélant des niveaux de pollution inquiétants dus aux bactéries fécales. Environ 22% des sites de baignade sont classés &quot;à éviter&quot; ou &quot;déconseillés&quot;, soulignant des risques sanitaires réels pour les baigneurs.</description>
+      <enclosure url="https://xblogttmomuogdhmaztf.supabase.co/storage/v1/object/public/blog-images/2026-07-20/plages-francaises-2026-zones-a-eviter-bacteries-fecales-1784542641054.png" type="image/jpeg" />
+    </item>
     <item>
       <title>PFAS : Un an après l&apos;interdiction, l&apos;eau de nouveau potable à Châlons</title>
       <link>https://infoeau.fr/lettre-de-leau/pfas-un-an-apres-interdiction-eau-potable-chalons-champagne</link>
