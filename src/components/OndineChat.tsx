@@ -38,14 +38,21 @@ function detectCommune(text: string): string | undefined {
 }
 
 const OndineChat: React.FC = () => {
+  const { t } = useLanguage();
+  const welcomeMessage = useMemo<Msg>(() => ({ role: 'assistant', content: t('ondine.welcome') }), [t]);
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Msg[]>([WELCOME_MESSAGE]);
+  const [messages, setMessages] = useState<Msg[]>([welcomeMessage]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [lastMessageId, setLastMessageId] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const lastMessageRef = useRef<HTMLDivElement>(null);
+
+  // Refresh welcome message when language changes and no user has replied yet
+  useEffect(() => {
+    setMessages(prev => (prev.length <= 1 ? [welcomeMessage] : prev));
+  }, [welcomeMessage]);
 
   useEffect(() => {
     if (lastMessageRef.current) {
