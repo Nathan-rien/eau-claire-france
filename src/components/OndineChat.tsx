@@ -242,7 +242,7 @@ const OndineChat: React.FC = () => {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Posez votre question sur l'eau..."
+                placeholder={t('ondine.placeholder')}
                 rows={1}
                 className="flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 max-h-24"
                 disabled={isLoading}
@@ -251,7 +251,7 @@ const OndineChat: React.FC = () => {
                 onClick={sendMessage}
                 disabled={!input.trim() || isLoading}
                 className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-50 hover:bg-primary/90 transition-colors shrink-0"
-                aria-label="Envoyer"
+                aria-label={t('ondine.send')}
               >
                 <Send className="w-4 h-4" />
               </button>
