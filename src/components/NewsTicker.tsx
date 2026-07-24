@@ -59,7 +59,7 @@ const NewsTicker = () => {
     <div
       className="sticky top-0 z-[100] w-full bg-slate-900 text-white shadow-sm hidden md:block"
       role="region"
-      aria-label="Alerte d'actualité"
+      aria-label={t('ticker.ariaLabel')}
     >
       <div className="relative flex items-center h-9 sm:h-10">
         {/* Static status icon */}
