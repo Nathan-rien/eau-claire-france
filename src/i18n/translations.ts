@@ -660,6 +660,13 @@ export const translations = {
     'europeAlerts.noExceedance': 'Aucun dépassement significatif identifié.',
     'europeAlerts.exceedance': 'dépassement',
     'europeAlerts.limit': 'limite',
+    'europeAlerts.pesticides': 'Pesticides',
+    'europeAlerts.lead': 'Plomb',
+    'europeAlerts.bacteria': 'Bactéries',
+    'europeAlerts.score': 'Score',
+    'alerts.vendee.badge': 'Résolu',
+    'alerts.vendee.title': 'Pollution au manganèse en Vendée — usine du Moulin Papon (juillet 2026)',
+    'alerts.vendee.description': "Chronologie factuelle 8→9 juillet 2026, communes concernées, levée de l'alerte par l'ARS et Vendée Eau. Lire l'article complet →",
 
     // Europe Prices
     'europePrices.title': 'Prix de l\'eau du robinet — Europe',
