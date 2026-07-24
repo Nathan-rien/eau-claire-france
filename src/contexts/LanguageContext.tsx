@@ -10,11 +10,43 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+const STORAGE_KEY = 'infoeau_lang';
+
+const detectInitialLanguage = (): 'fr' | 'en' => {
+  if (typeof window === 'undefined') return 'fr';
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (stored === 'fr' || stored === 'en') return stored;
+  } catch {
+    /* noop */
+  }
+  const nav = (typeof navigator !== 'undefined' && navigator.language) || 'fr';
+  return nav.toLowerCase().startsWith('en') ? 'en' : 'fr';
+};
+
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<'fr' | 'en'>('fr');
+  const [language, setLanguageState] = useState<'fr' | 'en'>(detectInitialLanguage);
+
+  const setLanguage = (lang: 'fr' | 'en') => {
+    setLanguageState(lang);
+    try {
+      window.localStorage.setItem(STORAGE_KEY, lang);
+    } catch {
+      /* noop */
+    }
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = lang;
+    }
+  };
+
+  React.useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = language;
+    }
+  }, [language]);
 
   const toggleLanguage = () => {
-    setLanguage(prev => prev === 'fr' ? 'en' : 'fr');
+    setLanguage(language === 'fr' ? 'en' : 'fr');
   };
 
   const t = (key: string, variables?: Record<string, string>): string => {
