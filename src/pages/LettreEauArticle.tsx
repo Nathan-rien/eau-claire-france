@@ -174,7 +174,7 @@ export default function LettreEauArticle() {
 
           {article.sources?.length > 0 && (
             <section className="mt-10 pt-6 border-t border-border">
-              <h2 className="text-base font-semibold mb-3">Sources</h2>
+              <h2 className="text-base font-semibold mb-3">{t('article.sources')}</h2>
               <ul className="space-y-2">
                 {article.sources.map((s, i) => (
                   <li key={i}>
@@ -194,13 +194,13 @@ export default function LettreEauArticle() {
           )}
 
           <p className="mt-6 text-xs text-muted-foreground italic">
-            Article rédigé avec l'aide de l'intelligence artificielle à partir de sources publiques, et publié par la rédaction d'InfoEau.fr.
+            {t('article.aiDisclaimer')}
           </p>
         </div>
 
         <InternalLinkHub
-          heading="Aller plus loin"
-          description="Outils et cartes pour vérifier la qualité de l'eau près de chez vous."
+          heading={t('article.hub.heading')}
+          description={t('article.hub.description')}
           groups={["explore", "decide"]}
           variant="muted"
         />
@@ -208,7 +208,7 @@ export default function LettreEauArticle() {
         {related.length > 0 && (
           <section className="bg-muted/20 py-12 px-4 border-t border-border">
             <div className="container mx-auto max-w-6xl">
-              <h2 className="text-xl md:text-2xl font-bold mb-6">À lire aussi</h2>
+              <h2 className="text-xl md:text-2xl font-bold mb-6">{t('article.alsoRead')}</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {related.map((a) => (
                   <BlogCard key={a.id} article={a} variant="compact" />
