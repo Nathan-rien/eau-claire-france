@@ -8,11 +8,13 @@ import { MapLoader, MapLoadingPlaceholder } from '@/components/ui/map-loader';
 import TasteWall from '@/components/TasteWall';
 import TasteReportForm from '@/components/TasteReportForm';
 import TastePartnerForm from '@/components/TastePartnerForm';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 
 const TasteMap = lazy(() => import('@/components/TasteMap'));
 
 const GoutEau: React.FC = () => {
+  const { t } = useLanguage();
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
 
   return (
@@ -24,11 +26,10 @@ const GoutEau: React.FC = () => {
             <div className="text-center mb-6 md:mb-8">
               <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-2">
                 <Droplets className="w-7 h-7 md:w-9 md:h-9 text-blue-600" />
-                <span>Goût de l'eau du robinet par région</span>
+                <span>{t('gout.title')}</span>
               </h1>
               <p className="text-sm md:text-lg text-gray-600 max-w-3xl mx-auto">
-                Ce que les Français disent réellement du goût de leur eau du robinet :
-                témoignages, sondages et articles de presse, cartographiés par région.
+                {t('gout.subtitle')}
               </p>
             </div>
 
@@ -36,14 +37,11 @@ const GoutEau: React.FC = () => {
             <div className="mb-8 rounded-lg border border-amber-300 bg-amber-50 p-4 md:p-5 flex gap-3 max-w-4xl mx-auto">
               <AlertTriangle className="w-5 h-5 md:w-6 md:h-6 text-amber-600 flex-shrink-0 mt-0.5" />
               <div className="text-sm text-amber-900">
-                <p className="font-semibold mb-1">Perceptions qualitatives, pas des mesures officielles</p>
+                <p className="font-semibold mb-1">{t('gout.warning.title')}</p>
                 <p className="leading-relaxed">
-                  Les retours ci-dessous proviennent de la presse, de sondages et de
-                  témoignages. Ils reflètent des <strong>ressentis</strong> et non des mesures
-                  de conformité sanitaire. Pour les données réglementaires,
-                  consultez la{' '}
+                  <span dangerouslySetInnerHTML={{ __html: t('gout.warning.body') }} />{' '}
                   <Link to="/carte" className="underline font-medium">
-                    carte de la qualité de l'eau
+                    {t('gout.warning.link')}
                   </Link>
                   .
                 </p>
@@ -68,8 +66,8 @@ const GoutEau: React.FC = () => {
                 <Info className="w-5 h-5 text-blue-600" />
                 <h2 className="text-xl md:text-2xl font-bold text-gray-900">
                   {selectedRegion
-                    ? `Retours pour ${selectedRegion}`
-                    : 'Mur des retours'}
+                    ? t('gout.wall.forRegion', { region: selectedRegion })
+                    : t('gout.wall.title')}
                 </h2>
               </div>
               <TasteWall
@@ -87,26 +85,26 @@ const GoutEau: React.FC = () => {
 
             <div className="mt-8 bg-white rounded-lg p-4 md:p-6 shadow-lg max-w-3xl mx-auto">
               <h3 className="text-base md:text-lg font-semibold mb-3 text-gray-900">
-                Aller plus loin
+                {t('gout.further')}
               </h3>
               <div className="flex flex-wrap gap-3 justify-center">
                 <Link
                   to="/carte"
                   className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm"
                 >
-                  Carte de la qualité
+                  {t('gout.link.map')}
                 </Link>
                 <Link
                   to="/carte-polluants"
                   className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm"
                 >
-                  Carte des polluants
+                  {t('gout.link.pollutants')}
                 </Link>
                 <Link
                   to="/quelle-eau-boire"
                   className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm"
                 >
-                  Quelle eau boire ?
+                  {t('gout.link.which')}
                 </Link>
               </div>
             </div>

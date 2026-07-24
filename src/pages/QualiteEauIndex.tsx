@@ -6,8 +6,10 @@ import SEOHead from '@/components/SEOHead';
 import InternalLinkHub from '@/components/InternalLinkHub';
 import { MapPin } from 'lucide-react';
 import { communeToSlug, communesByRegion, allCommunes } from '@/utils/communeSlug';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const QualiteEauIndex: React.FC = () => {
+  const { t } = useLanguage();
   const regions = communesByRegion();
   const total = allCommunes().length;
 
@@ -48,17 +50,16 @@ const QualiteEauIndex: React.FC = () => {
         <section className="bg-gradient-to-br from-sky-50 via-white to-green-50 py-12 md:py-16 px-4 border-b border-border">
           <div className="container mx-auto max-w-5xl text-center">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-              Qualité de l'eau dans ma commune
+              {t('qualite.index.title')}
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
-              Analyse officielle de l'eau potable pour {total} communes françaises.
-              Score de qualité, polluants surveillés, conformité sanitaire et derniers prélèvements — données Hub'Eau (ARS).
+              {t('qualite.index.subtitle', { total: String(total) })}
             </p>
           </div>
         </section>
 
         <section className="container mx-auto max-w-6xl px-4 py-10 md:py-14">
-          <h2 className="text-xl md:text-2xl font-bold mb-6">Toutes les communes par région</h2>
+          <h2 className="text-xl md:text-2xl font-bold mb-6">{t('qualite.index.byRegion')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Object.entries(regions)
               .sort(([a], [b]) => a.localeCompare(b, 'fr'))
@@ -90,8 +91,8 @@ const QualiteEauIndex: React.FC = () => {
         </section>
 
         <InternalLinkHub
-          heading="Explorez davantage la qualité de votre eau"
-          description="Cartes, comparateurs et diagnostic pour aller plus loin."
+          heading={t('qualite.index.hubHeading')}
+          description={t('qualite.index.hubDescription')}
         />
       </main>
       <Footer />
