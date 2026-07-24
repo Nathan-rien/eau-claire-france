@@ -15,83 +15,79 @@ import {
   Factory,
   GlassWater,
 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type LinkItem = {
   to: string;
-  label: string;
-  description: string;
+  labelKey: string;
+  descKey: string;
   icon: React.ComponentType<{ className?: string }>;
 };
 
-const LINK_GROUPS: Record<string, { title: string; items: LinkItem[] }> = {
+const LINK_GROUPS: Record<string, { titleKey: string; items: LinkItem[] }> = {
   explore: {
-    title: "Explorer la qualité de l'eau",
+    titleKey: "hub.explore.title",
     items: [
-      { to: "/carte", label: "Carte de l'eau du robinet", description: "Qualité commune par commune en France", icon: Map },
-      { to: "/qualite-eau", label: "Qualité de l'eau par commune", description: "Analyse eau potable dans votre ville", icon: MapPin },
-      { to: "/carte-polluants", label: "Carte des polluants", description: "PFAS, pesticides, nitrates par ville", icon: AlertTriangle },
-      { to: "/polluants", label: "Index des polluants", description: "Tous les contaminants surveillés", icon: Beaker },
-      { to: "/gout-eau", label: "Goût de l'eau par région", description: "Perceptions et témoignages par région", icon: GlassWater },
-      { to: "/cours-eau", label: "Cours d'eau", description: "État écologique des rivières françaises", icon: Droplets },
+      { to: "/carte", labelKey: "hub.explore.carte.label", descKey: "hub.explore.carte.desc", icon: Map },
+      { to: "/qualite-eau", labelKey: "hub.explore.qualite.label", descKey: "hub.explore.qualite.desc", icon: MapPin },
+      { to: "/carte-polluants", labelKey: "hub.explore.pollmap.label", descKey: "hub.explore.pollmap.desc", icon: AlertTriangle },
+      { to: "/polluants", labelKey: "hub.explore.poll.label", descKey: "hub.explore.poll.desc", icon: Beaker },
+      { to: "/gout-eau", labelKey: "hub.explore.gout.label", descKey: "hub.explore.gout.desc", icon: GlassWater },
+      { to: "/cours-eau", labelKey: "hub.explore.cours.label", descKey: "hub.explore.cours.desc", icon: Droplets },
     ],
   },
   decide: {
-    title: "Choisir et comparer",
+    titleKey: "hub.decide.title",
     items: [
-      { to: "/diagnostic", label: "Diagnostic personnalisé", description: "Quelle eau est faite pour vous ?", icon: Sparkles },
-      { to: "/quelle-eau-boire", label: "Comparateur de bouteilles", description: "Évian, Cristaline, Volvic, Vittel…", icon: Trophy },
-      { to: "/classement", label: "Classement des eaux", description: "Top des marques selon 11 critères", icon: Trophy },
-      { to: "/comparateur-prix", label: "Comparateur de prix", description: "Prix en magasin mis à jour quotidiennement", icon: Euro },
+      { to: "/diagnostic", labelKey: "hub.decide.diagnostic.label", descKey: "hub.decide.diagnostic.desc", icon: Sparkles },
+      { to: "/quelle-eau-boire", labelKey: "hub.decide.which.label", descKey: "hub.decide.which.desc", icon: Trophy },
+      { to: "/classement", labelKey: "hub.decide.ranking.label", descKey: "hub.decide.ranking.desc", icon: Trophy },
+      { to: "/comparateur-prix", labelKey: "hub.decide.prix.label", descKey: "hub.decide.prix.desc", icon: Euro },
     ],
   },
   journey: {
-    title: "Comprendre le parcours de l'eau",
+    titleKey: "hub.journey.title",
     items: [
-      { to: "/parcours-eau", label: "Parcours de l'eau du robinet", description: "De la source au verre, en 6 étapes", icon: Route },
-      { to: "/parcours-eau-bouteille", label: "Parcours de l'eau en bouteille", description: "Logistique et empreinte carbone", icon: Factory },
-      { to: "/sources-eau", label: "Sources d'eau minérale", description: "Cartographie des sources françaises", icon: Droplets },
-      { to: "/alertes", label: "Alertes qualité", description: "Soyez prévenu des dépassements", icon: Bell },
+      { to: "/parcours-eau", labelKey: "hub.journey.tap.label", descKey: "hub.journey.tap.desc", icon: Route },
+      { to: "/parcours-eau-bouteille", labelKey: "hub.journey.bottle.label", descKey: "hub.journey.bottle.desc", icon: Factory },
+      { to: "/sources-eau", labelKey: "hub.journey.sources.label", descKey: "hub.journey.sources.desc", icon: Droplets },
+      { to: "/alertes", labelKey: "hub.journey.alertes.label", descKey: "hub.journey.alertes.desc", icon: Bell },
     ],
   },
   europe: {
-    title: "Europe & données ouvertes",
+    titleKey: "hub.europe.title",
     items: [
-      { to: "/carte-europe", label: "Carte de l'eau en Europe", description: "27 pays — données EEA", icon: Globe2 },
-      { to: "/classement-europe", label: "Classement européen", description: "Comparaison entre pays", icon: Trophy },
-      { to: "/composition-europe", label: "Composition minérale UE", description: "Calcium, magnésium, nitrates", icon: Beaker },
-      { to: "/prix-eaux", label: "Prix des eaux", description: "Tarifs détaillés par marque", icon: Activity },
+      { to: "/carte-europe", labelKey: "hub.europe.carte.label", descKey: "hub.europe.carte.desc", icon: Globe2 },
+      { to: "/classement-europe", labelKey: "hub.europe.ranking.label", descKey: "hub.europe.ranking.desc", icon: Trophy },
+      { to: "/composition-europe", labelKey: "hub.europe.compo.label", descKey: "hub.europe.compo.desc", icon: Beaker },
+      { to: "/prix-eaux", labelKey: "hub.europe.prix.label", descKey: "hub.europe.prix.desc", icon: Activity },
     ],
   },
 };
 
 interface InternalLinkHubProps {
-  /** Quels groupes afficher (par défaut : tous) */
   groups?: Array<keyof typeof LINK_GROUPS>;
-  /** Titre principal de la section */
   heading?: string;
-  /** Sous-titre / contexte */
   description?: string;
-  /** Variante visuelle */
   variant?: "default" | "muted" | "inline";
 }
 
-/**
- * Bloc de maillage interne contextuel.
- * Améliore la découverte par les crawlers (Google Search Console)
- * en exposant les pages importantes depuis la home, le blog et les pages catégorie.
- */
 export default function InternalLinkHub({
   groups = ["explore", "decide", "journey", "europe"],
-  heading = "Explorez InfoEau.fr",
-  description = "Toutes nos ressources pour comprendre, comparer et surveiller la qualité de votre eau.",
+  heading,
+  description,
   variant = "default",
 }: InternalLinkHubProps) {
+  const { t } = useLanguage();
   const bgClass =
     variant === "muted"
       ? "bg-muted/30"
       : variant === "inline"
         ? "bg-transparent"
         : "bg-gradient-to-br from-sky-50 via-white to-green-50";
+
+  const resolvedHeading = heading ?? t("hub.defaultHeading");
+  const resolvedDescription = description ?? t("hub.defaultDescription");
 
   return (
     <section
@@ -105,11 +101,11 @@ export default function InternalLinkHub({
             id="internal-hub-title"
             className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2"
           >
-            {heading}
+            {resolvedHeading}
           </h2>
-          {description && (
+          {resolvedDescription && (
             <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
-              {description}
+              {resolvedDescription}
             </p>
           )}
         </div>
@@ -124,7 +120,7 @@ export default function InternalLinkHub({
                 className="bg-card rounded-xl p-5 md:p-6 border border-border shadow-sm hover:shadow-md transition-shadow"
               >
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-primary mb-4">
-                  {group.title}
+                  {t(group.titleKey)}
                 </h3>
                 <ul className="space-y-3">
                   {group.items.map((item) => {
@@ -140,10 +136,10 @@ export default function InternalLinkHub({
                           </span>
                           <span className="flex-1 min-w-0">
                             <span className="block text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
-                              {item.label}
+                              {t(item.labelKey)}
                             </span>
                             <span className="block text-xs text-muted-foreground leading-snug">
-                              {item.description}
+                              {t(item.descKey)}
                             </span>
                           </span>
                         </Link>
