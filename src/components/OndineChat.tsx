@@ -21,10 +21,7 @@ type Msg = { role: 'user' | 'assistant'; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ondine-chat`;
 
-const WELCOME_MESSAGE: Msg = {
-  role: 'assistant',
-  content: "Bonjour ! 💧 Je suis **Ondine**, votre assistante eau.\n\nPosez-moi vos questions sur :\n- La **qualité de l'eau du robinet** de votre commune\n- La **composition** des eaux en bouteille\n- Les **prix** comparés\n- Les **polluants** et seuils réglementaires\n- Quelle eau choisir selon votre **profil santé**",
-};
+const WELCOME_FR = "Bonjour ! 💧 Je suis **Ondine**, votre assistante eau.\n\nPosez-moi vos questions sur :\n- La **qualité de l'eau du robinet** de votre commune\n- La **composition** des eaux en bouteille\n- Les **prix** comparés\n- Les **polluants** et seuils réglementaires\n- Quelle eau choisir selon votre **profil santé**";
 
 // Simple commune detection in user text
 function detectCommune(text: string): string | undefined {
