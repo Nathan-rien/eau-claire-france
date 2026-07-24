@@ -128,14 +128,14 @@ export default function LettreEauArticle() {
             to="/lettre-de-leau"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6"
           >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Lettre de l'eau
+            <ArrowLeft className="w-4 h-4 mr-1" /> {t('article.back')}
           </Link>
 
           <div className="flex items-center gap-3 mb-4 text-sm text-muted-foreground">
             <Badge variant="secondary">{CATEGORY_LABELS[article.category] ?? article.category}</Badge>
             <time dateTime={article.published_at}>{date}</time>
             <span className="flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" aria-hidden="true" /> {article.reading_time_min} min de lecture
+              <Clock className="w-3.5 h-3.5" aria-hidden="true" /> {article.reading_time_min} {t('article.readingTime')}
             </span>
           </div>
 
