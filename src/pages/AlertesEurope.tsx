@@ -64,12 +64,12 @@ const AlertesEurope = () => {
                               <div>
                                 <span className="font-semibold">{c.countryName}</span>
                                 <Badge className={`ml-2 ${getScoreBadgeClass(c.qualityScore)}`}>
-                                  Score {c.qualityScore}
+                                  {t('europeAlerts.score')} {c.qualityScore}
                                 </Badge>
                               </div>
                             </div>
                             <div className="flex items-center gap-4">
-                              <span className="text-sm font-bold">Conformité : {c.complianceRate}%</span>
+                              <span className="text-sm font-bold">{t('europeAlerts.complianceLabel')} {c.complianceRate}%</span>
                               <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 [&[data-state=open]]:rotate-180" />
                             </div>
                           </div>
@@ -79,19 +79,19 @@ const AlertesEurope = () => {
                             {c.pesticideViolations > 0 && (
                               <span className="flex items-center gap-1.5 text-muted-foreground">
                                 <FlaskConical className="h-3.5 w-3.5" />
-                                Pesticides : <span className="font-semibold text-foreground">{c.pesticideViolations}</span>
+                                {t('europeAlerts.pesticides')} : <span className="font-semibold text-foreground">{c.pesticideViolations}</span>
                               </span>
                             )}
                             {c.leadViolations > 0 && (
                               <span className="flex items-center gap-1.5 text-muted-foreground">
                                 <Circle className="h-3.5 w-3.5" />
-                                Plomb : <span className="font-semibold text-foreground">{c.leadViolations}</span>
+                                {t('europeAlerts.lead')} : <span className="font-semibold text-foreground">{c.leadViolations}</span>
                               </span>
                             )}
                             {c.bacteriaViolations > 0 && (
                               <span className="flex items-center gap-1.5 text-muted-foreground">
                                 <Bug className="h-3.5 w-3.5" />
-                                Bactéries : <span className="font-semibold text-foreground">{c.bacteriaViolations}</span>
+                                {t('europeAlerts.bacteria')} : <span className="font-semibold text-foreground">{c.bacteriaViolations}</span>
                               </span>
                             )}
                           </div>
@@ -100,7 +100,7 @@ const AlertesEurope = () => {
                         <CollapsibleContent>
                           {countryPollutants.length > 0 && (
                             <div className="px-4 pb-4 pt-1 border-t border-destructive/10">
-                              <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Polluants détectés</p>
+                              <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">{t('europeAlerts.detectedPollutants')}</p>
                               <div className="space-y-1.5">
                                 {countryPollutants.map(p => (
                                   <div key={`${p.countryCode}-${p.pollutant}`} className="flex items-center justify-between text-sm py-1.5 px-3 rounded bg-background/60">
@@ -110,7 +110,7 @@ const AlertesEurope = () => {
                                     </div>
                                     <div className="flex items-center gap-3 text-xs">
                                       <span>{p.avgValue} {p.unit}</span>
-                                      <span className="text-muted-foreground">limite {p.limitValue}</span>
+                                      <span className="text-muted-foreground">{t('europeAlerts.limit')} {p.limitValue}</span>
                                       <Badge variant={p.exceedanceRatePct > 2 ? 'destructive' : 'secondary'} className="text-xs">
                                         {p.exceedanceRatePct}%
                                       </Badge>
@@ -135,12 +135,12 @@ const AlertesEurope = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingDown className="h-5 w-5 text-orange-500" />
-              Dépassements de seuils les plus importants
+              {t('europeAlerts.topExceedances')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {allExceedances.length === 0 ? (
-              <p className="text-muted-foreground">Aucun dépassement significatif identifié.</p>
+              <p className="text-muted-foreground">{t('europeAlerts.noExceedance')}</p>
             ) : (
               <div className="space-y-2">
                 {allExceedances.slice(0, 15).map((p) => (
@@ -151,10 +151,10 @@ const AlertesEurope = () => {
                     </div>
                     <div className="text-right">
                       <Badge variant={p.exceedanceRatePct > 15 ? 'destructive' : 'secondary'}>
-                        {p.exceedanceRatePct}% dépassement
+                        {p.exceedanceRatePct}% {t('europeAlerts.exceedance')}
                       </Badge>
                       <div className="text-xs text-muted-foreground mt-1">
-                        {p.avgValue} {p.unit} / limite {p.limitValue}
+                        {p.avgValue} {p.unit} / {t('europeAlerts.limit')} {p.limitValue}
                       </div>
                     </div>
                   </div>

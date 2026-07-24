@@ -158,13 +158,13 @@ export default function Alertes() {
           className="block rounded-xl border border-green-200 bg-green-50 hover:bg-green-100 transition-colors p-4"
         >
           <div className="flex items-start gap-3">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-600 text-white text-xs font-semibold shrink-0 mt-0.5">Résolu</span>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-600 text-white text-xs font-semibold shrink-0 mt-0.5">{t('alerts.vendee.badge')}</span>
             <div>
               <p className="font-semibold text-green-900">
-                Pollution au manganèse en Vendée — usine du Moulin Papon (juillet 2026)
+                {t('alerts.vendee.title')}
               </p>
               <p className="text-sm text-green-900/80 mt-1">
-                Chronologie factuelle 8→9 juillet 2026, communes concernées, levée de l'alerte par l'ARS et Vendée Eau. Lire l'article complet →
+                {t('alerts.vendee.description')}
               </p>
             </div>
           </div>
