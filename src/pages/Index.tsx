@@ -115,13 +115,13 @@ const Index = () => {
                       <ClipboardList className="w-7 h-7 text-primary" />
                     </div>
                     <div className="flex items-center justify-center gap-2 mb-1">
-                      <CardTitle className="text-lg md:text-xl">Diagnostic complet</CardTitle>
-                      <Badge variant="secondary" className="text-xs">4 étapes</Badge>
+                      <CardTitle className="text-lg md:text-xl">{t('home.diagnostic.full.title')}</CardTitle>
+                      <Badge variant="secondary" className="text-xs">{t('home.diagnostic.full.badge')}</Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="text-center">
                     <p className="text-muted-foreground text-sm md:text-base">
-                      Analyse détaillée avec profils, intolérances et préférences pour un résultat sur-mesure.
+                      {t('home.diagnostic.full.desc')}
                     </p>
                   </CardContent>
                 </Card>
