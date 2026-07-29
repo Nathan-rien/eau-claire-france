@@ -92,7 +92,7 @@ export default function SourcesEau() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <div className="container mx-auto">
           <Breadcrumb items={[
-            { name: 'Sources d\'eau', href: '/sources-eau', current: true }
+            { name: t('waterSources.breadcrumb'), href: '/sources-eau', current: true }
           ]} />
         </div>
         
@@ -116,32 +116,32 @@ export default function SourcesEau() {
                   <CardContent className="pt-4 pb-3 text-center">
                     <Database className="h-6 w-6 mx-auto mb-1 text-blue-600" />
                     <p className="text-2xl font-bold">{stats.total}</p>
-                    <p className="text-xs text-muted-foreground">Sources référencées</p>
+                    <p className="text-xs text-muted-foreground">{t('waterSources.referenced')}</p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="pt-4 pb-3 text-center">
                     <Droplets className="h-6 w-6 mx-auto mb-1 text-green-600" />
                     <div className="flex justify-center gap-2 text-xs mt-1">
-                      <span className="text-green-700">{stats.byType.source} source</span>
-                      <span className="text-blue-700">{stats.byType.minerale} minérale</span>
-                      <span className="text-amber-700">{stats.byType.gazeuse} gazeuse</span>
+                      <span className="text-green-700">{stats.byType.source} {t('waterSources.typeSource')}</span>
+                      <span className="text-blue-700">{stats.byType.minerale} {t('waterSources.typeMineral')}</span>
+                      <span className="text-amber-700">{stats.byType.gazeuse} {t('waterSources.typeSparkling')}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">Répartition par type</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t('waterSources.distribution')}</p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="pt-4 pb-3 text-center">
                     <FlaskConical className="h-6 w-6 mx-auto mb-1 text-purple-600" />
                     <p className="text-2xl font-bold">{stats.withComposition}</p>
-                    <p className="text-xs text-muted-foreground">Compositions connues</p>
+                    <p className="text-xs text-muted-foreground">{t('waterSources.compositions')}</p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="pt-4 pb-3 text-center">
                     <BarChart3 className="h-6 w-6 mx-auto mb-1 text-orange-600" />
                     <p className="text-2xl font-bold">{stats.avgResidue ?? '—'}</p>
-                    <p className="text-xs text-muted-foreground">Résidu sec moyen (mg/L)</p>
+                    <p className="text-xs text-muted-foreground">{t('waterSources.avgResidue')}</p>
                   </CardContent>
                 </Card>
               </div>

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle } from 'lucide-react';
 import { MapboxSecurityService } from '@/services/mapboxSecurityService';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   getEUPollutants,
   getEUWaterQuality,
@@ -27,6 +28,7 @@ interface CountryMapData {
 }
 
 const PollutantMapEurope: React.FC = () => {
+  const { t } = useLanguage();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [countries, setCountries] = useState<CountryMapData[]>([]);
@@ -103,10 +105,10 @@ const PollutantMapEurope: React.FC = () => {
 
       const riskLabel =
         c.riskLevel === 'low'
-          ? 'Faible'
+          ? t('euMap.risk.low.label')
           : c.riskLevel === 'medium'
-          ? 'Modéré'
-          : 'Élevé';
+          ? t('euMap.risk.medium.label')
+          : t('euMap.risk.high.label');
 
       const pollutantRows = c.pollutants
         .sort((a, b) => b.exceedanceRatePct - a.exceedanceRatePct)
@@ -125,21 +127,21 @@ const PollutantMapEurope: React.FC = () => {
         `<div style="padding:8px">
           <h3 style="font-weight:700;font-size:15px;margin-bottom:4px">${c.name}</h3>
           <p style="font-size:12px;color:#666;margin-bottom:6px">
-            Risque : <span style="color:${getRiskColor(c.riskLevel)};font-weight:600">${riskLabel}</span>
-            · Conformité : ${c.complianceRate}%
+            ${t('euMap.risk')} : <span style="color:${getRiskColor(c.riskLevel)};font-weight:600">${riskLabel}</span>
+            · ${t('euMap.compliance')} : ${c.complianceRate}%
           </p>
           ${
             c.pollutants.length > 0
               ? `<table style="width:100%;border-collapse:collapse">
                   <thead><tr style="border-bottom:1px solid #e5e7eb">
-                    <th style="text-align:left;padding:2px 6px;font-size:11px;color:#888">Polluant</th>
-                    <th style="text-align:right;padding:2px 6px;font-size:11px;color:#888">Moy.</th>
-                    <th style="text-align:right;padding:2px 6px;font-size:11px;color:#888">Limite</th>
-                    <th style="text-align:right;padding:2px 6px;font-size:11px;color:#888">Dép.</th>
+                    <th style="text-align:left;padding:2px 6px;font-size:11px;color:#888">${t('qmap.table.pollutant')}</th>
+                    <th style="text-align:right;padding:2px 6px;font-size:11px;color:#888">${t('qmap.table.avg')}</th>
+                    <th style="text-align:right;padding:2px 6px;font-size:11px;color:#888">${t('qmap.table.limit')}</th>
+                    <th style="text-align:right;padding:2px 6px;font-size:11px;color:#888">${t('qmap.table.exceedance')}</th>
                   </tr></thead>
                   <tbody>${pollutantRows}</tbody>
                 </table>`
-              : '<p style="font-size:12px;color:#999">Aucun polluant référencé</p>'
+              : `<p style="font-size:12px;color:#999">${t('euMap.noPollutant')}</p>`
           }
         </div>`
       );
@@ -153,7 +155,7 @@ const PollutantMapEurope: React.FC = () => {
     return () => {
       map.current?.remove();
     };
-  }, [countries]);
+  }, [countries, t]);
 
   const getRiskBadgeClass = (r: string) =>
     r === 'low'
@@ -163,21 +165,21 @@ const PollutantMapEurope: React.FC = () => {
       : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
 
   const getRiskLabel = (r: string) =>
-    r === 'low' ? 'Faible' : r === 'medium' ? 'Modéré' : 'Élevé';
+    r === 'low' ? t('euMap.risk.low.label') : r === 'medium' ? t('euMap.risk.medium.label') : t('euMap.risk.high.label');
 
   return (
     <div className="space-y-6">
       {/* Legend */}
       <Card>
         <CardHeader>
-          <CardTitle>Légende des niveaux de risque</CardTitle>
+          <CardTitle>{t('euMap.legend.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
-              { level: 'low', label: 'Faible', desc: 'Polluants sous les seuils réglementaires', color: 'bg-green-500' },
-              { level: 'medium', label: 'Modéré', desc: 'Présence de polluants à surveiller', color: 'bg-yellow-500' },
-              { level: 'high', label: 'Élevé', desc: 'Dépassements ou polluants préoccupants', color: 'bg-red-500' },
+              { level: 'low', label: t('euMap.risk.low.label'), desc: t('euMap.risk.low.desc'), color: 'bg-green-500' },
+              { level: 'medium', label: t('euMap.risk.medium.label'), desc: t('euMap.risk.medium.desc'), color: 'bg-yellow-500' },
+              { level: 'high', label: t('euMap.risk.high.label'), desc: t('euMap.risk.high.desc'), color: 'bg-red-500' },
             ].map((item) => (
               <div key={item.level} className="flex items-center space-x-3">
                 <div
@@ -221,11 +223,11 @@ const PollutantMapEurope: React.FC = () => {
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Conformité</span>
+                  <span className="text-muted-foreground">{t('euMap.compliance')}</span>
                   <span className="font-medium">{c.complianceRate}%</span>
                 </div>
                 <div className="text-sm">
-                  <span className="text-muted-foreground">Polluants principaux :</span>
+                  <span className="text-muted-foreground">{t('euMap.mainPollutants')}</span>
                   <div className="mt-1 flex flex-wrap gap-1">
                     {c.pollutants.slice(0, 4).map((p) => (
                       <Badge key={p.pollutant} variant="outline" className="text-xs">
@@ -235,7 +237,7 @@ const PollutantMapEurope: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Zones affectées</span>
+                  <span className="text-muted-foreground">{t('euMap.affectedZones')}</span>
                   <span className="font-medium">
                     {c.pollutants.reduce((s, p) => s + p.affectedZones, 0)}
                   </span>
@@ -243,7 +245,7 @@ const PollutantMapEurope: React.FC = () => {
                 {c.riskLevel === 'high' && (
                   <div className="flex items-center space-x-1 text-sm text-destructive">
                     <AlertTriangle className="w-4 h-4" />
-                    <span>Pays à surveiller</span>
+                    <span>{t('euMap.countryToWatch')}</span>
                   </div>
                 )}
               </CardContent>

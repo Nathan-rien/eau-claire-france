@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import LazyInteractiveMap from './LazyInteractiveMap';
 import { MapLoader } from '@/components/ui/map-loader';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Pollutant {
   name: string;
@@ -185,15 +186,18 @@ const getQualityColor = (quality: string) => {
   }
 };
 
-const getQualityLabel = (quality: string) => {
-  switch (quality) {
-    case 'A': return 'Excellente';
-    case 'B': return 'Bonne';
-    case 'C': return 'Acceptable';
-    case 'D': return 'Médiocre';
-    case 'E': return 'Mauvaise';
-    default: return 'Non évaluée';
-  }
+const useQualityLabel = () => {
+  const { t } = useLanguage();
+  return (quality: string) => {
+    switch (quality) {
+      case 'A': return t('qmap.grade.A.label');
+      case 'B': return t('qmap.grade.B.label');
+      case 'C': return t('qmap.grade.C.label');
+      case 'D': return t('qmap.grade.D.label');
+      case 'E': return t('qmap.grade.E.label');
+      default: return '—';
+    }
+  };
 };
 
 const getRiskLevel = (complianceRate: number): 'low' | 'medium' | 'high' => {
@@ -201,9 +205,6 @@ const getRiskLevel = (complianceRate: number): 'low' | 'medium' | 'high' => {
   if (complianceRate >= 96) return 'medium';
   return 'high';
 };
-
-const getRiskLabel = (level: 'low' | 'medium' | 'high') =>
-  level === 'low' ? 'Faible' : level === 'medium' ? 'Modéré' : 'Élevé';
 
 const getRiskBadgeClass = (level: 'low' | 'medium' | 'high') =>
   level === 'low'
@@ -216,6 +217,10 @@ const getExceedanceColor = (rate: number) =>
   rate > 2 ? 'text-red-600' : rate > 1 ? 'text-yellow-600' : 'text-green-600';
 
 const QualityMap = () => {
+  const { t } = useLanguage();
+  const getQualityLabel = useQualityLabel();
+  const getRiskLabel = (level: 'low' | 'medium' | 'high') =>
+    level === 'low' ? t('qmap.risk.low.label') : level === 'medium' ? t('qmap.risk.medium.label') : t('qmap.risk.high.label');
   const [showWaterSources, setShowWaterSources] = useState<boolean>(true);
 
   // Compute national stats from regions
@@ -229,10 +234,10 @@ const QualityMap = () => {
       {/* National Stats Banner */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Communes surveillées', value: totalCities.toLocaleString('fr-FR'), icon: '🏘️' },
-          { label: 'Conformité nationale', value: `${avgConformity} %`, icon: '✅' },
-          { label: 'Alertes actives', value: totalAlerts.toString(), icon: '⚠️' },
-          { label: 'Population desservie', value: `${totalPopulation} M`, icon: '👥' },
+          { label: t('qmap.stat.communes'), value: totalCities.toLocaleString('fr-FR'), icon: '🏘️' },
+          { label: t('qmap.stat.conformity'), value: `${avgConformity} %`, icon: '✅' },
+          { label: t('qmap.stat.alerts'), value: totalAlerts.toString(), icon: '⚠️' },
+          { label: t('qmap.stat.population'), value: `${totalPopulation} M`, icon: '👥' },
         ].map(stat => (
           <Card key={stat.label}>
             <CardContent className="p-4 text-center">
@@ -247,16 +252,16 @@ const QualityMap = () => {
       {/* Quality Grade Legend */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base md:text-lg">Légende des scores de qualité</CardTitle>
+          <CardTitle className="text-base md:text-lg">{t('qmap.legend.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {[
-              { grade: 'A', label: 'Excellente', desc: 'Conforme en tout point' },
-              { grade: 'B', label: 'Bonne', desc: 'Dépassement ponctuel' },
-              { grade: 'C', label: 'Acceptable', desc: 'Données incomplètes' },
-              { grade: 'D', label: 'Médiocre', desc: 'Non-conformité chronique' },
-              { grade: 'E', label: 'Mauvaise', desc: 'Risques sanitaires' },
+              { grade: 'A', label: t('qmap.grade.A.label'), desc: t('qmap.grade.A.desc') },
+              { grade: 'B', label: t('qmap.grade.B.label'), desc: t('qmap.grade.B.desc') },
+              { grade: 'C', label: t('qmap.grade.C.label'), desc: t('qmap.grade.C.desc') },
+              { grade: 'D', label: t('qmap.grade.D.label'), desc: t('qmap.grade.D.desc') },
+              { grade: 'E', label: t('qmap.grade.E.label'), desc: t('qmap.grade.E.desc') },
             ].map(item => (
               <div key={item.grade} className="flex items-center space-x-3">
                 <div className={`w-6 h-6 md:w-8 md:h-8 ${getQualityColor(item.grade)} rounded-full flex items-center justify-center text-white font-bold text-xs md:text-sm`}>
@@ -272,12 +277,12 @@ const QualityMap = () => {
 
           {/* Risk Level Legend */}
           <div>
-            <h4 className="text-sm font-semibold mb-3 text-muted-foreground">Niveaux de risque (basés sur le taux de conformité)</h4>
+            <h4 className="text-sm font-semibold mb-3 text-muted-foreground">{t('qmap.risk.title')}</h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
-                { level: 'low' as const, label: 'Faible', desc: 'Conformité ≥ 98 %', color: 'bg-green-500' },
-                { level: 'medium' as const, label: 'Modéré', desc: 'Conformité 96–98 %', color: 'bg-yellow-500' },
-                { level: 'high' as const, label: 'Élevé', desc: 'Conformité < 96 %', color: 'bg-red-500' },
+                { level: 'low' as const, label: t('qmap.risk.low.label'), desc: t('qmap.risk.low.desc'), color: 'bg-green-500' },
+                { level: 'medium' as const, label: t('qmap.risk.medium.label'), desc: t('qmap.risk.medium.desc'), color: 'bg-yellow-500' },
+                { level: 'high' as const, label: t('qmap.risk.high.label'), desc: t('qmap.risk.high.desc'), color: 'bg-red-500' },
               ].map(item => (
                 <div key={item.level} className="flex items-center space-x-3">
                   <div className={`w-6 h-6 md:w-8 md:h-8 ${item.color} rounded-full flex items-center justify-center text-white font-bold text-xs`}>
@@ -297,7 +302,7 @@ const QualityMap = () => {
       {/* Water Sources Toggle */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base md:text-lg">Visualisation des sources d'eau</CardTitle>
+          <CardTitle className="text-base md:text-lg">{t('qmap.sources.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <Button
@@ -307,10 +312,10 @@ const QualityMap = () => {
           >
             {showWaterSources ? <Eye className="w-3 h-3 md:w-4 md:h-4" /> : <EyeOff className="w-3 h-3 md:w-4 md:h-4" />}
             <span className="hidden sm:inline">
-              {showWaterSources ? 'Masquer les zones de provenance' : 'Afficher les zones de provenance'}
+              {showWaterSources ? t('qmap.sources.hide') : t('qmap.sources.show')}
             </span>
             <span className="sm:hidden">
-              {showWaterSources ? 'Masquer zones' : 'Afficher zones'}
+              {showWaterSources ? t('qmap.sources.hideShort') : t('qmap.sources.showShort')}
             </span>
           </Button>
         </CardContent>
@@ -345,31 +350,31 @@ const QualityMap = () => {
               <CardContent>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-xs md:text-sm">
-                    <span className="text-muted-foreground">Qualité moyenne</span>
+                    <span className="text-muted-foreground">{t('qmap.region.avgQuality')}</span>
                     <span className="font-medium">{getQualityLabel(region.quality)}</span>
                   </div>
                   <div className="flex items-center justify-between text-xs md:text-sm">
-                    <span className="text-muted-foreground">Taux de conformité</span>
+                    <span className="text-muted-foreground">{t('qmap.region.compliance')}</span>
                     <span className="font-medium">{region.complianceRate} %</span>
                   </div>
                   <div className="flex items-center justify-between text-xs md:text-sm">
-                    <span className="text-muted-foreground">Source d'eau</span>
+                    <span className="text-muted-foreground">{t('qmap.region.waterSource')}</span>
                     <span className="font-medium text-right">{region.waterSource}</span>
                   </div>
                   <div className="flex items-center justify-between text-xs md:text-sm">
-                    <span className="text-muted-foreground">Population desservie</span>
+                    <span className="text-muted-foreground">{t('qmap.region.population')}</span>
                     <span className="font-medium">{region.population} M</span>
                   </div>
                   <div className="flex items-center justify-between text-xs md:text-sm">
-                    <span className="text-muted-foreground">Zones d'approvisionnement</span>
+                    <span className="text-muted-foreground">{t('qmap.region.supplyZones')}</span>
                     <span className="font-medium">{region.waterSupplyZones.toLocaleString()}</span>
                   </div>
                   <div className="flex items-center justify-between text-xs md:text-sm">
-                    <span className="text-muted-foreground">Communes</span>
+                    <span className="text-muted-foreground">{t('qmap.region.cities')}</span>
                     <span className="font-medium">{region.cities.toLocaleString()}</span>
                   </div>
                   <div className="flex items-center justify-between text-xs md:text-sm">
-                    <span className="text-muted-foreground">Alertes actives</span>
+                    <span className="text-muted-foreground">{t('qmap.region.alerts')}</span>
                     <div className="flex items-center space-x-1">
                       {region.alerts > 0 && (
                         <AlertTriangle className="w-3 h-3 md:w-4 md:h-4 text-orange-500" />
@@ -387,7 +392,7 @@ const QualityMap = () => {
                   {/* Collapsible Pollutants */}
                   <Collapsible>
                     <CollapsibleTrigger className="flex items-center justify-between w-full pt-2 text-xs md:text-sm font-medium text-primary hover:underline">
-                      <span>Polluants détectés ({region.mainPollutants.length})</span>
+                      <span>{t('qmap.region.pollutants')} ({region.mainPollutants.length})</span>
                       <ChevronDown className="w-3 h-3 md:w-4 md:h-4 transition-transform data-[state=open]:rotate-180" />
                     </CollapsibleTrigger>
                     <CollapsibleContent>
@@ -395,10 +400,10 @@ const QualityMap = () => {
                         <table className="w-full text-xs border-collapse">
                           <thead>
                             <tr className="border-b border-border">
-                              <th className="text-left py-1 px-1 text-muted-foreground font-medium">Polluant</th>
-                              <th className="text-right py-1 px-1 text-muted-foreground font-medium">Moy.</th>
-                              <th className="text-right py-1 px-1 text-muted-foreground font-medium">Limite</th>
-                              <th className="text-right py-1 px-1 text-muted-foreground font-medium">Dép. %</th>
+                              <th className="text-left py-1 px-1 text-muted-foreground font-medium">{t('qmap.table.pollutant')}</th>
+                              <th className="text-right py-1 px-1 text-muted-foreground font-medium">{t('qmap.table.avg')}</th>
+                              <th className="text-right py-1 px-1 text-muted-foreground font-medium">{t('qmap.table.limit')}</th>
+                              <th className="text-right py-1 px-1 text-muted-foreground font-medium">{t('qmap.table.exceedance')}</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -421,7 +426,7 @@ const QualityMap = () => {
                   {riskLevel === 'high' && (
                     <div className="flex items-center space-x-1 text-xs md:text-sm text-destructive pt-1">
                       <AlertTriangle className="w-3 h-3 md:w-4 md:h-4" />
-                      <span>Région à surveiller</span>
+                      <span>{t('qmap.region.toWatch')}</span>
                     </div>
                   )}
                 </div>
