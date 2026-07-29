@@ -81,10 +81,10 @@ const Index = () => {
           <div className="relative container mx-auto max-w-4xl">
             <div className="text-center mb-4">
               <h2 id="diagnostic-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-                Quelle eau boire ?
+                {t('home.diagnostic.title')}
               </h2>
               <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-                Trouvez l'eau idéale pour votre santé grâce à nos outils de diagnostic personnalisé.
+                {t('home.diagnostic.subtitle')}
               </p>
             </div>
 
