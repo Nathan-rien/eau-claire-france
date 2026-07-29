@@ -96,13 +96,13 @@ const Index = () => {
                       <Zap className="w-7 h-7 text-green-600" />
                     </div>
                     <div className="flex items-center justify-center gap-2 mb-1">
-                      <CardTitle className="text-lg md:text-xl">Diagnostic rapide</CardTitle>
-                      <Badge variant="secondary" className="text-xs">Rapide</Badge>
+                      <CardTitle className="text-lg md:text-xl">{t('home.diagnostic.quick.title')}</CardTitle>
+                      <Badge variant="secondary" className="text-xs">{t('home.diagnostic.quick.badge')}</Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="text-center">
                     <p className="text-muted-foreground text-sm md:text-base">
-                      3 questions, résultat en 30 secondes. Obtenez une recommandation immédiate.
+                      {t('home.diagnostic.quick.desc')}
                     </p>
                   </CardContent>
                 </Card>
