@@ -164,22 +164,22 @@ const Index = () => {
           <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-4">
               <h2 id="maps-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-                Cartes & Infographies
+                {t('home.maps.title')}
               </h2>
               <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-                Explorez nos cartes interactives et visualisations pour tout comprendre sur l'eau en France et en Europe.
+                {t('home.maps.subtitle')}
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
-                { to: '/carte', icon: MapPin, color: 'text-primary', bg: 'bg-primary/10', title: 'Carte qualité de l\'eau', desc: 'Qualité de l\'eau potable par commune en France' },
-                { to: '/carte-polluants', icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-100', title: 'Carte des polluants', desc: 'Polluants détectés dans l\'eau en France' },
-                { to: '/gout-eau', icon: GlassWater, color: 'text-cyan-600', bg: 'bg-cyan-100', title: 'Goût de l\'eau par région', desc: 'Ce que les Français disent du goût de leur eau du robinet' },
-                { to: '/carte-parcours-eau', icon: Droplets, color: 'text-blue-500', bg: 'bg-blue-100', title: 'Parcours eau en bouteille', desc: 'De la source au magasin, suivez le trajet' },
-                { to: '/carte-parcours-robinet', icon: Search, color: 'text-green-600', bg: 'bg-green-100', title: 'Parcours eau du robinet', desc: 'Du captage au robinet, le traitement expliqué' },
-                { to: '/sources-eau', icon: Leaf, color: 'text-emerald-600', bg: 'bg-emerald-100', title: 'Sources d\'eau', desc: 'Carte des sources d\'eau en France' },
-                { to: '/carte-europe', icon: Globe, color: 'text-purple-600', bg: 'bg-purple-100', title: 'Carte Europe', desc: 'Qualité de l\'eau potable en Europe' },
+                { to: '/carte', icon: MapPin, color: 'text-primary', bg: 'bg-primary/10', title: t('home.maps.card1.title'), desc: t('home.maps.card1.desc') },
+                { to: '/carte-polluants', icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-100', title: t('home.maps.card2.title'), desc: t('home.maps.card2.desc') },
+                { to: '/gout-eau', icon: GlassWater, color: 'text-cyan-600', bg: 'bg-cyan-100', title: t('home.maps.card3.title'), desc: t('home.maps.card3.desc') },
+                { to: '/carte-parcours-eau', icon: Droplets, color: 'text-blue-500', bg: 'bg-blue-100', title: t('home.maps.card4.title'), desc: t('home.maps.card4.desc') },
+                { to: '/carte-parcours-robinet', icon: Search, color: 'text-green-600', bg: 'bg-green-100', title: t('home.maps.card5.title'), desc: t('home.maps.card5.desc') },
+                { to: '/sources-eau', icon: Leaf, color: 'text-emerald-600', bg: 'bg-emerald-100', title: t('home.maps.card6.title'), desc: t('home.maps.card6.desc') },
+                { to: '/carte-europe', icon: Globe, color: 'text-purple-600', bg: 'bg-purple-100', title: t('home.maps.card7.title'), desc: t('home.maps.card7.desc') },
               ].map(({ to, icon: Icon, color, bg, title, desc }) => (
                 <Link key={to} to={to} className="group">
                   <Card className="h-full border border-border hover:border-primary/40 hover:shadow-lg transition-all duration-300 group-hover:scale-[1.02]">
