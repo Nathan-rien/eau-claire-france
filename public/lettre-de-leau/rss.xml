@@ -6,7 +6,16 @@
     <atom:link href="https://infoeau.fr/lettre-de-leau/rss.xml" rel="self" type="application/rss+xml" />
     <description>Actualités, scandales, réglementation et enquêtes sur la qualité de l'eau en France.</description>
     <language>fr-FR</language>
-    <lastBuildDate>Fri, 24 Jul 2026 13:50:28 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 29 Jul 2026 07:55:41 GMT</lastBuildDate>
+    <item>
+      <title>Le coût de l&apos;eau en France : bas, mais à quel prix pour sa qualité ?</title>
+      <link>https://infoeau.fr/lettre-de-leau/cout-eau-france-qualite-pollution-pfas</link>
+      <guid isPermaLink="true">https://infoeau.fr/lettre-de-leau/cout-eau-france-qualite-pollution-pfas</guid>
+      <pubDate>Mon, 27 Jul 2026 10:48:24 GMT</pubDate>
+      <category>qualite</category>
+      <description>Le coût de l&apos;eau en France est souvent perçu comme bas, mais cette perception masque des défis majeurs en matière de qualité et de gestion. Entre pollutions chimiques persistantes et efforts de dépollution coûteux, la &quot;Lettre de l&apos;eau&quot; explore les dessous d&apos;une ressource essentielle.</description>
+      <enclosure url="https://xblogttmomuogdhmaztf.supabase.co/storage/v1/object/public/blog-images/2026-07-27/cout-eau-france-qualite-pollution-pfas-1785149303703.png" type="image/jpeg" />
+    </item>
     <item>
       <title>Plages françaises 2026 : la carte des zones à éviter cet été dévoilée</title>
       <link>https://infoeau.fr/lettre-de-leau/plages-francaises-2026-zones-a-eviter-bacteries-fecales</link>

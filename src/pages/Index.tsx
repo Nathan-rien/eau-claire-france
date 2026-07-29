@@ -44,7 +44,7 @@ const Index = () => {
               <div className="mb-4 md:mb-6">
                 <Link to="/diagnostic">
                   <Button size="lg" className="bg-gradient-to-r from-[#3b82f6] to-[#22c55e] hover:from-[#2563eb] hover:to-[#16a34a] text-white text-base md:text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-                    Lancer un diagnostic →
+                    {t('home.cta.diagnostic')}
                   </Button>
                 </Link>
               </div>
@@ -81,10 +81,10 @@ const Index = () => {
           <div className="relative container mx-auto max-w-4xl">
             <div className="text-center mb-4">
               <h2 id="diagnostic-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-                Quelle eau boire ?
+                {t('home.diagnostic.title')}
               </h2>
               <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-                Trouvez l'eau idéale pour votre santé grâce à nos outils de diagnostic personnalisé.
+                {t('home.diagnostic.subtitle')}
               </p>
             </div>
 
@@ -96,13 +96,13 @@ const Index = () => {
                       <Zap className="w-7 h-7 text-green-600" />
                     </div>
                     <div className="flex items-center justify-center gap-2 mb-1">
-                      <CardTitle className="text-lg md:text-xl">Diagnostic rapide</CardTitle>
-                      <Badge variant="secondary" className="text-xs">Rapide</Badge>
+                      <CardTitle className="text-lg md:text-xl">{t('home.diagnostic.quick.title')}</CardTitle>
+                      <Badge variant="secondary" className="text-xs">{t('home.diagnostic.quick.badge')}</Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="text-center">
                     <p className="text-muted-foreground text-sm md:text-base">
-                      3 questions, résultat en 30 secondes. Obtenez une recommandation immédiate.
+                      {t('home.diagnostic.quick.desc')}
                     </p>
                   </CardContent>
                 </Card>
@@ -115,13 +115,13 @@ const Index = () => {
                       <ClipboardList className="w-7 h-7 text-primary" />
                     </div>
                     <div className="flex items-center justify-center gap-2 mb-1">
-                      <CardTitle className="text-lg md:text-xl">Diagnostic complet</CardTitle>
-                      <Badge variant="secondary" className="text-xs">4 étapes</Badge>
+                      <CardTitle className="text-lg md:text-xl">{t('home.diagnostic.full.title')}</CardTitle>
+                      <Badge variant="secondary" className="text-xs">{t('home.diagnostic.full.badge')}</Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="text-center">
                     <p className="text-muted-foreground text-sm md:text-base">
-                      Analyse détaillée avec profils, intolérances et préférences pour un résultat sur-mesure.
+                      {t('home.diagnostic.full.desc')}
                     </p>
                   </CardContent>
                 </Card>
@@ -143,13 +143,13 @@ const Index = () => {
                     </div>
                     <div className="text-center md:text-left flex-1">
                       <h2 id="ranking-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-                        Classement des eaux en bouteille
+                        {t('home.ranking.title')}
                       </h2>
                       <p className="text-muted-foreground text-sm md:text-base mb-4">
-                        Découvrez le top des eaux minérales et de source classées par composition minérale, prix et qualité.
+                        {t('home.ranking.desc')}
                       </p>
                       <Button className="group-hover:shadow-md transition-shadow">
-                        Voir le classement →
+                        {t('home.ranking.cta')}
                       </Button>
                     </div>
                   </div>
@@ -164,22 +164,22 @@ const Index = () => {
           <div className="container mx-auto max-w-5xl">
             <div className="text-center mb-4">
               <h2 id="maps-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-                Cartes & Infographies
+                {t('home.maps.title')}
               </h2>
               <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-                Explorez nos cartes interactives et visualisations pour tout comprendre sur l'eau en France et en Europe.
+                {t('home.maps.subtitle')}
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
-                { to: '/carte', icon: MapPin, color: 'text-primary', bg: 'bg-primary/10', title: 'Carte qualité de l\'eau', desc: 'Qualité de l\'eau potable par commune en France' },
-                { to: '/carte-polluants', icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-100', title: 'Carte des polluants', desc: 'Polluants détectés dans l\'eau en France' },
-                { to: '/gout-eau', icon: GlassWater, color: 'text-cyan-600', bg: 'bg-cyan-100', title: 'Goût de l\'eau par région', desc: 'Ce que les Français disent du goût de leur eau du robinet' },
-                { to: '/carte-parcours-eau', icon: Droplets, color: 'text-blue-500', bg: 'bg-blue-100', title: 'Parcours eau en bouteille', desc: 'De la source au magasin, suivez le trajet' },
-                { to: '/carte-parcours-robinet', icon: Search, color: 'text-green-600', bg: 'bg-green-100', title: 'Parcours eau du robinet', desc: 'Du captage au robinet, le traitement expliqué' },
-                { to: '/sources-eau', icon: Leaf, color: 'text-emerald-600', bg: 'bg-emerald-100', title: 'Sources d\'eau', desc: 'Carte des sources d\'eau en France' },
-                { to: '/carte-europe', icon: Globe, color: 'text-purple-600', bg: 'bg-purple-100', title: 'Carte Europe', desc: 'Qualité de l\'eau potable en Europe' },
+                { to: '/carte', icon: MapPin, color: 'text-primary', bg: 'bg-primary/10', title: t('home.maps.card1.title'), desc: t('home.maps.card1.desc') },
+                { to: '/carte-polluants', icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-100', title: t('home.maps.card2.title'), desc: t('home.maps.card2.desc') },
+                { to: '/gout-eau', icon: GlassWater, color: 'text-cyan-600', bg: 'bg-cyan-100', title: t('home.maps.card3.title'), desc: t('home.maps.card3.desc') },
+                { to: '/carte-parcours-eau', icon: Droplets, color: 'text-blue-500', bg: 'bg-blue-100', title: t('home.maps.card4.title'), desc: t('home.maps.card4.desc') },
+                { to: '/carte-parcours-robinet', icon: Search, color: 'text-green-600', bg: 'bg-green-100', title: t('home.maps.card5.title'), desc: t('home.maps.card5.desc') },
+                { to: '/sources-eau', icon: Leaf, color: 'text-emerald-600', bg: 'bg-emerald-100', title: t('home.maps.card6.title'), desc: t('home.maps.card6.desc') },
+                { to: '/carte-europe', icon: Globe, color: 'text-purple-600', bg: 'bg-purple-100', title: t('home.maps.card7.title'), desc: t('home.maps.card7.desc') },
               ].map(({ to, icon: Icon, color, bg, title, desc }) => (
                 <Link key={to} to={to} className="group">
                   <Card className="h-full border border-border hover:border-primary/40 hover:shadow-lg transition-all duration-300 group-hover:scale-[1.02]">
@@ -221,17 +221,13 @@ const Index = () => {
               <div className="flex-1">
                 <div className="border-l-4 border-primary pl-5">
                   <h2 id="choose-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-                    Bien choisir son eau en bouteille
+                    {t('home.choose.title')}
                   </h2>
-                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
-                    Chaque eau en bouteille a une <strong className="text-foreground">composition minérale unique</strong>. Calcium, magnésium, bicarbonates… choisir la bonne eau, c'est adapter sa consommation à ses besoins : <strong className="text-foreground">bébés</strong>, <strong className="text-foreground">sportifs</strong>, <strong className="text-foreground">personnes âgées</strong>.
-                  </p>
-                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
-                    Le <strong className="text-foreground">pH</strong> et le <strong className="text-foreground">résidu sec</strong> sont des indicateurs clés. Une eau faiblement minéralisée convient au quotidien, tandis qu'une eau riche en magnésium aide à combattre la fatigue.
-                  </p>
+                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3" dangerouslySetInnerHTML={{ __html: t('home.choose.p1') }} />
+                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3" dangerouslySetInnerHTML={{ __html: t('home.choose.p2') }} />
                   <Link to="/classement">
                     <Button className="mt-4">
-                      Voir le classement des eaux →
+                      {t('home.choose.cta')}
                     </Button>
                   </Link>
                 </div>
@@ -247,18 +243,14 @@ const Index = () => {
               {/* Texte à gauche, justifié à droite */}
               <div className="flex-1 text-right border-r-4 border-primary pr-5">
                 <h2 id="monitor-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-                  Surveillez la qualité de votre eau
+                  {t('home.monitor.title')}
                 </h2>
-                <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
-                  Les données de qualité de l'eau sont publiques et accessibles à tous. Grâce à notre outil de diagnostic, retrouvez en quelques clics les <strong className="text-foreground">analyses officielles</strong> de votre commune.
-                </p>
-                <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-4">
-                  Restez informé des dépassements de seuils, comprenez les résultats et recevez des <strong className="text-foreground">alertes en temps réel</strong> pour protéger votre santé et celle de vos proches.
-                </p>
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3" dangerouslySetInnerHTML={{ __html: t('home.monitor.p1') }} />
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: t('home.monitor.p2') }} />
                 <div className="flex justify-end mt-4">
                   <Link to="/diagnostic">
                     <Button size="lg" className="shadow-lg hover:shadow-xl transition-shadow">
-                      Lancer un diagnostic gratuit →
+                      {t('home.monitor.cta')}
                     </Button>
                   </Link>
                 </div>
@@ -285,17 +277,13 @@ const Index = () => {
               <div className="flex-1 order-2 md:order-2">
                 <div className="border-l-4 border-orange-400 pl-5">
                   <h2 id="risks-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-                    Les risques liés à l'eau du robinet
+                    {t('home.risks.title')}
                   </h2>
-                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
-                    L'eau du robinet en France est globalement de bonne qualité, mais elle peut contenir des traces de <strong className="text-foreground">pesticides</strong>, <strong className="text-foreground">microplastiques</strong> ou <strong className="text-foreground">résidus médicamenteux</strong> selon les régions.
-                  </p>
-                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
-                    Les canalisations anciennes peuvent libérer du <strong className="text-foreground">plomb</strong>, tandis que le traitement au chlore génère des sous-produits potentiellement indésirables. Connaître la qualité de votre eau est essentiel.
-                  </p>
+                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3" dangerouslySetInnerHTML={{ __html: t('home.risks.p1') }} />
+                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3" dangerouslySetInnerHTML={{ __html: t('home.risks.p2') }} />
                   <Link to="/polluants">
                     <Button variant="outline" className="mt-4 border-orange-300 text-orange-700 hover:bg-orange-100">
-                      Découvrir les polluants →
+                      {t('home.risks.cta')}
                     </Button>
                   </Link>
                 </div>
