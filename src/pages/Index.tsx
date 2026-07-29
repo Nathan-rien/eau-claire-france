@@ -277,17 +277,13 @@ const Index = () => {
               <div className="flex-1 order-2 md:order-2">
                 <div className="border-l-4 border-orange-400 pl-5">
                   <h2 id="risks-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-                    Les risques liés à l'eau du robinet
+                    {t('home.risks.title')}
                   </h2>
-                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
-                    L'eau du robinet en France est globalement de bonne qualité, mais elle peut contenir des traces de <strong className="text-foreground">pesticides</strong>, <strong className="text-foreground">microplastiques</strong> ou <strong className="text-foreground">résidus médicamenteux</strong> selon les régions.
-                  </p>
-                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
-                    Les canalisations anciennes peuvent libérer du <strong className="text-foreground">plomb</strong>, tandis que le traitement au chlore génère des sous-produits potentiellement indésirables. Connaître la qualité de votre eau est essentiel.
-                  </p>
+                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3" dangerouslySetInnerHTML={{ __html: t('home.risks.p1') }} />
+                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3" dangerouslySetInnerHTML={{ __html: t('home.risks.p2') }} />
                   <Link to="/polluants">
                     <Button variant="outline" className="mt-4 border-orange-300 text-orange-700 hover:bg-orange-100">
-                      Découvrir les polluants →
+                      {t('home.risks.cta')}
                     </Button>
                   </Link>
                 </div>
