@@ -243,18 +243,14 @@ const Index = () => {
               {/* Texte à gauche, justifié à droite */}
               <div className="flex-1 text-right border-r-4 border-primary pr-5">
                 <h2 id="monitor-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-                  Surveillez la qualité de votre eau
+                  {t('home.monitor.title')}
                 </h2>
-                <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
-                  Les données de qualité de l'eau sont publiques et accessibles à tous. Grâce à notre outil de diagnostic, retrouvez en quelques clics les <strong className="text-foreground">analyses officielles</strong> de votre commune.
-                </p>
-                <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-4">
-                  Restez informé des dépassements de seuils, comprenez les résultats et recevez des <strong className="text-foreground">alertes en temps réel</strong> pour protéger votre santé et celle de vos proches.
-                </p>
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3" dangerouslySetInnerHTML={{ __html: t('home.monitor.p1') }} />
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: t('home.monitor.p2') }} />
                 <div className="flex justify-end mt-4">
                   <Link to="/diagnostic">
                     <Button size="lg" className="shadow-lg hover:shadow-xl transition-shadow">
-                      Lancer un diagnostic gratuit →
+                      {t('home.monitor.cta')}
                     </Button>
                   </Link>
                 </div>
