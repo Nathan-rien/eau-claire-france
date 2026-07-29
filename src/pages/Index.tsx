@@ -44,7 +44,7 @@ const Index = () => {
               <div className="mb-4 md:mb-6">
                 <Link to="/diagnostic">
                   <Button size="lg" className="bg-gradient-to-r from-[#3b82f6] to-[#22c55e] hover:from-[#2563eb] hover:to-[#16a34a] text-white text-base md:text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-                    Lancer un diagnostic →
+                    {t('home.cta.diagnostic')}
                   </Button>
                 </Link>
               </div>
