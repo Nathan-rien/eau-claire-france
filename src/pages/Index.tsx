@@ -143,13 +143,13 @@ const Index = () => {
                     </div>
                     <div className="text-center md:text-left flex-1">
                       <h2 id="ranking-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-                        Classement des eaux en bouteille
+                        {t('home.ranking.title')}
                       </h2>
                       <p className="text-muted-foreground text-sm md:text-base mb-4">
-                        Découvrez le top des eaux minérales et de source classées par composition minérale, prix et qualité.
+                        {t('home.ranking.desc')}
                       </p>
                       <Button className="group-hover:shadow-md transition-shadow">
-                        Voir le classement →
+                        {t('home.ranking.cta')}
                       </Button>
                     </div>
                   </div>
