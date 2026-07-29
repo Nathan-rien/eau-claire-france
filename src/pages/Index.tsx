@@ -221,17 +221,13 @@ const Index = () => {
               <div className="flex-1">
                 <div className="border-l-4 border-primary pl-5">
                   <h2 id="choose-title" className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2">
-                    Bien choisir son eau en bouteille
+                    {t('home.choose.title')}
                   </h2>
-                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
-                    Chaque eau en bouteille a une <strong className="text-foreground">composition minérale unique</strong>. Calcium, magnésium, bicarbonates… choisir la bonne eau, c'est adapter sa consommation à ses besoins : <strong className="text-foreground">bébés</strong>, <strong className="text-foreground">sportifs</strong>, <strong className="text-foreground">personnes âgées</strong>.
-                  </p>
-                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3">
-                    Le <strong className="text-foreground">pH</strong> et le <strong className="text-foreground">résidu sec</strong> sont des indicateurs clés. Une eau faiblement minéralisée convient au quotidien, tandis qu'une eau riche en magnésium aide à combattre la fatigue.
-                  </p>
+                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3" dangerouslySetInnerHTML={{ __html: t('home.choose.p1') }} />
+                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-3" dangerouslySetInnerHTML={{ __html: t('home.choose.p2') }} />
                   <Link to="/classement">
                     <Button className="mt-4">
-                      Voir le classement des eaux →
+                      {t('home.choose.cta')}
                     </Button>
                   </Link>
                 </div>
