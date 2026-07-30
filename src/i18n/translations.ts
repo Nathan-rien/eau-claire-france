@@ -3236,6 +3236,83 @@ export const translations = {
     'sat.bouteille.p1': 'The price gap between tap and bottled water is considerable: around €0.004/L on national average for tap water, versus €0.20 to €0.60/L for a branded bottle. At 1.5 litres per day per person, the annual gap amounts to hundreds of euros per household.',
     'sat.bouteille.p2': 'Domestic filtration sits in between. A filter pitcher adds cartridge costs, generally a few cents per litre depending on replacement frequency — an order of magnitude far below bottled water, but not negligible over a year.',
     'sat.bouteille.p3': 'Beyond money there are transport, storage and the impact of plastic packaging. Bottled water keeps its value in specific cases: a local regulatory exceedance, a need for particular mineralisation, or very low-mineral water for an infant.',
+
+    // Bottled water or filtration (full page)
+    'bof.tag': 'Costs & uses',
+    'bof.breadcrumb.guides': 'Guides',
+    'bof.breadcrumb.current': 'Bottled water or filtration',
+    'bof.h1': 'Bottled water or filtration: the real cost',
+    'bof.seo.title': 'Bottled water or filtration: the real annual cost',
+    'bof.seo.desc': 'How much does bottled water really cost compared with filtered tap water? Savings calculator, the limits of filtration, and the cases where bottled water still makes sense.',
+    'bof.intro.p1': 'Choosing between bottled water and filtered tap water is not only a question of price. Taste, everyday convenience, the weight of packs to carry home and plastic waste weigh as much in the decision as the annual cost.',
+    'bof.intro.p2': 'The financial gap is nonetheless real: tap water costs a few thousandths of a euro per litre, bottled water a few dozen cents. Domestic filtration sits in between, since it adds the recurring cost of cartridges. The calculator below lets you put figures on your own situation, with your own prices.',
+    'bof.intro.note': 'No commercial links, no recommended brands: this page compares orders of magnitude, not products.',
+
+    // Calculator
+    'bof.calc.title': 'Calculator: how much does your water cost each year?',
+    'bof.calc.intro': 'Every parameter below is a default assumption and can be edited. Adjust them to the prices you actually pay.',
+    'bof.calc.people': 'People in the household',
+    'bof.calc.liters': 'Litres drunk per person per day',
+    'bof.calc.bottlePrice': 'Average bottled water price (€/L)',
+    'bof.calc.tapPrice': 'Tap water price (€/L)',
+    'bof.calc.cartridgePrice': 'Price of one filter cartridge (€)',
+    'bof.calc.cartridgeLiters': 'Litres treated per cartridge (L)',
+    'bof.calc.res.title': 'Result over one year',
+    'bof.calc.res.bottle': 'Annual cost of bottled water',
+    'bof.calc.res.filter': 'Annual cost of tap water + filtration',
+    'bof.calc.res.savings': 'Estimated annual saving',
+    'bof.calc.res.extra': 'Estimated annual extra cost',
+    'bof.calc.res.volume': 'Annual volume consumed',
+    'bof.calc.res.cartridges': 'Cartridges needed per year',
+    'bof.calc.res.payback': 'Pitcher pays for itself in',
+    'bof.calc.res.paybackMonths': '{n} months',
+    'bof.calc.res.paybackNever': 'Never, under these assumptions',
+    'bof.calc.res.paybackNote': 'Based on a filter pitcher bought for about €{price}.',
+    'bof.calc.carafePrice': 'Purchase price of the pitcher (€)',
+    'bof.calc.chart.bottle': 'Bottled',
+    'bof.calc.chart.filter': 'Filtered tap',
+    'bof.calc.disclaimer': 'Indicative estimates: these results depend entirely on the values you enter and are neither a guaranteed price nor purchasing advice.',
+    'bof.calc.unit.liters': 'L',
+    'bof.calc.unit.year': '/year',
+
+    // What filtration does and does not do
+    'bof.does.title': 'What filtration does — and does not do',
+    'bof.does.p1': 'A filter pitcher mainly acts on taste: activated carbon captures residual chlorine and some organic compounds responsible for odours. The ion-exchange resin temporarily reduces hardness, and therefore the feeling of limescale.',
+    'bof.does.p2': 'However, a pitcher does not make unsafe water drinkable. It does not remove nitrates, and its effectiveness on lead or certain metals depends entirely on the cartridge type and its condition. A cartridge used beyond its lifespan can even degrade water quality.',
+    'bof.does.p3': 'For a specific need — nitrates, lead, high hardness — the right technology is not always a pitcher. Comparing technologies before buying avoids a pointless expense.',
+    'bof.does.link1': 'Filter pitcher comparison',
+    'bof.does.link2': 'Which water filter should you choose?',
+
+    // When bottled water still makes sense
+    'bof.bottle.title': 'When bottled water still makes sense',
+    'bof.bottle.p1': 'Some situations justify bottled water: preparing infant bottles with very low-mineral water, low-sodium diets, targeted magnesium or calcium intake, or an explicit medical recommendation. In these cases the water composition is the criterion, not its price.',
+    'bof.bottle.p2': 'The other case is regulatory: when a municipality records a confirmed exceedance (nitrates, pesticides, microbiology), the health authority can restrict tap water consumption. Checking the official analyses for your municipality comes before any decision.',
+    'bof.bottle.cta.commune': 'Check my water quality',
+    'bof.bottle.cta.diagnostic': 'Diagnosis: which water suits me?',
+
+    // FAQ
+    'bof.faq.title': 'Frequently asked questions',
+    'bof.faq.q1.q': 'Is filtering really cheaper than buying bottled water?',
+    'bof.faq.q1.a': 'In the vast majority of cases yes, because tap water costs a few thousandths of a euro per litre and only cartridges are a recurring expense. The gap still depends on what you currently pay for bottles and how often you replace cartridges: the calculator above lets you check it with your own figures.',
+    'bof.faq.q2.q': 'How long does it take for a filter pitcher to pay for itself?',
+    'bof.faq.q2.a': 'The break-even point is when the savings on bottles cover the purchase price of the pitcher. With common assumptions this is usually a matter of a few weeks to a few months. It takes longer if you drink little water or already buy cheap bottles.',
+    'bof.faq.q3.q': 'Is filtered water better for your health?',
+    'bof.faq.q3.a': 'Nothing supports that claim for water that is already compliant. Domestic filtration mainly improves taste. It also removes part of the calcium and magnesium, which contribute to mineral intake. A health benefit only exists against an identified problem, and only if the chosen technology treats that specific problem.',
+    'bof.faq.q4.q': 'Do cartridges need changing often?',
+    'bof.faq.q4.a': 'Yes, and this is the critical point. Manufacturers state a lifespan in litres treated or in weeks. Past that point the cartridge saturates and can encourage bacterial growth. A poorly maintained pitcher delivers worse water than a plain glass from the tap.',
+    'bof.faq.q5.q': 'Is tap water safe in France?',
+    'bof.faq.q5.a': 'Water distributed in France is one of the most monitored foodstuffs, with regular analyses published municipality by municipality. The national compliance rate is very high, but localised exceedances exist. Checking the official results for your municipality is the only way to know where you stand.',
+
+    // Internal links
+    'bof.links.title': 'Going further',
+    'bof.links.pillar': 'Full guide: treating tap water',
+    'bof.links.pillar.desc': 'All domestic treatment options and their real limits.',
+    'bof.links.prices': 'Bottled water prices',
+    'bof.links.prices.desc': 'Price readings by brand and retailer, updated regularly.',
+    'bof.links.ranking': 'Bottled water ranking',
+    'bof.links.ranking.desc': 'Waters compared by composition and mineral profile.',
+    'bof.links.quality': 'Water quality by municipality',
+    'bof.links.quality.desc': 'Official analyses for your distribution network.',
   }
 
 } as const;
