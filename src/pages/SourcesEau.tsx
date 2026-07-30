@@ -3,7 +3,7 @@ import { Droplets, MapPin, Info, FlaskConical, BarChart3, Database } from 'lucid
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import WaterSourcesMap from '@/components/WaterSourcesMap';
 import { buildSources, type SourceItem } from "@/utils/sourcesAdapter";
 import { useLanguage } from '@/contexts/LanguageContext';
