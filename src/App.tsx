@@ -70,6 +70,14 @@ const QualiteEauCommune = React.lazy(() => import("./pages/QualiteEauCommune"));
 const GuideEauxMagnesium = React.lazy(() => import("./pages/GuideEauxMagnesium"));
 const GuideMaCommune = React.lazy(() => import("./pages/GuideMaCommune"));
 const AlerteEauVendee = React.lazy(() => import("./pages/actualites/AlerteEauVendee"));
+const TraiterEauRobinet = React.lazy(() => import("./pages/TraiterEauRobinet"));
+const GuideEauCalcaire = React.lazy(() => import("./pages/traiter/GuideEauCalcaire"));
+const GuideGoutChlore = React.lazy(() => import("./pages/traiter/GuideGoutChlore"));
+const GuideNitratesEau = React.lazy(() => import("./pages/traiter/GuideNitratesEau"));
+const GuidePlombEau = React.lazy(() => import("./pages/traiter/GuidePlombEau"));
+const ComparatifCarafes = React.lazy(() => import("./pages/traiter/ComparatifCarafes"));
+const GuideQuelFiltreEau = React.lazy(() => import("./pages/traiter/GuideQuelFiltreEau"));
+const BouteilleOuFiltration = React.lazy(() => import("./pages/traiter/BouteilleOuFiltration"));
 
 
 const queryClient = new QueryClient({
@@ -168,6 +176,14 @@ const App = () => {
                 <Route path="/guide/eaux-riches-magnesium" element={<GuideEauxMagnesium />} />
                 <Route path="/guide/ma-commune" element={<GuideMaCommune />} />
                 <Route path="/actualites/pollution-manganese-vendee-juillet-2026" element={<AlerteEauVendee />} />
+                <Route path="/traiter-eau-robinet" element={<TraiterEauRobinet />} />
+                <Route path="/guide/eau-calcaire" element={<GuideEauCalcaire />} />
+                <Route path="/guide/gout-chlore" element={<GuideGoutChlore />} />
+                <Route path="/guide/nitrates-eau" element={<GuideNitratesEau />} />
+                <Route path="/guide/plomb-eau" element={<GuidePlombEau />} />
+                <Route path="/comparatif-carafes" element={<ComparatifCarafes />} />
+                <Route path="/guide/quel-filtre-eau" element={<GuideQuelFiltreEau />} />
+                <Route path="/bouteille-ou-filtration" element={<BouteilleOuFiltration />} />
 
 
                 <Route 

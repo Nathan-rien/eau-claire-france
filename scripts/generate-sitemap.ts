@@ -67,6 +67,8 @@ const staticEntries: SitemapEntry[] = [
   // Guides thématiques
  { path: "/guide/eaux-riches-magnesium", lastmod: today, changefreq: "monthly", priority: "0.75" },
  { path: "/guide/ma-commune", lastmod: today, changefreq: "monthly", priority: "0.85" },
+  // Cluster « traiter l'eau du robinet » (seule la page pilier est indexable)
+  { path: "/traiter-eau-robinet", lastmod: today, changefreq: "monthly", priority: "0.85" },
   // Actualités / alertes détaillées
   { path: "/actualites/pollution-manganese-vendee-juillet-2026", lastmod: "2026-07-09", changefreq: "monthly", priority: "0.7" },
   // Europe
