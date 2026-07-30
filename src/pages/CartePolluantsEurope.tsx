@@ -33,7 +33,7 @@ const CartePolluantsEurope = () => {
 
             <div className="mt-8 text-center">
               <div className="bg-card rounded-lg p-6 shadow-lg max-w-2xl mx-auto">
-                <h3 className="text-lg font-semibold mb-3 text-foreground">{t('europePollutantMap.nav')}</h3>
+                <h2 className="text-lg font-semibold mb-3 text-foreground">{t('europePollutantMap.nav')}</h2>
                 <div className="flex flex-wrap gap-3 justify-center">
                   <a
                     href="/carte-europe"

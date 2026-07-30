@@ -3,7 +3,7 @@ import { Droplets, MapPin, Info, FlaskConical, BarChart3, Database } from 'lucid
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import WaterSourcesMap from '@/components/WaterSourcesMap';
 import { buildSources, type SourceItem } from "@/utils/sourcesAdapter";
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -156,10 +156,10 @@ export default function SourcesEau() {
             <div className="mb-8">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                     <Info className="h-5 w-5" />
                     {t('waterSources.aboutTitle')}
-                  </CardTitle>
+                  </h2>
                 </CardHeader>
                 <CardContent>
                   <div className="grid md:grid-cols-3 gap-6">
@@ -185,10 +185,10 @@ export default function SourcesEau() {
             <div className="mt-12">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                     <MapPin className="h-5 w-5" />
                     {t('waterSources.understand')}
-                  </CardTitle>
+                  </h2>
                 </CardHeader>
                 <CardContent>
                   <div className="grid md:grid-cols-2 gap-6">
