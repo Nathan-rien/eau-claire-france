@@ -194,7 +194,10 @@ const App = () => {
                     </ProtectedRoute>
                   } 
                 />
+                <Route path="/en" element={<EnRedirect />} />
+                <Route path="/en/*" element={<EnRedirect />} />
                 <Route path="*" element={<NotFound />} />
+
               </Routes>
             </Suspense>
             <OndineChat />
