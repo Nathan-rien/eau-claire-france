@@ -1452,7 +1452,7 @@ export const translations = {
     'tr.h1': "Comment améliorer et traiter l'eau du robinet",
     'tr.intro.p1': "En France, l'eau du robinet est l'un des produits alimentaires les plus contrôlés : chaque année, plus de 300 000 prélèvements sont réalisés par les Agences régionales de santé. Dans la très grande majorité des communes, elle est conforme aux limites réglementaires et peut être bue sans aucun traitement complémentaire.",
     'tr.intro.p2': "Vouloir « traiter » son eau relève donc rarement d'un enjeu sanitaire. C'est le plus souvent une question de confort : un goût de chlore prononcé, un calcaire qui abîme les appareils ménagers, ou un réseau ancien dont on ignore l'état. Ce guide explique, sans alarmisme, dans quels cas un équipement a un intérêt réel, et dans quels cas il n'en a aucun.",
-    'tr.intro.note': "InfoEau ne vend aucun équipement et ne perçoit aucune commission. Les informations ci-dessous s'appuient sur les données publiques du ministère de la Santé, de l'Anses et de Hub'Eau.",
+    'tr.intro.note': "InfoEau ne vend aucun équipement. Nos comparatifs et diagnostics reposent uniquement sur des données publiques (ministère de la Santé, Anses, Hub'Eau) et ne sont jamais influencés par un intérêt commercial.",
 
     'tr.why.title': "Pourquoi vouloir traiter son eau ?",
     'tr.why.chlore.title': 'Le goût de chlore',
@@ -1563,7 +1563,7 @@ export const translations = {
     'sat.carafes.seoDesc': "Comment comparer objectivement les carafes filtrantes : ce qu'elles retiennent, le coût des cartouches et leurs limites.",
     'sat.carafes.p1': "La carafe filtrante est l'équipement le plus vendu en France, parce qu'il est peu coûteux à l'achat et immédiat à utiliser. Son principe est constant d'une marque à l'autre : un charbon actif capte le chlore et certains composés organiques, une résine échangeuse d'ions réduit temporairement la dureté.",
     'sat.carafes.p2': "Les différences se jouent surtout sur trois critères mesurables : la durée de vie réelle de la cartouche, le coût annuel des recharges et les certifications obtenues pour des substances précises. Les allégations générales du type « eau plus pure » n'ont pas de valeur normative.",
-    'sat.carafes.p3': "Ce comparatif est en cours de construction sur une base strictement documentaire, sans lien commercial ni partenariat. En attendant, retenez qu'une carafe mal entretenue est moins bonne qu'un verre d'eau du robinet : le respect du délai de changement des cartouches est le point critique.",
+    'sat.carafes.p3': "Ce comparatif repose sur une base strictement documentaire et notre évaluation n'est influencée par aucun fabricant. Retenez qu'une carafe mal entretenue est moins bonne qu'un verre d'eau du robinet : le respect du délai de changement des cartouches est le point critique.",
 
     'sat.quelfiltre.h1': 'Carafe, filtre sur robinet ou osmoseur ?',
     'sat.quelfiltre.seoTitle': 'Quel filtre à eau choisir ? Carafe, robinet ou osmoseur',
@@ -1588,7 +1588,7 @@ export const translations = {
     'bof.seo.desc': "Combien coûte réellement l'eau en bouteille comparée à l'eau du robinet filtrée ? Calculateur d'économies, limites de la filtration et cas où la bouteille reste pertinente.",
     'bof.intro.p1': "Choisir entre l'eau en bouteille et l'eau du robinet filtrée n'est pas seulement une question de prix. Le goût, la praticité au quotidien, le poids des packs à transporter et les déchets plastiques pèsent autant dans la décision que le coût annuel.",
     'bof.intro.p2': "L'écart financier est néanmoins réel : l'eau du robinet coûte quelques millièmes d'euro par litre, l'eau embouteillée quelques dizaines de centimes. La filtration domestique se situe entre les deux, car elle ajoute le coût récurrent des cartouches. Le calculateur ci-dessous permet de chiffrer votre situation avec vos propres prix.",
-    'bof.intro.note': "Aucun lien commercial, aucune marque recommandée : cette page compare des ordres de grandeur, pas des produits.",
+    'bof.intro.note': "Cette page compare des ordres de grandeur, pas des produits : elle ne recommande aucune marque et son contenu n'est influencé par aucun intérêt commercial.",
 
     // Calculateur
     'bof.calc.title': "Calculateur : combien coûte votre eau chaque année ?",
@@ -3110,7 +3110,7 @@ export const translations = {
     'tr.h1': 'How to improve and treat your tap water',
     'tr.intro.p1': 'In France, tap water is one of the most closely monitored food products: more than 300,000 samples are taken every year by the Regional Health Agencies. In the vast majority of municipalities it complies with regulatory limits and can be drunk with no additional treatment.',
     'tr.intro.p2': 'Wanting to "treat" your water is therefore rarely a health issue. It is usually about comfort: a strong chlorine taste, limescale damaging household appliances, or an old plumbing network of unknown condition. This guide explains, without alarmism, when equipment is genuinely useful, and when it is not.',
-    'tr.intro.note': 'InfoEau sells no equipment and earns no commission. The information below is based on public data from the French Ministry of Health, Anses and Hub\'Eau.',
+    'tr.intro.note': 'InfoEau sells no equipment. Our comparisons and diagnostics rely solely on public data (French Ministry of Health, Anses, Hub\'Eau) and are never influenced by commercial interests.',
 
     'tr.why.title': 'Why treat your water?',
     'tr.why.chlore.title': 'The chlorine taste',
@@ -3221,7 +3221,7 @@ export const translations = {
     'sat.carafes.seoDesc': 'How to objectively compare filter pitchers: what they retain, cartridge cost and their limits.',
     'sat.carafes.p1': 'The filter pitcher is the best-selling device in France, because it is cheap to buy and immediate to use. Its principle is the same across brands: activated carbon captures chlorine and some organic compounds, while an ion-exchange resin temporarily reduces hardness.',
     'sat.carafes.p2': 'Differences come down to three measurable criteria: the real cartridge lifetime, the annual cost of refills and the certifications obtained for specific substances. Generic claims such as "purer water" have no normative value.',
-    'sat.carafes.p3': 'This comparison is being built on a strictly documentary basis, with no commercial link or partnership. In the meantime, remember that a poorly maintained pitcher is worse than a glass of tap water: respecting cartridge replacement intervals is the critical point.',
+    'sat.carafes.p3': 'This comparison is based on a strictly documentary basis and our assessment is not influenced by any manufacturer. Remember that a poorly maintained pitcher is worse than a glass of tap water: respecting cartridge replacement intervals is the critical point.',
 
     'sat.quelfiltre.h1': 'Pitcher, faucet filter or reverse osmosis?',
     'sat.quelfiltre.seoTitle': 'Which water filter to choose? Pitcher, faucet or reverse osmosis',
@@ -3246,7 +3246,7 @@ export const translations = {
     'bof.seo.desc': 'How much does bottled water really cost compared with filtered tap water? Savings calculator, the limits of filtration, and the cases where bottled water still makes sense.',
     'bof.intro.p1': 'Choosing between bottled water and filtered tap water is not only a question of price. Taste, everyday convenience, the weight of packs to carry home and plastic waste weigh as much in the decision as the annual cost.',
     'bof.intro.p2': 'The financial gap is nonetheless real: tap water costs a few thousandths of a euro per litre, bottled water a few dozen cents. Domestic filtration sits in between, since it adds the recurring cost of cartridges. The calculator below lets you put figures on your own situation, with your own prices.',
-    'bof.intro.note': 'No commercial links, no recommended brands: this page compares orders of magnitude, not products.',
+    'bof.intro.note': 'This page compares orders of magnitude, not products: it recommends no brand and its content is not influenced by any commercial interest.',
 
     // Calculator
     'bof.calc.title': 'Calculator: how much does your water cost each year?',
