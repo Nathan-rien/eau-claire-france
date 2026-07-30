@@ -39,6 +39,8 @@ const APropos = React.lazy(() => import("./pages/APropos"));
 const Contact = React.lazy(() => import("./pages/Contact"));
 const MentionsLegales = React.lazy(() => import("./pages/MentionsLegales"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
+const EnRedirect = React.lazy(() => import("./components/EnRedirect"));
+
 const RGPD = React.lazy(() => import("./pages/RGPD"));
 const Accessibilite = React.lazy(() => import("./pages/Accessibilite"));
 const OpenData = React.lazy(() => import("./pages/OpenData"));
@@ -194,7 +196,10 @@ const App = () => {
                     </ProtectedRoute>
                   } 
                 />
+                <Route path="/en" element={<EnRedirect />} />
+                <Route path="/en/*" element={<EnRedirect />} />
                 <Route path="*" element={<NotFound />} />
+
               </Routes>
             </Suspense>
             <OndineChat />
