@@ -185,10 +185,10 @@ export default function SourcesEau() {
             <div className="mt-12">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2">
                     <MapPin className="h-5 w-5" />
                     {t('waterSources.understand')}
-                  </CardTitle>
+                  </h2>
                 </CardHeader>
                 <CardContent>
                   <div className="grid md:grid-cols-2 gap-6">
