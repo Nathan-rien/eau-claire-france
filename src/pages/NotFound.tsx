@@ -19,7 +19,7 @@ const NotFound = () => {
       <Helmet>
         <title>{t('notfound.seoTitle')}</title>
         <meta name="description" content={t('notfound.seoDesc')} />
-        <meta name="robots" content="noindex, nofollow" />
+        <meta name="robots" content="noindex, follow" />
       </Helmet>
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-4">404</h1>
