@@ -1451,7 +1451,7 @@ export const translations = {
     'tr.tag': 'Guide pratique',
     'tr.h1': "Comment améliorer et traiter l'eau du robinet",
     'tr.intro.p1': "En France, l'eau du robinet est l'un des produits alimentaires les plus contrôlés : chaque année, plus de 300 000 prélèvements sont réalisés par les Agences régionales de santé. Dans la très grande majorité des communes, elle est conforme aux limites réglementaires et peut être bue sans aucun traitement complémentaire.",
-    'tr.intro.p2': "Vouloir « traiter » son eau relève donc rarement d'un enjeu sanitaire. C'est le plus souvent une question de confort : un goût de chlore prononcé, un calcaire qui abîme les appareils ménagers, ou un réseau ancien dont on ignore l'état. Ce guide explique, sans alarmisme, dans quels cas un équipement a un intérêt réel — et dans quels cas il n'en a aucun.",
+    'tr.intro.p2': "Vouloir « traiter » son eau relève donc rarement d'un enjeu sanitaire. C'est le plus souvent une question de confort : un goût de chlore prononcé, un calcaire qui abîme les appareils ménagers, ou un réseau ancien dont on ignore l'état. Ce guide explique, sans alarmisme, dans quels cas un équipement a un intérêt réel, et dans quels cas il n'en a aucun.",
     'tr.intro.note': "InfoEau ne vend aucun équipement et ne perçoit aucune commission. Les informations ci-dessous s'appuient sur les données publiques du ministère de la Santé, de l'Anses et de Hub'Eau.",
 
     'tr.why.title': "Pourquoi vouloir traiter son eau ?",
@@ -1459,7 +1459,7 @@ export const translations = {
     'tr.why.chlore.text': "Le chlore est ajouté volontairement pour garantir l'absence de bactéries jusqu'au robinet. Il est sans danger aux doses utilisées, mais son goût et son odeur peuvent gêner. Une simple carafe laissée au réfrigérateur pendant une heure suffit souvent à le faire disparaître.",
     'tr.why.chlore.link': "Enlever le goût de chlore de l'eau",
     'tr.why.calcaire.title': 'Le calcaire (eau dure)',
-    'tr.why.calcaire.text': "Le calcaire correspond au calcium et au magnésium naturellement dissous. Il n'est pas dangereux pour la santé — c'est même un apport minéral utile — mais il entartre les canalisations, les bouilloires et les chauffe-eau, et peut assécher la peau.",
+    'tr.why.calcaire.text': "Le calcaire correspond au calcium et au magnésium naturellement dissous. Il n'est pas dangereux pour la santé, c'est même un apport minéral utile, mais il entartre les canalisations, les bouilloires et les chauffe-eau, et peut assécher la peau.",
     'tr.why.calcaire.link': 'Eau trop calcaire : que faire ?',
     'tr.why.nitrates.title': 'Les nitrates',
     'tr.why.nitrates.text': "D'origine essentiellement agricole, les nitrates sont surveillés avec une limite réglementaire de 50 mg/L. Les dépassements sont rares et localisés, surtout en zone de grande culture. Une vigilance particulière s'applique aux nourrissons et aux femmes enceintes.",
@@ -1502,7 +1502,7 @@ export const translations = {
     'tr.need.cta.pollutants': 'Comprendre les polluants surveillés',
 
     'tr.cost.title': 'Bouteille ou filtration : le coût',
-    'tr.cost.p1': "L'eau du robinet coûte en moyenne 0,004 €/L, contre 0,20 à 0,60 €/L pour une eau en bouteille — soit un rapport de 1 à 100 environ. Une carafe filtrante ajoute quelques centimes par litre à cause des cartouches, ce qui reste très inférieur à la bouteille.",
+    'tr.cost.p1': "L'eau du robinet coûte en moyenne 0,004 €/L, contre 0,20 à 0,60 €/L pour une eau en bouteille, soit un rapport de 1 à 100 environ. Une carafe filtrante ajoute quelques centimes par litre à cause des cartouches, ce qui reste très inférieur à la bouteille.",
     'tr.cost.link': 'Eau en bouteille ou filtration : le vrai coût',
     'tr.cost.link2': 'Comparer les prix des eaux en bouteille',
     'tr.cost.link3': 'Voir le classement des eaux en bouteille',
@@ -1549,7 +1549,7 @@ export const translations = {
     'sat.nitrates.seoDesc': "Origine des nitrates, limite réglementaire de 50 mg/L, populations sensibles et solutions réellement efficaces.",
     'sat.nitrates.p1': "Les nitrates présents dans l'eau potable proviennent majoritairement des engrais azotés et des effluents d'élevage, qui percolent vers les nappes souterraines. La limite réglementaire est fixée à 50 mg/L pour l'ensemble de la population, avec une vigilance renforcée à 25 mg/L pour les nourrissons et les femmes enceintes.",
     'sat.nitrates.p2': "Les dépassements sont rares et concentrés dans certaines zones de grande culture. Lorsqu'ils surviennent, l'ARS impose au distributeur des mesures correctives : dilution avec une autre ressource, changement de captage ou traitement spécifique. Les résultats sont publics et consultables commune par commune.",
-    'sat.nitrates.p3': "À l'échelle du foyer, ni la carafe filtrante classique ni l'ébullition ne réduisent les nitrates — l'ébullition les concentre même légèrement. Seules l'osmose inverse et les résines échangeuses d'ions spécifiques sont efficaces. En cas de dépassement avéré, l'eau embouteillée faiblement minéralisée reste la solution transitoire recommandée pour les nourrissons.",
+    'sat.nitrates.p3': "À l'échelle du foyer, ni la carafe filtrante classique ni l'ébullition ne réduisent les nitrates : l'ébullition les concentre même légèrement. Seules l'osmose inverse et les résines échangeuses d'ions spécifiques sont efficaces. En cas de dépassement avéré, l'eau embouteillée faiblement minéralisée reste la solution transitoire recommandée pour les nourrissons.",
 
     'sat.plomb.h1': "Plomb dans l'eau : que faire ?",
     'sat.plomb.seoTitle': "Plomb dans l'eau du robinet : diagnostic et solutions",
@@ -1576,7 +1576,7 @@ export const translations = {
     'sat.bouteille.seoTitle': 'Eau en bouteille ou filtration : comparatif des coûts réels',
     'sat.bouteille.seoDesc': "Combien coûtent réellement l'eau du robinet, une carafe filtrante et l'eau en bouteille sur une année ? Comparaison chiffrée.",
     'sat.bouteille.p1': "L'écart de prix entre l'eau du robinet et l'eau en bouteille est considérable : environ 0,004 €/L en moyenne nationale pour le robinet, contre 0,20 à 0,60 €/L pour une bouteille de marque. Pour une consommation de 1,5 litre par jour et par personne, l'écart annuel se chiffre en centaines d'euros par foyer.",
-    'sat.bouteille.p2': "La filtration domestique se situe entre les deux. Une carafe filtrante ajoute le coût des cartouches, soit généralement quelques centimes par litre selon la fréquence de remplacement — un ordre de grandeur qui reste très inférieur à la bouteille, mais qui n'est pas négligeable sur une année.",
+    'sat.bouteille.p2': "La filtration domestique se situe entre les deux. Une carafe filtrante ajoute le coût des cartouches, soit généralement quelques centimes par litre selon la fréquence de remplacement. Un ordre de grandeur qui reste très inférieur à la bouteille, mais qui n'est pas négligeable sur une année.",
     'sat.bouteille.p3': "Au coût financier s'ajoutent le transport, le stockage et l'impact des emballages plastiques. L'eau en bouteille conserve un intérêt dans des cas précis : dépassement réglementaire local, besoin d'une minéralisation particulière ou d'une eau très faiblement minéralisée pour un nourrisson.",
 
     // Bouteille ou filtration (page complète)
@@ -1618,10 +1618,10 @@ export const translations = {
     'bof.calc.unit.year': '/an',
 
     // Ce que la filtration fait ou non
-    'bof.does.title': 'Ce que la filtration fait — et ne fait pas',
+    'bof.does.title': 'Ce que la filtration fait et ne fait pas',
     'bof.does.p1': "Une carafe filtrante agit principalement sur le goût : le charbon actif retient le chlore résiduel et certains composés organiques responsables des odeurs. La résine échangeuse d'ions réduit temporairement la dureté, donc la sensation de calcaire.",
     'bof.does.p2': "En revanche, une carafe ne rend pas potable une eau qui ne l'est pas. Elle n'élimine pas les nitrates, et son efficacité sur le plomb ou certains métaux dépend entièrement du type de cartouche et de son état. Une cartouche utilisée au-delà de sa durée de vie peut même dégrader la qualité de l'eau.",
-    'bof.does.p3': "Pour un besoin précis — nitrates, plomb, dureté élevée — la technologie adaptée n'est pas toujours la carafe. Comparer les technologies avant d'acheter évite une dépense inutile.",
+    'bof.does.p3': "Pour un besoin précis (nitrates, plomb, dureté élevée), la technologie adaptée n'est pas toujours la carafe. Comparer les technologies avant d'acheter évite une dépense inutile.",
     'bof.does.link1': 'Comparatif des carafes filtrantes',
     'bof.does.link2': 'Quel filtre à eau choisir ?',
 
@@ -3109,7 +3109,7 @@ export const translations = {
     'tr.tag': 'Practical guide',
     'tr.h1': 'How to improve and treat your tap water',
     'tr.intro.p1': 'In France, tap water is one of the most closely monitored food products: more than 300,000 samples are taken every year by the Regional Health Agencies. In the vast majority of municipalities it complies with regulatory limits and can be drunk with no additional treatment.',
-    'tr.intro.p2': 'Wanting to "treat" your water is therefore rarely a health issue. It is usually about comfort: a strong chlorine taste, limescale damaging household appliances, or an old plumbing network of unknown condition. This guide explains, without alarmism, when equipment is genuinely useful — and when it is not.',
+    'tr.intro.p2': 'Wanting to "treat" your water is therefore rarely a health issue. It is usually about comfort: a strong chlorine taste, limescale damaging household appliances, or an old plumbing network of unknown condition. This guide explains, without alarmism, when equipment is genuinely useful, and when it is not.',
     'tr.intro.note': 'InfoEau sells no equipment and earns no commission. The information below is based on public data from the French Ministry of Health, Anses and Hub\'Eau.',
 
     'tr.why.title': 'Why treat your water?',
@@ -3117,7 +3117,7 @@ export const translations = {
     'tr.why.chlore.text': 'Chlorine is added deliberately to guarantee the absence of bacteria all the way to your tap. It is harmless at the doses used, but its taste and smell can be unpleasant. Simply leaving a jug in the fridge for an hour is often enough for it to disappear.',
     'tr.why.chlore.link': 'Removing the chlorine taste from water',
     'tr.why.calcaire.title': 'Limescale (hard water)',
-    'tr.why.calcaire.text': 'Limescale comes from naturally dissolved calcium and magnesium. It is not a health hazard — it is even a useful mineral intake — but it scales up pipes, kettles and water heaters, and can dry out the skin.',
+    'tr.why.calcaire.text': 'Limescale comes from naturally dissolved calcium and magnesium. It is not a health hazard, it is even a useful mineral intake, but it scales up pipes, kettles and water heaters, and can dry out the skin.',
     'tr.why.calcaire.link': 'Water too hard: what can you do?',
     'tr.why.nitrates.title': 'Nitrates',
     'tr.why.nitrates.text': 'Mainly of agricultural origin, nitrates are monitored with a regulatory limit of 50 mg/L. Exceedances are rare and localised, mostly in intensive farming areas. Particular care applies to infants and pregnant women.',
@@ -3160,7 +3160,7 @@ export const translations = {
     'tr.need.cta.pollutants': 'Understand the monitored pollutants',
 
     'tr.cost.title': 'Bottled water or filtration: the cost',
-    'tr.cost.p1': 'Tap water costs about €0.004/L on average, versus €0.20 to €0.60/L for bottled water — a ratio of roughly 1 to 100. A filter pitcher adds a few cents per litre for cartridges, which remains far below bottled water.',
+    'tr.cost.p1': 'Tap water costs about €0.004/L on average, versus €0.20 to €0.60/L for bottled water, a ratio of roughly 1 to 100. A filter pitcher adds a few cents per litre for cartridges, which remains far below bottled water.',
     'tr.cost.link': 'Bottled water or filtration: the real cost',
     'tr.cost.link2': 'Compare bottled water prices',
     'tr.cost.link3': 'See the bottled water ranking',
@@ -3207,7 +3207,7 @@ export const translations = {
     'sat.nitrates.seoDesc': 'Origin of nitrates, the 50 mg/L regulatory limit, sensitive populations and genuinely effective solutions.',
     'sat.nitrates.p1': 'Nitrates in drinking water come mostly from nitrogen fertilisers and livestock effluents percolating into groundwater. The regulatory limit is 50 mg/L for the whole population, with heightened caution at 25 mg/L for infants and pregnant women.',
     'sat.nitrates.p2': 'Exceedances are rare and concentrated in certain intensive farming areas. When they occur, the health agency requires corrective measures from the utility: dilution with another resource, changing the abstraction point, or specific treatment. Results are public and available municipality by municipality.',
-    'sat.nitrates.p3': 'At household level, neither a standard filter pitcher nor boiling reduces nitrates — boiling even concentrates them slightly. Only reverse osmosis and specific ion-exchange resins are effective. In case of a proven exceedance, low-mineral bottled water remains the recommended interim solution for infants.',
+    'sat.nitrates.p3': 'At household level, neither a standard filter pitcher nor boiling reduces nitrates: boiling even concentrates them slightly. Only reverse osmosis and specific ion-exchange resins are effective. In case of a proven exceedance, low-mineral bottled water remains the recommended interim solution for infants.',
 
     'sat.plomb.h1': 'Lead in water: what can you do?',
     'sat.plomb.seoTitle': 'Lead in tap water: diagnosis and solutions',
@@ -3234,7 +3234,7 @@ export const translations = {
     'sat.bouteille.seoTitle': 'Bottled water or filtration: comparing the real costs',
     'sat.bouteille.seoDesc': 'How much do tap water, a filter pitcher and bottled water really cost over a year? A figures-based comparison.',
     'sat.bouteille.p1': 'The price gap between tap and bottled water is considerable: around €0.004/L on national average for tap water, versus €0.20 to €0.60/L for a branded bottle. At 1.5 litres per day per person, the annual gap amounts to hundreds of euros per household.',
-    'sat.bouteille.p2': 'Domestic filtration sits in between. A filter pitcher adds cartridge costs, generally a few cents per litre depending on replacement frequency — an order of magnitude far below bottled water, but not negligible over a year.',
+    'sat.bouteille.p2': 'Domestic filtration sits in between. A filter pitcher adds cartridge costs, generally a few cents per litre depending on replacement frequency. An order of magnitude far below bottled water, but not negligible over a year.',
     'sat.bouteille.p3': 'Beyond money there are transport, storage and the impact of plastic packaging. Bottled water keeps its value in specific cases: a local regulatory exceedance, a need for particular mineralisation, or very low-mineral water for an infant.',
 
     // Bottled water or filtration (full page)
@@ -3276,10 +3276,10 @@ export const translations = {
     'bof.calc.unit.year': '/year',
 
     // What filtration does and does not do
-    'bof.does.title': 'What filtration does — and does not do',
+    'bof.does.title': 'What filtration does and does not do',
     'bof.does.p1': 'A filter pitcher mainly acts on taste: activated carbon captures residual chlorine and some organic compounds responsible for odours. The ion-exchange resin temporarily reduces hardness, and therefore the feeling of limescale.',
     'bof.does.p2': 'However, a pitcher does not make unsafe water drinkable. It does not remove nitrates, and its effectiveness on lead or certain metals depends entirely on the cartridge type and its condition. A cartridge used beyond its lifespan can even degrade water quality.',
-    'bof.does.p3': 'For a specific need — nitrates, lead, high hardness — the right technology is not always a pitcher. Comparing technologies before buying avoids a pointless expense.',
+    'bof.does.p3': 'For a specific need (nitrates, lead, high hardness), the right technology is not always a pitcher. Comparing technologies before buying avoids a pointless expense.',
     'bof.does.link1': 'Filter pitcher comparison',
     'bof.does.link2': 'Which water filter should you choose?',
 
