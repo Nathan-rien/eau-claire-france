@@ -191,6 +191,12 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://infoeau.fr/traiter-eau-robinet</loc>
+    <lastmod>2026-07-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://infoeau.fr/actualites/pollution-manganese-vendee-juillet-2026</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
