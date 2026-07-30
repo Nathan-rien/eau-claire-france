@@ -38,7 +38,7 @@ const CartePolluants = () => {
             
             <div className="mt-6 md:mt-8 text-center">
               <div className="bg-white rounded-lg p-4 md:p-6 shadow-lg max-w-2xl mx-auto">
-                <h3 className="text-base md:text-lg font-semibold mb-3 text-gray-900">{t('pollutantMap.nav')}</h3>
+                <h2 className="text-base md:text-lg font-semibold mb-3 text-gray-900">{t('pollutantMap.nav')}</h2>
                 <div className="flex flex-wrap gap-3 justify-center">
                   <a 
                     href="/carte" 
