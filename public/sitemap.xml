@@ -209,6 +209,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://infoeau.fr/durete-eau-france</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://infoeau.fr/guide/eau-calcaire</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>monthly</changefreq>
@@ -626,7 +632,7 @@
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
     <image:image>
-      <image:loc>/articles/nestle-perquisitions.jpg</image:loc>
+      <image:loc>https://infoeau.fr/articles/nestle-perquisitions.jpg</image:loc>
       <image:title>Nestlé Waters sous le feu des perquisitions : l&apos;intégrité de nos eaux en question</image:title>
     </image:image>
   </url>
