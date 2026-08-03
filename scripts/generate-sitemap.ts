@@ -166,7 +166,7 @@ function buildSitemap(entries: SitemapEntry[], articles: BlogArticle[]): string 
       `    <changefreq>monthly</changefreq>`,
       `    <priority>0.75</priority>`,
       a.cover_image_url
-        ? `    <image:image>\n      <image:loc>${xmlEscape(a.cover_image_url)}</image:loc>\n      <image:title>${xmlEscape(a.title)}</image:title>\n    </image:image>`
+        ? `    <image:image>\n      <image:loc>${xmlEscape(a.cover_image_url.startsWith('http') ? a.cover_image_url : `${BASE_URL}${a.cover_image_url}`)}</image:loc>\n      <image:title>${xmlEscape(a.title)}</image:title>\n    </image:image>`
         : null,
       `  </url>`,
     ].filter(Boolean);
