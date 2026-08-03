@@ -52,6 +52,14 @@ const QualiteEauCommune: React.FC = () => {
   // Thin content protection: no data yet → soft noindex to avoid low-quality pages in index
   const hasData = results.length > 0;
 
+  // Derived signals for the "improve tap water" block (no extra fetch)
+  const dureteValue = durete ? Number(durete.valeurParametre) : null;
+  const isHard = dureteValue != null && Number.isFinite(dureteValue) && dureteValue > 25;
+  const nitratesValue = nitrates ? Number(nitrates.valeurParametre) : null;
+  const nitratesNotable = nitratesValue != null && Number.isFinite(nitratesValue) && nitratesValue >= 40;
+  const hasLeadIssue = nonConforme.some((r) => /plomb|\bPb\b|lead/i.test(r.parametreAnalyse ?? ''));
+  const noIssue = nonConforme.length === 0 && !isHard && !nitratesNotable && !hasLeadIssue;
+
   // Shorter title (<60 chars target) — Google truncates otherwise
   const title = `Qualité de l'eau à ${commune.name} (${commune.postcode})`;
   const description = hasData
