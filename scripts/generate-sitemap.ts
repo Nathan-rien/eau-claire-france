@@ -75,6 +75,7 @@ const staticEntries: SitemapEntry[] = [
   { path: "/guide/gout-chlore", lastmod: today, changefreq: "monthly", priority: "0.75" },
   { path: "/guide/nitrates-eau", lastmod: today, changefreq: "monthly", priority: "0.75" },
   { path: "/guide/plomb-eau", lastmod: today, changefreq: "monthly", priority: "0.75" },
+  { path: "/guide/quel-filtre-eau", lastmod: today, changefreq: "monthly", priority: "0.8" },
   // Actualités / alertes détaillées
   { path: "/actualites/pollution-manganese-vendee-juillet-2026", lastmod: "2026-07-09", changefreq: "monthly", priority: "0.7" },
   // Europe
