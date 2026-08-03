@@ -3369,6 +3369,25 @@ export const translations = {
     'commune.neighbors.title': 'Other towns in {context}',
     'commune.neighbors.all': 'All towns',
 
+    // Improve tap water block (commune page)
+    'improve.title': 'Improving tap water in {name}',
+    'improve.intro': 'Tap water in {name} is monitored by the regional health authority. Depending on your needs (taste, limescale, comfort), several options exist, with no equipment required.',
+    'improve.links.title': 'Guides and tools',
+    'improve.links.pillar': 'Treating tap water: the complete guide',
+    'improve.links.carafes': 'Filter jug comparison',
+    'improve.links.quelfiltre': 'Which water filter should you choose?',
+    'improve.links.diagnostic': 'Take my personalised diagnostic',
+    'improve.hard': 'Based on the latest samples, water in {name} is rather hard ({value}). Limescale is harmless to health but can affect appliances and comfort.',
+    'improve.veryHard': 'Based on the latest samples, water in {name} is very hard ({value}). Limescale is harmless to health but can affect appliances and comfort.',
+    'improve.hard.link': 'Guide: hard water, what to do?',
+    'improve.nitrates': 'Nitrate levels measured in {name} reach {value}, a notable level compared with the regulatory limit of 50 mg/L.',
+    'improve.nitrates.link': 'Guide: nitrates in tap water',
+    'improve.lead': 'A lead-related parameter appears among the non-compliant results in {name}. Lead usually comes from old pipework and must be checked case by case.',
+    'improve.lead.link': 'Guide: lead in tap water',
+    'improve.chlorine': 'If you notice a chlorine taste at the tap, a few simple steps are often enough to reduce it.',
+    'improve.chlorine.link': 'Guide: chlorine taste',
+    'improve.ok': 'Water in {name} is compliant and of good quality: no equipment is needed. If you simply want to improve the taste, here are the options.',
+
     // Home sections
     'home.cta.diagnostic': 'Start a diagnostic →',
     'home.diagnostic.title': 'Which water to drink?',
