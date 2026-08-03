@@ -52,6 +52,14 @@ const QualiteEauCommune: React.FC = () => {
   // Thin content protection: no data yet → soft noindex to avoid low-quality pages in index
   const hasData = results.length > 0;
 
+  // Derived signals for the "improve tap water" block (no extra fetch)
+  const dureteValue = durete ? Number(durete.valeurParametre) : null;
+  const isHard = dureteValue != null && Number.isFinite(dureteValue) && dureteValue > 25;
+  const nitratesValue = nitrates ? Number(nitrates.valeurParametre) : null;
+  const nitratesNotable = nitratesValue != null && Number.isFinite(nitratesValue) && nitratesValue >= 40;
+  const hasLeadIssue = nonConforme.some((r) => /plomb|\bPb\b|lead/i.test(r.parametreAnalyse ?? ''));
+  const noIssue = nonConforme.length === 0 && !isHard && !nitratesNotable && !hasLeadIssue;
+
   // Shorter title (<60 chars target) — Google truncates otherwise
   const title = `Qualité de l'eau à ${commune.name} (${commune.postcode})`;
   const description = hasData
@@ -358,6 +366,84 @@ const QualiteEauCommune: React.FC = () => {
               </Button>
             </div>
           </div>
+        </section>
+
+        {/* Améliorer l'eau du robinet — bloc additif (maillage cluster solutions) */}
+        <section className="container mx-auto max-w-5xl px-4 py-8">
+          <h2 className="text-2xl font-bold mb-3">{t('improve.title', { name: commune.name })}</h2>
+          <p className="text-sm md:text-base text-muted-foreground max-w-3xl mb-5">
+            {t('improve.intro', { name: commune.name })}
+          </p>
+
+          {hasData && !isLoading && (
+            <div className="space-y-3 mb-6">
+              {noIssue && (
+                <p className="text-sm text-foreground bg-green-50 border border-green-200 rounded-lg p-4">
+                  {t('improve.ok', { name: commune.name })}
+                </p>
+              )}
+              {isHard && (
+                <div className="bg-card border border-border rounded-lg p-4">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {t(dureteValue! > 35 ? 'improve.veryHard' : 'improve.hard', { name: commune.name, value: dureteText ?? '' })}
+                  </p>
+                  <Link to="/guide/eau-calcaire" className="text-sm text-primary font-medium hover:underline inline-flex items-center gap-1">
+                    {t('improve.hard.link')} <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              )}
+              {nitratesNotable && (
+                <div className="bg-card border border-border rounded-lg p-4">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {t('improve.nitrates', { name: commune.name, value: nitratesText ?? '' })}
+                  </p>
+                  <Link to="/guide/nitrates-eau" className="text-sm text-primary font-medium hover:underline inline-flex items-center gap-1">
+                    {t('improve.nitrates.link')} <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              )}
+              {hasLeadIssue && (
+                <div className="bg-card border border-border rounded-lg p-4">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {t('improve.lead', { name: commune.name })}
+                  </p>
+                  <Link to="/guide/plomb-eau" className="text-sm text-primary font-medium hover:underline inline-flex items-center gap-1">
+                    {t('improve.lead.link')} <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              )}
+              <div className="bg-card border border-border rounded-lg p-4">
+                <p className="text-sm text-muted-foreground mb-2">{t('improve.chlorine')}</p>
+                <Link to="/guide/gout-chlore" className="text-sm text-primary font-medium hover:underline inline-flex items-center gap-1">
+                  {t('improve.chlorine.link')} <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+          )}
+
+          <h3 className="text-base font-semibold mb-3">{t('improve.links.title')}</h3>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <li>
+              <Link to="/traiter-eau-robinet" className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm hover:bg-muted transition-colors">
+                <ArrowRight className="w-4 h-4 text-primary shrink-0" /> {t('improve.links.pillar')}
+              </Link>
+            </li>
+            <li>
+              <Link to="/comparatif-carafes" className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm hover:bg-muted transition-colors">
+                <ArrowRight className="w-4 h-4 text-primary shrink-0" /> {t('improve.links.carafes')}
+              </Link>
+            </li>
+            <li>
+              <Link to="/guide/quel-filtre-eau" className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm hover:bg-muted transition-colors">
+                <ArrowRight className="w-4 h-4 text-primary shrink-0" /> {t('improve.links.quelfiltre')}
+              </Link>
+            </li>
+            <li>
+              <Link to="/diagnostic" className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm hover:bg-muted transition-colors">
+                <ArrowRight className="w-4 h-4 text-primary shrink-0" /> {t('improve.links.diagnostic')}
+              </Link>
+            </li>
+          </ul>
         </section>
 
         {/* Neighboring communes */}

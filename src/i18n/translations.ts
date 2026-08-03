@@ -1334,6 +1334,25 @@ export const translations = {
     'commune.neighbors.title': 'Autres communes en {context}',
     'commune.neighbors.all': 'Toutes les communes',
 
+    // Improve tap water block (commune page)
+    'improve.title': 'Améliorer l\'eau du robinet à {name}',
+    'improve.intro': 'L\'eau distribuée à {name} est contrôlée par l\'ARS. Selon vos besoins (goût, calcaire, confort), différentes solutions existent, sans obligation d\'équipement.',
+    'improve.links.title': 'Guides et outils',
+    'improve.links.pillar': 'Traiter l\'eau du robinet : le guide complet',
+    'improve.links.carafes': 'Comparatif des carafes filtrantes',
+    'improve.links.quelfiltre': 'Quel filtre à eau choisir ?',
+    'improve.links.diagnostic': 'Faire mon diagnostic personnalisé',
+    'improve.hard': 'D\'après les derniers relevés, l\'eau de {name} est plutôt dure ({value}). Le calcaire est sans risque pour la santé mais peut gêner les appareils et le confort.',
+    'improve.veryHard': 'D\'après les derniers relevés, l\'eau de {name} est très dure ({value}). Le calcaire est sans risque pour la santé mais peut gêner les appareils et le confort.',
+    'improve.hard.link': 'Guide : eau calcaire, que faire ?',
+    'improve.nitrates': 'Les nitrates relevés à {name} atteignent {value}, un niveau notable au regard de la limite réglementaire de 50 mg/L.',
+    'improve.nitrates.link': 'Guide : nitrates dans l\'eau du robinet',
+    'improve.lead': 'Un paramètre lié au plomb figure parmi les non-conformités relevées à {name}. Le plomb provient généralement des canalisations anciennes, à vérifier au cas par cas.',
+    'improve.lead.link': 'Guide : plomb dans l\'eau du robinet',
+    'improve.chlorine': 'Si vous percevez un goût de chlore au robinet, quelques gestes simples suffisent souvent à l\'atténuer.',
+    'improve.chlorine.link': 'Guide : goût de chlore',
+    'improve.ok': 'L\'eau de {name} est conforme et de bonne qualité : aucun équipement n\'est nécessaire. Si vous souhaitez seulement en améliorer le goût, voici les options.',
+
     // Home sections
     'home.cta.diagnostic': 'Lancer un diagnostic →',
     'home.diagnostic.title': 'Quelle eau boire ?',
@@ -3349,6 +3368,25 @@ export const translations = {
     'commune.cta.map': 'Map of France',
     'commune.neighbors.title': 'Other towns in {context}',
     'commune.neighbors.all': 'All towns',
+
+    // Improve tap water block (commune page)
+    'improve.title': 'Improving tap water in {name}',
+    'improve.intro': 'Tap water in {name} is monitored by the regional health authority. Depending on your needs (taste, limescale, comfort), several options exist, with no equipment required.',
+    'improve.links.title': 'Guides and tools',
+    'improve.links.pillar': 'Treating tap water: the complete guide',
+    'improve.links.carafes': 'Filter jug comparison',
+    'improve.links.quelfiltre': 'Which water filter should you choose?',
+    'improve.links.diagnostic': 'Take my personalised diagnostic',
+    'improve.hard': 'Based on the latest samples, water in {name} is rather hard ({value}). Limescale is harmless to health but can affect appliances and comfort.',
+    'improve.veryHard': 'Based on the latest samples, water in {name} is very hard ({value}). Limescale is harmless to health but can affect appliances and comfort.',
+    'improve.hard.link': 'Guide: hard water, what to do?',
+    'improve.nitrates': 'Nitrate levels measured in {name} reach {value}, a notable level compared with the regulatory limit of 50 mg/L.',
+    'improve.nitrates.link': 'Guide: nitrates in tap water',
+    'improve.lead': 'A lead-related parameter appears among the non-compliant results in {name}. Lead usually comes from old pipework and must be checked case by case.',
+    'improve.lead.link': 'Guide: lead in tap water',
+    'improve.chlorine': 'If you notice a chlorine taste at the tap, a few simple steps are often enough to reduce it.',
+    'improve.chlorine.link': 'Guide: chlorine taste',
+    'improve.ok': 'Water in {name} is compliant and of good quality: no equipment is needed. If you simply want to improve the taste, here are the options.',
 
     // Home sections
     'home.cta.diagnostic': 'Start a diagnostic →',
