@@ -29,7 +29,6 @@ interface SitemapEntry {
   imageTitle?: string;
 }
 
-const today = new Date().toISOString().slice(0, 10);
 
 const staticEntries: SitemapEntry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0", imageLoc: "/images/og-default.jpg", imageTitle: "InfoEau.fr - Qualité de l'eau potable en France" },
