@@ -80,6 +80,7 @@ const GuidePlombEau = React.lazy(() => import("./pages/traiter/GuidePlombEau"));
 const ComparatifCarafes = React.lazy(() => import("./pages/traiter/ComparatifCarafes"));
 const GuideQuelFiltreEau = React.lazy(() => import("./pages/traiter/GuideQuelFiltreEau"));
 const BouteilleOuFiltration = React.lazy(() => import("./pages/traiter/BouteilleOuFiltration"));
+const DureteEauFrance = React.lazy(() => import("./pages/DureteEauFrance"));
 
 
 const queryClient = new QueryClient({
@@ -186,6 +187,7 @@ const App = () => {
                 <Route path="/comparatif-carafes" element={<ComparatifCarafes />} />
                 <Route path="/guide/quel-filtre-eau" element={<GuideQuelFiltreEau />} />
                 <Route path="/bouteille-ou-filtration" element={<BouteilleOuFiltration />} />
+                <Route path="/durete-eau-france" element={<DureteEauFrance />} />
 
 
                 <Route 
