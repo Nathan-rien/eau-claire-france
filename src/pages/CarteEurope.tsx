@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { getEUWaterQuality, getScoreBadgeClass, EU_COUNTRY_COORDS, type EUCountryWaterQuality } from '@/services/europeWaterApi';
 import { MapboxSecurityService } from '@/services/mapboxSecurityService';
 import { Droplets, MapPin, Users, AlertTriangle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/components/LocalizedLink';
 import { MapLoader } from '@/components/ui/map-loader';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';

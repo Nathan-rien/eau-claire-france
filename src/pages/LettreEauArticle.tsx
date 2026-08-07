@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from 'react-router-dom';
+import { Link } from '@/components/LocalizedLink';
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ArrowLeft, Clock, ExternalLink } from "lucide-react";

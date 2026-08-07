@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from '@/components/LocalizedLink';
 import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
 import InternalLinkHub from "@/components/InternalLinkHub";

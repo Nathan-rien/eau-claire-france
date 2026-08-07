@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { getEUWaterComposition, type EUWaterComposition } from '@/services/europeWaterApi';
 import { Beaker, ArrowUpDown, ChevronDown, ChevronUp, Search, Droplets, FlaskConical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link } from '@/components/LocalizedLink';
 
 const PARAM_LABELS: Record<string, string> = {
   'Total hardness': 'Dureté totale',

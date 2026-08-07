@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRegion } from '@/contexts/RegionContext';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useNavigate } from '@/components/LocalizedLink';
 import { cn } from '@/lib/utils';
 
 const ROUTE_MAP_FR_TO_EU: Record<string, string> = {

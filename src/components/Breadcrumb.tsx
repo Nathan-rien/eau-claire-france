@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/components/LocalizedLink';
 import { ChevronRight, Home } from 'lucide-react';
 import { generateBreadcrumbSchema } from '@/utils/seoData';
 import { Helmet } from 'react-helmet-async';

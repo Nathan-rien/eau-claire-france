@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from '@/components/LocalizedLink';
 import { Newspaper, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BlogCard from "./BlogCard";

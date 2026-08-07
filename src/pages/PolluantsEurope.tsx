@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { getEUPollutantsBaseline, enrichPollutantsWithApi, getEUWaterComposition, type EUPollutant, type EUWaterComposition } from '@/services/europeWaterApi';
 import { FlaskConical, Beaker, Loader2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/components/LocalizedLink';
 
 const KEY_PARAMS = ['pH', 'Total hardness', 'Electrical conductivity'];
 const PARAM_LABELS: Record<string, string> = {

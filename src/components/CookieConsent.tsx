@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from '@/components/LocalizedLink';
 import { Button } from "@/components/ui/button";
 import { Cookie, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
