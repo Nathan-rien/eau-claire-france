@@ -1,0 +1,24 @@
+name: Ping Sitemap (Google Search Console)
+
+on:
+  schedule:
+    # Every day at 04:30 UTC (06:30 Paris), after the nightly content jobs
+    - cron: '30 4 * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Resubmit sitemap to Google Search Console
+        run: |
+          echo "Pinging submit-sitemap edge function..."
+          code=$(curl -sS -o /tmp/ping.json -w '%{http_code}' \
+            -X POST \
+            -H 'Content-Type: application/json' \
+            -d '{}' \
+            https://xblogttmomuogdhmaztf.supabase.co/functions/v1/submit-sitemap)
+          echo "HTTP $code"
+          cat /tmp/ping.json
+          test "$code" = "200"
