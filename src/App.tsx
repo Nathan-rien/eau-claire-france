@@ -39,7 +39,6 @@ const APropos = React.lazy(() => import("./pages/APropos"));
 const Contact = React.lazy(() => import("./pages/Contact"));
 const MentionsLegales = React.lazy(() => import("./pages/MentionsLegales"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
-const EnRedirect = React.lazy(() => import("./components/EnRedirect"));
 
 const RGPD = React.lazy(() => import("./pages/RGPD"));
 const Accessibilite = React.lazy(() => import("./pages/Accessibilite"));
@@ -83,6 +82,92 @@ const BouteilleOuFiltration = React.lazy(() => import("./pages/traiter/Bouteille
 const DureteEauFrance = React.lazy(() => import("./pages/DureteEauFrance"));
 
 
+const appRoutes = (p: string) => (
+  <>
+                <Route path={p || "/"} element={<Index />} />
+                <Route path={`${p}/carte`} element={<Carte />} />
+                <Route path={`${p}/carte-polluants`} element={<CartePolluants />} />
+                <Route path={`${p}/sources-eau`} element={<SourcesEau />} />
+                <Route path={`${p}/alertes`} element={<Alertes />} />
+                <Route path={`${p}/diagnostic`} element={<Diagnostic />} />
+                {/* Redirections SEO: ancienne URL comparateur → page classement (plus aboutie) */}
+                <Route path={`${p}/comparatif-bouteilles`} element={<Navigate to="/classement" replace />} />
+                <Route path={`${p}/bouteilles`} element={<Navigate to="/classement" replace />} />
+                <Route path={`${p}/quelle-eau-boire`} element={<LazyWaterRecommendation />} />
+                <Route path={`${p}/quelle-eau-boire/rapide`} element={<LazyWaterRecommendation initialMode="quick" />} />
+                <Route path={`${p}/quelle-eau-boire/complet`} element={<LazyWaterRecommendation initialMode="full" />} />
+                <Route path={`${p}/classement`} element={<Classement />} />
+                <Route path={`${p}/polluants`} element={<Polluants />} />
+                <Route path={`${p}/auth`} element={<Auth />} />
+                <Route 
+                  path={`${p}/dashboard`} 
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route path={`${p}/sources`} element={<Sources />} />
+                <Route path={`${p}/methodologie`} element={<Methodologie />} />
+                <Route path={`${p}/api-publique`} element={<ApiPublique />} />
+                <Route path={`${p}/a-propos`} element={<APropos />} />
+                <Route path={`${p}/contact`} element={<Contact />} />
+                <Route path={`${p}/mentions-legales`} element={<MentionsLegales />} />
+                <Route path={`${p}/rgpd`} element={<RGPD />} />
+                <Route path={`${p}/accessibilite`} element={<Accessibilite />} />
+                <Route path={`${p}/open-data`} element={<OpenData />} />
+                <Route path={`${p}/prix-eaux`} element={<PrixEaux />} />
+                
+                <Route path={`${p}/marque/:slug`} element={<MarquePrix />} />
+                <Route path={`${p}/admin`} element={<Admin />} />
+                <Route path={`${p}/admin-setup`} element={<AdminSetup />} />
+                <Route path={`${p}/carte-europe`} element={<CarteEurope />} />
+                <Route path={`${p}/carte-polluants-europe`} element={<CartePolluantsEurope />} />
+                <Route path={`${p}/classement-europe`} element={<ClassementEurope />} />
+                <Route path={`${p}/polluants-europe`} element={<PolluantsEurope />} />
+                <Route path={`${p}/diagnostic-europe`} element={<DiagnosticEurope />} />
+                <Route path={`${p}/alertes-europe`} element={<AlertesEurope />} />
+                <Route path={`${p}/prix-eaux-europe`} element={<PrixEauxEurope />} />
+                <Route path={`${p}/composition-europe`} element={<CompositionEurope />} />
+                <Route path={`${p}/parcours-eau`} element={<ParcoursEau />} />
+                <Route path={`${p}/cours-eau`} element={<CoursEau />} />
+                <Route path={`${p}/parcours-eau-bouteille`} element={<ParcoursEauBouteille />} />
+                <Route path={`${p}/carte-parcours-eau`} element={<CarteParcoursEau />} />
+                <Route path={`${p}/carte-parcours-robinet`} element={<CarteParcoursRobinet />} />
+                <Route path={`${p}/diagnostic-prix`} element={<DiagnosticPrix />} />
+                <Route path={`${p}/lettre-de-leau`} element={<LettreEau />} />
+                <Route path={`${p}/lettre-de-leau/:slug`} element={<LettreEauArticle />} />
+                <Route path={`${p}/gout-eau`} element={<GoutEau />} />
+                <Route path={`${p}/qualite-eau`} element={<QualiteEauIndex />} />
+                <Route path={`${p}/qualite-eau/:slug`} element={<QualiteEauCommune />} />
+                <Route path={`${p}/guide/eaux-riches-magnesium`} element={<GuideEauxMagnesium />} />
+                <Route path={`${p}/guide/ma-commune`} element={<GuideMaCommune />} />
+                <Route path={`${p}/actualites/pollution-manganese-vendee-juillet-2026`} element={<AlerteEauVendee />} />
+                <Route path={`${p}/traiter-eau-robinet`} element={<TraiterEauRobinet />} />
+                <Route path={`${p}/guide/eau-calcaire`} element={<GuideEauCalcaire />} />
+                <Route path={`${p}/guide/gout-chlore`} element={<GuideGoutChlore />} />
+                <Route path={`${p}/guide/nitrates-eau`} element={<GuideNitratesEau />} />
+                <Route path={`${p}/guide/plomb-eau`} element={<GuidePlombEau />} />
+                <Route path={`${p}/comparatif-carafes`} element={<ComparatifCarafes />} />
+                <Route path={`${p}/guide/quel-filtre-eau`} element={<GuideQuelFiltreEau />} />
+                <Route path={`${p}/bouteille-ou-filtration`} element={<BouteilleOuFiltration />} />
+                <Route path={`${p}/durete-eau-france`} element={<DureteEauFrance />} />
+
+
+                <Route 
+                  path={`${p}/admin/security`} 
+                  element={
+                    <ProtectedRoute>
+                      <SecurityDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route path={p ? `${p}/*` : "*"} element={<NotFound />} />
+
+
+  </>
+);
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -120,88 +205,8 @@ const App = () => {
             <NewsTicker />
             <Suspense fallback={<PageLoader />}>
               <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/carte" element={<Carte />} />
-                <Route path="/carte-polluants" element={<CartePolluants />} />
-                <Route path="/sources-eau" element={<SourcesEau />} />
-                <Route path="/alertes" element={<Alertes />} />
-                <Route path="/diagnostic" element={<Diagnostic />} />
-                {/* Redirections SEO: ancienne URL comparateur → page classement (plus aboutie) */}
-                <Route path="/comparatif-bouteilles" element={<Navigate to="/classement" replace />} />
-                <Route path="/bouteilles" element={<Navigate to="/classement" replace />} />
-                <Route path="/quelle-eau-boire" element={<LazyWaterRecommendation />} />
-                <Route path="/quelle-eau-boire/rapide" element={<LazyWaterRecommendation initialMode="quick" />} />
-                <Route path="/quelle-eau-boire/complet" element={<LazyWaterRecommendation initialMode="full" />} />
-                <Route path="/classement" element={<Classement />} />
-                <Route path="/polluants" element={<Polluants />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route 
-                  path="/dashboard" 
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route path="/sources" element={<Sources />} />
-                <Route path="/methodologie" element={<Methodologie />} />
-                <Route path="/api-publique" element={<ApiPublique />} />
-                <Route path="/a-propos" element={<APropos />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/mentions-legales" element={<MentionsLegales />} />
-                <Route path="/rgpd" element={<RGPD />} />
-                <Route path="/accessibilite" element={<Accessibilite />} />
-                <Route path="/open-data" element={<OpenData />} />
-                <Route path="/prix-eaux" element={<PrixEaux />} />
-                
-                <Route path="/marque/:slug" element={<MarquePrix />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="/admin-setup" element={<AdminSetup />} />
-                <Route path="/carte-europe" element={<CarteEurope />} />
-                <Route path="/carte-polluants-europe" element={<CartePolluantsEurope />} />
-                <Route path="/classement-europe" element={<ClassementEurope />} />
-                <Route path="/polluants-europe" element={<PolluantsEurope />} />
-                <Route path="/diagnostic-europe" element={<DiagnosticEurope />} />
-                <Route path="/alertes-europe" element={<AlertesEurope />} />
-                <Route path="/prix-eaux-europe" element={<PrixEauxEurope />} />
-                <Route path="/composition-europe" element={<CompositionEurope />} />
-                <Route path="/parcours-eau" element={<ParcoursEau />} />
-                <Route path="/cours-eau" element={<CoursEau />} />
-                <Route path="/parcours-eau-bouteille" element={<ParcoursEauBouteille />} />
-                <Route path="/carte-parcours-eau" element={<CarteParcoursEau />} />
-                <Route path="/carte-parcours-robinet" element={<CarteParcoursRobinet />} />
-                <Route path="/diagnostic-prix" element={<DiagnosticPrix />} />
-                <Route path="/lettre-de-leau" element={<LettreEau />} />
-                <Route path="/lettre-de-leau/:slug" element={<LettreEauArticle />} />
-                <Route path="/gout-eau" element={<GoutEau />} />
-                <Route path="/qualite-eau" element={<QualiteEauIndex />} />
-                <Route path="/qualite-eau/:slug" element={<QualiteEauCommune />} />
-                <Route path="/guide/eaux-riches-magnesium" element={<GuideEauxMagnesium />} />
-                <Route path="/guide/ma-commune" element={<GuideMaCommune />} />
-                <Route path="/actualites/pollution-manganese-vendee-juillet-2026" element={<AlerteEauVendee />} />
-                <Route path="/traiter-eau-robinet" element={<TraiterEauRobinet />} />
-                <Route path="/guide/eau-calcaire" element={<GuideEauCalcaire />} />
-                <Route path="/guide/gout-chlore" element={<GuideGoutChlore />} />
-                <Route path="/guide/nitrates-eau" element={<GuideNitratesEau />} />
-                <Route path="/guide/plomb-eau" element={<GuidePlombEau />} />
-                <Route path="/comparatif-carafes" element={<ComparatifCarafes />} />
-                <Route path="/guide/quel-filtre-eau" element={<GuideQuelFiltreEau />} />
-                <Route path="/bouteille-ou-filtration" element={<BouteilleOuFiltration />} />
-                <Route path="/durete-eau-france" element={<DureteEauFrance />} />
-
-
-                <Route 
-                  path="/admin/security" 
-                  element={
-                    <ProtectedRoute>
-                      <SecurityDashboard />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route path="/en" element={<EnRedirect />} />
-                <Route path="/en/*" element={<EnRedirect />} />
-                <Route path="*" element={<NotFound />} />
-
+                {appRoutes("")}
+                {appRoutes("/en")}
               </Routes>
             </Suspense>
             <OndineChat />
