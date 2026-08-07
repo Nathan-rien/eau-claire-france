@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getEUWaterQuality, getEUPollutantsBaseline, enrichPollutantsWithApi, getEUWaterComposition, getScoreBadgeClass, type EUCountryWaterQuality, type EUPollutant, type EUWaterComposition } from '@/services/europeWaterApi';
 import { Trophy, ArrowUpDown, ChevronDown, FlaskConical, Shield, Users, Droplets, MapPin, Beaker, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link } from '@/components/LocalizedLink';
 
 const PARAM_LABELS: Record<string, string> = {
   'Total hardness': 'Dureté totale',

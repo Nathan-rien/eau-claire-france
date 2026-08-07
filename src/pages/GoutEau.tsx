@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useState } from 'react';
 import { AlertTriangle, Droplets, Info } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/components/LocalizedLink';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';

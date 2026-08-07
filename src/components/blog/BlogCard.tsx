@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from '@/components/LocalizedLink';
 import { Clock, ArrowRight, Droplets } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CATEGORY_LABELS, type BlogArticle } from "@/services/blogApi";

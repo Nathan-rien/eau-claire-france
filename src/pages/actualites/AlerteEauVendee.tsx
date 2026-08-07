@@ -1,7 +1,7 @@
 import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
 import InternalLinkHub from "@/components/InternalLinkHub";
-import { Link } from "react-router-dom";
+import { Link } from '@/components/LocalizedLink';
 import { CheckCircle2, Clock, MapPin, ShieldAlert, ArrowLeft, ExternalLink } from "lucide-react";
 
 const CANONICAL = "/actualites/pollution-manganese-vendee-juillet-2026";

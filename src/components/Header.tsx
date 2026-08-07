@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { Link } from '@/components/LocalizedLink';
 import {
   Droplets, Menu, ChevronDown, Search,
   Droplet, GlassWater, AlertTriangle, Truck, Route as RouteIcon,
