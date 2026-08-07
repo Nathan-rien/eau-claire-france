@@ -307,8 +307,9 @@ export const seoData = {
   // === Pages prix ===
 
   prixEaux: {
-    title: "Prix eau en bouteille : comparateur Leclerc, Carrefour, Auchan",
-    description: "Comparateur de prix des eaux en bouteille en France : Cristaline, Mont Roucous, Evian, Volvic dans les enseignes Leclerc, Carrefour, Auchan. Trouvez l'eau la moins chère.",
+    title: "Prix de l'eau en bouteille : comparez par marque et enseigne",
+    description: "Comparez le prix de l'eau en bouteille par marque et enseigne (Leclerc, Carrefour, Auchan). Prix au litre et offres du moment, relevés régulièrement.",
+
     keywords: "prix eau bouteille, comparaison prix eau en bouteille, eau la moins chere, prix cristaline leclerc, prix eau mont roucous leclerc, comparateur eau",
     canonical: "/prix-eaux",
     schemaData: {

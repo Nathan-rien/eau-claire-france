@@ -173,8 +173,9 @@ export const translations = {
     // Prices page
     'prices.title': 'Prix des eaux en bouteille',
     'prices.subtitle': 'Comparez les prix des eaux en bouteille dans toutes les enseignes. Données mises à jour quotidiennement.',
-    'prices.seoTitle': 'Prix des eaux en bouteille - Comparateur par enseigne',
-    'prices.seoDescription': 'Comparez les prix des eaux en bouteille dans toutes les enseignes. Trouvez les meilleures offres pour Evian, Cristaline, Volvic et plus.',
+    'prices.seoTitle': "Prix de l'eau en bouteille : comparez par marque et enseigne",
+    'prices.seoDescription': "Comparez le prix de l'eau en bouteille par marque et enseigne (Leclerc, Carrefour, Auchan). Prix au litre et offres du moment, relevés régulièrement.",
+
     'prices.sourcesTitle': 'Sources de prix',
     'prices.mainSite': 'Site principal :',
     'prices.mainSiteDesc': 'Prix grand public',
@@ -2279,8 +2280,9 @@ export const translations = {
     // Prices page
     'prices.title': 'Bottled water prices',
     'prices.subtitle': 'Compare bottled water prices across all retailers. Data updated daily.',
-    'prices.seoTitle': 'Bottled water prices - Retailer comparison',
-    'prices.seoDescription': 'Compare bottled water prices across all retailers. Find the best deals on Evian, Cristaline, Volvic and more.',
+    'prices.seoTitle': "Bottled water prices: compare by brand and retailer",
+    'prices.seoDescription': "Compare bottled water prices by brand and retailer (Leclerc, Carrefour, Auchan). Price per litre and current offers, checked regularly.",
+
     'prices.sourcesTitle': 'Price sources',
     'prices.mainSite': 'Main site:',
     'prices.mainSiteDesc': 'Public prices',
