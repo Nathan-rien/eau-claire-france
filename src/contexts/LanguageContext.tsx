@@ -1,6 +1,5 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useNavigate } from '@/components/LocalizedLink';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { translations, TranslationKey } from '@/i18n/translations';
 import { getLanguageFromPath, localizePath, type AppLanguage } from '@/lib/i18nRoutes';
 

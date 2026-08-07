@@ -42,8 +42,16 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   // Canonical must always point to the production domain infoeau.fr — never to
   // preview/lovable.app hosts. When no explicit canonical prop is given, we
   // build it from the current pathname but force the infoeau.fr origin.
+  // Language-aware self-canonical: an EN page (/en/...) canonicalises to its own
+  // /en URL, a FR page to its unprefixed URL. No cross-language canonical.
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
-  const canonicalUrl = canonical ? `${siteUrl}${canonical}` : `${siteUrl}${currentPath}`;
+  const isEnglishPath = /^\/en(\/|$)/.test(currentPath);
+  const basePath = canonical ? canonical : currentPath;
+  const unprefixed = basePath.replace(/^\/en(?=\/|$)/, '') || '/';
+  const canonicalPath = isEnglishPath
+    ? (unprefixed === '/' ? '/en' : `/en${unprefixed}`)
+    : unprefixed;
+  const canonicalUrl = `${siteUrl}${canonicalPath}`;
   const ogImageUrl = ogImage?.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
   const schemas = schemaData ? (Array.isArray(schemaData) ? schemaData : [schemaData]) : [];
 
