@@ -44,7 +44,7 @@ const staticEntries: SitemapEntry[] = [
   { path: "/carte-parcours-robinet", changefreq: "monthly", priority: "0.7" },
   { path: "/prix-eaux", changefreq: "daily", priority: "0.8" },
   { path: "/comparateur-prix", changefreq: "daily", priority: "0.8" },
-  { path: "/comparatif-bouteilles", changefreq: "weekly", priority: "0.8" },
+  // /comparatif-bouteilles et /bouteilles redirigent vers /classement : hors sitemap.
   { path: "/sources-eau", changefreq: "monthly", priority: "0.7" },
   { path: "/marque/evian", changefreq: "weekly", priority: "0.6" },
   { path: "/marque/cristaline", changefreq: "weekly", priority: "0.6" },
