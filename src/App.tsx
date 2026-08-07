@@ -195,13 +195,15 @@ const App = () => {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <LanguageProvider>
+          <BrowserRouter>
+            {/* LanguageProvider must live inside the router: the language is
+                derived from the URL pathname (/en prefix) on the first render. */}
+            <LanguageProvider>
             <RegionProvider>
             <TooltipProvider>
               <SecurityHeaders />
             <Toaster />
             <Sonner />
-            <BrowserRouter>
             <NewsTicker />
             <Suspense fallback={<PageLoader />}>
               <Routes>
@@ -211,10 +213,10 @@ const App = () => {
             </Suspense>
             <OndineChat />
             <CookieConsent />
-            </BrowserRouter>
             </TooltipProvider>
             </RegionProvider>
-          </LanguageProvider>
+            </LanguageProvider>
+          </BrowserRouter>
         </AuthProvider>
       </QueryClientProvider>
     </HelmetProvider>
