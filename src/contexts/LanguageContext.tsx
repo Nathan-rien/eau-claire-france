@@ -1,10 +1,12 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { translations, TranslationKey } from '@/i18n/translations';
+import { getLanguageFromPath, localizePath, type AppLanguage } from '@/lib/i18nRoutes';
 
 interface LanguageContextType {
-  language: 'fr' | 'en';
+  language: AppLanguage;
   toggleLanguage: () => void;
-  setLanguage: (lang: 'fr' | 'en') => void;
+  setLanguage: (lang: AppLanguage) => void;
   t: (key: string, variables?: Record<string, string>) => string;
 }
 
@@ -12,52 +14,44 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 const STORAGE_KEY = 'infoeau_lang';
 
-const detectInitialLanguage = (): 'fr' | 'en' => {
-  if (typeof window === 'undefined') return 'fr';
-  try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored === 'fr' || stored === 'en') return stored;
-  } catch {
-    /* noop */
-  }
-  const nav = (typeof navigator !== 'undefined' && navigator.language) || 'fr';
-  return nav.toLowerCase().startsWith('en') ? 'en' : 'fr';
-};
-
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguageState] = useState<'fr' | 'en'>(detectInitialLanguage);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const setLanguage = (lang: 'fr' | 'en') => {
-    setLanguageState(lang);
+  // The URL is the ONLY source of truth, from the very first render.
+  const language: AppLanguage = getLanguageFromPath(location.pathname);
+
+  // localStorage is only a memory of the last explicit choice (used for UI
+  // affordances). It never triggers a redirect nor overrides the URL.
+  React.useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, lang);
+      window.localStorage.setItem(STORAGE_KEY, language);
     } catch {
       /* noop */
     }
-    if (typeof document !== 'undefined') {
-      document.documentElement.lang = lang;
-    }
-  };
-
-  React.useEffect(() => {
     if (typeof document !== 'undefined') {
       document.documentElement.lang = language;
     }
   }, [language]);
 
-  const toggleLanguage = () => {
-    setLanguage(language === 'fr' ? 'en' : 'fr');
+  // Switching language = navigating to the localized URL.
+  const setLanguage = (lang: AppLanguage) => {
+    if (lang === language) return;
+    const target = localizePath(location.pathname, lang);
+    navigate(`${target}${location.search}${location.hash}`);
   };
+
+  const toggleLanguage = () => setLanguage(language === 'fr' ? 'en' : 'fr');
 
   const t = (key: string, variables?: Record<string, string>): string => {
     let translation = translations[language][key as TranslationKey] || key;
-    
+
     if (variables) {
       Object.entries(variables).forEach(([varKey, value]) => {
         translation = translation.replace(`{${varKey}}`, value);
       });
     }
-    
+
     return translation;
   };
 
