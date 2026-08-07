@@ -91,8 +91,8 @@ const appRoutes = (p: string) => (
                 <Route path={`${p}/alertes`} element={<Alertes />} />
                 <Route path={`${p}/diagnostic`} element={<Diagnostic />} />
                 {/* Redirections SEO: ancienne URL comparateur → page classement (plus aboutie) */}
-                <Route path={`${p}/comparatif-bouteilles`} element={<Navigate to="/classement" replace />} />
-                <Route path={`${p}/bouteilles`} element={<Navigate to="/classement" replace />} />
+                <Route path={`${p}/comparatif-bouteilles`} element={<Navigate to={`${p}/classement`} replace />} />
+                <Route path={`${p}/bouteilles`} element={<Navigate to={`${p}/classement`} replace />} />
                 <Route path={`${p}/quelle-eau-boire`} element={<LazyWaterRecommendation />} />
                 <Route path={`${p}/quelle-eau-boire/rapide`} element={<LazyWaterRecommendation initialMode="quick" />} />
                 <Route path={`${p}/quelle-eau-boire/complet`} element={<LazyWaterRecommendation initialMode="full" />} />
