@@ -745,6 +745,12 @@ export type Database = {
     }
     Functions: {
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
+      distinct_price_brands: {
+        Args: never
+        Returns: {
+          brand: string
+        }[]
+      }
       has_admin_role: { Args: { check_user_id: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       refresh_prices_view: { Args: never; Returns: undefined }

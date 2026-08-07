@@ -21,16 +21,15 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { data, error } = await supabase
-      .from('prices')
-      .select('brand')
-      .not('brand', 'is', null)
-      .neq('brand', 'Inconnu');
+    const { data, error } = await supabase.rpc('distinct_price_brands');
 
     if (error) throw error;
 
-    const distinct = Array.from(new Set((data || []).map(r => r.brand).filter(Boolean) as string[]));
+    const distinct = ((data as { brand: string }[]) || [])
+      .map(r => r.brand)
+      .filter(Boolean);
     distinct.sort((a, b) => normalizeStr(a).localeCompare(normalizeStr(b)));
+
 
     return new Response(JSON.stringify(distinct), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
