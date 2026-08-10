@@ -12,6 +12,7 @@ import { Price, Retailer, BrandPriceStats } from '@/types/pricing';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { getBrandTimeseries, BrandTimeseries } from '@/services/timeseriesApi';
+import { resolveBrandFromSlug } from '@/config/brands';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
