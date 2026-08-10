@@ -12,7 +12,8 @@ import { Price, Retailer, BrandPriceStats } from '@/types/pricing';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { getBrandTimeseries, BrandTimeseries } from '@/services/timeseriesApi';
-import { resolveBrandFromSlug } from '@/config/brands';
+import { resolveBrandFromSlug, getBrandFacts } from '@/config/brands';
+import { isPricedBrandSlug } from '@/config/pricedBrands';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
@@ -168,7 +169,7 @@ export default function MarquePrix() {
         title={t('brandPrice.price', { brand })}
         description={t('brandPrice.comparison', { brand })}
         canonical={`/marque/${slug}`}
-        noindex={prices.length === 0}
+        noindex={!isPricedBrandSlug(slug)}
       />
 
 
