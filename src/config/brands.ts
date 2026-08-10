@@ -61,6 +61,51 @@ export const BRAND_CONFIG = {
       variants: ['salvetat', 'la salvetat'],
       type: 'mineral_sparkling',
       source: 'La Salvetat'
+    },
+    'Arvie': {
+      variants: ['arvie'],
+      type: 'mineral_sparkling',
+      source: 'Arvie (Auvergne)'
+    },
+    'Courmayeur': {
+      variants: ['courmayeur'],
+      type: 'mineral',
+      source: 'Courmayeur (Val d\'Aoste)'
+    },
+    'Plancoët': {
+      variants: ['plancoet', 'plancoët'],
+      type: 'mineral',
+      source: 'Sassay (Plancoët)'
+    },
+    'Rozana': {
+      variants: ['rozana'],
+      type: 'mineral_sparkling',
+      source: 'Rouzat'
+    },
+    'Saint-Yorre': {
+      variants: ['saint-yorre', 'saint yorre', 'st-yorre'],
+      type: 'mineral_sparkling',
+      source: 'Saint-Yorre (Vichy)'
+    },
+    'San Pellegrino': {
+      variants: ['san pellegrino', 'sanpellegrino', 's.pellegrino'],
+      type: 'mineral_sparkling',
+      source: 'San Pellegrino Terme'
+    },
+    'Thonon': {
+      variants: ['thonon', 'thonon-les-bains'],
+      type: 'mineral',
+      source: 'La Versoie (Thonon-les-Bains)'
+    },
+    'Vichy Célestins': {
+      variants: ['vichy celestins', 'vichy célestins', 'vichy-celestins'],
+      type: 'mineral_sparkling',
+      source: 'Les Célestins (Vichy)'
+    },
+    'Wattwiller': {
+      variants: ['wattwiller'],
+      type: 'mineral',
+      source: 'Wattwiller'
     }
   },
 
@@ -146,3 +191,12 @@ export const resolveBrandFromSlug = (slug: string): string | null => {
 
 /** Slug canonique d'une marque, pour construire les URLs /marque/:slug. */
 export const brandToSlug = (brand: string): string => normalizeBrandKey(brand);
+
+/** Faits fiables (type + source) d'une marque à partir de son slug d'URL. Aucune donnée inventée. */
+export const getBrandFacts = (slug: string): { name: string; type: string; source: string } | null => {
+  const name = resolveBrandFromSlug(slug);
+  if (!name) return null;
+  const cfg = (BRAND_CONFIG.brands as Record<string, { type?: string; source?: string }>)[name];
+  if (!cfg?.type || !cfg?.source) return null;
+  return { name, type: cfg.type, source: cfg.source };
+};

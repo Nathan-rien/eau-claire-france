@@ -22,6 +22,7 @@ import { DataBanner } from '@/components/DataBanner';
 import { supabase } from '@/integrations/supabase/client';
 import { extractSourceInfo, detectChannelType, getChannelDescription, ChannelType } from '@/utils/sourceDetection';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import BrandLinksSection from '@/components/BrandLinksSection';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
@@ -682,6 +683,8 @@ export default function PrixEaux() {
             </div>
             </>
           )}
+
+          <BrandLinksSection />
         </div>
       </main>
     </Layout>

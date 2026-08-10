@@ -580,6 +580,22 @@ export const translations = {
     'brandPrice.bestPrice': 'Meilleur prix',
     'brandPrice.recentPrices': 'Derniers prix relevés',
     'brandPrice.days': 'jours',
+    'brandPrice.about': 'À propos de {brand}',
+    'brandPrice.factsMineral': '{brand} est une eau minérale naturelle plate, issue de la source {source}.',
+    'brandPrice.factsSparkling': '{brand} est une eau minérale naturelle gazeuse, issue de la source {source}.',
+    'brandPrice.factsSpring': '{brand} est une eau de source, issue de {source}.',
+    'brandPrice.factsGeneric': '{brand} est une eau en bouteille distribuée en France.',
+    'brandPrice.priceContext': 'Les prix ci-dessous sont relevés chez les enseignes suivies par InfoEau et varient selon le format du pack, l\'enseigne et les promotions en cours.',
+
+    // Maillage interne marques / Europe
+    'brandLinks.title': 'Parcourir par marque',
+    'brandLinks.intro': 'Consultez le détail des prix relevés, enseigne par enseigne, pour chaque marque suivie.',
+    'brandLinks.europeTitle': 'Comparer à l\'échelle européenne',
+    'brandLinks.europeIntro': 'Élargissez la comparaison aux autres pays européens.',
+    'brandLinks.euRanking': 'Classement des eaux en Europe',
+    'brandLinks.euPrices': 'Prix de l\'eau en Europe',
+    'brandLinks.euComposition': 'Composition de l\'eau en Europe',
+    'brandLinks.euPollutants': 'Polluants de l\'eau en Europe',
 
     // Price Diagnostic page
     'priceDiag.title': 'Diagnostic des Prix - Audit & Transparence',
@@ -2687,6 +2703,22 @@ export const translations = {
     'brandPrice.bestPrice': 'Best price',
     'brandPrice.recentPrices': 'Latest recorded prices',
     'brandPrice.days': 'days',
+    'brandPrice.about': 'About {brand}',
+    'brandPrice.factsMineral': '{brand} is a still natural mineral water from the {source} source.',
+    'brandPrice.factsSparkling': '{brand} is a sparkling natural mineral water from the {source} source.',
+    'brandPrice.factsSpring': '{brand} is a spring water from {source}.',
+    'brandPrice.factsGeneric': '{brand} is a bottled water sold in France.',
+    'brandPrice.priceContext': 'The prices below are recorded at the retailers tracked by InfoEau and vary with pack size, retailer and current promotions.',
+
+    // Internal links: brands / Europe
+    'brandLinks.title': 'Browse by brand',
+    'brandLinks.intro': 'See the recorded prices, retailer by retailer, for each tracked brand.',
+    'brandLinks.europeTitle': 'Compare across Europe',
+    'brandLinks.europeIntro': 'Extend the comparison to other European countries.',
+    'brandLinks.euRanking': 'European water ranking',
+    'brandLinks.euPrices': 'Water prices in Europe',
+    'brandLinks.euComposition': 'Water composition in Europe',
+    'brandLinks.euPollutants': 'Water pollutants in Europe',
 
     // Price Diagnostic page
     'priceDiag.title': 'Price Diagnostic - Audit & Transparency',

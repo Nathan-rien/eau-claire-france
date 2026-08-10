@@ -12,7 +12,8 @@ import { Price, Retailer, BrandPriceStats } from '@/types/pricing';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { getBrandTimeseries, BrandTimeseries } from '@/services/timeseriesApi';
-import { resolveBrandFromSlug } from '@/config/brands';
+import { resolveBrandFromSlug, getBrandFacts } from '@/config/brands';
+import { isPricedBrandSlug } from '@/config/pricedBrands';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
@@ -168,7 +169,7 @@ export default function MarquePrix() {
         title={t('brandPrice.price', { brand })}
         description={t('brandPrice.comparison', { brand })}
         canonical={`/marque/${slug}`}
-        noindex={prices.length === 0}
+        noindex={!isPricedBrandSlug(slug)}
       />
 
 
@@ -178,6 +179,29 @@ export default function MarquePrix() {
           <p className="text-muted-foreground mb-6">
             {t('brandPrice.comparison', { brand })}
           </p>
+
+          {/* Bloc factuel unique par marque (type + source, données BRAND_CONFIG) */}
+          {(() => {
+            const facts = slug ? getBrandFacts(slug) : null;
+            const sentence = facts
+              ? facts.type === 'mineral_sparkling'
+                ? t('brandPrice.factsSparkling', { brand: facts.name, source: facts.source })
+                : facts.type === 'spring'
+                  ? t('brandPrice.factsSpring', { brand: facts.name, source: facts.source })
+                  : t('brandPrice.factsMineral', { brand: facts.name, source: facts.source })
+              : t('brandPrice.factsGeneric', { brand });
+            return (
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle>{t('brandPrice.about', { brand })}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <p className="text-sm">{sentence}</p>
+                  <p className="text-sm text-muted-foreground">{t('brandPrice.priceContext')}</p>
+                </CardContent>
+              </Card>
+            );
+          })()}
 
           {/* Composition placeholder */}
           <Card className="mb-6">
