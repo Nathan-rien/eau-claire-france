@@ -12,6 +12,7 @@ import { Price, Retailer, BrandPriceStats } from '@/types/pricing';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { getBrandTimeseries, BrandTimeseries } from '@/services/timeseriesApi';
+import { resolveBrandFromSlug } from '@/config/brands';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
@@ -32,34 +33,44 @@ export default function MarquePrix() {
 
   useEffect(() => {
     if (!slug) return;
-    
+
     const loadBrandData = async () => {
       setLoading(true);
       try {
-        // Détecter la marque depuis le slug
-        const brandName = slug.charAt(0).toUpperCase() + slug.slice(1);
+        // Résolution du nom exact de la marque depuis le slug (accents, espaces, tirets)
+        const titleCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+        const resolved = resolveBrandFromSlug(slug);
+        const brandName = resolved ?? titleCase(slug.replace(/-/g, ' '));
         setBrand(brandName);
 
-        // Charger les prix récents pour cette marque
+        // Variantes de libellé possibles en base (casse et séparateurs)
+        const candidates = Array.from(new Set([
+          brandName,
+          titleCase(slug),
+          titleCase(slug.replace(/-/g, ' ')),
+          slug.split('-').map(titleCase).join(' '),
+          slug.split('-').map(titleCase).join('-'),
+        ]));
+
+        // Charger les prix récents pour cette marque (comparaison insensible à la casse)
         const { data: pricesData, error: pricesError } = await supabase
           .from('prices')
           .select(`
             *,
             retailers!inner(name)
           `)
-          .eq('brand', brandName)
+          .or(candidates.map((c) => `brand.ilike.${c}`).join(','))
           .order('scraped_at', { ascending: false })
           .limit(100);
 
+
         if (pricesError) throw pricesError;
-        
-        if (pricesData) {
-          const pricesWithRetailer = pricesData.map(price => ({
-            ...price,
-            retailer_name: (price as any).retailers.name
-          }));
-          setPrices(pricesWithRetailer as PriceWithRetailer[]);
-        }
+
+        const loadedPrices: PriceWithRetailer[] = (pricesData ?? []).map((price) => ({
+          ...price,
+          retailer_name: (price as any).retailers.name,
+        })) as PriceWithRetailer[];
+        setPrices(loadedPrices);
 
         // Charger les enseignes
         const { data: retailersData, error: retailersError } = await supabase
@@ -69,11 +80,12 @@ export default function MarquePrix() {
           .order('name');
 
         if (retailersError) throw retailersError;
-        if (retailersData) setRetailers(retailersData as Retailer[]);
+        const loadedRetailers = (retailersData ?? []) as Retailer[];
+        setRetailers(loadedRetailers);
 
-        // Calculer les stats (médiane par enseigne) 
-        const retailerStats = retailers.map(retailer => {
-          const retailerPrices = prices
+        // Calculer les stats (médiane par enseigne) sur les données fraîchement chargées
+        const retailerStats = loadedRetailers.map(retailer => {
+          const retailerPrices = loadedPrices
             .filter(p => p.retailer_id === retailer.id && p.price_per_l_eur)
             .map(p => p.price_per_l_eur!)
             .sort((a, b) => a - b);
@@ -123,7 +135,8 @@ export default function MarquePrix() {
     };
 
     loadBrandData();
-  }, [slug, toast, retailers, prices, selectedPeriod]);
+  }, [slug, toast, selectedPeriod]);
+
 
   const formatPrice = (price: number | null) => {
     if (!price) return '-';
@@ -155,7 +168,9 @@ export default function MarquePrix() {
         title={t('brandPrice.price', { brand })}
         description={t('brandPrice.comparison', { brand })}
         canonical={`/marque/${slug}`}
+        noindex={prices.length === 0}
       />
+
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
