@@ -180,6 +180,29 @@ export default function MarquePrix() {
             {t('brandPrice.comparison', { brand })}
           </p>
 
+          {/* Bloc factuel unique par marque (type + source, données BRAND_CONFIG) */}
+          {(() => {
+            const facts = slug ? getBrandFacts(slug) : null;
+            const sentence = facts
+              ? facts.type === 'mineral_sparkling'
+                ? t('brandPrice.factsSparkling', { brand: facts.name, source: facts.source })
+                : facts.type === 'spring'
+                  ? t('brandPrice.factsSpring', { brand: facts.name, source: facts.source })
+                  : t('brandPrice.factsMineral', { brand: facts.name, source: facts.source })
+              : t('brandPrice.factsGeneric', { brand });
+            return (
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle>{t('brandPrice.about', { brand })}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <p className="text-sm">{sentence}</p>
+                  <p className="text-sm text-muted-foreground">{t('brandPrice.priceContext')}</p>
+                </CardContent>
+              </Card>
+            );
+          })()}
+
           {/* Composition placeholder */}
           <Card className="mb-6">
             <CardHeader>
