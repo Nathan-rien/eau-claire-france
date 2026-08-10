@@ -38,19 +38,31 @@ export default function MarquePrix() {
       setLoading(true);
       try {
         // Résolution du nom exact de la marque depuis le slug (accents, espaces, tirets)
-        const brandName = resolveBrandFromSlug(slug) ?? slug.charAt(0).toUpperCase() + slug.slice(1);
+        const titleCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+        const resolved = resolveBrandFromSlug(slug);
+        const brandName = resolved ?? titleCase(slug.replace(/-/g, ' '));
         setBrand(brandName);
 
-        // Charger les prix récents pour cette marque
+        // Variantes de libellé possibles en base (casse et séparateurs)
+        const candidates = Array.from(new Set([
+          brandName,
+          titleCase(slug),
+          titleCase(slug.replace(/-/g, ' ')),
+          slug.split('-').map(titleCase).join(' '),
+          slug.split('-').map(titleCase).join('-'),
+        ]));
+
+        // Charger les prix récents pour cette marque (comparaison insensible à la casse)
         const { data: pricesData, error: pricesError } = await supabase
           .from('prices')
           .select(`
             *,
             retailers!inner(name)
           `)
-          .eq('brand', brandName)
+          .or(candidates.map((c) => `brand.ilike.${c}`).join(','))
           .order('scraped_at', { ascending: false })
           .limit(100);
+
 
         if (pricesError) throw pricesError;
 
