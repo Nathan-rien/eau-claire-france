@@ -191,3 +191,12 @@ export const resolveBrandFromSlug = (slug: string): string | null => {
 
 /** Slug canonique d'une marque, pour construire les URLs /marque/:slug. */
 export const brandToSlug = (brand: string): string => normalizeBrandKey(brand);
+
+/** Faits fiables (type + source) d'une marque à partir de son slug d'URL. Aucune donnée inventée. */
+export const getBrandFacts = (slug: string): { name: string; type: string; source: string } | null => {
+  const name = resolveBrandFromSlug(slug);
+  if (!name) return null;
+  const cfg = (BRAND_CONFIG.brands as Record<string, { type?: string; source?: string }>)[name];
+  if (!cfg?.type || !cfg?.source) return null;
+  return { name, type: cfg.type, source: cfg.source };
+};
