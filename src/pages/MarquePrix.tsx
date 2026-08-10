@@ -32,12 +32,12 @@ export default function MarquePrix() {
 
   useEffect(() => {
     if (!slug) return;
-    
+
     const loadBrandData = async () => {
       setLoading(true);
       try {
-        // Détecter la marque depuis le slug
-        const brandName = slug.charAt(0).toUpperCase() + slug.slice(1);
+        // Résolution du nom exact de la marque depuis le slug (accents, espaces, tirets)
+        const brandName = resolveBrandFromSlug(slug) ?? slug.charAt(0).toUpperCase() + slug.slice(1);
         setBrand(brandName);
 
         // Charger les prix récents pour cette marque
@@ -52,14 +52,12 @@ export default function MarquePrix() {
           .limit(100);
 
         if (pricesError) throw pricesError;
-        
-        if (pricesData) {
-          const pricesWithRetailer = pricesData.map(price => ({
-            ...price,
-            retailer_name: (price as any).retailers.name
-          }));
-          setPrices(pricesWithRetailer as PriceWithRetailer[]);
-        }
+
+        const loadedPrices: PriceWithRetailer[] = (pricesData ?? []).map((price) => ({
+          ...price,
+          retailer_name: (price as any).retailers.name,
+        })) as PriceWithRetailer[];
+        setPrices(loadedPrices);
 
         // Charger les enseignes
         const { data: retailersData, error: retailersError } = await supabase
@@ -69,11 +67,12 @@ export default function MarquePrix() {
           .order('name');
 
         if (retailersError) throw retailersError;
-        if (retailersData) setRetailers(retailersData as Retailer[]);
+        const loadedRetailers = (retailersData ?? []) as Retailer[];
+        setRetailers(loadedRetailers);
 
-        // Calculer les stats (médiane par enseigne) 
-        const retailerStats = retailers.map(retailer => {
-          const retailerPrices = prices
+        // Calculer les stats (médiane par enseigne) sur les données fraîchement chargées
+        const retailerStats = loadedRetailers.map(retailer => {
+          const retailerPrices = loadedPrices
             .filter(p => p.retailer_id === retailer.id && p.price_per_l_eur)
             .map(p => p.price_per_l_eur!)
             .sort((a, b) => a - b);
@@ -123,7 +122,8 @@ export default function MarquePrix() {
     };
 
     loadBrandData();
-  }, [slug, toast, retailers, prices, selectedPeriod]);
+  }, [slug, toast, selectedPeriod]);
+
 
   const formatPrice = (price: number | null) => {
     if (!price) return '-';
