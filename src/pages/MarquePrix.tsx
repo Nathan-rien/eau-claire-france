@@ -156,7 +156,9 @@ export default function MarquePrix() {
         title={t('brandPrice.price', { brand })}
         description={t('brandPrice.comparison', { brand })}
         canonical={`/marque/${slug}`}
+        noindex={prices.length === 0}
       />
+
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
