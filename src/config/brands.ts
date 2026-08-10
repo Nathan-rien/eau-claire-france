@@ -119,3 +119,30 @@ export const BRAND_CONFIG = {
 
 export const TARGET_BRANDS = Object.keys(BRAND_CONFIG.brands);
 export const MDD_BRANDS = Object.keys(BRAND_CONFIG.mdd);
+/** Normalise une chaîne : minuscules, sans accents, séparateurs unifiés en "-". */
+const normalizeBrandKey = (s: string) =>
+  s
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+/**
+ * Retrouve le nom exact de la marque (tel que stocké en base) à partir d'un slug d'URL.
+ * Ex. "hepar" -> "Hépar", "mont-roucous" -> "Mont Roucous", "saint-amand" -> "Saint-Amand".
+ */
+export const resolveBrandFromSlug = (slug: string): string | null => {
+  const key = normalizeBrandKey(slug);
+  const pools = [BRAND_CONFIG.brands as Record<string, { variants: string[] }>, BRAND_CONFIG.mdd as unknown as Record<string, { variants: string[] }>];
+  for (const pool of pools) {
+    for (const [name, cfg] of Object.entries(pool)) {
+      if (normalizeBrandKey(name) === key) return name;
+      if (cfg.variants?.some((v) => normalizeBrandKey(v) === key)) return name;
+    }
+  }
+  return null;
+};
+
+/** Slug canonique d'une marque, pour construire les URLs /marque/:slug. */
+export const brandToSlug = (brand: string): string => normalizeBrandKey(brand);
