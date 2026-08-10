@@ -9,6 +9,7 @@
 import { writeFileSync, mkdirSync } from "fs";
 import { resolve } from "path";
 import { FRENCH_CITIES } from "../src/data/frenchCities";
+import { PRICED_BRAND_SLUGS } from "../src/config/pricedBrands";
 
 const stripAccents = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 const communeSlug = (name: string, postcode: string) =>
@@ -46,16 +47,7 @@ const staticEntries: SitemapEntry[] = [
   { path: "/comparateur-prix", changefreq: "daily", priority: "0.8" },
   // /comparatif-bouteilles et /bouteilles redirigent vers /classement : hors sitemap.
   { path: "/sources-eau", changefreq: "monthly", priority: "0.7" },
-  { path: "/marque/evian", changefreq: "weekly", priority: "0.6" },
-  { path: "/marque/cristaline", changefreq: "weekly", priority: "0.6" },
-  { path: "/marque/volvic", changefreq: "weekly", priority: "0.6" },
-  { path: "/marque/vittel", changefreq: "weekly", priority: "0.6" },
-  { path: "/marque/perrier", changefreq: "weekly", priority: "0.6" },
-  { path: "/marque/hepar", changefreq: "weekly", priority: "0.6" },
-  { path: "/marque/badoit", changefreq: "weekly", priority: "0.6" },
-  { path: "/marque/contrex", changefreq: "weekly", priority: "0.6" },
-  { path: "/marque/mont-roucous", changefreq: "weekly", priority: "0.6" },
-  { path: "/marque/saint-amand", changefreq: "weekly", priority: "0.6" },
+  // Les pages /marque/* sont générées depuis PRICED_BRAND_SLUGS (voir plus bas).
   { path: "/classement", changefreq: "monthly", priority: "0.7" },
   { path: "/alertes", changefreq: "daily", priority: "0.7" },
   // Blog index
