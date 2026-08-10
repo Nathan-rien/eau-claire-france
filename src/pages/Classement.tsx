@@ -18,6 +18,7 @@ import { useWaterCompositions } from '@/hooks/useWaterCompositions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { seoData } from '@/utils/seoData';
 import { useRegion } from '@/contexts/RegionContext';
+import BrandLinksSection from '@/components/BrandLinksSection';
 
 const FAVORITES_KEY = 'ranking-water-favorites';
 const MAX_COMPARE = 5;
@@ -395,6 +396,9 @@ const Classement = () => {
             />
           </div>
         </section>
+        <div className="container mx-auto px-4">
+          <BrandLinksSection />
+        </div>
       </div>
     </Layout>
   );

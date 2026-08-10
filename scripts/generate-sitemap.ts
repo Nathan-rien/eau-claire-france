@@ -220,10 +220,17 @@ function buildRss(articles: BlogArticle[]): string {
     priority: "0.7",
   }));
 
-  const allEntries = [...staticEntries, ...communeEntries];
+  // Pages marque : exactement les marques ayant des prix (même liste que le noindex)
+  const brandEntries: SitemapEntry[] = PRICED_BRAND_SLUGS.map((slug) => ({
+    path: `/marque/${slug}`,
+    changefreq: "weekly",
+    priority: "0.6",
+  }));
+
+  const allEntries = [...staticEntries, ...brandEntries, ...communeEntries];
   const sitemap = buildSitemap(allEntries, articles);
   writeFileSync(resolve("public/sitemap.xml"), sitemap);
-  console.log(`[sitemap] ${staticEntries.length} static + ${communeEntries.length} communes + ${articles.length} blog entries`);
+  console.log(`[sitemap] ${staticEntries.length} static + ${brandEntries.length} brands + ${communeEntries.length} communes + ${articles.length} blog entries`);
 
   mkdirSync(resolve("public/lettre-de-leau"), { recursive: true });
   writeFileSync(resolve("public/lettre-de-leau/rss.xml"), buildRss(articles));
