@@ -6,7 +6,15 @@
     <atom:link href="https://infoeau.fr/lettre-de-leau/rss.xml" rel="self" type="application/rss+xml" />
     <description>Actualités, scandales, réglementation et enquêtes sur la qualité de l'eau en France.</description>
     <language>fr-FR</language>
-    <lastBuildDate>Fri, 07 Aug 2026 10:40:24 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 10 Aug 2026 12:32:44 GMT</lastBuildDate>
+    <item>
+      <title>PFAS et eau du robinet : Le cas de Villy révèle des normes en évolution</title>
+      <link>https://infoeau.fr/lettre-de-leau/pfas-eau-robinet-villy-normes-evolution</link>
+      <guid isPermaLink="true">https://infoeau.fr/lettre-de-leau/pfas-eau-robinet-villy-normes-evolution</guid>
+      <pubDate>Mon, 10 Aug 2026 08:43:46 GMT</pubDate>
+      <category>reglementation</category>
+      <description>L&apos;eau du robinet est-elle toujours synonyme de pureté ? À Villy, dans les Ardennes, la présence de PFAS a entraîné une interdiction de consommation, soulignant l&apos;urgence d&apos;adapter les normes sanitaires face à ces « polluants éternels » et de renforcer les contrôles pour garantir la sécurité de l&apos;eau potable en France.</description>
+    </item>
     <item>
       <title>Le coût de l&apos;eau en France : bas, mais à quel prix pour sa qualité ?</title>
       <link>https://infoeau.fr/lettre-de-leau/cout-eau-france-qualite-pollution-pfas</link>
