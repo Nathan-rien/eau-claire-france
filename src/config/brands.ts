@@ -61,6 +61,51 @@ export const BRAND_CONFIG = {
       variants: ['salvetat', 'la salvetat'],
       type: 'mineral_sparkling',
       source: 'La Salvetat'
+    },
+    'Arvie': {
+      variants: ['arvie'],
+      type: 'mineral_sparkling',
+      source: 'Arvie (Auvergne)'
+    },
+    'Courmayeur': {
+      variants: ['courmayeur'],
+      type: 'mineral',
+      source: 'Courmayeur (Val d\'Aoste)'
+    },
+    'Plancoët': {
+      variants: ['plancoet', 'plancoët'],
+      type: 'mineral',
+      source: 'Sassay (Plancoët)'
+    },
+    'Rozana': {
+      variants: ['rozana'],
+      type: 'mineral_sparkling',
+      source: 'Rouzat'
+    },
+    'Saint-Yorre': {
+      variants: ['saint-yorre', 'saint yorre', 'st-yorre'],
+      type: 'mineral_sparkling',
+      source: 'Saint-Yorre (Vichy)'
+    },
+    'San Pellegrino': {
+      variants: ['san pellegrino', 'sanpellegrino', 's.pellegrino'],
+      type: 'mineral_sparkling',
+      source: 'San Pellegrino Terme'
+    },
+    'Thonon': {
+      variants: ['thonon', 'thonon-les-bains'],
+      type: 'mineral',
+      source: 'La Versoie (Thonon-les-Bains)'
+    },
+    'Vichy Célestins': {
+      variants: ['vichy celestins', 'vichy célestins', 'vichy-celestins'],
+      type: 'mineral_sparkling',
+      source: 'Les Célestins (Vichy)'
+    },
+    'Wattwiller': {
+      variants: ['wattwiller'],
+      type: 'mineral',
+      source: 'Wattwiller'
     }
   },
 
