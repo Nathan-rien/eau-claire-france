@@ -46,6 +46,7 @@ export const INTERNATIONAL_PATHS: string[] = [
   '/comparatif-carafes',
   '/guide/quel-filtre-eau',
   '/bouteille-ou-filtration',
+  '/calculateur-hydratation',
   '/carte-europe',
   '/carte-polluants-europe',
   '/classement-europe',
