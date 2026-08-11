@@ -80,6 +80,7 @@ const ComparatifCarafes = React.lazy(() => import("./pages/traiter/ComparatifCar
 const GuideQuelFiltreEau = React.lazy(() => import("./pages/traiter/GuideQuelFiltreEau"));
 const BouteilleOuFiltration = React.lazy(() => import("./pages/traiter/BouteilleOuFiltration"));
 const DureteEauFrance = React.lazy(() => import("./pages/DureteEauFrance"));
+const CalculateurHydratation = React.lazy(() => import("./pages/CalculateurHydratation"));
 
 
 const appRoutes = (p: string) => (
@@ -152,6 +153,7 @@ const appRoutes = (p: string) => (
                 <Route path={`${p}/guide/quel-filtre-eau`} element={<GuideQuelFiltreEau />} />
                 <Route path={`${p}/bouteille-ou-filtration`} element={<BouteilleOuFiltration />} />
                 <Route path={`${p}/durete-eau-france`} element={<DureteEauFrance />} />
+                <Route path={`${p}/calculateur-hydratation`} element={<CalculateurHydratation />} />
 
 
                 <Route 
