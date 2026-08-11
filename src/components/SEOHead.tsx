@@ -1,5 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { isInternationalPath, stripLangPrefix } from '@/lib/i18nRoutes';
+
 
 interface SEOHeadProps {
   title: string;
