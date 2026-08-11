@@ -10,6 +10,8 @@ import { writeFileSync, mkdirSync } from "fs";
 import { resolve } from "path";
 import { FRENCH_CITIES } from "../src/data/frenchCities";
 import { PRICED_BRAND_SLUGS } from "../src/config/pricedBrands";
+import { INTERNATIONAL_PATHS } from "../src/lib/i18nRoutes";
+
 
 const stripAccents = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 const communeSlug = (name: string, postcode: string) =>
