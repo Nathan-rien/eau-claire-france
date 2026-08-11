@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://infoeau.fr/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/" />
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://infoeau.fr/images/og-default.jpg</image:loc>
+      <image:title>InfoEau.fr - Qualité de l&apos;eau potable en France</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/" />
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -41,11 +56,33 @@
   </url>
   <url>
     <loc>https://infoeau.fr/parcours-eau</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/parcours-eau" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/parcours-eau" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/parcours-eau" />
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/parcours-eau</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/parcours-eau" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/parcours-eau" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/parcours-eau" />
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/parcours-eau-bouteille</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/parcours-eau-bouteille" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/parcours-eau-bouteille" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/parcours-eau-bouteille" />
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/parcours-eau-bouteille</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/parcours-eau-bouteille" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/parcours-eau-bouteille" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/parcours-eau-bouteille" />
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -111,16 +148,49 @@
   </url>
   <url>
     <loc>https://infoeau.fr/traiter-eau-robinet</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/traiter-eau-robinet" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/traiter-eau-robinet" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/traiter-eau-robinet" />
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/traiter-eau-robinet</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/traiter-eau-robinet" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/traiter-eau-robinet" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/traiter-eau-robinet" />
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/bouteille-ou-filtration</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/bouteille-ou-filtration" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/bouteille-ou-filtration" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/bouteille-ou-filtration" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/bouteille-ou-filtration</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/bouteille-ou-filtration" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/bouteille-ou-filtration" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/bouteille-ou-filtration" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/comparatif-carafes</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/comparatif-carafes" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/comparatif-carafes" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/comparatif-carafes" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/comparatif-carafes</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/comparatif-carafes" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/comparatif-carafes" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/comparatif-carafes" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -131,26 +201,81 @@
   </url>
   <url>
     <loc>https://infoeau.fr/guide/eau-calcaire</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/guide/eau-calcaire" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/guide/eau-calcaire" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/guide/eau-calcaire" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/guide/eau-calcaire</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/guide/eau-calcaire" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/guide/eau-calcaire" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/guide/eau-calcaire" />
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/guide/gout-chlore</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/guide/gout-chlore" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/guide/gout-chlore" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/guide/gout-chlore" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/guide/gout-chlore</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/guide/gout-chlore" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/guide/gout-chlore" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/guide/gout-chlore" />
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/guide/nitrates-eau</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/guide/nitrates-eau" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/guide/nitrates-eau" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/guide/nitrates-eau" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/guide/nitrates-eau</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/guide/nitrates-eau" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/guide/nitrates-eau" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/guide/nitrates-eau" />
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/guide/plomb-eau</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/guide/plomb-eau" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/guide/plomb-eau" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/guide/plomb-eau" />
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/guide/plomb-eau</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/guide/plomb-eau" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/guide/plomb-eau" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/guide/plomb-eau" />
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/guide/quel-filtre-eau</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/guide/quel-filtre-eau" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/guide/quel-filtre-eau" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/guide/quel-filtre-eau" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/guide/quel-filtre-eau</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/guide/quel-filtre-eau" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/guide/quel-filtre-eau" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/guide/quel-filtre-eau" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -162,41 +287,129 @@
   </url>
   <url>
     <loc>https://infoeau.fr/carte-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/carte-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/carte-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/carte-europe" />
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/carte-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/carte-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/carte-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/carte-europe" />
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/carte-polluants-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/carte-polluants-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/carte-polluants-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/carte-polluants-europe" />
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/carte-polluants-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/carte-polluants-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/carte-polluants-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/carte-polluants-europe" />
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/classement-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/classement-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/classement-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/classement-europe" />
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/classement-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/classement-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/classement-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/classement-europe" />
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/polluants-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/polluants-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/polluants-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/polluants-europe" />
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/polluants-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/polluants-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/polluants-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/polluants-europe" />
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/diagnostic-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/diagnostic-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/diagnostic-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/diagnostic-europe" />
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/diagnostic-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/diagnostic-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/diagnostic-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/diagnostic-europe" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/alertes-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/alertes-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/alertes-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/alertes-europe" />
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/alertes-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/alertes-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/alertes-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/alertes-europe" />
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/prix-eaux-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/prix-eaux-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/prix-eaux-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/prix-eaux-europe" />
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/prix-eaux-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/prix-eaux-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/prix-eaux-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/prix-eaux-europe" />
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/composition-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/composition-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/composition-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/composition-europe" />
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/composition-europe</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/composition-europe" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/composition-europe" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/composition-europe" />
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

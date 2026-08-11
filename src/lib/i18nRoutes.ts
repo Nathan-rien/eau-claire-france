@@ -30,3 +30,33 @@ export const localizePath = (path: string, lang: AppLanguage): string => {
   if (lang === 'fr') return base;
   return base === '/' ? LANG_PREFIX : `${LANG_PREFIX}${base}`;
 };
+
+/**
+ * Pages with international value, promoted in English (/en).
+ * Single source of truth for hreflang (SEOHead) and the bilingual sitemap.
+ * Paths are UNPREFIXED (FR canonical form).
+ */
+export const INTERNATIONAL_PATHS: string[] = [
+  '/',
+  '/traiter-eau-robinet',
+  '/guide/eau-calcaire',
+  '/guide/gout-chlore',
+  '/guide/nitrates-eau',
+  '/guide/plomb-eau',
+  '/comparatif-carafes',
+  '/guide/quel-filtre-eau',
+  '/bouteille-ou-filtration',
+  '/carte-europe',
+  '/carte-polluants-europe',
+  '/classement-europe',
+  '/polluants-europe',
+  '/diagnostic-europe',
+  '/alertes-europe',
+  '/prix-eaux-europe',
+  '/composition-europe',
+  '/parcours-eau',
+  '/parcours-eau-bouteille',
+];
+
+export const isInternationalPath = (path: string): boolean =>
+  INTERNATIONAL_PATHS.includes(stripLangPrefix(path));
