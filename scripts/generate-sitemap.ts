@@ -214,7 +214,7 @@ function buildRss(articles: BlogArticle[]): string {
   const articles = await fetchBlogArticles();
 
   // Commune SEO pages
-  const communeEntries: SitemapEntry[] = FRENCH_CITIES.map((c) => ({
+  const communeEntries: SitemapEntry[] = FRENCH_CITIES.filter((c) => c.indexable !== false).map((c) => ({
     path: `/qualite-eau/${communeSlug(c.name, c.postcode)}`,
     changefreq: "monthly",
     priority: "0.7",
