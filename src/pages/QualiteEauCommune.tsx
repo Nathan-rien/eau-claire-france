@@ -50,7 +50,7 @@ const QualiteEauCommune: React.FC = () => {
     .filter((c) => c.context === commune.context && c.citycode !== commune.citycode)
     .slice(0, 6);
 
-  // Thin content protection: no data yet → soft noindex to avoid low-quality pages in index
+  // hasData/isLoading pilotent uniquement l'AFFICHAGE (l'indexabilité vient de FRENCH_CITIES)
   const hasData = results.length > 0;
 
   // Derived signals for the "improve tap water" block (no extra fetch)
@@ -163,7 +163,7 @@ const QualiteEauCommune: React.FC = () => {
         description={description}
         keywords={`qualité eau ${commune.name}, eau du robinet ${commune.name}, analyse eau potable ${commune.name}, dureté eau ${commune.name}, nitrates ${commune.name}, ${commune.postcode}, polluants ${commune.name}, contrôle sanitaire ARS`}
         canonical={canonical}
-        noindex={!hasData && !isLoading}
+        noindex={commune.indexable === false}
         schemaData={[faqSchema, breadcrumbSchema, placeSchema, ...(datasetSchema ? [datasetSchema] : [])]}
       />
       <Header />

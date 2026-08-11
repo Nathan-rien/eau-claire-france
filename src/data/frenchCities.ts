@@ -6,6 +6,7 @@ export interface CityData {
   context: string;
   coordinates: [number, number]; // [longitude, latitude]
   score?: number; // Score optionnel pour le classement
+  indexable?: boolean; // false = exclue du sitemap et mise en noindex (défaut : indexable)
 }
 
 export const FRENCH_CITIES: CityData[] = [
