@@ -136,10 +136,21 @@ function xmlEscape(s: string): string {
 function buildSitemap(entries: SitemapEntry[], articles: BlogArticle[]): string {
   const urls: string[] = [];
 
-  for (const e of entries) {
+  const altLinks = (path: string): string[] => {
+    const fr = `${BASE_URL}${path}`;
+    const en = `${BASE_URL}/en${path === "/" ? "" : path}`;
+    return [
+      `    <xhtml:link rel="alternate" hreflang="fr" href="${fr}" />`,
+      `    <xhtml:link rel="alternate" hreflang="en" href="${en}" />`,
+      `    <xhtml:link rel="alternate" hreflang="x-default" href="${fr}" />`,
+    ];
+  };
+
+  const renderUrl = (e: SitemapEntry, loc: string, alternates: string[] | null) => {
     const parts = [
       `  <url>`,
-      `    <loc>${BASE_URL}${e.path}</loc>`,
+      `    <loc>${loc}</loc>`,
+      ...(alternates ?? []),
       e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>` : null,
       e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
       e.priority ? `    <priority>${e.priority}</priority>` : null,
@@ -149,6 +160,16 @@ function buildSitemap(entries: SitemapEntry[], articles: BlogArticle[]): string 
       `  </url>`,
     ].filter(Boolean);
     urls.push(parts.join("\n"));
+  };
+
+  for (const e of entries) {
+    if (INTERNATIONAL_PATHS.includes(e.path)) {
+      const alts = altLinks(e.path);
+      renderUrl(e, `${BASE_URL}${e.path}`, alts);
+      renderUrl(e, `${BASE_URL}/en${e.path === "/" ? "" : e.path}`, alts);
+    } else {
+      renderUrl(e, `${BASE_URL}${e.path}`, null);
+    }
   }
 
   for (const a of articles) {
@@ -169,12 +190,13 @@ function buildSitemap(entries: SitemapEntry[], articles: BlogArticle[]): string 
 
   return [
     `<?xml version="1.0" encoding="UTF-8"?>`,
-    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`,
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">`,
     ...urls,
     `</urlset>`,
     ``,
   ].join("\n");
 }
+
 
 function buildRss(articles: BlogArticle[]): string {
   const items = articles.slice(0, 30).map((a) => {
