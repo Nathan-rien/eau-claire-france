@@ -63,14 +63,20 @@ const SEOHead: React.FC<SEOHeadProps> = ({
     /(^|\.)lovable\.app$/.test(window.location.hostname);
   const effectiveNoindex = noindex || isNonProdHost;
 
+  // Reciprocal hreflang, only for pages promoted in English.
+  const altBase = stripLangPrefix(unprefixed) || '/';
+  const showHreflang = isInternationalPath(altBase);
+  const frUrl = `${siteUrl}${altBase}`;
+  const enUrl = `${siteUrl}/en${altBase === '/' ? '' : altBase}`;
+
   return (
-    <Helmet>
+    <Helmet htmlAttributes={{ lang: isEnglishPath ? 'en' : 'fr' }}>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
       <meta name="robots" content={effectiveNoindex ? "noindex, follow" : "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"} />
       <meta name="author" content={articleAuthor || "InfoEau.fr"} />
-      <meta name="language" content="fr" />
+      <meta name="language" content={isEnglishPath ? 'en' : 'fr'} />
 
       <link rel="canonical" href={canonicalUrl} />
 
@@ -78,9 +84,9 @@ const SEOHead: React.FC<SEOHeadProps> = ({
         <link rel="alternate" type="application/rss+xml" title="Lettre de l'eau — InfoEau.fr" href={`${siteUrl}${rssUrl}`} />
       )}
 
-      {Object.entries(hreflang).map(([lang, url]) => (
-        <link key={lang} rel="alternate" hrefLang={lang} href={url} />
-      ))}
+      {showHreflang && <link rel="alternate" hrefLang="fr" href={frUrl} />}
+      {showHreflang && <link rel="alternate" hrefLang="en" href={enUrl} />}
+      {showHreflang && <link rel="alternate" hrefLang="x-default" href={frUrl} />}
 
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={canonicalUrl} />
@@ -88,7 +94,8 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImageUrl} />
       <meta property="og:site_name" content="InfoEau.fr" />
-      <meta property="og:locale" content="fr_FR" />
+      <meta property="og:locale" content={isEnglishPath ? 'en_GB' : 'fr_FR'} />
+
 
       {ogType === 'article' && articlePublishedTime && (
         <meta property="article:published_time" content={articlePublishedTime} />
