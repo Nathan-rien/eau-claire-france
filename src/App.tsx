@@ -49,6 +49,7 @@ const PrixEaux = React.lazy(() => import("./pages/PrixEaux"));
 const MarquePrix = React.lazy(() => import("./pages/MarquePrix"));
 const Admin = React.lazy(() => import("./pages/Admin"));
 const AdminSetup = React.lazy(() => import("./pages/AdminSetup"));
+const AdminIndexation = React.lazy(() => import("./pages/AdminIndexation"));
 const CarteEurope = React.lazy(() => import("./pages/CarteEurope"));
 const CartePolluantsEurope = React.lazy(() => import("./pages/CartePolluantsEurope"));
 const ClassementEurope = React.lazy(() => import("./pages/ClassementEurope"));
