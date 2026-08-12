@@ -280,6 +280,22 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://infoeau.fr/calculateur-hydratation</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/calculateur-hydratation" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/calculateur-hydratation" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/calculateur-hydratation" />
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/calculateur-hydratation</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/calculateur-hydratation" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/calculateur-hydratation" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/calculateur-hydratation" />
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://infoeau.fr/actualites/pollution-manganese-vendee-juillet-2026</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
