@@ -123,6 +123,7 @@ const appRoutes = (p: string) => (
                 <Route path={`${p}/marque/:slug`} element={<MarquePrix />} />
                 <Route path={`${p}/admin`} element={<Admin />} />
                 <Route path={`${p}/admin-setup`} element={<AdminSetup />} />
+                <Route path={`${p}/admin/indexation`} element={<AdminIndexation />} />
                 <Route path={`${p}/carte-europe`} element={<CarteEurope />} />
                 <Route path={`${p}/carte-polluants-europe`} element={<CartePolluantsEurope />} />
                 <Route path={`${p}/classement-europe`} element={<ClassementEurope />} />
