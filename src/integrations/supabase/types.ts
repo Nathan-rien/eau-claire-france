@@ -267,6 +267,42 @@ export type Database = {
         }
         Relationships: []
       }
+      indexation_status: {
+        Row: {
+          coverage_state: string | null
+          created_at: string
+          first_seen_unindexed: string | null
+          id: string
+          import_source: string | null
+          is_indexed: boolean
+          last_crawled_at: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          coverage_state?: string | null
+          created_at?: string
+          first_seen_unindexed?: string | null
+          id?: string
+          import_source?: string | null
+          is_indexed?: boolean
+          last_crawled_at?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          coverage_state?: string | null
+          created_at?: string
+          first_seen_unindexed?: string | null
+          id?: string
+          import_source?: string | null
+          is_indexed?: boolean
+          last_crawled_at?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       prices: {
         Row: {
           availability: string | null

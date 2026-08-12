@@ -49,6 +49,7 @@ const PrixEaux = React.lazy(() => import("./pages/PrixEaux"));
 const MarquePrix = React.lazy(() => import("./pages/MarquePrix"));
 const Admin = React.lazy(() => import("./pages/Admin"));
 const AdminSetup = React.lazy(() => import("./pages/AdminSetup"));
+const AdminIndexation = React.lazy(() => import("./pages/AdminIndexation"));
 const CarteEurope = React.lazy(() => import("./pages/CarteEurope"));
 const CartePolluantsEurope = React.lazy(() => import("./pages/CartePolluantsEurope"));
 const ClassementEurope = React.lazy(() => import("./pages/ClassementEurope"));
@@ -122,6 +123,7 @@ const appRoutes = (p: string) => (
                 <Route path={`${p}/marque/:slug`} element={<MarquePrix />} />
                 <Route path={`${p}/admin`} element={<Admin />} />
                 <Route path={`${p}/admin-setup`} element={<AdminSetup />} />
+                <Route path={`${p}/admin/indexation`} element={<AdminIndexation />} />
                 <Route path={`${p}/carte-europe`} element={<CarteEurope />} />
                 <Route path={`${p}/carte-polluants-europe`} element={<CartePolluantsEurope />} />
                 <Route path={`${p}/classement-europe`} element={<ClassementEurope />} />
