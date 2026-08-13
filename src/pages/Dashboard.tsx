@@ -148,7 +148,13 @@ const Dashboard = () => {
             </Card>
           </div>
 
+          {/* Indexation Google */}
+          <div className="mb-8">
+            <IndexationOverview />
+          </div>
+
           {/* Détail par page */}
+
           <Card>
             <CardHeader>
               <CardTitle>Performance par page</CardTitle>
