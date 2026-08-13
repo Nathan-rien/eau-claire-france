@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { parseCSV } from '@/utils/csv';
-import { AlertTriangle, CheckCircle2, Clock, Upload, RefreshCw, Trash2 } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Clock, Upload, RefreshCw, Trash2, ExternalLink } from 'lucide-react';
+import { gscCoverageUrl, gscInspectUrl, gscSitemapsUrl } from '@/lib/gsc';
 
 type Row = {
   id: string;
@@ -219,6 +220,18 @@ export default function IndexationDashboard() {
               <RefreshCw className="w-4 h-4 mr-2" />
               Actualiser
             </Button>
+            <Button asChild variant="outline" className="min-h-11">
+              <a href={gscCoverageUrl()} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Rapport indexation
+              </a>
+            </Button>
+            <Button asChild variant="outline" className="min-h-11">
+              <a href={gscSitemapsUrl()} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Sitemaps
+              </a>
+            </Button>
             {rows.length > 0 && (
               <Button variant="outline" onClick={handleClear} className="min-h-11 text-destructive">
                 <Trash2 className="w-4 h-4 mr-2" />
@@ -303,6 +316,12 @@ export default function IndexationDashboard() {
                   {r.coverage_state && (
                     <span className="text-muted-foreground">— {r.coverage_state}</span>
                   )}
+                  <Button asChild size="sm" variant="outline" className="min-h-11">
+                    <a href={gscInspectUrl(r.url)} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Demander l'indexation
+                    </a>
+                  </Button>
                 </li>
               ))}
             </ul>
@@ -331,6 +350,7 @@ export default function IndexationDashboard() {
                     <TableHead>État Search Console</TableHead>
                     <TableHead className="text-right">Non indexée depuis</TableHead>
                     <TableHead className="text-right">Dernière exploration</TableHead>
+                    <TableHead className="text-right">Search Console</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -359,6 +379,14 @@ export default function IndexationDashboard() {
                           {r.is_indexed ? '—' : days !== null ? `${days} j` : '—'}
                         </TableCell>
                         <TableCell className="text-right">{r.last_crawled_at || '—'}</TableCell>
+                        <TableCell className="text-right">
+                          <Button asChild size="sm" variant="outline" className="min-h-11 whitespace-nowrap">
+                            <a href={gscInspectUrl(r.url)} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="w-4 h-4 mr-2" />
+                              {r.is_indexed ? 'Inspecter' : "Demander l'indexation"}
+                            </a>
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     );
                   })}
