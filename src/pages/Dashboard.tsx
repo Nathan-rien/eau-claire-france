@@ -1,11 +1,14 @@
 
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Droplets, Users, Eye, Clock, MousePointer, LogOut, TrendingUp, RefreshCw, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import IndexationOverview from '@/components/IndexationOverview';
+
 
 const Dashboard = () => {
   const { metrics, refreshMetrics, resetAnalytics } = useAnalytics();
@@ -145,7 +148,13 @@ const Dashboard = () => {
             </Card>
           </div>
 
+          {/* Indexation Google */}
+          <div className="mb-8">
+            <IndexationOverview />
+          </div>
+
           {/* Détail par page */}
+
           <Card>
             <CardHeader>
               <CardTitle>Performance par page</CardTitle>
