@@ -136,7 +136,14 @@ const Auth = () => {
           return;
         }
 
-        if (data.user) {
+        if (data.session) {
+          // Confirmation email désactivée : l'utilisateur est connecté immédiatement
+          toast({
+            title: "Inscription réussie",
+            description: "Redirection en cours...",
+          });
+          navigate('/dashboard');
+        } else if (data.user) {
           toast({
             title: "Inscription réussie",
             description: "Veuillez vérifier votre email pour confirmer votre compte.",
