@@ -1295,11 +1295,9 @@ const rawBottleWaterDatabase: BottleWaterData[] = [
     prix_moyen_litre: 0,
     nitrates_mgL: 1,
     residu_sec_mgL: 118.5,
-    // Valeurs non publiées dans l'analyse consultée : laissées à null (à compléter
-    // depuis l'analyse officielle, ne pas inventer)
-    calcium_mgL: null,
-    magnesium_mgL: null,
-    sodium_mgL: null,
+    calcium_mgL: 35.0,
+    magnesium_mgL: 3.6,
+    sodium_mgL: 0.3,
     pH: 8.3,
     emballage: "Plastique",
     recyclable: "Oui",
