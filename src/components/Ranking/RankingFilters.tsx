@@ -5,6 +5,17 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { WaterRegion, WaterRegion, getWaterRegion, REGION_ORDER, REGION_LABELS } from '@/config/waterRegions';
+
+export type { WaterRegion } from '@/config/waterRegions';
 
 export interface RankingFilterState {
   showSparkling: boolean;
@@ -12,6 +23,7 @@ export interface RankingFilterState {
   hideExcluded: boolean;
   showMddOnly: boolean;
   origins: ('FR' | 'EU' | 'Monde')[];
+  region: WaterRegion | 'all';
   residuRange: [number, number];
   calciumRange: [number, number];
   sodiumRange: [number, number];
@@ -25,6 +37,7 @@ export const DEFAULT_FILTERS: RankingFilterState = {
   hideExcluded: true,
   showMddOnly: false,
   origins: ['FR', 'EU', 'Monde'],
+  region: 'all',
   residuRange: [0, 5000],
   calciumRange: [0, 600],
   sodiumRange: [0, 2000],
@@ -41,6 +54,7 @@ interface Props {
 
 export default function RankingFilters({ filters, onChange, resultCount, activeCount = 0 }: Props) {
   const [open, setOpen] = useState(false);
+  const { t } = useLanguage();
 
   const update = <K extends keyof RankingFilterState>(key: K, value: RankingFilterState[K]) => {
     onChange({ ...filters, [key]: value });
@@ -55,6 +69,11 @@ export default function RankingFilters({ filters, onChange, resultCount, activeC
 
   const reset = () => onChange(DEFAULT_FILTERS);
 
+  const allRegionOptions: { value: WaterRegion | 'all'; label: string }[] = [
+    { value: 'all', label: t('ranking.region.all') },
+    ...REGION_ORDER.map((r) => ({ value: r, label: t(`ranking.region.${r}`) })),
+  ];
+
   return (
     <div className="mb-4 bg-white rounded-lg border shadow-sm overflow-hidden">
       <button
@@ -63,7 +82,7 @@ export default function RankingFilters({ filters, onChange, resultCount, activeC
       >
         <div className="flex items-center gap-2 flex-wrap">
           <Filter className="w-4 h-4 text-gray-600" />
-          <span className="font-medium text-sm">Filtres avancés</span>
+          <span className="font-medium text-sm">{t('ranking.filters')}</span>
           <Badge variant="secondary">{resultCount} eaux</Badge>
           {activeCount > 0 && (
             <Badge variant="default" className="bg-blue-600">{activeCount} actif{activeCount > 1 ? 's' : ''}</Badge>
@@ -77,17 +96,17 @@ export default function RankingFilters({ filters, onChange, resultCount, activeC
           <div className="flex flex-wrap gap-4">
             <div className="flex items-center gap-2">
               <Switch checked={filters.showStill} onCheckedChange={(v) => update('showStill', v)} id="f-still" />
-              <Label htmlFor="f-still" className="text-sm cursor-pointer">Plate</Label>
+              <Label htmlFor="f-still" className="text-sm cursor-pointer">{t('ranking.still')}</Label>
             </div>
             <div className="flex items-center gap-2">
               <Switch checked={filters.showSparkling} onCheckedChange={(v) => update('showSparkling', v)} id="f-spark" />
               <Label htmlFor="f-spark" className="text-sm cursor-pointer flex items-center gap-1">
-                <Sparkles className="w-3 h-3" /> Gazeuse
+                <Sparkles className="w-3 h-3" /> {t('ranking.sparkling')}
               </Label>
             </div>
             <div className="flex items-center gap-2">
               <Switch checked={filters.hideExcluded} onCheckedChange={(v) => update('hideExcluded', v)} id="f-excl" />
-              <Label htmlFor="f-excl" className="text-sm cursor-pointer">Masquer non-recommandées</Label>
+              <Label htmlFor="f-excl" className="text-sm cursor-pointer">{t('ranking.hideExcluded')}</Label>
             </div>
             <div className="flex items-center gap-2">
               <Switch checked={filters.showMddOnly} onCheckedChange={(v) => update('showMddOnly', v)} id="f-mdd" />
@@ -96,7 +115,26 @@ export default function RankingFilters({ filters, onChange, resultCount, activeC
           </div>
 
           <div>
-            <Label className="text-sm mb-2 block">Origine</Label>
+            <Label className="text-sm mb-2 block">{t('ranking.region.label')}</Label>
+            <Select
+              value={filters.region}
+              onValueChange={(value) => update('region', value as WaterRegion | 'all')}
+            >
+              <SelectTrigger className="w-full sm:w-[260px]">
+                <SelectValue placeholder={t('ranking.region.all')} />
+              </SelectTrigger>
+              <SelectContent>
+                {allRegionOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label className="text-sm mb-2 block">{t('ranking.origin') || 'Origine'}</Label>
             <div className="flex gap-2">
               {(['FR', 'EU', 'Monde'] as const).map(o => (
                 <button
@@ -116,32 +154,32 @@ export default function RankingFilters({ filters, onChange, resultCount, activeC
 
           <div className="grid sm:grid-cols-2 gap-4">
             <SliderField
-              label="Minéralisation (résidu sec, mg/L)"
+              label={t('ranking.slider.residu') || 'Minéralisation (résidu sec, mg/L)'}
               value={filters.residuRange}
               min={0} max={5000} step={50}
               onChange={(v) => update('residuRange', v)}
             />
             <SliderField
-              label="Calcium (mg/L)"
+              label={t('ranking.slider.calcium') || 'Calcium (mg/L)'}
               value={filters.calciumRange}
               min={0} max={600} step={10}
               onChange={(v) => update('calciumRange', v)}
             />
             <SliderField
-              label="Sodium (mg/L)"
+              label={t('ranking.slider.sodium') || 'Sodium (mg/L)'}
               value={filters.sodiumRange}
               min={0} max={2000} step={10}
               onChange={(v) => update('sodiumRange', v)}
             />
             <SliderField
-              label="pH"
+              label={t('ranking.slider.pH') || 'pH'}
               value={filters.pHRange}
               min={5} max={9} step={0.1}
               onChange={(v) => update('pHRange', v)}
             />
             <div>
               <Label className="text-sm flex justify-between mb-2">
-                <span>Nitrates max</span>
+                <span>{t('ranking.slider.nitrates') || 'Nitrates max'}</span>
                 <span className="text-gray-500">≤ {filters.nitratesMax} mg/L</span>
               </Label>
               <Slider
