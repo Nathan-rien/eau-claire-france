@@ -174,6 +174,16 @@ export const translations = {
     'ranking.variableSourceHint': 'Marque multi-captages : la composition affichée n\'est pas garantie pour toutes les bouteilles.',
     'ranking.infantMention': 'Convient à l\'alimentation des nourrissons',
     'ranking.infantMentionMissing': 'Mention nourrissons non vérifiée',
+    'ranking.region.label': 'Région d\'origine',
+    'ranking.region.all': 'Toutes les régions',
+    'ranking.region.alpes': 'Alpes',
+    'ranking.region.vosges': 'Vosges / Grand Est',
+    'ranking.region.auvergne': 'Auvergne',
+    'ranking.region.pyrenees': 'Pyrénées / Sud-Ouest',
+    'ranking.region.mediterranee': 'Languedoc / Méditerranée',
+    'ranking.region.ouest': 'Ouest',
+    'ranking.region.autres': 'Autres',
+    'ranking.region.hors-france': 'Hors France',
 
     // Prices page
     'prices.title': 'Prix des eaux en bouteille',
