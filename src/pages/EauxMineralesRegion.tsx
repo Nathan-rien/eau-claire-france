@@ -39,10 +39,9 @@ export default function EauxMineralesRegion({ region }: Props) {
 
   const canonical = `/${REGION_PAGE_SLUGS[region]}`;
   const regionLabel = REGION_LABELS[region];
-  const h1 = t('regionPage.h1', {
-    prefix: t(`regionPage.${region}.prefix`),
-    region: regionLabel,
-  });
+  // « des Alpes », « d'Auvergne », « the Alps »… : article + label from waterRegions.ts
+  const regionPhrase = `${t(`regionPage.${region}.prefix`)}${regionLabel}`;
+  const h1 = t('regionPage.h1', { region: regionPhrase });
 
   // Region membership comes ONLY from waterRegions.ts; values come ONLY from the dataset.
   const regionWaters = waters
@@ -56,11 +55,11 @@ export default function EauxMineralesRegion({ region }: Props) {
     { q: t(`regionPage.${region}.faq.q1.q`), a: t(`regionPage.${region}.faq.q1.a`) },
     { q: t(`regionPage.${region}.faq.q2.q`), a: t(`regionPage.${region}.faq.q2.a`) },
     {
-      q: t('regionPage.faq.shared1.q', { region: regionLabel }),
+      q: t('regionPage.faq.shared1.q', { region: regionPhrase }),
       a: t('regionPage.faq.shared1.a'),
     },
     {
-      q: t('regionPage.faq.shared2.q', { region: regionLabel }),
+      q: t('regionPage.faq.shared2.q', { region: regionPhrase }),
       a: t('regionPage.faq.shared2.a'),
     },
   ];
@@ -71,7 +70,7 @@ export default function EauxMineralesRegion({ region }: Props) {
     { to: '/qualite-eau', title: t('regionPage.links.quality'), desc: t('regionPage.links.quality.desc') },
   ];
 
-  const description = t('regionPage.seo.desc', { region: regionLabel });
+  const description = t('regionPage.seo.desc', { region: regionPhrase });
 
   const schemas = [
     {
@@ -113,7 +112,7 @@ export default function EauxMineralesRegion({ region }: Props) {
   return (
     <Layout>
       <SEOHead
-        title={t('regionPage.seo.title', { region: regionLabel })}
+        title={t('regionPage.seo.title', { region: regionPhrase })}
         description={description}
         canonical={canonical}
         keywords={`eaux minérales ${regionLabel}, eau en bouteille ${regionLabel}, composition eau minérale, minéralisation`}
@@ -173,7 +172,7 @@ export default function EauxMineralesRegion({ region }: Props) {
           <div className="container mx-auto max-w-4xl">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6 tracking-tight flex items-center gap-3">
               <Mountain className="w-8 h-8 text-blue-600 shrink-0" />
-              {t('regionPage.geo.title', { region: regionLabel })}
+              {t('regionPage.geo.title', { region: regionPhrase })}
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-4">{t(`regionPage.${region}.geo1`)}</p>
             <p className="text-muted-foreground leading-relaxed mb-6">{t(`regionPage.${region}.geo2`)}</p>
@@ -191,7 +190,7 @@ export default function EauxMineralesRegion({ region }: Props) {
         <section className="px-4 py-12 md:py-16 bg-muted/30 border-y border-border">
           <div className="container mx-auto max-w-5xl">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 tracking-tight">
-              {t('regionPage.list.title', { region: regionLabel })}
+              {t('regionPage.list.title', { region: regionPhrase })}
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-8 max-w-3xl">
               {t('regionPage.list.intro')}
