@@ -23,4 +23,15 @@ export interface BottleWaterData {
   impact_carbone_gCO2L: number;
   ecoscore: string;
   url_fiche?: string;
+
+  /** Eau gazeuse (dérivé de type_eau, contient "gazeuse"). */
+  gazeuse?: boolean;
+  /**
+   * Mention réglementaire officielle « convient à l'alimentation des nourrissons ».
+   * DONNÉE RÉGLEMENTAIRE : à revérifier sur l'étiquette réelle de chaque eau avant
+   * publication. Ne pas déduire d'un score calculé.
+   */
+  mention_nourrissons?: boolean;
+  /** Marque multi-captages : composition variable selon la source embouteillée. */
+  source_variable?: boolean;
 }
