@@ -2,7 +2,44 @@
 import type { BottleWaterData } from '@/types/bottleTypes';
 export type { BottleWaterData } from '@/types/bottleTypes';
 
-export const bottleWaterDatabase: BottleWaterData[] = [
+/**
+ * Mention réglementaire officielle « convient à l'alimentation des nourrissons ».
+ * DONNÉE RÉGLEMENTAIRE — à revérifier sur l'étiquette réelle de chaque eau avant
+ * publication (la mention est portée par la bouteille, pas déduite d'un score).
+ * Toute eau absente de cette liste est considérée comme NON vérifiée (false).
+ */
+export const INFANT_MENTION_BRANDS: readonly string[] = [
+  'mont roucous',
+  'montcalm',
+  'volvic',
+  'evian',
+  'thonon',
+  'wattwiller',
+  'mont blanc',
+  'roche claire',
+];
+
+const normalizeBrand = (s?: string) =>
+  (s ?? '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+/** La marque porte-t-elle la mention officielle nourrissons ? */
+export const hasInfantMention = (brand?: string): boolean =>
+  INFANT_MENTION_BRANDS.includes(normalizeBrand(brand));
+
+/** Eau gazeuse, dérivée du libellé type_eau. */
+export const isGaseousType = (typeEau?: string): boolean =>
+  /gazeu/i.test(typeEau ?? '');
+
+/** Marque multi-captages (composition variable selon la source). */
+export const isVariableSource = (source?: string): boolean =>
+  /multiple|multi-source|multi source|multisource|variable/i.test(source ?? '');
+
+const rawBottleWaterDatabase: BottleWaterData[] = [
   {
     id: 1,
     marque: "Cristaline",
@@ -1247,8 +1284,45 @@ export const bottleWaterDatabase: BottleWaterData[] = [
     consigne: "Non",
     impact_carbone_gCO2L: 170,
     ecoscore: "B"
+  },
+  {
+    id: 61,
+    marque: "Roche Claire",
+    nom_bouteille: "Roche Claire",
+    type_eau: "Eau de source",
+    format: "1.5L",
+    source: "Séez, Savoie",
+    prix_moyen_litre: 0,
+    nitrates_mgL: 1,
+    residu_sec_mgL: 118.5,
+    // Valeurs non publiées dans l'analyse consultée : laissées à null (à compléter
+    // depuis l'analyse officielle, ne pas inventer)
+    calcium_mgL: null,
+    magnesium_mgL: null,
+    sodium_mgL: null,
+    pH: 8.3,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 0,
+    ecoscore: "",
+    url_fiche: "https://eau-rocheclaire.com",
+    mention_nourrissons: true,
+    source_variable: false,
+    gazeuse: false
   }
 ];
+
+/**
+ * Base enrichie : gazéité et multi-source dérivées des données existantes,
+ * mention nourrissons issue du registre réglementaire ci-dessus.
+ */
+export const bottleWaterDatabase: BottleWaterData[] = rawBottleWaterDatabase.map(b => ({
+  ...b,
+  gazeuse: b.gazeuse ?? isGaseousType(b.type_eau),
+  source_variable: b.source_variable ?? isVariableSource(b.source),
+  mention_nourrissons: b.mention_nourrissons ?? hasInfantMention(b.marque),
+}));
 
 // Import centralized price logic
 import { makeTapPrice } from "@/lib/price";

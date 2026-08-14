@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Composition } from '@/utils/rankingV2';
+import { hasInfantMention, isVariableSource } from '@/data/bottleComparisonData';
 
 export type Origin = 'FR' | 'EU' | 'Monde';
 
@@ -83,6 +84,10 @@ export function useWaterCompositions() {
             F_mg_L: getVal('F_mg_L'),
             K_mg_L: getVal('K_mg_L'),
             Cl_mg_L: getVal('Cl_mg_L'),
+            // Métadonnées catégorielles propagées au scoring
+            gazeuse: is_sparkling,
+            mention_nourrissons: hasInfantMention(brand),
+            source_variable: isVariableSource(source_name) || isVariableSource(location),
           };
 
           const availStr = getStr('available_fr').toLowerCase();

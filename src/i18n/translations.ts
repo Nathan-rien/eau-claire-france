@@ -169,6 +169,11 @@ export const translations = {
     'ranking.hideExcluded': 'Masquer contre-indiquées',
     'ranking.watersShown': '{count} eau(x) affichée(s)',
     'ranking.noResults': 'Aucune eau ne correspond aux critères sélectionnés.',
+    'ranking.variableSource': 'Composition variable selon la source',
+    'ranking.variableSourceShort': 'Source variable',
+    'ranking.variableSourceHint': 'Marque multi-captages : la composition affichée n\'est pas garantie pour toutes les bouteilles.',
+    'ranking.infantMention': 'Convient à l\'alimentation des nourrissons',
+    'ranking.infantMentionMissing': 'Mention nourrissons non vérifiée',
 
     // Prices page
     'prices.title': 'Prix des eaux en bouteille',
@@ -2369,6 +2374,11 @@ export const translations = {
     'ranking.hideExcluded': 'Hide contraindicated',
     'ranking.watersShown': '{count} water(s) displayed',
     'ranking.noResults': 'No water matches the selected criteria.',
+    'ranking.variableSource': 'Composition varies depending on the source',
+    'ranking.variableSourceShort': 'Variable source',
+    'ranking.variableSourceHint': 'Multi-spring brand: the displayed composition is not guaranteed for every bottle.',
+    'ranking.infantMention': 'Suitable for infant feeding',
+    'ranking.infantMentionMissing': 'Infant mention not verified',
 
     // Prices page
     'prices.title': 'Bottled water prices',
