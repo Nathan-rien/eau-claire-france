@@ -66,6 +66,12 @@ const staticEntries: SitemapEntry[] = [
   { path: "/bouteille-ou-filtration", changefreq: "monthly", priority: "0.8" },
   { path: "/comparatif-carafes", changefreq: "monthly", priority: "0.8" },
   { path: "/durete-eau-france", changefreq: "monthly", priority: "0.7" },
+  // Eaux minérales par région d'origine (contenu franco-français, hors /en)
+  { path: "/eaux-minerales-alpes", changefreq: "monthly", priority: "0.6" },
+  { path: "/eaux-minerales-vosges", changefreq: "monthly", priority: "0.6" },
+  { path: "/eaux-minerales-auvergne", changefreq: "monthly", priority: "0.6" },
+  { path: "/eaux-minerales-pyrenees", changefreq: "monthly", priority: "0.6" },
+  { path: "/eaux-minerales-mediterranee", changefreq: "monthly", priority: "0.6" },
   { path: "/guide/eau-calcaire", changefreq: "monthly", priority: "0.75" },
   { path: "/guide/gout-chlore", changefreq: "monthly", priority: "0.75" },
   { path: "/guide/nitrates-eau", changefreq: "monthly", priority: "0.75" },
