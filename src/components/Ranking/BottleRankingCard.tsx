@@ -2,6 +2,7 @@
 import { Composition, scoreBottle, letterGrade, reasons, Profile, CRITERION_LABELS, getCompositionForDisplay, formatMineralValue } from "@/utils/rankingV2";
 import { AlertTriangle, Sparkles, Droplets } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function BottleRankingCard({
   name, brand, location, isSparkling, compos, profile, rank, podium
@@ -15,6 +16,7 @@ export default function BottleRankingCard({
   rank?: number;
   podium?: boolean;
 }) {
+  const { t } = useLanguage();
   const scored = scoreBottle(compos, profile);
   const letter = letterGrade(scored.total, scored.excluded);
   const rsn = reasons(compos, profile);
@@ -77,6 +79,13 @@ export default function BottleRankingCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-semibold text-gray-900 truncate">{brand || name}</span>
+            {compos.source_variable === true && (
+              <Badge variant="outline" className="text-xs flex items-center gap-1 border-amber-300 text-amber-700 bg-amber-50"
+                title={t('ranking.variableSourceHint')}>
+                <AlertTriangle className="w-3 h-3" />
+                {t('ranking.variableSourceShort')}
+              </Badge>
+            )}
             {isSparkling && (
               <Badge variant="outline" className="text-xs flex items-center gap-1">
                 <Sparkles className="w-3 h-3" />
@@ -109,6 +118,13 @@ export default function BottleRankingCard({
               {scored.exclusionReasons.map((r, i) => <li key={i}>• {r}</li>)}
             </ul>
           </div>
+        </div>
+      )}
+
+      {/* Multi-source disclaimer */}
+      {compos.source_variable === true && (
+        <div className="mb-3 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2">
+          {t('ranking.variableSource')}
         </div>
       )}
 
