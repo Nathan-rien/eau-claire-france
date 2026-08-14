@@ -30,6 +30,7 @@ function countActiveFilters(f: RankingFilterState): number {
   if (f.hideExcluded) n++;
   if (f.showMddOnly) n++;
   if (f.origins.length !== 3) n++;
+  if (f.region !== 'all') n++;
   if (f.residuRange[0] !== 0 || f.residuRange[1] !== 5000) n++;
   if (f.calciumRange[0] !== 0 || f.calciumRange[1] !== 600) n++;
   if (f.sodiumRange[0] !== 0 || f.sodiumRange[1] !== 2000) n++;
@@ -97,6 +98,7 @@ const Classement = () => {
       if (!filters.showStill && !w.is_sparkling) return false;
       if (filters.showMddOnly && !w.is_mdd) return false;
       if (!filters.origins.includes(w.origin)) return false;
+      if (filters.region !== 'all' && getWaterRegion(w.brand) !== filters.region) return false;
 
       const c = w.composition;
       const res = c.residu_sec_180_mg_L;
