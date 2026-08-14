@@ -2389,6 +2389,16 @@ export const translations = {
     'ranking.variableSourceHint': 'Multi-spring brand: the displayed composition is not guaranteed for every bottle.',
     'ranking.infantMention': 'Suitable for infant feeding',
     'ranking.infantMentionMissing': 'Infant mention not verified',
+    'ranking.region.label': 'Region of origin',
+    'ranking.region.all': 'All regions',
+    'ranking.region.alpes': 'Alps',
+    'ranking.region.vosges': 'Vosges / Grand Est',
+    'ranking.region.auvergne': 'Auvergne',
+    'ranking.region.pyrenees': 'Pyrenees / South-West',
+    'ranking.region.mediterranee': 'Languedoc / Mediterranean',
+    'ranking.region.ouest': 'West',
+    'ranking.region.autres': 'Others',
+    'ranking.region.hors-france': 'Outside France',
 
     // Prices page
     'prices.title': 'Bottled water prices',
