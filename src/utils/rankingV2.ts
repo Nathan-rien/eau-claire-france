@@ -13,7 +13,37 @@ export type Composition = {
   F_mg_L?: number;               // Fluorure
   K_mg_L?: number;               // Potassium
   Cl_mg_L?: number;              // Chlorures
+
+  // ===== Métadonnées catégorielles (non notées, servent aux exclusions) =====
+  /** Eau gazeuse (dérivée du type d'eau / du flag gazéité de la source). */
+  gazeuse?: boolean;
+  /**
+   * Mention réglementaire officielle « convient à l'alimentation des nourrissons ».
+   * DONNÉE RÉGLEMENTAIRE à revérifier sur l'étiquette réelle avant publication :
+   * elle ne se déduit jamais d'un score calculé.
+   */
+  mention_nourrissons?: boolean;
+  /** Marque multi-captages : composition variable selon la source embouteillée. */
+  source_variable?: boolean;
 };
+
+/**
+ * Exclusions par CATÉGORIE (en plus des exclusions par critère chiffré).
+ * Aucune marque n'est citée : tout est piloté par les métadonnées des données.
+ */
+const SPARKLING_EXCLUDED_PROFILES: Profile[] = ["baby", "daily", "purity"];
+const INFANT_MENTION_REQUIRED_PROFILES: Profile[] = ["baby"];
+
+export function categoryExclusions(comp: Composition, profile: Profile): string[] {
+  const out: string[] = [];
+  if (comp.gazeuse === true && SPARKLING_EXCLUDED_PROFILES.includes(profile)) {
+    out.push("Eau gazeuse : non adaptée à ce profil (biberons, usage quotidien, pureté)");
+  }
+  if (INFANT_MENTION_REQUIRED_PROFILES.includes(profile) && comp.mention_nourrissons !== true) {
+    out.push("Absence de la mention officielle « convient à l'alimentation des nourrissons »");
+  }
+  return out;
+}
 
 type Rule =
   | { type:"low-better"; fullAt:number; zeroAt:number }
