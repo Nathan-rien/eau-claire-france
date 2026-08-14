@@ -11,12 +11,12 @@ export interface BottleWaterData {
   format: string;
   source: string;
   prix_moyen_litre: number;
-  nitrates_mgL: number;
-  residu_sec_mgL: number;
-  calcium_mgL: number;
-  magnesium_mgL: number;
-  sodium_mgL: number;
-  pH: number;
+  nitrates_mgL: number | null;
+  residu_sec_mgL: number | null;
+  calcium_mgL: number | null;
+  magnesium_mgL: number | null;
+  sodium_mgL: number | null;
+  pH: number | null;
   emballage: string;
   recyclable: string;
   consigne: string;
