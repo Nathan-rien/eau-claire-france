@@ -2374,6 +2374,11 @@ export const translations = {
     'ranking.hideExcluded': 'Hide contraindicated',
     'ranking.watersShown': '{count} water(s) displayed',
     'ranking.noResults': 'No water matches the selected criteria.',
+    'ranking.variableSource': 'Composition varies depending on the source',
+    'ranking.variableSourceShort': 'Variable source',
+    'ranking.variableSourceHint': 'Multi-spring brand: the displayed composition is not guaranteed for every bottle.',
+    'ranking.infantMention': 'Suitable for infant feeding',
+    'ranking.infantMentionMissing': 'Infant mention not verified',
 
     // Prices page
     'prices.title': 'Bottled water prices',
