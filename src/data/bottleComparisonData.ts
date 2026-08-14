@@ -37,7 +37,7 @@ export const isGaseousType = (typeEau?: string): boolean =>
 
 /** Marque multi-captages (composition variable selon la source). */
 export const isVariableSource = (source?: string): boolean =>
-  /multiple|variable/i.test(source ?? '');
+  /multiple|multi-source|multi source|multisource|variable/i.test(source ?? '');
 
 const rawBottleWaterDatabase: BottleWaterData[] = [
   {
