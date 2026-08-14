@@ -1,17 +1,17 @@
 brand,source_name,location,is_sparkling,pH,residu_sec_180_mg_L,HCO3_mg_L,Ca_mg_L,Cl_mg_L,F_mg_L,Mg_mg_L,NO3_mg_L,K_mg_L,SiO2_mg_L,Na_mg_L,SO4_mg_L,source_url,available_fr
 Arvie,Arvie,Augnat (Puy-de-Dôme),True,6.3,2520.0,2195.0,170.0,387.0,0.9,92.0,0.0,130.0,77.0,650.0,31.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
 Badoit,Badoit,Saint-Galmier (Loire),True,6.0,1100.0,1250.0,153.0,54.0,1.2,80.0,,11.0,27.0,180.0,35.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
-Contrex,Source Contrex,Contrexéville (Vosges),False,7.4,2078.0,372.0,468.0,7.6,0.36,74.0,2.8,9.4,1121.0,,,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
-Hépar,Hépar,Vittel (Vosges),False,7.2,2513.0,384.0,549.0,19.0,0.4,119.0,4.3,14.2,1530.0,,,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
+Contrex,Source Contrex,Contrexéville (Vosges),False,7.4,2078,372,468,7.6,0.36,74.5,2.7,2.8,,9.4,1121,https://www.contrex.fr,true
+Hépar,Hépar,Vittel (Vosges),False,7.2,2513,403,549,,0.4,119,4.0,,,14,1530,https://www.hepar.fr,true
 Perrier,Les Bouillens,Vergèze (Gard),True,5.5,456.0,420.0,150.0,19.5,,3.9,7.3,1.0,,9.6,25.3,https://en.wikipedia.org/wiki/Perrier,true
 Plancoët,Sassoy,Plancoët (Côtes-d'Armor),False,6.5,257.0,121.0,24.0,,,16.0,,4.9,,32.0,50.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
 Quézac,Diva,Quézac (Lozère),True,5.8,980.0,1000.0,165.0,38.0,2.2,69.0,1.0,50.0,,110.0,143.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
 Rozana,Des Romains,Beauregard-Vendon (Puy-de-Dôme),True,6.3,3022.0,1837.0,301.0,649.0,,160.0,1.0,52.0,97.0,493.0,230.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
 Saint-Yorre,Bassin de Vichy,Allier (Auvergne),True,6.6,4774.0,4368.0,90.0,322.0,1.5,11.0,0.0,110.0,,1708.0,174.0,https://www.bienmanger.com/2F37522_Natural_Sparkling_Mineral_Water_From_Yorre.html,true
 Vichy Célestins,Bassin de Vichy,Allier (Auvergne),True,6.8,3378.0,3245.0,90.0,227.0,,9.0,2.0,71.0,,1265.0,129.0,https://aqua-amore.com/products/vichy-celestins-naturally-sparkling-water-plastic-bottle-6x1-15-litres,true
-Vittel,Grande Source,Vosges,False,7.6,1084.0,384.0,240.0,7.3,0.17,42.0,4.4,1.9,,5.2,400.0,https://fr.wikipedia.org/wiki/Vittel_%28eau_min%C3%A9rale%29,true
+Vittel,Grande Source,Vosges,False,7.5,841,402,202,,0.28,43,4.4,,,5,336,https://www.vittel.fr,true
 Cristaline,Multi-sources,France,False,7.5,244.0,210.0,71.0,14.0,0.2,5.5,1.0,2.0,,8.0,10.0,https://www.cristaline.fr,true
-Courmayeur,Courmayeur,Courmayeur (Italie),False,7.4,2080.0,168.0,517.0,1.0,0.5,67.0,2.0,1.6,,1.6,1371.0,https://www.courmayeur.com,true
+Courmayeur,Courmayeur,Courmayeur (Italie),False,7.4,2080,168,517,,0.5,67,2.0,,,1.6,1371,https://www.courmayeur.com,true
 San Pellegrino,San Pellegrino,San Pellegrino Terme (Italie),True,7.7,949.0,219.0,178.0,53.5,0.5,53.5,1.0,3.0,,32.0,415.0,https://www.sanpellegrino.com,true
 Mont Roucous,Mont Roucous,Lacaune (Tarn),False,6.0,22,4.9,2.9,3.2,0.1,0.5,2.0,0.4,,3.0,3,https://www.mont-roucous.com,true
 Montcalm,Montcalm,Auzat (Ariège),False,6.8,32,5.2,3.0,,0.1,0.7,0.7,0.6,,2.2,10,,true
