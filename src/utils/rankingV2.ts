@@ -596,8 +596,8 @@ export function scoreBottle(comp: Composition, profile: Profile = "daily") {
     ? (weightedSum / availableWeight) * totalWeight
     : 0;
 
-  // Check exclusions
-  const exclusionReasons: string[] = [];
+  // Check exclusions (catégorielles puis par critère)
+  const exclusionReasons: string[] = [...categoryExclusions(comp, profile)];
   if (cfg.exclusions) {
     for (const ex of cfg.exclusions) {
       const value = getCompositionValue(comp, ex.criterion);
