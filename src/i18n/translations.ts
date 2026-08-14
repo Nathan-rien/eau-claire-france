@@ -164,6 +164,7 @@ export const translations = {
     'ranking.scoreDescription': 'Chaque eau est évaluée sur 11 critères pondérés selon votre profil :',
     'ranking.excludedNote': '💡 Les eaux exclues (contre-indiquées pour le profil) sont signalées en rouge.',
     'ranking.filters': 'Filtres :',
+    'ranking.advancedFilters': 'Filtres avancés',
     'ranking.still': 'Plates',
     'ranking.sparkling': 'Gazeuses',
     'ranking.hideExcluded': 'Masquer contre-indiquées',
