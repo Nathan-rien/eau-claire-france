@@ -16,6 +16,7 @@ export interface BottleWaterData {
   calcium_mgL: number | null;
   magnesium_mgL: number | null;
   sodium_mgL: number | null;
+  fluor_mgL?: number | null;
   pH: number | null;
   emballage: string;
   recyclable: string;

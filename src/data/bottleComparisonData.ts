@@ -1298,6 +1298,7 @@ const rawBottleWaterDatabase: BottleWaterData[] = [
     calcium_mgL: 35.0,
     magnesium_mgL: 3.6,
     sodium_mgL: 0.3,
+    fluor_mgL: 0,
     pH: 8.3,
     emballage: "Plastique",
     recyclable: "Oui",
