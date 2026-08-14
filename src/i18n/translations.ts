@@ -2380,6 +2380,7 @@ export const translations = {
     'ranking.scoreDescription': 'Each water is evaluated on 11 weighted criteria according to your profile:',
     'ranking.excludedNote': '💡 Excluded waters (contraindicated for the profile) are flagged in red.',
     'ranking.filters': 'Filters:',
+    'ranking.advancedFilters': 'Advanced filters',
     'ranking.still': 'Still',
     'ranking.sparkling': 'Sparkling',
     'ranking.hideExcluded': 'Hide contraindicated',
