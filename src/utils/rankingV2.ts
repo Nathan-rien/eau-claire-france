@@ -666,7 +666,7 @@ export function getProfileInfo(profile: Profile) {
 // Explications utilisateur enrichies
 export function reasons(comp: Composition, profile: Profile) {
   const cfg = PROFILES[profile];
-  const r: string[] = [];
+  const r: string[] = categoryExclusions(comp, profile).map(x => `⚠️ ${x}`);
 
   // Check exclusions first
   if (cfg.exclusions) {
