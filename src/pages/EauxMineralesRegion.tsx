@@ -38,7 +38,10 @@ export default function EauxMineralesRegion({ region }: Props) {
   const { waters, loading } = useWaterCompositions();
 
   const canonical = `/${REGION_PAGE_SLUGS[region]}`;
-  const regionLabel = REGION_LABELS[region];
+  // FR labels come from waterRegions.ts (single source); EN overrides live in i18n.
+  const labelKey = `regionPage.${region}.label`;
+  const translatedLabel = t(labelKey);
+  const regionLabel = translatedLabel === labelKey ? REGION_LABELS[region] : translatedLabel;
   // « des Alpes », « d'Auvergne », « the Alps »… : article + label from waterRegions.ts
   const regionPhrase = `${t(`regionPage.${region}.prefix`)}${regionLabel}`;
   const h1 = t('regionPage.h1', { region: regionPhrase });

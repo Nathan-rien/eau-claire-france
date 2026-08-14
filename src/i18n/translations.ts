@@ -2221,7 +2221,7 @@ export const translations = {
     'hydration.links.quality.desc': "Les analyses officielles du réseau qui alimente votre logement.",
     // Eaux minérales par région d'origine
     'regionPage.tag': "Eaux minérales par région",
-    'regionPage.h1': "Eaux minérales {prefix}{region}",
+    'regionPage.h1': "Eaux minérales {region}",
     'regionPage.seo.title': "Eaux minérales {region} : marques et compositions",
     'regionPage.seo.desc': "Les eaux minérales en bouteille {region} : origine géologique, résidu sec, calcium, magnésium et sodium, d'après notre base de compositions.",
     'regionPage.breadcrumb.hub': "Classement des eaux",
@@ -4556,6 +4556,7 @@ export const translations = {
     'regionPage.links.quality.desc': "Official analyses of the drinking water network supplying your home.",
 
     'regionPage.alpes.prefix': "the ",
+    'regionPage.alpes.label': "Alps",
     'regionPage.alpes.intro': "Alpine waters are filtered through glacial deposits and poorly soluble rocks: mineralisation usually stays moderate, close to an everyday drinking water profile.",
     'regionPage.alpes.geo1': "Water in the Alpine massifs flows through glacial deposits and crystalline formations that release few dissolved salts. Residence times are long, but the rock gives up little calcium, hence generally moderate dry residues.",
     'regionPage.alpes.geo2': "That is why several Alpine waters are marketed as everyday waters rather than highly mineralised ones. Exact values for each brand are in the table below.",
@@ -4565,6 +4566,7 @@ export const translations = {
     'regionPage.alpes.faq.q2.a': "They are generally moderately mineralised, without being as low-mineral as granitic-basement waters. Check the dry residue shown for each brand.",
 
     'regionPage.vosges.prefix': "the ",
+    'regionPage.vosges.label': "Vosges / Grand Est",
     'regionPage.vosges.intro': "The Vosges and Grand Est host aquifers rich in calcium and sulphates, producing the most mineralised still waters sold in France.",
     'regionPage.vosges.geo1': "The Vosges basin combines sandstone with sedimentary layers containing gypsum and anhydrite. As these dissolve, they enrich the water in calcium, magnesium and sulphates.",
     'regionPage.vosges.geo2': "This is why the same area yields both highly mineralised waters with a nutritional positioning and much lighter waters filtered through sandstone. Measured values are detailed below.",
@@ -4574,6 +4576,7 @@ export const translations = {
     'regionPage.vosges.faq.q2.a': "Because the water flows through gypsum-bearing layers (calcium sulphate). Its dissolution raises calcium, sulphates and, depending on the spring, magnesium.",
 
     'regionPage.auvergne.prefix': "",
+    'regionPage.auvergne.label': "Auvergne",
     'regionPage.auvergne.intro': "Volcanic Auvergne produces the most contrasted profiles: waters filtered by lava on one side, naturally carbonated bicarbonate-rich waters on the other.",
     'regionPage.auvergne.geo1': "Basalt flows and volcanic sands filter the water and keep mineralisation contained, with silica. Nearby, deep volcanism releases CO₂ that dissolves rock and produces bicarbonate waters, sometimes highly mineralised.",
     'regionPage.auvergne.geo2': "So a single region can offer a light water alongside strongly mineralised sparkling waters, notably in sodium. Compare the actual values brand by brand in the table.",
@@ -4583,6 +4586,7 @@ export const translations = {
     'regionPage.auvergne.faq.q2.a': "Sparkling waters from the Vichy basin are sodium bicarbonate waters, with high sodium content. They are not suited to daily consumption on a low-salt diet.",
 
     'regionPage.pyrenees.prefix': "the ",
+    'regionPage.pyrenees.label': "Pyrenees / South-West",
     'regionPage.pyrenees.intro': "The Pyrenees and South-West supply several of the lowest-mineral waters sold in France, filtered through poorly soluble crystalline rocks.",
     'regionPage.pyrenees.geo1': "Pyrenean granites and schists release very little calcium and magnesium. The water therefore comes out weakly mineralised, with a low dry residue and often very low nitrate levels.",
     'regionPage.pyrenees.geo2': "These light profiles explain why several waters from the area carry the official \"suitable for infant feeding\" mention. Check each brand's values below.",
@@ -4592,6 +4596,7 @@ export const translations = {
     'regionPage.pyrenees.faq.q2.a': "Only waters carrying the official \"suitable for infant feeding\" mention on the label can be recommended for that use. Several low-mineral waters from this area do, but the mention must be checked on the bottle.",
 
     'regionPage.mediterranee.prefix': "the ",
+    'regionPage.mediterranee.label': "Languedoc / Mediterranean",
     'regionPage.mediterranee.intro': "Languedoc and the Mediterranean arc are the cradle of French sparkling waters, linked to natural carbon dioxide upwelling.",
     'regionPage.mediterranee.geo1': "In Gard, Hérault and Lozère, deep faults let CO₂ rise and dissolve into the aquifers. The gas acidifies the water and speeds up the dissolution of the rocks it flows through.",
     'regionPage.mediterranee.geo2': "The result: naturally sparkling waters, ranging from contained mineralisation to waters clearly richer in bicarbonates and calcium. Values are in the table.",
