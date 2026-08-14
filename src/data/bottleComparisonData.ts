@@ -1313,6 +1313,17 @@ const rawBottleWaterDatabase: BottleWaterData[] = [
   }
 ];
 
+/**
+ * Base enrichie : gazéité et multi-source dérivées des données existantes,
+ * mention nourrissons issue du registre réglementaire ci-dessus.
+ */
+export const bottleWaterDatabase: BottleWaterData[] = rawBottleWaterDatabase.map(b => ({
+  ...b,
+  gazeuse: b.gazeuse ?? isGaseousType(b.type_eau),
+  source_variable: b.source_variable ?? isVariableSource(b.source),
+  mention_nourrissons: b.mention_nourrissons ?? hasInfantMention(b.marque),
+}));
+
 // Import centralized price logic
 import { makeTapPrice } from "@/lib/price";
 import { PRICE_INPUTS } from "@/data/prices.example";
