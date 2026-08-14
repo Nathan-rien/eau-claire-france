@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { WaterRegion, getWaterRegion, REGION_ORDER, REGION_LABELS } from '@/config/waterRegions';
+import { WaterRegion, REGION_ORDER } from '@/config/waterRegions';
 
 export type { WaterRegion } from '@/config/waterRegions';
 
