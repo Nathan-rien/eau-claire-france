@@ -23,8 +23,6 @@ La Française,La Française,Propiac (Drôme),False,,225.0,354.0,982.0,83.0,0.0,2
 La Salvetat,Rieumajou,La Salvetat-sur-Agout (Hérault),True,6.0,520.0,530.0,160.0,5.0,7.5,2.0,55.0,5.0,20.0,,,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
 Le Vernet,Vernet Ouest,Prades (Ardèche),True,,675.0,734.0,33.5,6.4,1.3,47.6,1.0,28.7,192.0,14.0,,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,false
 Luchon,Lapade,Bagnères-de-Luchon (Haute-Garonne),False,8.0,83.0,78.0,26.5,2.3,1.0,1.8,0.2,0.8,8.2,,,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,false
-Mont Roucous,Mont Roucous,Lacaune (Tarn),False,5.8,25.0,6.3,2.4,3.0,0.1,0.5,0.4,8.2,3.1,2.0,,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
-Montcalm,Montcalm,Auzat (Ariège),False,6.8,32.0,5.2,3.0,0.6,0.1,0.7,0.7,0.6,7.5,2.2,10.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
 Nessel,Nessel,Soultzmatt (Haut-Rhin),True,6.2,1002.0,1069.0,96.0,19.0,1.0,42.0,37.0,216.0,68.0,,,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,false
 Ogeu - source du Roy,Roy,Ogeu-les-Bains (Pyrénées-Atlantiques),False,7.9,250.0,180.0,47.0,20.7,15.1,2.9,0.7,16.0,35.5,,,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
 Ogeu – gazeuse n°1,Gazeuse n°1,Ogeu-les-Bains (Pyrénées-Atlantiques),True,4.8,250.0,180.0,47.0,20.7,15.1,2.9,0.7,16.0,35.5,,,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
@@ -45,10 +43,6 @@ Vernet,Vernet Ouest,Prades (Ardèche),True,,,538.0,32.0,5.2,1.3,17.0,,22.0,,129.
 Vernière,Rieumajou,Les Aires (Hérault),True,6.0,1400.0,946.0,168.0,18.0,,66.0,2.0,35.0,,105.0,142.0,https://fr.wikipedia.org/wiki/Verni%C3%A8re,true
 Vichy Célestins,Bassin de Vichy,Allier (Auvergne),True,6.8,3378.0,3245.0,90.0,227.0,,9.0,2.0,71.0,,1265.0,129.0,https://aqua-amore.com/products/vichy-celestins-naturally-sparkling-water-plastic-bottle-6x1-15-litres,true
 Vittel,Grande Source,Vosges,False,7.6,1084.0,384.0,240.0,7.3,0.17,42.0,4.4,1.9,,5.2,400.0,https://fr.wikipedia.org/wiki/Vittel_%28eau_min%C3%A9rale%29,true
-Volvic,Clairvic,Puy-de-Dôme (Auvergne),False,7.0,130.0,74.0,12.0,15.0,,8.0,7.3,6.0,32.0,12.0,9.0,https://www.volvic.fr/nos-produits/eau-minerale-naturelle.html,true
-Évian,Cachat,Évian-les-Bains (Haute-Savoie),False,7.2,345.0,360.0,80.0,10.0,3.8,1.0,15.0,6.5,14.0,,,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
-Thonon,Thonon,Thonon-les-Bains (Haute-Savoie),False,7.3,342.0,335.0,108.0,8.0,0.1,16.0,2.1,1.5,,5.0,18.0,https://www.eauthonon.com,true
-Wattwiller,Wattwiller,Wattwiller (Haut-Rhin),False,7.5,1534.0,258.0,288.0,4.0,1.5,19.8,0.1,2.0,,3.0,630.0,https://www.wattwiller.com,true
 Cristaline,Multi-sources,France,False,7.5,244.0,210.0,71.0,14.0,0.2,5.5,1.0,2.0,,8.0,10.0,https://www.cristaline.fr,true
 Laqueuille,Laqueuille,Laqueuille (Puy-de-Dôme),False,6.5,46.0,18.0,4.2,2.0,0.1,1.9,3.0,1.0,,2.7,3.0,https://www.roxane.fr,true
 Grand Barbier,Grand Barbier,Douvres (Ain),False,7.6,340.0,285.0,85.0,4.0,0.2,26.0,1.0,1.5,,2.0,30.0,https://www.carrefour.fr,true
@@ -59,7 +53,6 @@ Saint-Martin d'Abbat,Saint-Martin d'Abbat,Saint-Martin-d'Abbat (Loiret),False,7.
 Louise,Louise,Andrézieux-Bouthéon (Loire),False,7.4,290.0,240.0,60.0,8.0,0.3,18.0,3.0,2.5,,8.0,12.0,https://www.roxane.fr,true
 Ophélie,Ophélie,Saint-Cyr-en-Val (Loiret),False,7.6,310.0,260.0,98.0,9.0,0.2,5.0,2.0,1.5,,7.0,10.0,https://www.roxane.fr,true
 Courmayeur,Courmayeur,Courmayeur (Italie),False,7.4,2080.0,168.0,517.0,1.0,0.5,67.0,2.0,1.6,,1.6,1371.0,https://www.courmayeur.com,true
-Mont Blanc,Mont Blanc,Saint-Gervais (Haute-Savoie),False,7.5,167.0,156.0,32.0,2.0,0.05,7.0,0.8,1.0,,3.0,4.0,https://www.mont-blanc.com,true
 Carola,Carola Rouge,Ribeauvillé (Haut-Rhin),True,6.5,580.0,452.0,93.0,18.0,0.4,30.0,3.0,3.0,,18.0,55.0,https://www.carola.fr,true
 Carola,Carola Verte,Ribeauvillé (Haut-Rhin),False,7.4,260.0,200.0,72.0,5.0,0.3,8.0,1.5,1.5,,4.0,18.0,https://www.carola.fr,true
 Vals,Vivaraise,Vals-les-Bains (Ardèche),True,6.5,1830.0,1700.0,45.0,40.0,1.0,21.0,1.0,80.0,,450.0,38.0,https://www.vals.fr,false
@@ -88,10 +81,6 @@ Casino,Eau de Source Casino,Vosges,False,7.6,310.0,250.0,90.0,6.0,0.15,8.0,2.0,1
 Intermarché,Pierval,Saint-Yorre (Allier),False,7.5,280.0,230.0,84.0,5.0,0.2,7.0,1.8,1.4,,5.5,10.0,https://www.intermarche.com,true
 Vernière,Vernière,Lamalou-les-Bains (Hérault),True,6.4,3325.0,2820.0,200.0,250.0,3.5,75.0,2.0,140.0,,790.0,30.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
 La Salvetat,La Salvetat,La Salvetat-sur-Agout (Hérault),True,6.0,253.0,205.0,160.0,4.0,0.6,11.0,1.0,3.0,,11.0,3.0,https://www.lasalvetat.com,true
-Wattwiller,Wattwiller plate,Wattwiller (Haut-Rhin),False,7.5,335.0,160.0,98.0,4.0,0.5,11.0,2.0,2.5,,3.0,135.0,https://www.wattwiller.com,true
-Wattwiller,Wattwiller fines bulles,Wattwiller (Haut-Rhin),True,7.0,335.0,160.0,98.0,4.0,0.5,11.0,2.0,2.5,,3.0,135.0,https://www.wattwiller.com,true
-Évian,Évian,Évian-les-Bains (Haute-Savoie),False,7.2,345.0,357.0,80.0,4.5,0.1,26.0,3.7,1.0,,6.5,12.6,https://www.evian.com,true
-Volvic,Volvic,Volvic (Puy-de-Dôme),False,7.0,130.0,71.0,11.5,13.5,0.2,8.0,6.3,6.2,,11.6,8.1,https://www.volvic.fr,true
 Contrex,Contrex,Contrexéville (Vosges),False,7.3,2125.0,403.0,486.0,10.0,0.4,84.0,2.7,3.2,,9.4,1187.0,https://www.contrex.fr,true
 Hépar,Hépar,Vittel (Vosges),False,7.2,2580.0,403.0,549.0,19.0,0.4,119.0,4.0,4.0,,14.2,1530.0,https://www.heparcontrex.fr,true
 Badoit,Badoit Verte,Saint-Galmier (Loire),True,6.0,1200.0,1300.0,190.0,40.0,1.2,85.0,7.0,10.0,,150.0,38.0,https://www.badoit.com,true
@@ -102,4 +91,11 @@ Quézac,Quézac,Quézac (Lozère),True,6.4,1010.0,1685.0,241.0,40.0,1.0,95.0,1.0
 Arvie,Arvie,Le Vernet-Sainte-Marguerite (Puy-de-Dôme),True,6.5,2552.0,2195.0,170.0,387.0,0.9,92.0,1.0,130.0,,650.0,31.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
 Plancoët,Plancoët Source Sassay,Plancoët (Côtes-d'Armor),False,7.5,300.0,288.0,36.0,12.0,0.7,32.0,2.0,2.0,,7.0,5.0,https://www.eauxdeplancoet.fr,true
 Pyrénéa,Pyrénéa,Ogeu-les-Bains (Pyrénées-Atlantiques),False,7.6,177.0,150.0,48.0,5.0,0.5,11.0,2.0,1.5,,4.5,7.0,https://fr.wikipedia.org/wiki/Eaux_min%C3%A9rales_fran%C3%A7aises,true
-Roche Claire,Roche Claire,"Séez (Savoie)",False,8.3,118.5,110.3,35.0,0.2,0,3.6,1.0,0.2,,0.3,15.2,https://eau-rocheclaire.com,true
+Mont Roucous,Mont Roucous,Lacaune (Tarn),False,6.0,22,4.9,2.9,3.2,0.1,0.5,2.0,0.4,,3.0,3,https://www.mont-roucous.com,true
+Montcalm,Montcalm,Auzat (Ariège),False,6.8,32,5.2,3.0,,0.1,0.7,0.7,0.6,,2.2,10,,true
+Volvic,Volvic,Volvic (Puy-de-Dôme),False,7.0,130,74,12,15,0.2,8,7.3,6,32,12,9,https://www.volvic.fr,true
+Évian,Évian,Évian-les-Bains (Haute-Savoie),False,7.2,345,360,80,10,0.1,26,3.7,1,,6.5,14,https://www.evian.com,true
+Thonon,Thonon,Thonon-les-Bains (Haute-Savoie),False,7.4,342,,92,,0.1,16,2.1,,,6,18,https://www.eauthonon.com,true
+Wattwiller,Wattwiller,Wattwiller (Haut-Rhin),False,7.5,155,135,35,,0.5,11,0,1,,3,24,https://www.wattwiller.com,true
+Mont Blanc,Mont Blanc,Saint-Gervais (Haute-Savoie),False,7.4,134,,32,,0.05,7,0.8,1,,3,4,https://www.mont-blanc.com,true
+Roche Claire,Roche Claire,Séez (Savoie),False,8.3,118.5,110.3,35,0.2,0,3.6,1.0,0.2,3.1,0.3,15.2,https://eau-rocheclaire.com,true
