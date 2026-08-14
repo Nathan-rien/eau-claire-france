@@ -82,7 +82,7 @@ export default function RankingFilters({ filters, onChange, resultCount, activeC
       >
         <div className="flex items-center gap-2 flex-wrap">
           <Filter className="w-4 h-4 text-gray-600" />
-          <span className="font-medium text-sm">{t('ranking.filters')}</span>
+          <span className="font-medium text-sm">{t('ranking.advancedFilters')}</span>
           <Badge variant="secondary">{resultCount} eaux</Badge>
           {activeCount > 0 && (
             <Badge variant="default" className="bg-blue-600">{activeCount} actif{activeCount > 1 ? 's' : ''}</Badge>
