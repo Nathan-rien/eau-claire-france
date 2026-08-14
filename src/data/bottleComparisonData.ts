@@ -2,7 +2,44 @@
 import type { BottleWaterData } from '@/types/bottleTypes';
 export type { BottleWaterData } from '@/types/bottleTypes';
 
-export const bottleWaterDatabase: BottleWaterData[] = [
+/**
+ * Mention réglementaire officielle « convient à l'alimentation des nourrissons ».
+ * DONNÉE RÉGLEMENTAIRE — à revérifier sur l'étiquette réelle de chaque eau avant
+ * publication (la mention est portée par la bouteille, pas déduite d'un score).
+ * Toute eau absente de cette liste est considérée comme NON vérifiée (false).
+ */
+export const INFANT_MENTION_BRANDS: readonly string[] = [
+  'mont roucous',
+  'montcalm',
+  'volvic',
+  'evian',
+  'thonon',
+  'wattwiller',
+  'mont blanc',
+  'roche claire',
+];
+
+const normalizeBrand = (s?: string) =>
+  (s ?? '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+/** La marque porte-t-elle la mention officielle nourrissons ? */
+export const hasInfantMention = (brand?: string): boolean =>
+  INFANT_MENTION_BRANDS.includes(normalizeBrand(brand));
+
+/** Eau gazeuse, dérivée du libellé type_eau. */
+export const isGaseousType = (typeEau?: string): boolean =>
+  /gazeu/i.test(typeEau ?? '');
+
+/** Marque multi-captages (composition variable selon la source). */
+export const isVariableSource = (source?: string): boolean =>
+  /multiple|variable/i.test(source ?? '');
+
+const rawBottleWaterDatabase: BottleWaterData[] = [
   {
     id: 1,
     marque: "Cristaline",
