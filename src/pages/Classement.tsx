@@ -14,6 +14,7 @@ import RankingFilters, { DEFAULT_FILTERS, RankingFilterState } from '@/component
 import RankingTableView from '@/components/Ranking/RankingTableView';
 import BottleCompareModal from '@/components/Ranking/BottleCompareModal';
 import { Profile, scoreBottle, Composition, CRITERION_LABELS, getProfileInfo } from '@/utils/rankingV2';
+import { getWaterRegion } from '@/config/waterRegions';
 import { useWaterCompositions } from '@/hooks/useWaterCompositions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { seoData } from '@/utils/seoData';
