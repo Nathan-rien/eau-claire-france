@@ -1247,6 +1247,32 @@ export const bottleWaterDatabase: BottleWaterData[] = [
     consigne: "Non",
     impact_carbone_gCO2L: 170,
     ecoscore: "B"
+  },
+  {
+    id: 61,
+    marque: "Roche Claire",
+    nom_bouteille: "Roche Claire",
+    type_eau: "Eau de source",
+    format: "1.5L",
+    source: "Séez, Savoie",
+    prix_moyen_litre: 0,
+    nitrates_mgL: 1,
+    residu_sec_mgL: 118.5,
+    // Valeurs non publiées dans l'analyse consultée : laissées à null (à compléter
+    // depuis l'analyse officielle, ne pas inventer)
+    calcium_mgL: null,
+    magnesium_mgL: null,
+    sodium_mgL: null,
+    pH: 8.3,
+    emballage: "Plastique",
+    recyclable: "Oui",
+    consigne: "Non",
+    impact_carbone_gCO2L: 0,
+    ecoscore: "",
+    url_fiche: "https://eau-rocheclaire.com",
+    mention_nourrissons: true,
+    source_variable: false,
+    gazeuse: false
   }
 ];
 
