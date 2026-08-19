@@ -1153,6 +1153,8 @@ export const translations = {
     'hub.decide.ranking.desc': 'Top des marques selon 11 critères',
     'hub.decide.prix.label': 'Comparateur de prix',
     'hub.decide.prix.desc': 'Prix en magasin mis à jour quotidiennement',
+    'hub.decide.hydration.label': "Calculateur d'hydratation",
+    'hub.decide.hydration.desc': "Combien de litres d'eau par jour selon votre profil",
     'hub.journey.title': 'Comprendre le parcours de l\'eau',
     'hub.journey.tap.label': 'Parcours de l\'eau du robinet',
     'hub.journey.tap.desc': 'De la source au verre, en 6 étapes',
