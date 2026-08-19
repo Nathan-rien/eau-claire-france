@@ -3456,6 +3456,8 @@ export const translations = {
     'hub.decide.ranking.desc': 'Top brands across 11 criteria',
     'hub.decide.prix.label': 'Price comparator',
     'hub.decide.prix.desc': 'Store prices updated daily',
+    'hub.decide.hydration.label': 'Hydration calculator',
+    'hub.decide.hydration.desc': 'How many litres of water per day for your profile',
     'hub.journey.title': 'Understand the water journey',
     'hub.journey.tap.label': 'Tap water journey',
     'hub.journey.tap.desc': 'From source to glass in 6 steps',
