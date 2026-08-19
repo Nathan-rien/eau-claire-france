@@ -43,6 +43,7 @@ const LINK_GROUPS: Record<string, { titleKey: string; items: LinkItem[] }> = {
       { to: "/quelle-eau-boire", labelKey: "hub.decide.which.label", descKey: "hub.decide.which.desc", icon: Trophy },
       { to: "/classement", labelKey: "hub.decide.ranking.label", descKey: "hub.decide.ranking.desc", icon: Trophy },
       { to: "/prix-eaux", labelKey: "hub.decide.prix.label", descKey: "hub.decide.prix.desc", icon: Euro },
+      { to: "/calculateur-hydratation", labelKey: "hub.decide.hydration.label", descKey: "hub.decide.hydration.desc", icon: Droplets },
     ],
   },
   journey: {
