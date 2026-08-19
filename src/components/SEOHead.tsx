@@ -46,9 +46,16 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   // build it from the current pathname but force the infoeau.fr origin.
   // Language-aware self-canonical: an EN page (/en/...) canonicalises to its own
   // /en URL, a FR page to its unprefixed URL. No cross-language canonical.
-  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
+  // Normalise a path so that /Classement, /classement/ and /classement?x=1
+  // all resolve to the SAME canonical URL (no duplicate-URL variants).
+  const normalizePath = (p: string): string => {
+    const clean = p.split('#')[0].split('?')[0].toLowerCase();
+    const noTrailing = clean.replace(/\/+$/, '');
+    return noTrailing === '' ? '/' : noTrailing;
+  };
+  const currentPath = normalizePath(typeof window !== 'undefined' ? window.location.pathname : '/');
   const isEnglishPath = /^\/en(\/|$)/.test(currentPath);
-  const basePath = canonical ? canonical : currentPath;
+  const basePath = normalizePath(canonical ? canonical : currentPath);
   const unprefixed = basePath.replace(/^\/en(?=\/|$)/, '') || '/';
   const canonicalPath = isEnglishPath
     ? (unprefixed === '/' ? '/en' : `/en${unprefixed}`)
