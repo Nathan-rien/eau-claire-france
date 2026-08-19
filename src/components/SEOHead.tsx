@@ -27,7 +27,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   description,
   keywords = "qualité eau potable France, analyse eau robinet, eaux bouteilles comparaison, polluants eau",
   canonical,
-  ogImage = "/images/og-default.jpg",
+  ogImage = "/images/og-image.png",
   ogType = "website",
   schemaData,
   hreflang = {},

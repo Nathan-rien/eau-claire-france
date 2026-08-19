@@ -34,7 +34,7 @@ interface SitemapEntry {
 
 
 const staticEntries: SitemapEntry[] = [
-  { path: "/", changefreq: "weekly", priority: "1.0", imageLoc: "/images/og-default.jpg", imageTitle: "InfoEau.fr - Qualité de l'eau potable en France" },
+  { path: "/", changefreq: "weekly", priority: "1.0", imageLoc: "/images/og-image.png", imageTitle: "InfoEau.fr - Qualité de l'eau potable en France" },
   { path: "/carte", changefreq: "weekly", priority: "0.9" },
   { path: "/diagnostic", changefreq: "weekly", priority: "0.9" },
   { path: "/carte-polluants", changefreq: "weekly", priority: "0.8" },
