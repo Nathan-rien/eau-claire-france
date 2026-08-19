@@ -6,7 +6,15 @@
     <atom:link href="https://infoeau.fr/lettre-de-leau/rss.xml" rel="self" type="application/rss+xml" />
     <description>Actualités, scandales, réglementation et enquêtes sur la qualité de l'eau en France.</description>
     <language>fr-FR</language>
-    <lastBuildDate>Fri, 14 Aug 2026 09:48:21 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 19 Aug 2026 07:35:40 GMT</lastBuildDate>
+    <item>
+      <title>PFAS dans l&apos;eau : l&apos;invisible menace révélée, la France sous alerte</title>
+      <link>https://infoeau.fr/lettre-de-leau/pfas-eau-france-recherche-alerte</link>
+      <guid isPermaLink="true">https://infoeau.fr/lettre-de-leau/pfas-eau-france-recherche-alerte</guid>
+      <pubDate>Mon, 17 Aug 2026 07:55:32 GMT</pubDate>
+      <category>qualite</category>
+      <description>Longtemps ignorés, les PFAS sont désormais sous le microscope. Avec des milliers de communes testées et des centaines en alerte, la France fait face à une nouvelle réalité sanitaire. &quot;Lettre de l&apos;eau&quot; décrypte cette situation alarmante.</description>
+    </item>
     <item>
       <title>PFAS et eau du robinet : Le cas de Villy révèle des normes en évolution</title>
       <link>https://infoeau.fr/lettre-de-leau/pfas-eau-robinet-villy-normes-evolution</link>

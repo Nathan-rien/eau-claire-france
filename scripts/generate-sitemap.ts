@@ -46,7 +46,7 @@ const staticEntries: SitemapEntry[] = [
   { path: "/carte-parcours-eau", changefreq: "monthly", priority: "0.7" },
   { path: "/carte-parcours-robinet", changefreq: "monthly", priority: "0.7" },
   { path: "/prix-eaux", changefreq: "daily", priority: "0.8" },
-  { path: "/comparateur-prix", changefreq: "daily", priority: "0.8" },
+  // /comparateur-prix n'existe pas comme route : retiré (soft 404 / doublon de /prix-eaux).
   // /comparatif-bouteilles et /bouteilles redirigent vers /classement : hors sitemap.
   { path: "/sources-eau", changefreq: "monthly", priority: "0.7" },
   // Les pages /marque/* sont générées depuis PRICED_BRAND_SLUGS (voir plus bas).

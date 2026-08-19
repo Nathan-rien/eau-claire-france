@@ -168,14 +168,15 @@ const QuelleEauBoire: React.FC<QuelleEauBoireProps> = ({ initialMode }) => {
     quick: {
       title: "Diagnostic rapide : quelle eau boire ? | InfoEau.fr",
       description: "Diagnostic rapide en 30 secondes : recevez une recommandation d'eau adaptée à votre profil (sportif, femme enceinte, senior…) en quelques clics.",
-      canonical: "/quelle-eau-boire/rapide",
+      // Variante d'affichage du même contenu → canonique vers l'URL principale.
+      canonical: "/quelle-eau-boire",
       url: "https://infoeau.fr/quelle-eau-boire/rapide",
       name: "Diagnostic rapide - Quelle eau boire ?",
     },
     full: {
       title: "Diagnostic complet : quelle eau boire ? | InfoEau.fr",
       description: "Diagnostic complet et personnalisé : profils santé, intolérances, âge, préférences. Obtenez les eaux en bouteille et du robinet les mieux adaptées à vos besoins.",
-      canonical: "/quelle-eau-boire/complet",
+      canonical: "/quelle-eau-boire",
       url: "https://infoeau.fr/quelle-eau-boire/complet",
       name: "Diagnostic complet - Quelle eau boire ?",
     },

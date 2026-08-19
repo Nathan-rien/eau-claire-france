@@ -102,11 +102,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://infoeau.fr/comparateur-prix</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://infoeau.fr/sources-eau</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -783,6 +778,12 @@
     <loc>https://infoeau.fr/qualite-eau/nancy-54000</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/lettre-de-leau/pfas-eau-france-recherche-alerte</loc>
+    <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
   </url>
   <url>
     <loc>https://infoeau.fr/lettre-de-leau/pfas-eau-robinet-villy-normes-evolution</loc>
