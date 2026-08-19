@@ -8,7 +8,7 @@
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://infoeau.fr/images/og-default.jpg</image:loc>
+      <image:loc>https://infoeau.fr/images/og-image.png</image:loc>
       <image:title>InfoEau.fr - Qualité de l&apos;eau potable en France</image:title>
     </image:image>
   </url>
@@ -20,7 +20,7 @@
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://infoeau.fr/images/og-default.jpg</image:loc>
+      <image:loc>https://infoeau.fr/images/og-image.png</image:loc>
       <image:title>InfoEau.fr - Qualité de l&apos;eau potable en France</image:title>
     </image:image>
   </url>
