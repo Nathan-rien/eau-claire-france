@@ -23,6 +23,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { extractSourceInfo, detectChannelType, getChannelDescription, ChannelType } from '@/utils/sourceDetection';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import BrandLinksSection from '@/components/BrandLinksSection';
+import RegionLinksSection from '@/components/RegionLinksSection';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
@@ -685,6 +686,7 @@ export default function PrixEaux() {
           )}
 
           <BrandLinksSection />
+          <RegionLinksSection />
         </div>
       </main>
     </Layout>

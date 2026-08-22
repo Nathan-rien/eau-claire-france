@@ -7,6 +7,7 @@ import InternalLinkHub from '@/components/InternalLinkHub';
 import { MapPin } from 'lucide-react';
 import { communeToSlug, communesByRegion, allCommunes } from '@/utils/communeSlug';
 import { useLanguage } from '@/contexts/LanguageContext';
+import TasteLinkCallout from '@/components/TasteLinkCallout';
 
 const QualiteEauIndex: React.FC = () => {
   const { t } = useLanguage();
@@ -89,6 +90,10 @@ const QualiteEauIndex: React.FC = () => {
               ))}
           </div>
         </section>
+
+        <div className="container mx-auto px-4">
+          <TasteLinkCallout />
+        </div>
 
         <InternalLinkHub
           heading={t('qualite.index.hubHeading')}
