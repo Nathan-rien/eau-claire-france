@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import WaterSourcesMap from '@/components/WaterSourcesMap';
 import { buildSources, type SourceItem } from "@/utils/sourcesAdapter";
 import { useLanguage } from '@/contexts/LanguageContext';
+import RegionLinksSection from '@/components/RegionLinksSection';
 
 export default function SourcesEau() {
   const { t } = useLanguage();
@@ -213,6 +214,10 @@ export default function SourcesEau() {
             </div>
           </div>
         </section>
+
+        <div className="container mx-auto px-4 pb-12">
+          <RegionLinksSection />
+        </div>
       </div>
     </Layout>
   );

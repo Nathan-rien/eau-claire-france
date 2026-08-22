@@ -8,6 +8,7 @@ import SEOHead from '@/components/SEOHead';
 import Breadcrumb from '@/components/Breadcrumb';
 import { seoData } from '@/utils/seoData';
 import { useLanguage } from '@/contexts/LanguageContext';
+import TasteLinkCallout from '@/components/TasteLinkCallout';
 
 const Carte = () => {
   const { t } = useLanguage();
@@ -44,6 +45,8 @@ const Carte = () => {
             </div>
             
             <QualityMap />
+
+            <TasteLinkCallout />
           </div>
         </section>
       </div>
