@@ -3,6 +3,9 @@ import { Composition, scoreBottle, letterGrade, reasons, Profile, CRITERION_LABE
 import { AlertTriangle, Sparkles, Droplets } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Link } from "@/components/LocalizedLink";
+import { brandToSlug } from "@/config/brands";
+import { isPricedBrandSlug } from "@/config/pricedBrands";
 
 export default function BottleRankingCard({
   name, brand, location, isSparkling, compos, profile, rank, podium
@@ -17,6 +20,8 @@ export default function BottleRankingCard({
   podium?: boolean;
 }) {
   const { t } = useLanguage();
+  const candidateSlug = brand ? brandToSlug(brand) : undefined;
+  const brandSlug = isPricedBrandSlug(candidateSlug) ? candidateSlug : undefined;
   const scored = scoreBottle(compos, profile);
   const letter = letterGrade(scored.total, scored.excluded);
   const rsn = reasons(compos, profile);
@@ -78,7 +83,16 @@ export default function BottleRankingCard({
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-gray-900 truncate">{brand || name}</span>
+            {brandSlug ? (
+              <Link
+                to={`/marque/${brandSlug}`}
+                className="font-semibold text-gray-900 truncate hover:text-blue-600 hover:underline"
+              >
+                {brand || name}
+              </Link>
+            ) : (
+              <span className="font-semibold text-gray-900 truncate">{brand || name}</span>
+            )}
             {compos.source_variable === true && (
               <Badge variant="outline" className="text-xs flex items-center gap-1 border-amber-300 text-amber-700 bg-amber-50"
                 title={t('ranking.variableSourceHint')}>

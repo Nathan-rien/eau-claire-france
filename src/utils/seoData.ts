@@ -1,8 +1,8 @@
 // SEO data for all pages - France & Europe
 export const seoData = {
   home: {
-    title: "InfoEau.fr - Qualité de l'eau potable en France",
-    description: "Découvrez la qualité de l'eau potable dans votre commune. Analyses officielles, comparaisons d'eaux en bouteille, diagnostic personnalisé et données transparentes.",
+    title: "InfoEau — Qualité de l'eau du robinet et prix des eaux en bouteille en France",
+    description: "Consultez la qualité de l'eau potable commune par commune, comparez la composition et les prix des eaux en bouteille. Données officielles, indépendant et gratuit.",
     keywords: "qualité eau potable France, analyse eau robinet, diagnostic eau commune, transparence eau potable, ARS données eau",
     ogImage: "/images/og-home.jpg",
     schemaData: {
@@ -126,8 +126,8 @@ export const seoData = {
   },
 
   quelleEauBoire: {
-    title: "Quelle eau boire ? Meilleure eau en bouteille selon votre profil",
-    description: "Quelle est la meilleure eau en bouteille pour vous ? Diagnostic personnalisé selon votre profil : femme enceinte, sportif, nourrisson, reins, hypertension. Résultat en 30 secondes.",
+    title: "Quelle eau boire ? Recommandation personnalisée selon votre profil | InfoEau",
+    description: "Sportif, femme enceinte, bébé, régime sans sel… Trouvez l'eau minérale idéale pour votre profil grâce à notre outil de recommandation gratuit.",
     keywords: "quelle eau boire, meilleure eau en bouteille, meilleur eau bouteille santé, eau femme enceinte, eau sportif, eau nourrisson, eau hypertension",
     ogImage: "/images/og-recommandations.jpg",
     schemaData: {
@@ -307,8 +307,8 @@ export const seoData = {
   // === Pages prix ===
 
   prixEaux: {
-    title: "Prix de l'eau en bouteille : comparez par marque et enseigne",
-    description: "Comparez le prix de l'eau en bouteille par marque et enseigne (Leclerc, Carrefour, Auchan). Prix au litre et offres du moment, relevés régulièrement.",
+    title: "Prix des eaux en bouteille 2026 — Comparatif par marque et supermarché | InfoEau",
+    description: "Comparez les prix de 20+ marques d'eau en bouteille dans 24 supermarchés français. Évolution des prix, meilleur rapport qualité-prix et alertes promotions.",
 
     keywords: "prix eau bouteille, comparaison prix eau en bouteille, eau la moins chere, prix cristaline leclerc, prix eau mont roucous leclerc, comparateur eau",
     canonical: "/prix-eaux",
