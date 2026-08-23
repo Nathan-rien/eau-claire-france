@@ -189,27 +189,39 @@ export function productTreatsProblem(product: AffiliateProduct, problem: string)
   return product.treats.some((t) => normalize(t).includes(p) || p.includes(normalize(t)));
 }
 
+/** Le produit indique explicitement ne pas traiter (ou mal traiter) ce problème. */
+export function productExcludesProblem(product: AffiliateProduct, problem: string): boolean {
+  const p = normalize(problem);
+  if (!p) return false;
+  return product.doesNotTreat.some((t) => normalize(t).includes(p));
+}
+
 const TIER_ORDER: ProductTier[] = ['entry', 'standard', 'premium'];
 
 /**
  * Sélectionne un produit par palier (entrée / standard / premium) pour une
  * catégorie donnée. Si un contexte problème est fourni, les produits qui
- * traitent réellement ce problème sont prioritaires dans chaque palier.
+ * traitent réellement ce problème sont prioritaires dans chaque palier ;
+ * ceux qui indiquent ne pas le traiter passent en dernier.
  */
 export function getProductPicks(
   category: ProductCategory,
   problemContext?: string,
 ): AffiliateProduct[] {
   const pool = AFFILIATE_PRODUCTS.filter((p) => p.category === category);
+  const score = (p: AffiliateProduct) => {
+    if (!problemContext) return 0;
+    if (productTreatsProblem(p, problemContext)) return 0;
+    if (productExcludesProblem(p, problemContext)) return 2;
+    return 1;
+  };
 
   return TIER_ORDER.map((tier) => {
-    const inTier = pool.filter((p) => p.tier === tier);
-    if (inTier.length === 0) return undefined;
-    if (!problemContext) return inTier[0];
-    const relevant = inTier.filter((p) => productTreatsProblem(p, problemContext));
-    return relevant[0] ?? inTier[0];
+    const inTier = pool.filter((p) => p.tier === tier).sort((a, b) => score(a) - score(b));
+    return inTier[0];
   }).filter((p): p is AffiliateProduct => Boolean(p));
 }
+
 
 export function getProductsByCategory(category: ProductCategory): AffiliateProduct[] {
   return AFFILIATE_PRODUCTS.filter((p) => p.category === category);
