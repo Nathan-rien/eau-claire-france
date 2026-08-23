@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSearchParams } from 'react-router-dom';
+import { Link } from '@/components/LocalizedLink';
 import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
@@ -684,6 +685,22 @@ export default function PrixEaux() {
             </div>
             </>
           )}
+
+          <aside className="rounded-xl border border-green-200 bg-green-50 p-5 my-8">
+            <div className="flex items-start gap-3">
+              <Info className="h-5 w-5 text-green-700 mt-0.5 shrink-0" />
+              <div>
+                <p className="font-semibold text-green-900 mb-1">{t('prices.treat.title')}</p>
+                <p className="text-sm text-green-900/90 mb-2">{t('prices.treat.description')}</p>
+                <Link
+                  to="/traiter-eau-robinet"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-green-700 hover:underline"
+                >
+                  {t('prices.treat.cta')}
+                </Link>
+              </div>
+            </div>
+          </aside>
 
           <BrandLinksSection />
           <RegionLinksSection />
