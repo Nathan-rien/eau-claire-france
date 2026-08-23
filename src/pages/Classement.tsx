@@ -407,6 +407,12 @@ const Classement = () => {
             title="Filtrer plutôt que comparer les eaux en bouteille ?"
             intro="Si votre objectif est de réduire le chlore, le calcaire ou certains contaminants, la filtration à domicile peut remplacer l'achat de bouteilles. Voici ce que chaque solution traite réellement."
           />
+          <Link
+            to="/comparatif-filtres-eau"
+            className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-blue-700 hover:underline"
+          >
+            Comparatif complet des filtres à eau
+          </Link>
         </section>
         <div className="container mx-auto px-4">
           <BrandLinksSection />
