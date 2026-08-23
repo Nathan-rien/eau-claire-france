@@ -12,6 +12,7 @@ import { seoData } from '@/utils/seoData';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useReverseGeocoding } from '@/hooks/useReverseGeocoding';
+import AffiliateProductPick from '@/components/affiliate/AffiliateProductPick';
 
 const Diagnostic = () => {
   const [selectedCity, setSelectedCity] = useState<string>('');
@@ -128,6 +129,12 @@ const Diagnostic = () => {
             </div>
             
             <WaterQualityCard city={selectedCity || "Paris"} />
+
+            <AffiliateProductPick
+              category="filtration"
+              problemContext={searchParams.get('probleme') ?? undefined}
+              className="px-0"
+            />
           </div>
         </section>
       </div>

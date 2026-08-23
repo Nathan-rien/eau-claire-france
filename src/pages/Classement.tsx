@@ -19,7 +19,9 @@ import { useWaterCompositions } from '@/hooks/useWaterCompositions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { seoData } from '@/utils/seoData';
 import { useRegion } from '@/contexts/RegionContext';
+import { Link } from '@/components/LocalizedLink';
 import BrandLinksSection from '@/components/BrandLinksSection';
+import AffiliateComparisonTable from '@/components/affiliate/AffiliateComparisonTable';
 import RegionLinksSection from '@/components/RegionLinksSection';
 
 const FAVORITES_KEY = 'ranking-water-favorites';
@@ -399,6 +401,19 @@ const Classement = () => {
               profile={profile}
             />
           </div>
+        </section>
+        <section className="container mx-auto px-4 py-12 border-t border-border">
+          <AffiliateComparisonTable
+            category="filtration"
+            title="Filtrer plutôt que comparer les eaux en bouteille ?"
+            intro="Si votre objectif est de réduire le chlore, le calcaire ou certains contaminants, la filtration à domicile peut remplacer l'achat de bouteilles. Voici ce que chaque solution traite réellement."
+          />
+          <Link
+            to="/comparatif-filtres-eau"
+            className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-blue-700 hover:underline"
+          >
+            Comparatif complet des filtres à eau
+          </Link>
         </section>
         <div className="container mx-auto px-4">
           <BrandLinksSection />

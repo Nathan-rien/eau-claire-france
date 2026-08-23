@@ -190,6 +190,22 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://infoeau.fr/comparatif-filtres-eau</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/comparatif-filtres-eau" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/comparatif-filtres-eau" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/comparatif-filtres-eau" />
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/comparatif-filtres-eau</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/comparatif-filtres-eau" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/comparatif-filtres-eau" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/comparatif-filtres-eau" />
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://infoeau.fr/durete-eau-france</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
