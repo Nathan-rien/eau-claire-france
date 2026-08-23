@@ -1,4 +1,4 @@
-import { Check, X, AlertTriangle, ExternalLink } from 'lucide-react';
+import { ArrowRight, Check, X, AlertTriangle, ExternalLink } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -154,7 +154,7 @@ export default function AffiliateProductPick({
             className="inline-flex items-center gap-1 text-sm font-medium text-blue-700 hover:underline"
           >
             {L.compare}
-            <ExternalLink className="w-4 h-4 rotate-0" />
+            <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </div>

@@ -217,7 +217,10 @@ export function getProductPicks(
   };
 
   return TIER_ORDER.map((tier) => {
-    const inTier = pool.filter((p) => p.tier === tier).sort((a, b) => score(a) - score(b));
+    const inTier = pool
+      .filter((p) => p.tier === tier)
+      // À score de pertinence égal, on privilégie la couverture la plus large.
+      .sort((a, b) => score(a) - score(b) || b.treats.length - a.treats.length);
     return inTier[0];
   }).filter((p): p is AffiliateProduct => Boolean(p));
 }
