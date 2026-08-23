@@ -30,7 +30,8 @@ const NewsTicker = () => {
     const eligible = SITE_ALERTS.filter(
       (a) =>
         (!a.displayUntil || new Date(a.displayUntil).getTime() >= now) &&
-        !dismissedIds.has(a.id),
+        // Non-dismissible alerts ignore any previously stored dismissal.
+        (a.dismissible === false || !dismissedIds.has(a.id)),
     );
     if (eligible.length === 0) return null;
     return eligible.sort(
@@ -39,6 +40,8 @@ const NewsTicker = () => {
   }, [dismissedIds]);
 
   if (!alert) return null;
+
+  const isDismissible = alert.dismissible !== false;
 
   const handleDismiss = (e: React.MouseEvent) => {
     e.preventDefault();
