@@ -44,6 +44,7 @@ export const INTERNATIONAL_PATHS: string[] = [
   '/guide/nitrates-eau',
   '/guide/plomb-eau',
   '/comparatif-carafes',
+  '/comparatif-filtres-eau',
   '/guide/quel-filtre-eau',
   '/bouteille-ou-filtration',
   '/calculateur-hydratation',

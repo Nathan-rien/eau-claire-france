@@ -9,6 +9,7 @@ import {
   type ProductTier,
 } from '@/config/affiliateProducts';
 import AffiliateDisclosure from './AffiliateDisclosure';
+import { Link } from '@/components/LocalizedLink';
 
 interface Props {
   category: ProductCategory;
@@ -32,6 +33,7 @@ const LABELS = {
     annual: 'Coût annuel',
     cta: 'Voir sur Amazon',
     reviews: 'avis',
+    compare: 'Voir le comparatif complet des filtres à eau',
   },
   en: {
     title: 'Our recommendations for every budget',
@@ -46,6 +48,7 @@ const LABELS = {
     annual: 'Annual cost',
     cta: 'View on Amazon',
     reviews: 'reviews',
+    compare: 'See the full water filter comparison',
   },
 };
 
@@ -143,6 +146,16 @@ export default function AffiliateProductPick({
               )}
             </div>
           ))}
+        </div>
+
+        <div className="mt-8">
+          <Link
+            to="/comparatif-filtres-eau"
+            className="inline-flex items-center gap-1 text-sm font-medium text-blue-700 hover:underline"
+          >
+            {L.compare}
+            <ExternalLink className="w-4 h-4 rotate-0" />
+          </Link>
         </div>
       </div>
     </section>

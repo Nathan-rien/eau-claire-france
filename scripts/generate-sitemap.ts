@@ -65,6 +65,7 @@ const staticEntries: SitemapEntry[] = [
   { path: "/traiter-eau-robinet", changefreq: "monthly", priority: "0.85" },
   { path: "/bouteille-ou-filtration", changefreq: "monthly", priority: "0.8" },
   { path: "/comparatif-carafes", changefreq: "monthly", priority: "0.8" },
+  { path: "/comparatif-filtres-eau", changefreq: "monthly", priority: "0.85" },
   { path: "/durete-eau-france", changefreq: "monthly", priority: "0.7" },
   // Eaux minérales par région d'origine (contenu franco-français, hors /en)
   { path: "/eaux-minerales-alpes", changefreq: "monthly", priority: "0.6" },
