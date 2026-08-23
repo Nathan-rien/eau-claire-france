@@ -19,6 +19,7 @@ import { useWaterCompositions } from '@/hooks/useWaterCompositions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { seoData } from '@/utils/seoData';
 import { useRegion } from '@/contexts/RegionContext';
+import { Link } from '@/components/LocalizedLink';
 import BrandLinksSection from '@/components/BrandLinksSection';
 import AffiliateComparisonTable from '@/components/affiliate/AffiliateComparisonTable';
 import RegionLinksSection from '@/components/RegionLinksSection';
