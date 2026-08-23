@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/accordion";
 import { ArrowRight, Droplets, Info, ShieldAlert, Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import AffiliateProductPick from "@/components/affiliate/AffiliateProductPick";
 
 const CANONICAL = "/guide/nitrates-eau";
 const PREFIX = "sat.nitrates";
@@ -223,6 +224,9 @@ export default function GuideNitratesEau() {
             <p className="text-muted-foreground leading-relaxed">{t(`${PREFIX}.limits.p3`)}</p>
           </div>
         </section>
+
+        {/* RECOMMANDATIONS PRODUITS (liens affiliés) */}
+        <AffiliateProductPick category="filtration" problemContext="nitrates" />
 
         {/* FAQ */}
         <section className="px-4 py-12 md:py-16">

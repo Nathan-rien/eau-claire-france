@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/accordion";
 import { ArrowRight, Droplets, Info, ShieldAlert, Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import AffiliateProductPick from "@/components/affiliate/AffiliateProductPick";
 
 const CANONICAL = "/guide/eau-calcaire";
 const TODAY = new Date().toISOString().slice(0, 10);
@@ -204,6 +205,9 @@ export default function GuideEauCalcaire() {
             <p className="text-muted-foreground leading-relaxed">{t("sat.calcaire.limits.p3")}</p>
           </div>
         </section>
+
+        {/* RECOMMANDATIONS PRODUITS (liens affiliés) */}
+        <AffiliateProductPick category="filtration" problemContext="calcaire" />
 
         {/* FAQ */}
         <section className="px-4 py-12 md:py-16 bg-muted/30 border-y border-border">

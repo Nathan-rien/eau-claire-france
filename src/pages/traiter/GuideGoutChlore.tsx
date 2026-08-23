@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/accordion";
 import { ArrowRight, Droplets, Info, ShieldAlert, Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import AffiliateProductPick from "@/components/affiliate/AffiliateProductPick";
 
 const CANONICAL = "/guide/gout-chlore";
 const TODAY = new Date().toISOString().slice(0, 10);
@@ -202,6 +203,9 @@ export default function GuideGoutChlore() {
             <p className="text-muted-foreground leading-relaxed">{t("sat.chlore.limits.p3")}</p>
           </div>
         </section>
+
+        {/* RECOMMANDATIONS PRODUITS (liens affiliés) */}
+        <AffiliateProductPick category="filtration" problemContext="chlore" />
 
         {/* FAQ */}
         <section className="px-4 py-12 md:py-16 bg-muted/30 border-y border-border">
