@@ -72,6 +72,7 @@ const QualiteEauCommune = React.lazy(() => import("./pages/QualiteEauCommune"));
 const GuideEauxMagnesium = React.lazy(() => import("./pages/GuideEauxMagnesium"));
 const GuideMaCommune = React.lazy(() => import("./pages/GuideMaCommune"));
 const AlerteEauVendee = React.lazy(() => import("./pages/actualites/AlerteEauVendee"));
+const AlerteUraniumSavoie = React.lazy(() => import("./pages/actualites/AlerteUraniumSavoie"));
 const TraiterEauRobinet = React.lazy(() => import("./pages/TraiterEauRobinet"));
 const GuideEauCalcaire = React.lazy(() => import("./pages/traiter/GuideEauCalcaire"));
 const GuideGoutChlore = React.lazy(() => import("./pages/traiter/GuideGoutChlore"));
@@ -148,6 +149,7 @@ const appRoutes = (p: string) => (
                 <Route path={`${p}/guide/eaux-riches-magnesium`} element={<GuideEauxMagnesium />} />
                 <Route path={`${p}/guide/ma-commune`} element={<GuideMaCommune />} />
                 <Route path={`${p}/actualites/pollution-manganese-vendee-juillet-2026`} element={<AlerteEauVendee />} />
+                <Route path={`${p}/actualites/uranium-eau-robinet-savoie-maurienne-aout-2026`} element={<AlerteUraniumSavoie />} />
                 <Route path={`${p}/traiter-eau-robinet`} element={<TraiterEauRobinet />} />
                 <Route path={`${p}/guide/eau-calcaire`} element={<GuideEauCalcaire />} />
                 <Route path={`${p}/guide/gout-chlore`} element={<GuideGoutChlore />} />

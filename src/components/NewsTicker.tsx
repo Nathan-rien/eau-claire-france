@@ -30,7 +30,8 @@ const NewsTicker = () => {
     const eligible = SITE_ALERTS.filter(
       (a) =>
         (!a.displayUntil || new Date(a.displayUntil).getTime() >= now) &&
-        !dismissedIds.has(a.id),
+        // Non-dismissible alerts ignore any previously stored dismissal.
+        (a.dismissible === false || !dismissedIds.has(a.id)),
     );
     if (eligible.length === 0) return null;
     return eligible.sort(
@@ -39,6 +40,8 @@ const NewsTicker = () => {
   }, [dismissedIds]);
 
   if (!alert) return null;
+
+  const isDismissible = alert.dismissible !== false;
 
   const handleDismiss = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -87,14 +90,16 @@ const NewsTicker = () => {
         </Link>
 
         {/* Close button */}
-        <button
-          type="button"
-          onClick={handleDismiss}
-          className="flex items-center justify-center px-3 shrink-0 border-l border-white/10 h-full hover:bg-white/10 transition-colors"
-          aria-label={t('ticker.close')}
-        >
-          <X className="h-4 w-4" aria-hidden="true" />
-        </button>
+        {isDismissible && (
+          <button
+            type="button"
+            onClick={handleDismiss}
+            className="flex items-center justify-center px-3 shrink-0 border-l border-white/10 h-full hover:bg-white/10 transition-colors"
+            aria-label={t('ticker.close')}
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        )}
       </div>
 
       <style>{`
