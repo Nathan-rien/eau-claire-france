@@ -1273,8 +1273,9 @@ export const translations = {
     'article.keyword.quality': "qualité de l'eau",
 
     // Guide Eaux Magnésium
-    'mg.seo.title': 'Les meilleures eaux riches en magnésium — Comparatif 2026',
-    'mg.seo.description': "Hépar, Rozana, Contrex, Badoit… Comparez les eaux les plus riches en magnésium (mg/L), leurs bienfaits contre la fatigue et comment les consommer sans risque.",
+    'mg.seo.title': 'Eaux riches en magnésium : classement 2026 (Rozana, Hépar…)',
+    'mg.seo.description': '10 eaux classées par teneur en magnésium, du plus fort (Rozana 160mg/L) au plus faible. Utile contre fatigue, stress ou crampes : comparatif et conseils.',
+
     'mg.breadcrumb.guides': 'Guides',
     'mg.breadcrumb.current': 'Eaux riches en magnésium',
     'mg.tag': 'Guide santé · Minéraux',
@@ -3576,8 +3577,9 @@ export const translations = {
     'article.keyword.quality': 'water quality',
 
     // Guide Magnesium-Rich Waters
-    'mg.seo.title': 'The best magnesium-rich waters — 2026 comparison',
-    'mg.seo.description': 'Hépar, Rozana, Contrex, Badoit… Compare the most magnesium-rich waters (mg/L), their benefits against fatigue and how to consume them safely.',
+    'mg.seo.title': 'Magnesium-rich waters: 2026 ranking (Rozana, Hépar…)',
+    'mg.seo.description': '10 waters ranked by magnesium content, from the strongest (Rozana 160mg/L) to the lowest. Helpful for fatigue, stress or cramps: full comparison and advice.',
+
     'mg.breadcrumb.guides': 'Guides',
     'mg.breadcrumb.current': 'Magnesium-rich waters',
     'mg.tag': 'Health guide · Minerals',

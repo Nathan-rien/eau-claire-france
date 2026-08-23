@@ -307,8 +307,9 @@ export const seoData = {
   // === Pages prix ===
 
   prixEaux: {
-    title: "Prix des eaux en bouteille 2026 — Comparatif par marque et supermarché | InfoEau",
-    description: "Comparez les prix de 20+ marques d'eau en bouteille dans 24 supermarchés français. Évolution des prix, meilleur rapport qualité-prix et alertes promotions.",
+    title: "Prix eau bouteille : le moins cher par supermarché | InfoEau",
+    description: "16 000+ prix relevés en temps réel chez Leclerc, Carrefour, Auchan... Trouvez l'eau en bouteille la moins chère près de chez vous, comparée au litre.",
+
 
     keywords: "prix eau bouteille, comparaison prix eau en bouteille, eau la moins chere, prix cristaline leclerc, prix eau mont roucous leclerc, comparateur eau",
     canonical: "/prix-eaux",
