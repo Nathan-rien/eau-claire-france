@@ -18,6 +18,7 @@ import { getWaterRegion } from '@/config/waterRegions';
 import { useWaterCompositions } from '@/hooks/useWaterCompositions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { seoData } from '@/utils/seoData';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useRegion } from '@/contexts/RegionContext';
 import { Link } from '@/components/LocalizedLink';
 import BrandLinksSection from '@/components/BrandLinksSection';
@@ -43,6 +44,7 @@ function countActiveFilters(f: RankingFilterState): number {
 }
 
 const Classement = () => {
+  const { t } = useLanguage();
   const [profile, setProfile] = useState<Profile>("general");
   const [filters, setFilters] = useState<RankingFilterState>(DEFAULT_FILTERS);
   const [search, setSearch] = useState('');
@@ -414,6 +416,22 @@ const Classement = () => {
           >
             Comparatif complet des filtres à eau
           </Link>
+
+          <aside className="rounded-xl border border-blue-200 bg-blue-50 p-5 mt-8">
+            <div className="flex items-start gap-3">
+              <Info className="h-5 w-5 text-blue-700 mt-0.5 shrink-0" />
+              <div>
+                <p className="font-semibold text-blue-900 mb-1">{t('ranking.treat.title')}</p>
+                <p className="text-sm text-blue-900/90 mb-2">{t('ranking.treat.description')}</p>
+                <Link
+                  to="/traiter-eau-robinet"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-blue-700 hover:underline"
+                >
+                  {t('ranking.treat.cta')}
+                </Link>
+              </div>
+            </div>
+          </aside>
         </section>
         <div className="container mx-auto px-4">
           <BrandLinksSection />

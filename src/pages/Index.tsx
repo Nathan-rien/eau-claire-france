@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, MapPin, Droplets, AlertTriangle, Leaf, Award, Zap, ClipboardList, Globe, Shield, Heart, Baby, Dumbbell, FlaskConical, Bell, Activity, Skull, GlassWater } from 'lucide-react';
+import { Search, MapPin, Droplets, AlertTriangle, Leaf, Award, Zap, ClipboardList, Globe, Shield, Heart, Baby, Dumbbell, FlaskConical, Bell, Activity, Skull, GlassWater, Filter } from 'lucide-react';
 import { Link } from '@/components/LocalizedLink';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -180,6 +180,7 @@ const Index = () => {
                 { to: '/carte-parcours-robinet', icon: Search, color: 'text-green-600', bg: 'bg-green-100', title: t('home.maps.card5.title'), desc: t('home.maps.card5.desc') },
                 { to: '/sources-eau', icon: Leaf, color: 'text-emerald-600', bg: 'bg-emerald-100', title: t('home.maps.card6.title'), desc: t('home.maps.card6.desc') },
                 { to: '/carte-europe', icon: Globe, color: 'text-purple-600', bg: 'bg-purple-100', title: t('home.maps.card7.title'), desc: t('home.maps.card7.desc') },
+                { to: '/traiter-eau-robinet', icon: Filter, color: 'text-blue-600', bg: 'bg-blue-100', title: t('home.maps.card8.title'), desc: t('home.maps.card8.desc') },
               ].map(({ to, icon: Icon, color, bg, title, desc }) => (
                 <Link key={to} to={to} className="group">
                   <Card className="h-full border border-border hover:border-primary/40 hover:shadow-lg transition-all duration-300 group-hover:scale-[1.02]">

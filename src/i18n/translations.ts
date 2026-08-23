@@ -191,6 +191,9 @@ export const translations = {
     'ranking.region.ouest': 'Ouest',
     'ranking.region.autres': 'Autres',
     'ranking.region.hors-france': 'Hors France',
+    'ranking.treat.title': 'Votre eau du robinet a un problème de goût, de calcaire ou d\'un autre contaminant ?',
+    'ranking.treat.description': 'Comparez les solutions concrètes (filtration, adoucissement, etc.) pour améliorer l\'eau de votre robinet.',
+    'ranking.treat.cta': 'Découvrir comment traiter l\'eau du robinet',
 
     // Prices page
     'prices.title': 'Prix des eaux en bouteille',
@@ -240,6 +243,9 @@ export const translations = {
     'prices.pricePerL': 'Prix €/L',
     'prices.updated': 'Mise à jour',
     'prices.ago': 'il y a',
+    'prices.treat.title': 'Avant de comparer les prix des eaux en bouteille, avez-vous pensé à filtrer votre eau du robinet ?',
+    'prices.treat.description': 'Une carafe ou un filtre sous évier peut coûter moins cher au litre que des packs d\'eau en bouteille.',
+    'prices.treat.cta': 'Voir les solutions pour traiter l\'eau du robinet',
 
     // Parcours Eau
     'journey.heroTag': 'Infographie interactive immersive',
@@ -1424,6 +1430,8 @@ export const translations = {
     'home.maps.card6.desc': 'Carte des sources d\'eau en France',
     'home.maps.card7.title': 'Carte Europe',
     'home.maps.card7.desc': 'Qualité de l\'eau potable en Europe',
+    'home.maps.card8.title': 'Traiter l\'eau du robinet',
+    'home.maps.card8.desc': 'Calcaire, chlore, nitrates, plomb : solutions et comparatifs',
     'home.choose.title': 'Bien choisir son eau en bouteille',
     'home.choose.p1': 'Chaque eau en bouteille a une <strong>composition minérale unique</strong>. Calcium, magnésium, bicarbonates… choisir la bonne eau, c\'est adapter sa consommation à ses besoins : <strong>bébés</strong>, <strong>sportifs</strong>, <strong>personnes âgées</strong>.',
     'home.choose.p2': 'Le <strong>pH</strong> et le <strong>résidu sec</strong> sont des indicateurs clés. Une eau faiblement minéralisée convient au quotidien, tandis qu\'une eau riche en magnésium aide à combattre la fatigue.',
@@ -2495,6 +2503,9 @@ export const translations = {
     'ranking.region.ouest': 'West',
     'ranking.region.autres': 'Others',
     'ranking.region.hors-france': 'Outside France',
+    'ranking.treat.title': 'Does your tap water have a taste issue, limescale or another contaminant?',
+    'ranking.treat.description': 'Compare practical solutions (filtration, softening, etc.) to improve your tap water.',
+    'ranking.treat.cta': 'Discover how to treat tap water',
 
     // Prices page
     'prices.title': 'Bottled water prices',
@@ -2544,6 +2555,9 @@ export const translations = {
     'prices.pricePerL': 'Price €/L',
     'prices.updated': 'Updated',
     'prices.ago': 'ago',
+    'prices.treat.title': 'Before comparing bottled water prices, have you thought about filtering your tap water?',
+    'prices.treat.description': 'A pitcher or under-sink filter can cost less per litre than packs of bottled water.',
+    'prices.treat.cta': 'See solutions to treat tap water',
 
     // Parcours Eau
     'journey.heroTag': 'Immersive interactive infographic',
@@ -3728,6 +3742,8 @@ export const translations = {
     'home.maps.card6.desc': 'Map of water sources in France',
     'home.maps.card7.title': 'Europe map',
     'home.maps.card7.desc': 'Drinking water quality in Europe',
+    'home.maps.card8.title': 'Treat tap water',
+    'home.maps.card8.desc': 'Hardness, chlorine, nitrates, lead: solutions and comparisons',
     'home.choose.title': 'Choosing your bottled water wisely',
     'home.choose.p1': 'Every bottled water has a <strong>unique mineral composition</strong>. Calcium, magnesium, bicarbonates… choosing the right water means matching it to your needs: <strong>babies</strong>, <strong>athletes</strong>, <strong>seniors</strong>.',
     'home.choose.p2': '<strong>pH</strong> and <strong>dry residue</strong> are key indicators. Lightly mineralized water suits daily use, while magnesium-rich water helps fight fatigue.',
