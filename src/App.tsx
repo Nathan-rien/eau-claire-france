@@ -72,6 +72,7 @@ const QualiteEauCommune = React.lazy(() => import("./pages/QualiteEauCommune"));
 const GuideEauxMagnesium = React.lazy(() => import("./pages/GuideEauxMagnesium"));
 const GuideMaCommune = React.lazy(() => import("./pages/GuideMaCommune"));
 const AlerteEauVendee = React.lazy(() => import("./pages/actualites/AlerteEauVendee"));
+const AlerteUraniumSavoie = React.lazy(() => import("./pages/actualites/AlerteUraniumSavoie"));
 const TraiterEauRobinet = React.lazy(() => import("./pages/TraiterEauRobinet"));
 const GuideEauCalcaire = React.lazy(() => import("./pages/traiter/GuideEauCalcaire"));
 const GuideGoutChlore = React.lazy(() => import("./pages/traiter/GuideGoutChlore"));
