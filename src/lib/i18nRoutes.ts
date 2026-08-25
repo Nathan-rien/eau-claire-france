@@ -54,6 +54,7 @@ export const INTERNATIONAL_PATHS: string[] = [
   '/polluants-europe',
   '/diagnostic-europe',
   '/alertes-europe',
+  '/prix-eaux',
   '/prix-eaux-europe',
   '/composition-europe',
   '/parcours-eau',
