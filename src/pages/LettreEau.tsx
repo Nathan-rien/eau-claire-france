@@ -169,6 +169,15 @@ export default function LettreEau() {
           </section>
         )}
 
+        {/* Chapeau éditorial — contenu unique propre à la page */}
+        <section className="px-4 pt-10 md:pt-14">
+          <div className="container mx-auto max-w-3xl space-y-4 text-base md:text-lg text-muted-foreground leading-relaxed">
+            <p>{t('lettre.editorial.p1')}</p>
+            <p>{t('lettre.editorial.p2')}</p>
+            <p>{t('lettre.editorial.p3')}</p>
+          </div>
+        </section>
+
         {/* Filtres */}
         <section className="px-4 pt-10 md:pt-14">
           <div className="container mx-auto max-w-6xl">
