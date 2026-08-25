@@ -796,6 +796,16 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://infoeau.fr/lettre-de-leau/alerte-secheresse-france-defi-eau-potable</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+    <image:image>
+      <image:loc>https://xblogttmomuogdhmaztf.supabase.co/storage/v1/object/public/blog-images/2026-08-24/alerte-secheresse-france-defi-eau-potable-1787558413351.png</image:loc>
+      <image:title>Alerte Sécheresse : La France Face au Défi de l&apos;Eau Potable</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://infoeau.fr/lettre-de-leau/pfas-eau-france-recherche-alerte</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>monthly</changefreq>
