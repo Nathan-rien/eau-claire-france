@@ -163,24 +163,14 @@ function buildRss(articles: BlogArticle[]): string {
 (async () => {
   const articles = await fetchBlogArticles();
 
-  // Commune SEO pages
-  const communeEntries: SitemapEntry[] = FRENCH_CITIES.filter((c) => c.indexable !== false).map((c) => ({
-    path: `/qualite-eau/${communeSlug(c.name, c.postcode)}`,
-    changefreq: "monthly",
-    priority: "0.7",
-  }));
+  // Commune SEO pages (liste partagée avec le prerender)
+  const communes = communeEntries();
 
-  // Pages marque : exactement les marques ayant des prix (même liste que le noindex)
-  const brandEntries: SitemapEntry[] = PRICED_BRAND_SLUGS.map((slug) => ({
-    path: `/marque/${slug}`,
-    changefreq: "weekly",
-    priority: "0.6",
-  }));
-
-  const allEntries = [...staticEntries, ...brandEntries, ...communeEntries];
+  const allEntries = [...staticEntries, ...brandEntries, ...communes];
   const sitemap = buildSitemap(allEntries, articles);
   writeFileSync(resolve("public/sitemap.xml"), sitemap);
-  console.log(`[sitemap] ${staticEntries.length} static + ${brandEntries.length} brands + ${communeEntries.length} communes + ${articles.length} blog entries`);
+  console.log(`[sitemap] ${staticEntries.length} static + ${brandEntries.length} brands + ${communes.length} communes + ${articles.length} blog entries`);
+
 
   mkdirSync(resolve("public/lettre-de-leau"), { recursive: true });
   writeFileSync(resolve("public/lettre-de-leau/rss.xml"), buildRss(articles));
