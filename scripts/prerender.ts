@@ -171,11 +171,22 @@ async function launchBrowser(): Promise<Browser> {
     return await chromium.launch({ headless: true });
   } catch (e) {
     const executablePath = resolveChromiumPath();
-    if (!executablePath) throw e;
-    console.log(`[prerender] using fallback chromium at ${executablePath}`);
-    return await chromium.launch({ headless: true, executablePath });
+    if (executablePath) {
+      console.log(`[prerender] using fallback chromium at ${executablePath}`);
+      return await chromium.launch({ headless: true, executablePath });
+    }
+    // No browser in the image (typical CI/prod build): install on the fly once.
+    console.log("[prerender] no chromium found — running `playwright install chromium`…");
+    const { execSync } = await import("child_process");
+    try {
+      execSync("npx --yes playwright install --with-deps chromium", { stdio: "inherit", timeout: 10 * 60_000 });
+    } catch {
+      execSync("npx --yes playwright install chromium", { stdio: "inherit", timeout: 10 * 60_000 });
+    }
+    return await chromium.launch({ headless: true });
   }
 }
+
 
 
 async function main() {
