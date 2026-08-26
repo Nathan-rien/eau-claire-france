@@ -14,7 +14,7 @@
 import { createServer, type Server } from "http";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, statSync } from "fs";
 import { extname, join, resolve } from "path";
-import { chromium, type Browser } from "playwright";
+import { chromium, type Browser, type Page } from "playwright";
 import { staticEntries, brandEntries, communeEntries } from "./routes";
 import { INTERNATIONAL_PATHS } from "../src/lib/i18nRoutes";
 
@@ -114,7 +114,7 @@ function canonicalForRoute(route: string): string {
   return path === "/" ? `${SITE_URL}/` : `${SITE_URL}${path}`;
 }
 
-async function normalizeHead(page: Awaited<ReturnType<Browser["newPage"]>>) {
+async function normalizeHead(page: Page) {
   await page.evaluate(() => {
     const keepLastByAttribute = (selector: string, attribute: string) => {
       const seen = new Set<string>();
