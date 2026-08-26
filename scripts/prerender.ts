@@ -12,7 +12,7 @@
  * Never fatal: any failure logs a warning and exits 0 so the build survives.
  */
 import { createServer, type Server } from "http";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, statSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, statSync } from "fs";
 import { extname, join, resolve } from "path";
 import { chromium, type Browser } from "playwright";
 import { staticEntries, brandEntries, communeEntries } from "./routes";
@@ -205,7 +205,7 @@ async function main() {
 
   try {
     server = await startServer();
-    browser = await chromium.launch({ headless: true });
+    browser = await launchBrowser();
     console.log(`[prerender] serving dist on ${ORIGIN} — ${routes.length} routes, concurrency ${CONCURRENCY}`);
 
     const queue = [...routes];
