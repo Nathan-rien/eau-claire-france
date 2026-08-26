@@ -14,7 +14,7 @@
 import { createServer, type Server } from "http";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, statSync } from "fs";
 import { extname, join, resolve } from "path";
-import { chromium, type Browser } from "playwright";
+import { chromium, type Browser, type Page } from "playwright";
 import { staticEntries, brandEntries, communeEntries } from "./routes";
 import { INTERNATIONAL_PATHS } from "../src/lib/i18nRoutes";
 
@@ -24,6 +24,8 @@ const ORIGIN = `http://127.0.0.1:${PORT}`;
 const NAV_TIMEOUT = 20_000;
 const RENDER_TIMEOUT = 10_000;
 const CONCURRENCY = Number(process.env.PRERENDER_CONCURRENCY || 3);
+const SITE_URL = "https://infoeau.fr";
+const FALLBACK_TITLE = "InfoEau — Qualité de l'eau du robinet et prix des eaux en bouteille en France";
 
 // Caps for dynamic route families (first pass stays small on purpose).
 const MAX_COMMUNES = Number(process.env.PRERENDER_MAX_COMMUNES || 50);
@@ -107,7 +109,37 @@ function outFile(route: string): string {
   return clean === "" ? join(DIST, "index.html") : join(DIST, clean, "index.html");
 }
 
-async function renderRoute(browser: Browser, route: string): Promise<{ route: string; jsonLd: boolean; bytes: number }> {
+function canonicalForRoute(route: string): string {
+  const path = route.split("#")[0].split("?")[0].toLowerCase().replace(/\/+$/g, "") || "/";
+  return path === "/" ? `${SITE_URL}/` : `${SITE_URL}${path}`;
+}
+
+async function normalizeHead(page: Page) {
+  await page.evaluate(`(() => {
+    const keepLastByAttribute = (selector, attribute) => {
+      const seen = new Set();
+      const nodes = Array.from(document.head.querySelectorAll(selector)).reverse();
+      for (const node of nodes) {
+        const key = node.getAttribute(attribute);
+        if (!key) continue;
+        if (seen.has(key)) node.remove();
+        else seen.add(key);
+      }
+    };
+
+    keepLastByAttribute(
+      'meta[name="description"],meta[name="keywords"],meta[name="robots"],meta[name="author"],meta[name="language"],meta[name="twitter:card"],meta[name="twitter:url"],meta[name="twitter:title"],meta[name="twitter:description"],meta[name="twitter:image"]',
+      'name'
+    );
+    keepLastByAttribute(
+      'meta[property="og:type"],meta[property="og:url"],meta[property="og:title"],meta[property="og:description"],meta[property="og:image"],meta[property="og:site_name"],meta[property="og:locale"]',
+      'property'
+    );
+    keepLastByAttribute('link[rel="canonical"]', 'rel');
+  })()`);
+}
+
+async function renderRoute(browser: Browser, route: string): Promise<{ route: string; jsonLd: boolean; headReady: boolean; bytes: number }> {
   const page = await browser.newPage({ viewport: { width: 1280, height: 1200 } });
   try {
     page.setDefaultTimeout(RENDER_TIMEOUT);
@@ -126,17 +158,35 @@ async function renderRoute(browser: Browser, route: string): Promise<{ route: st
       { timeout: RENDER_TIMEOUT },
     ).catch(() => { /* keep whatever rendered */ });
 
+    // Helmet updates the head after React has mounted. Waiting only for body
+    // content can capture the generic SPA fallback title/meta on deep routes.
+    const expectedCanonical = canonicalForRoute(route);
+    const headReady = await page
+      .waitForFunction(
+        ({ canonical, fallbackTitle }) => {
+          const canonicalOk = !!document.head.querySelector(`link[rel="canonical"][href="${canonical}"]`);
+          const title = (document.title || "").trim();
+          return canonicalOk && (canonical === "https://infoeau.fr/" || title !== fallbackTitle);
+        },
+        { canonical: expectedCanonical, fallbackTitle: FALLBACK_TITLE },
+        { timeout: RENDER_TIMEOUT },
+      )
+      .then(() => true)
+      .catch(() => false);
+
     // JSON-LD injected by react-helmet-async (best effort).
     const jsonLd = await page
       .waitForSelector('head script[type="application/ld+json"]', { state: "attached", timeout: 5_000 })
       .then(() => true)
       .catch(() => false);
 
+    await normalizeHead(page);
+
     const html = await page.content();
     const file = outFile(route);
     mkdirSync(join(file, ".."), { recursive: true });
     writeFileSync(file, html);
-    return { route, jsonLd, bytes: html.length };
+    return { route, jsonLd, headReady, bytes: html.length };
   } finally {
     await page.close().catch(() => {});
   }
@@ -229,7 +279,7 @@ async function main() {
           ok += 1;
           if (r.jsonLd) withJsonLd += 1;
           console.log(
-            `[prerender] ok   ${route}  (${Math.round(r.bytes / 1024)} kB${r.jsonLd ? ", JSON-LD" : ", no JSON-LD"})`,
+            `[prerender] ok   ${route}  (${Math.round(r.bytes / 1024)} kB${r.jsonLd ? ", JSON-LD" : ", no JSON-LD"}${r.headReady ? ", head" : ", head fallback"})`,
           );
         } catch (e) {
           const error = (e as Error).message.split("\n")[0];
