@@ -115,9 +115,9 @@ function canonicalForRoute(route: string): string {
 }
 
 async function normalizeHead(page: Page) {
-  await page.evaluate(() => {
-    const keepLastByAttribute = (selector: string, attribute: string) => {
-      const seen = new Set<string>();
+  await page.evaluate(`(() => {
+    const keepLastByAttribute = (selector, attribute) => {
+      const seen = new Set();
       const nodes = Array.from(document.head.querySelectorAll(selector)).reverse();
       for (const node of nodes) {
         const key = node.getAttribute(attribute);
@@ -129,14 +129,14 @@ async function normalizeHead(page: Page) {
 
     keepLastByAttribute(
       'meta[name="description"],meta[name="keywords"],meta[name="robots"],meta[name="author"],meta[name="language"],meta[name="twitter:card"],meta[name="twitter:url"],meta[name="twitter:title"],meta[name="twitter:description"],meta[name="twitter:image"]',
-      "name",
+      'name'
     );
     keepLastByAttribute(
       'meta[property="og:type"],meta[property="og:url"],meta[property="og:title"],meta[property="og:description"],meta[property="og:image"],meta[property="og:site_name"],meta[property="og:locale"]',
-      "property",
+      'property'
     );
-    keepLastByAttribute('link[rel="canonical"]', "rel");
-  });
+    keepLastByAttribute('link[rel="canonical"]', 'rel');
+  })()`);
 }
 
 async function renderRoute(browser: Browser, route: string): Promise<{ route: string; jsonLd: boolean; headReady: boolean; bytes: number }> {
