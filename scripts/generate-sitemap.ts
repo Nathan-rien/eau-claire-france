@@ -8,14 +8,9 @@
  */
 import { writeFileSync, mkdirSync } from "fs";
 import { resolve } from "path";
-import { FRENCH_CITIES } from "../src/data/frenchCities";
-import { PRICED_BRAND_SLUGS } from "../src/config/pricedBrands";
 import { INTERNATIONAL_PATHS } from "../src/lib/i18nRoutes";
+import { staticEntries, brandEntries, communeEntries, type SitemapEntry } from "./routes";
 
-
-const stripAccents = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-const communeSlug = (name: string, postcode: string) =>
-  `${stripAccents(name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${postcode}`;
 
 const BASE_URL = "https://infoeau.fr";
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "https://xblogttmomuogdhmaztf.supabase.co";
@@ -23,14 +18,6 @@ const SUPABASE_KEY =
   process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibG9ndHRtb211b2dkaG1henRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0MDYwNTgsImV4cCI6MjA2NTk4MjA1OH0._CAQGXwo2ZJYmwvvstGJ2bnC65vT9fHcTyuXwgNalP8";
 
-interface SitemapEntry {
-  path: string;
-  lastmod?: string;
-  changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
-  priority?: string;
-  imageLoc?: string;
-  imageTitle?: string;
-}
 
 
 const staticEntries: SitemapEntry[] = [
