@@ -182,11 +182,15 @@ async function renderRoute(browser: Browser, route: string): Promise<{ route: st
 
     await normalizeHead(page);
 
-    const html = await page.content();
+    const rawHtml = await page.content();
+    // The local prerender origin must never leak into the published HTML
+    // (inline styles, data-* attributes, srcset…): rewrite it to relative paths.
+    const html = rawHtml.split(ORIGIN).join("").split(`http://localhost:${PORT}`).join("");
     const file = outFile(route);
     mkdirSync(join(file, ".."), { recursive: true });
     writeFileSync(file, html);
     return { route, jsonLd, headReady, bytes: html.length };
+
   } finally {
     await page.close().catch(() => {});
   }
