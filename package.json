@@ -8,7 +8,8 @@
     "dev": "vite",
     "prebuild": "tsx scripts/generate-sitemap.ts",
     "build": "vite build",
-    "postbuild": "tsx scripts/ping-sitemap.ts || true",
+    "prerender": "tsx scripts/prerender.ts",
+    "postbuild": "tsx scripts/prerender.ts || true && tsx scripts/ping-sitemap.ts || true",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview"

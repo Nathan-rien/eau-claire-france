@@ -8,14 +8,9 @@
  */
 import { writeFileSync, mkdirSync } from "fs";
 import { resolve } from "path";
-import { FRENCH_CITIES } from "../src/data/frenchCities";
-import { PRICED_BRAND_SLUGS } from "../src/config/pricedBrands";
 import { INTERNATIONAL_PATHS } from "../src/lib/i18nRoutes";
+import { staticEntries, brandEntries, communeEntries, type SitemapEntry } from "./routes";
 
-
-const stripAccents = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-const communeSlug = (name: string, postcode: string) =>
-  `${stripAccents(name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${postcode}`;
 
 const BASE_URL = "https://infoeau.fr";
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "https://xblogttmomuogdhmaztf.supabase.co";
@@ -23,85 +18,8 @@ const SUPABASE_KEY =
   process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibG9ndHRtb211b2dkaG1henRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0MDYwNTgsImV4cCI6MjA2NTk4MjA1OH0._CAQGXwo2ZJYmwvvstGJ2bnC65vT9fHcTyuXwgNalP8";
 
-interface SitemapEntry {
-  path: string;
-  lastmod?: string;
-  changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
-  priority?: string;
-  imageLoc?: string;
-  imageTitle?: string;
-}
 
 
-const staticEntries: SitemapEntry[] = [
-  { path: "/", changefreq: "weekly", priority: "1.0", imageLoc: "/images/og-image.png", imageTitle: "InfoEau.fr - Qualité de l'eau potable en France" },
-  { path: "/carte", changefreq: "weekly", priority: "0.9" },
-  { path: "/diagnostic", changefreq: "weekly", priority: "0.9" },
-  { path: "/carte-polluants", changefreq: "weekly", priority: "0.8" },
-  { path: "/quelle-eau-boire", changefreq: "weekly", priority: "0.8" },
-  { path: "/polluants", changefreq: "monthly", priority: "0.8" },
-  { path: "/cours-eau", changefreq: "daily", priority: "0.8" },
-  { path: "/parcours-eau", changefreq: "monthly", priority: "0.7" },
-  { path: "/parcours-eau-bouteille", changefreq: "monthly", priority: "0.7" },
-  { path: "/carte-parcours-eau", changefreq: "monthly", priority: "0.7" },
-  { path: "/carte-parcours-robinet", changefreq: "monthly", priority: "0.7" },
-  { path: "/prix-eaux", changefreq: "daily", priority: "0.8" },
-  // /comparateur-prix n'existe pas comme route : retiré (soft 404 / doublon de /prix-eaux).
-  // /comparatif-bouteilles et /bouteilles redirigent vers /classement : hors sitemap.
-  { path: "/sources-eau", changefreq: "monthly", priority: "0.7" },
-  // Les pages /marque/* sont générées depuis PRICED_BRAND_SLUGS (voir plus bas).
-  { path: "/classement", changefreq: "monthly", priority: "0.7" },
-  { path: "/alertes", changefreq: "daily", priority: "0.7" },
-  // Blog index
-  { path: "/lettre-de-leau", changefreq: "weekly", priority: "0.85" },
-  // Goût de l'eau
-  { path: "/gout-eau", changefreq: "weekly", priority: "0.75" },
-  // Qualité de l'eau par commune (hub)
-  { path: "/qualite-eau", changefreq: "weekly", priority: "0.85" },
-  // Guides thématiques
- { path: "/guide/eaux-riches-magnesium", changefreq: "monthly", priority: "0.75" },
- { path: "/guide/ma-commune", changefreq: "monthly", priority: "0.85" },
-  // Cluster « traiter l'eau du robinet » (seule la page pilier est indexable)
-  { path: "/traiter-eau-robinet", changefreq: "monthly", priority: "0.85" },
-  { path: "/bouteille-ou-filtration", changefreq: "monthly", priority: "0.8" },
-  { path: "/comparatif-carafes", changefreq: "monthly", priority: "0.8" },
-  { path: "/comparatif-filtres-eau", changefreq: "monthly", priority: "0.85" },
-  { path: "/durete-eau-france", changefreq: "monthly", priority: "0.7" },
-  // Eaux minérales par région d'origine (contenu franco-français, hors /en)
-  { path: "/eaux-minerales-alpes", changefreq: "monthly", priority: "0.6" },
-  { path: "/eaux-minerales-vosges", changefreq: "monthly", priority: "0.6" },
-  { path: "/eaux-minerales-auvergne", changefreq: "monthly", priority: "0.6" },
-  { path: "/eaux-minerales-pyrenees", changefreq: "monthly", priority: "0.6" },
-  { path: "/eaux-minerales-mediterranee", changefreq: "monthly", priority: "0.6" },
-  { path: "/guide/eau-calcaire", changefreq: "monthly", priority: "0.75" },
-  { path: "/guide/gout-chlore", changefreq: "monthly", priority: "0.75" },
-  { path: "/guide/nitrates-eau", changefreq: "monthly", priority: "0.75" },
-  { path: "/guide/plomb-eau", changefreq: "monthly", priority: "0.75" },
-  { path: "/guide/quel-filtre-eau", changefreq: "monthly", priority: "0.8" },
-  { path: "/calculateur-hydratation", changefreq: "monthly", priority: "0.7" },
-  // Actualités / alertes détaillées
-  { path: "/actualites/pollution-manganese-vendee-juillet-2026", lastmod: "2026-07-09", changefreq: "monthly", priority: "0.7" },
-  // Europe
-  { path: "/carte-europe", changefreq: "weekly", priority: "0.8" },
-  { path: "/carte-polluants-europe", changefreq: "weekly", priority: "0.8" },
-  { path: "/classement-europe", changefreq: "monthly", priority: "0.7" },
-  { path: "/polluants-europe", changefreq: "monthly", priority: "0.7" },
-  { path: "/diagnostic-europe", changefreq: "weekly", priority: "0.7" },
-  { path: "/alertes-europe", changefreq: "daily", priority: "0.7" },
-  { path: "/prix-eaux-europe", changefreq: "monthly", priority: "0.7" },
-  { path: "/composition-europe", changefreq: "monthly", priority: "0.7" },
-  // Informatives
-  { path: "/sources", changefreq: "monthly", priority: "0.6" },
-  { path: "/methodologie", changefreq: "monthly", priority: "0.6" },
-  { path: "/api-publique", changefreq: "monthly", priority: "0.5" },
-  { path: "/open-data", changefreq: "monthly", priority: "0.5" },
-  { path: "/a-propos", changefreq: "monthly", priority: "0.4" },
-  { path: "/contact", changefreq: "monthly", priority: "0.4" },
-  // Légales
-  { path: "/mentions-legales", changefreq: "yearly", priority: "0.3" },
-  { path: "/rgpd", changefreq: "yearly", priority: "0.3" },
-  { path: "/accessibilite", changefreq: "yearly", priority: "0.3" },
-];
 
 interface BlogArticle {
   slug: string;
@@ -245,24 +163,14 @@ function buildRss(articles: BlogArticle[]): string {
 (async () => {
   const articles = await fetchBlogArticles();
 
-  // Commune SEO pages
-  const communeEntries: SitemapEntry[] = FRENCH_CITIES.filter((c) => c.indexable !== false).map((c) => ({
-    path: `/qualite-eau/${communeSlug(c.name, c.postcode)}`,
-    changefreq: "monthly",
-    priority: "0.7",
-  }));
+  // Commune SEO pages (liste partagée avec le prerender)
+  const communes = communeEntries();
 
-  // Pages marque : exactement les marques ayant des prix (même liste que le noindex)
-  const brandEntries: SitemapEntry[] = PRICED_BRAND_SLUGS.map((slug) => ({
-    path: `/marque/${slug}`,
-    changefreq: "weekly",
-    priority: "0.6",
-  }));
-
-  const allEntries = [...staticEntries, ...brandEntries, ...communeEntries];
+  const allEntries = [...staticEntries, ...brandEntries, ...communes];
   const sitemap = buildSitemap(allEntries, articles);
   writeFileSync(resolve("public/sitemap.xml"), sitemap);
-  console.log(`[sitemap] ${staticEntries.length} static + ${brandEntries.length} brands + ${communeEntries.length} communes + ${articles.length} blog entries`);
+  console.log(`[sitemap] ${staticEntries.length} static + ${brandEntries.length} brands + ${communes.length} communes + ${articles.length} blog entries`);
+
 
   mkdirSync(resolve("public/lettre-de-leau"), { recursive: true });
   writeFileSync(resolve("public/lettre-de-leau/rss.xml"), buildRss(articles));
