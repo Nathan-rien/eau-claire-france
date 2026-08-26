@@ -98,6 +98,17 @@
   </url>
   <url>
     <loc>https://infoeau.fr/prix-eaux</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/prix-eaux" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/prix-eaux" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/prix-eaux" />
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/prix-eaux</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/prix-eaux" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/prix-eaux" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/prix-eaux" />
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
