@@ -141,6 +141,42 @@ async function renderRoute(browser: Browser, route: string): Promise<{ route: st
     await page.close().catch(() => {});
   }
 }
+/**
+ * Resolve a Chromium binary. Playwright's own download is used by default; when
+ * the installed browser revision doesn't match the npm package (common in CI
+ * images shipping a pre-baked browsers dir), fall back to any chromium found in
+ * PLAYWRIGHT_BROWSERS_PATH. Override explicitly with PRERENDER_CHROMIUM_PATH.
+ */
+function resolveChromiumPath(): string | undefined {
+  const explicit = process.env.PRERENDER_CHROMIUM_PATH;
+  if (explicit && existsSync(explicit)) return explicit;
+  const base = process.env.PLAYWRIGHT_BROWSERS_PATH;
+  if (!base || !existsSync(base)) return undefined;
+  try {
+    const dirs = readdirSync(base).filter((d) => d.startsWith("chromium"));
+    for (const d of dirs.sort().reverse()) {
+      for (const bin of ["chrome-linux/chrome", "chrome-linux/headless_shell"]) {
+        const p = join(base, d, bin);
+        if (existsSync(p)) return p;
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+  return undefined;
+}
+
+async function launchBrowser(): Promise<Browser> {
+  try {
+    return await chromium.launch({ headless: true });
+  } catch (e) {
+    const executablePath = resolveChromiumPath();
+    if (!executablePath) throw e;
+    console.log(`[prerender] using fallback chromium at ${executablePath}`);
+    return await chromium.launch({ headless: true, executablePath });
+  }
+}
+
 
 async function main() {
   if (!existsSync(join(DIST, "index.html"))) {
