@@ -1,4 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Droplet, AlertCircle, Users, Calendar as CalendarIcon, Shield, RefreshCw, Filter, X } from "lucide-react";
 import AlertSubscriptionForm from "@/components/AlertSubscriptionForm";
