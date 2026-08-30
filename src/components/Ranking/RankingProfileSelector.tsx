@@ -29,7 +29,6 @@ export default function RankingProfileSelector({ value, onChange }: Props) {
               `}
               title={info.description}
             >
-              <span>{info.icon}</span>
               <span>{info.label}</span>
             </button>
           );
