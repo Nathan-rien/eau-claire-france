@@ -113,7 +113,28 @@ export default function Alertes() {
     );
   }
 
-  const groupedAlerts = groupAlertsByRegion(filteredAlerts);
+  const severityRank: Record<string, number> = { high: 0, medium: 1, low: 2 };
+
+  // Regroupe par région, trie les alertes (gravité puis date récente)
+  // et ordonne les régions par nombre d'alertes décroissant puis alphabétiquement.
+  const groupedAlerts = useMemo(() => {
+    const groups = groupAlertsByRegion(filteredAlerts);
+    const sortedEntries = Object.entries(groups)
+      .map(([region, regionAlerts]) => [
+        region,
+        [...regionAlerts].sort(
+          (a, b) =>
+            (severityRank[a.severity] ?? 3) - (severityRank[b.severity] ?? 3) ||
+            new Date(b.date).getTime() - new Date(a.date).getTime() ||
+            a.city.localeCompare(b.city, 'fr'),
+        ),
+      ] as const)
+      .sort(
+        (a, b) =>
+          b[1].length - a[1].length || a[0].localeCompare(b[0], 'fr'),
+      );
+    return Object.fromEntries(sortedEntries);
+  }, [filteredAlerts]);
 
   return (
     <Layout>
