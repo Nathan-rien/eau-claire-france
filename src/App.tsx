@@ -218,7 +218,7 @@ const App = () => {
               <SecurityHeaders />
             <Toaster />
             <Sonner />
-            <NewsTicker />
+            
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 {appRoutes("")}
