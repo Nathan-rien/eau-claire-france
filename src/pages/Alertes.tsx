@@ -1,4 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Droplet, AlertCircle, Users, Calendar as CalendarIcon, Shield, RefreshCw, Filter, X } from "lucide-react";
 import AlertSubscriptionForm from "@/components/AlertSubscriptionForm";
@@ -382,73 +384,82 @@ export default function Alertes() {
             </CardContent>
           </Card>
         ) : (
-          <div className="columns-1 md:columns-2 gap-8 [column-fill:balance]">
-            {Object.entries(groupedAlerts).map(([region, regionAlerts]) => (
-              <Card key={region} className="overflow-hidden mb-8 break-inside-avoid">
-
-                <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-4 border-b">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-foreground">{region}</h3>
-                    <Badge variant="secondary" className="text-sm">
-                      {regionAlerts.length} {regionAlerts.length > 1 ? t('alerts.alerts') : t('alerts.alert')}
-                    </Badge>
-                  </div>
-                </div>
-
-                <div className="space-y-6 p-6">
-                  {regionAlerts.map(alert => {
-                    const SeverityIcon = getSeverityIcon(alert.severity);
-                    return (
-                      <div key={alert.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                        <div className="space-y-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start gap-3">
-                              <SeverityIcon className="h-5 w-5 mt-1" />
-                              <div>
-                                <h3 className="font-semibold text-lg">{alert.city}</h3>
-                                <p className="text-sm text-muted-foreground">{alert.type}</p>
-                              </div>
-                            </div>
-                            <Badge className={getSeverityColor(alert.severity)}>
-                              {alert.severity === 'high' ? t('alerts.critical') : alert.severity === 'medium' ? t('alerts.moderate') : t('alerts.low')}
+          <Card>
+            <div className="flex items-center justify-between gap-4 p-4 border-b bg-muted/30">
+              <h2 className="text-lg font-semibold">
+                {filteredAlerts.length} {filteredAlerts.length > 1 ? t('alerts.alerts') : t('alerts.alert')}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {Object.keys(groupedAlerts).length} régions
+              </p>
+            </div>
+            <Accordion type="multiple" className="w-full">
+              {Object.entries(groupedAlerts).map(([region, regionAlerts]) => {
+                const highCount = regionAlerts.filter(a => a.severity === 'high').length;
+                return (
+                  <AccordionItem key={region} value={region} className="px-4">
+                    <AccordionTrigger className="hover:no-underline">
+                      <div className="flex flex-1 items-center justify-between gap-3 pr-3">
+                        <span className="font-semibold text-left">{region}</span>
+                        <span className="flex items-center gap-2 shrink-0">
+                          {highCount > 0 && (
+                            <Badge className="bg-destructive text-destructive-foreground">
+                              {highCount}
                             </Badge>
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
-                            <div className="flex items-center gap-2">
-                              <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                              <div>
-                                <p className="text-muted-foreground">{t('alerts.sampledOn')}</p>
-                                <p className="font-medium">{new Date(alert.date).toLocaleDateString('fr-FR')}</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Users className="h-4 w-4 text-muted-foreground" />
-                              <div>
-                                <p className="text-muted-foreground">{t('alerts.affectedPopulation')}</p>
-                                <p className="font-medium">{alert.affectedPopulation.toLocaleString('fr-FR')}</p>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="mt-4 p-3 bg-muted/50 rounded-md">
-                            <div className="flex items-start gap-2">
-                              <Shield className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                              <div>
-                                <p className="text-sm font-medium mb-1">{t('alerts.measures')}</p>
-                                <p className="text-sm text-muted-foreground">{alert.measures}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                          )}
+                          <Badge variant="secondary">{regionAlerts.length}</Badge>
+                        </span>
                       </div>
-                    );
-                  })}
-                </div>
-              </Card>
-            ))}
-          </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <ul className="divide-y">
+                        {regionAlerts.map(alert => {
+                          const SeverityIcon = getSeverityIcon(alert.severity);
+                          return (
+                            <li key={alert.id}>
+                              <details className="group py-3">
+                                <summary className="flex cursor-pointer items-center gap-3 list-none">
+                                  <SeverityIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                                  <span className="min-w-0 flex-1">
+                                    <span className="font-medium">{alert.city}</span>
+                                    <span className="text-muted-foreground"> — {alert.type}</span>
+                                  </span>
+                                  <Badge className={cn(getSeverityColor(alert.severity), "shrink-0 text-xs")}>
+                                    {alert.severity === 'high' ? t('alerts.critical') : alert.severity === 'medium' ? t('alerts.moderate') : t('alerts.low')}
+                                  </Badge>
+                                </summary>
+                                <div className="mt-3 ml-7 space-y-2 text-sm">
+                                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-muted-foreground">
+                                    <span className="flex items-center gap-1.5">
+                                      <CalendarIcon className="h-4 w-4" />
+                                      {t('alerts.sampledOn')} {new Date(alert.date).toLocaleDateString('fr-FR')}
+                                    </span>
+                                    <span className="flex items-center gap-1.5">
+                                      <Users className="h-4 w-4" />
+                                      {alert.affectedPopulation.toLocaleString('fr-FR')}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-start gap-2 rounded-md bg-muted/50 p-3">
+                                    <Shield className="h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
+                                    <p className="text-muted-foreground">
+                                      <span className="font-medium text-foreground">{t('alerts.measures')} </span>
+                                      {alert.measures}
+                                    </p>
+                                  </div>
+                                </div>
+                              </details>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
+            </Accordion>
+          </Card>
         )}
+
       </div>
     </div>
     </Layout>
