@@ -75,7 +75,7 @@ export default function BottleRankingCard({
         <div className={`absolute -top-3 -left-3 ${rank <= 3 ? 'w-10 h-10 text-base' : 'w-8 h-8 text-sm'} rounded-full flex items-center justify-center text-white font-bold shadow-md ${
           rank === 1 ? 'bg-yellow-500' : rank === 2 ? 'bg-gray-400' : rank === 3 ? 'bg-amber-700' : 'bg-blue-500'
         }`}>
-          {rank <= 3 ? (rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉') : rank}
+          {rank}
         </div>
       )}
 
