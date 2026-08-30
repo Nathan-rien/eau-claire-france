@@ -117,7 +117,7 @@ export default function Alertes() {
 
   // Regroupe par région, trie les alertes (gravité puis date récente)
   // et ordonne les régions par nombre d'alertes décroissant puis alphabétiquement.
-  const groupedAlerts = useMemo(() => {
+  const groupedAlerts = (() => {
     const groups = groupAlertsByRegion(filteredAlerts);
     const sortedEntries = Object.entries(groups)
       .map(([region, regionAlerts]) => [
@@ -134,7 +134,7 @@ export default function Alertes() {
           b[1].length - a[1].length || a[0].localeCompare(b[0], 'fr'),
       );
     return Object.fromEntries(sortedEntries);
-  }, [filteredAlerts]);
+  })();
 
   return (
     <Layout>
