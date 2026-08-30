@@ -146,7 +146,7 @@ export default function RankingFilters({ filters, onChange, resultCount, activeC
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
-                  {o === 'FR' ? '🇫🇷 France' : o === 'EU' ? '🇪🇺 Europe' : '🌍 Monde'}
+                  {o === 'FR' ? 'France' : o === 'EU' ? 'Europe' : 'Monde'}
                 </button>
               ))}
             </div>

@@ -229,9 +229,8 @@ const Classement = () => {
                     </DialogHeader>
                     <div className="text-sm text-gray-700 space-y-2">
                       <p>Chaque eau est notée sur 80 points selon <strong>{criteriaCount} critères</strong> (minéralisation, nitrates, calcium, sodium, pH, etc.) pondérés en fonction du profil choisi.</p>
-                      <p>Le profil <strong>💎 Pureté</strong> valorise les eaux ultra-pures comme Mont Roucous ou Montcalm. Le profil <strong>🦴 Os & calcium</strong> valorise au contraire les eaux fortement minéralisées.</p>
-                      <p>Les valeurs manquantes ne pénalisent pas une eau : le score est normalisé sur les critères disponibles.</p>
-                      <p className="text-amber-700 text-xs mt-2">⚠️ Les eaux marquées « non recommandées » dépassent un seuil critique pour le profil sélectionné.</p>
+                      <p>Le profil <strong>Pureté</strong> valorise les eaux ultra-pures comme Mont Roucous ou Montcalm. Le profil <strong>Os & calcium</strong> valorise au contraire les eaux fortement minéralisées.</p>
+
                     </div>
                   </DialogContent>
                 </Dialog>

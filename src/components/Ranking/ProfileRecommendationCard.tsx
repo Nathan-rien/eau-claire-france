@@ -36,9 +36,6 @@ export default function ProfileRecommendationCard({ profile }: Props) {
         aria-expanded={open}
       >
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 shrink-0 rounded-xl bg-blue-50 flex items-center justify-center text-xl">
-            {info.icon}
-          </div>
           <div className="min-w-0">
             <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">{info.label}</h2>
             <p className="text-xs sm:text-sm text-slate-500 truncate">{info.description}</p>
