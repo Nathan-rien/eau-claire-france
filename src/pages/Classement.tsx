@@ -230,14 +230,14 @@ const Classement = () => {
                     <div className="text-sm text-gray-700 space-y-2">
                       <p>Chaque eau est notée sur 80 points selon <strong>{criteriaCount} critères</strong> (minéralisation, nitrates, calcium, sodium, pH, etc.) pondérés en fonction du profil choisi.</p>
                       <p>Le profil <strong>Pureté</strong> valorise les eaux ultra-pures comme Mont Roucous ou Montcalm. Le profil <strong>Os & calcium</strong> valorise au contraire les eaux fortement minéralisées.</p>
-
+                      <p className="text-amber-700 text-xs mt-2">Les eaux marquées « non recommandées » dépassent un seuil critique pour le profil sélectionné.</p>
                     </div>
                   </DialogContent>
                 </Dialog>
               </h1>
               <p className="text-sm text-gray-600 mt-2 flex items-center justify-center gap-2 flex-wrap">
                 <Badge variant="outline" className={isFrance ? 'border-blue-300 text-blue-700 bg-blue-50' : 'border-green-300 text-green-700 bg-green-50'}>
-                  {isFrance ? '🇫🇷 Marché français' : '🇪🇺 Catalogue Europe'}
+                  {isFrance ? 'Marché français' : 'Catalogue Europe'}
                 </Badge>
                 <span><strong>{waters.length}</strong> eaux comparées · {ranked.length} affichées</span>
               </p>
