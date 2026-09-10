@@ -306,6 +306,21 @@ export const seoData = {
 
   // === Pages prix ===
 
+  marques: {
+    title: "Marques d'eau en bouteille : prix et composition | InfoEau",
+    description: "Annuaire des marques d'eau en bouteille suivies par InfoEau : Cristaline, Evian, Volvic, Badoit, Perrier... Accédez aux prix relevés et à la composition de chaque marque.",
+    keywords: "marques eau en bouteille, liste marques eau, prix par marque eau, cristaline evian volvic badoit, composition eau marque",
+    canonical: "/marques",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "Marques d'eau en bouteille suivies par InfoEau",
+      "description": "Annuaire des marques d'eau en bouteille avec prix relevés et composition",
+      "url": "https://infoeau.fr/marques"
+    }
+  },
+
+
   prixEaux: {
     title: "Prix eau bouteille : le moins cher par supermarché | InfoEau",
     description: "16 000+ prix relevés en temps réel chez Leclerc, Carrefour, Auchan... Trouvez l'eau en bouteille la moins chère près de chez vous, comparée au litre.",
