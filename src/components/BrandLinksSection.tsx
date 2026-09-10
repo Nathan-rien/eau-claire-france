@@ -38,17 +38,27 @@ export default function BrandLinksSection({
         ))}
       </ul>
 
-      <h2 className="text-xl font-semibold mb-2">{t('brandLinks.europeTitle')}</h2>
-      <p className="text-sm text-muted-foreground mb-4">{t('brandLinks.europeIntro')}</p>
-      <ul className="flex flex-wrap gap-4 list-none p-0">
-        {EUROPE_LINKS.map((l) => (
-          <li key={l.path}>
-            <Link to={l.path} className="text-sm text-primary underline hover:no-underline">
-              {t(l.key)}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <p className="mb-8">
+        <Link to="/marques" className="text-sm text-primary underline hover:no-underline">
+          {t('brandLinks.all')}
+        </Link>
+      </p>
+
+      {showEurope && (
+        <>
+          <h2 className="text-xl font-semibold mb-2">{t('brandLinks.europeTitle')}</h2>
+          <p className="text-sm text-muted-foreground mb-4">{t('brandLinks.europeIntro')}</p>
+          <ul className="flex flex-wrap gap-4 list-none p-0">
+            {EUROPE_LINKS.map((l) => (
+              <li key={l.path}>
+                <Link to={l.path} className="text-sm text-primary underline hover:no-underline">
+                  {t(l.key)}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </section>
   );
 }
