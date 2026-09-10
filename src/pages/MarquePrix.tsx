@@ -322,6 +322,9 @@ export default function MarquePrix() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Maillage entre marques + annuaire */}
+          <BrandLinksSection />
         </div>
       </main>
     </Layout>
