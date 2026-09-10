@@ -624,6 +624,22 @@ export const translations = {
     'brandLinks.euPrices': 'Prix de l\'eau en Europe',
     'brandLinks.euComposition': 'Composition de l\'eau en Europe',
     'brandLinks.euPollutants': 'Polluants de l\'eau en Europe',
+    'brandLinks.all': 'Voir toutes les marques suivies',
+
+    // Annuaire des marques (/marques)
+    'brandsIndex.h1': 'Marques d\'eau en bouteille suivies par InfoEau',
+    'brandsIndex.intro': 'Retrouvez chaque marque d\'eau en bouteille suivie par InfoEau : type d\'eau, source d\'origine, prix relevés enseigne par enseigne et évolution récente.',
+    'brandsIndex.source': 'source',
+    'brandsIndex.type.mineral': 'Eau minérale naturelle plate',
+    'brandsIndex.type.sparkling': 'Eau minérale naturelle gazeuse',
+    'brandsIndex.type.spring': 'Eau de source',
+    'brandsIndex.type.bottled': 'Eau en bouteille',
+    'brandsIndex.cardCta': 'Voir les prix relevés de {brand}',
+    'brandsIndex.hub.title': 'Aller plus loin',
+    'brandsIndex.hub.prices': 'Comparer les prix de toutes les eaux en bouteille',
+    'brandsIndex.hub.ranking': 'Classement des eaux en bouteille',
+    'brandsIndex.hub.filters': 'Comparatif des filtres à eau',
+    'brandsIndex.hub.treat': 'Traiter et améliorer l\'eau du robinet',
 
     // Price Diagnostic page
     'priceDiag.title': 'Diagnostic des Prix - Audit & Transparence',
@@ -2939,6 +2955,22 @@ export const translations = {
     'brandLinks.euPrices': 'Water prices in Europe',
     'brandLinks.euComposition': 'Water composition in Europe',
     'brandLinks.euPollutants': 'Water pollutants in Europe',
+    'brandLinks.all': 'See all tracked brands',
+
+    // Brand directory (/marques)
+    'brandsIndex.h1': 'Bottled water brands tracked by InfoEau',
+    'brandsIndex.intro': 'Every bottled water brand tracked by InfoEau: water type, spring of origin, prices recorded retailer by retailer and recent trends.',
+    'brandsIndex.source': 'spring',
+    'brandsIndex.type.mineral': 'Still natural mineral water',
+    'brandsIndex.type.sparkling': 'Sparkling natural mineral water',
+    'brandsIndex.type.spring': 'Spring water',
+    'brandsIndex.type.bottled': 'Bottled water',
+    'brandsIndex.cardCta': 'See recorded prices for {brand}',
+    'brandsIndex.hub.title': 'Go further',
+    'brandsIndex.hub.prices': 'Compare prices of all bottled waters',
+    'brandsIndex.hub.ranking': 'Bottled water ranking',
+    'brandsIndex.hub.filters': 'Water filter comparison',
+    'brandsIndex.hub.treat': 'Treat and improve tap water',
 
     // Price Diagnostic page
     'priceDiag.title': 'Price Diagnostic - Audit & Transparency',
