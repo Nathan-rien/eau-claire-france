@@ -14,6 +14,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { getBrandTimeseries, BrandTimeseries } from '@/services/timeseriesApi';
 import { resolveBrandFromSlug, getBrandFacts } from '@/config/brands';
 import { isPricedBrandSlug } from '@/config/pricedBrands';
+import BrandLinksSection from '@/components/BrandLinksSection';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
