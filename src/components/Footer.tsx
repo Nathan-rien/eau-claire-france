@@ -31,6 +31,7 @@ const Footer = () => {
               <li><a href="/parcours-eau" className="hover:text-white transition-colors">{t('footer.waterJourney')}</a></li>
               <li><a href="/gout-eau" className="hover:text-white transition-colors">Goût de l'eau par région</a></li>
               <li><a href="/lettre-de-leau" className="hover:text-white transition-colors">Lettre de l'eau</a></li>
+              <li><a href="/marques" className="hover:text-white transition-colors">Marques d'eau en bouteille</a></li>
             </ul>
           </nav>
           
