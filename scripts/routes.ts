@@ -34,6 +34,8 @@ export const staticEntries: SitemapEntry[] = [
   // /comparateur-prix n'existe pas comme route : retiré (soft 404 / doublon de /prix-eaux).
   // /comparatif-bouteilles et /bouteilles redirigent vers /classement : hors sitemap.
   { path: "/sources-eau", changefreq: "monthly", priority: "0.7" },
+  // Annuaire des marques (hub interne vers les pages /marque/*).
+  { path: "/marques", changefreq: "weekly", priority: "0.8" },
   // Les pages /marque/* sont générées depuis PRICED_BRAND_SLUGS (voir brandEntries).
   { path: "/classement", changefreq: "monthly", priority: "0.7" },
   { path: "/alertes", changefreq: "daily", priority: "0.7" },

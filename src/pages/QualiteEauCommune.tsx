@@ -12,6 +12,7 @@ import { useWaterQuality } from '@/hooks/useWaterQuality';
 import { FRENCH_CITIES } from '@/data/frenchCities';
 import { communeToSlug, findCommuneBySlug } from '@/utils/communeSlug';
 import { useLanguage } from '@/contexts/LanguageContext';
+import BrandLinksSection from '@/components/BrandLinksSection';
 
 const QualiteEauCommune: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -448,6 +449,11 @@ const QualiteEauCommune: React.FC = () => {
         </section>
 
         {/* Neighboring communes */}
+        {/* Maillage interne : marques d'eau en bouteille (annuaire + pages marque) */}
+        <div className="container mx-auto max-w-5xl px-4">
+          <BrandLinksSection limit={10} showEurope={false} />
+        </div>
+
         {neighbors.length > 0 && (
           <section className="container mx-auto max-w-5xl px-4 py-8">
             <h2 className="text-xl font-bold mb-4">{t('commune.neighbors.title', { context: commune.context })}</h2>

@@ -47,6 +47,7 @@ const SecurityDashboard = React.lazy(() => import("./pages/SecurityDashboard"));
 const PrixEaux = React.lazy(() => import("./pages/PrixEaux"));
 
 const MarquePrix = React.lazy(() => import("./pages/MarquePrix"));
+const Marques = React.lazy(() => import("./pages/Marques"));
 const Admin = React.lazy(() => import("./pages/Admin"));
 const AdminSetup = React.lazy(() => import("./pages/AdminSetup"));
 const AdminIndexation = React.lazy(() => import("./pages/AdminIndexation"));
@@ -123,6 +124,7 @@ const appRoutes = (p: string) => (
                 <Route path={`${p}/open-data`} element={<OpenData />} />
                 <Route path={`${p}/prix-eaux`} element={<PrixEaux />} />
                 
+                <Route path={`${p}/marques`} element={<Marques />} />
                 <Route path={`${p}/marque/:slug`} element={<MarquePrix />} />
                 <Route path={`${p}/admin`} element={<Admin />} />
                 <Route path={`${p}/admin-setup`} element={<AdminSetup />} />

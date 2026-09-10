@@ -14,15 +14,19 @@ const EUROPE_LINKS: { path: string; key: string }[] = [
  * le sitemap et le noindex de /marque/:slug) + renvoi vers le pôle Europe.
  * Tous les liens passent par LocalizedLink pour conserver le préfixe /en.
  */
-export default function BrandLinksSection() {
+export default function BrandLinksSection({
+  limit,
+  showEurope = true,
+}: { limit?: number; showEurope?: boolean } = {}) {
   const { t } = useLanguage();
+  const slugs = typeof limit === 'number' ? PRICED_BRAND_SLUGS.slice(0, limit) : PRICED_BRAND_SLUGS;
 
   return (
     <section className="mt-12 border-t border-border pt-8">
       <h2 className="text-xl font-semibold mb-2">{t('brandLinks.title')}</h2>
       <p className="text-sm text-muted-foreground mb-4">{t('brandLinks.intro')}</p>
-      <ul className="flex flex-wrap gap-2 mb-8 list-none p-0">
-        {PRICED_BRAND_SLUGS.map((slug) => (
+      <ul className="flex flex-wrap gap-2 mb-4 list-none p-0">
+        {slugs.map((slug) => (
           <li key={slug}>
             <Link
               to={`/marque/${slug}`}
@@ -34,17 +38,27 @@ export default function BrandLinksSection() {
         ))}
       </ul>
 
-      <h2 className="text-xl font-semibold mb-2">{t('brandLinks.europeTitle')}</h2>
-      <p className="text-sm text-muted-foreground mb-4">{t('brandLinks.europeIntro')}</p>
-      <ul className="flex flex-wrap gap-4 list-none p-0">
-        {EUROPE_LINKS.map((l) => (
-          <li key={l.path}>
-            <Link to={l.path} className="text-sm text-primary underline hover:no-underline">
-              {t(l.key)}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <p className="mb-8">
+        <Link to="/marques" className="text-sm text-primary underline hover:no-underline">
+          {t('brandLinks.all')}
+        </Link>
+      </p>
+
+      {showEurope && (
+        <>
+          <h2 className="text-xl font-semibold mb-2">{t('brandLinks.europeTitle')}</h2>
+          <p className="text-sm text-muted-foreground mb-4">{t('brandLinks.europeIntro')}</p>
+          <ul className="flex flex-wrap gap-4 list-none p-0">
+            {EUROPE_LINKS.map((l) => (
+              <li key={l.path}>
+                <Link to={l.path} className="text-sm text-primary underline hover:no-underline">
+                  {t(l.key)}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </section>
   );
 }
