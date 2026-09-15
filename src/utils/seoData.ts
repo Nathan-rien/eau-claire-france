@@ -322,11 +322,9 @@ export const seoData = {
 
 
   prixEaux: {
-    title: "Prix eau bouteille : le moins cher par supermarché | InfoEau",
-    description: "16 000+ prix relevés en temps réel chez Leclerc, Carrefour, Auchan... Trouvez l'eau en bouteille la moins chère près de chez vous, comparée au litre.",
-
-
-    keywords: "prix eau bouteille, comparaison prix eau en bouteille, eau la moins chere, prix cristaline leclerc, prix eau mont roucous leclerc, comparateur eau",
+    title: "Eau la moins chère 2026 : comparaison des prix au litre | InfoEau",
+    description: "Quelle eau en bouteille est la moins chère ? Prix moyen au litre par type d'eau, top des références les moins chères et coût annuel comparé à l'eau du robinet.",
+    keywords: "eau la moins chere, prix eau bouteille, comparaison prix eau en bouteille, prix au litre eau, prix moyen eau bouteille, cout eau bouteille par an, comparateur eau",
     canonical: "/prix-eaux",
     schemaData: {
       "@context": "https://schema.org",
