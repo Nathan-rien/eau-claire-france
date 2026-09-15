@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp, AlertTriangle, Info, CheckCircle2 } from "lucide-react";
 import { Profile, getProfileInfo } from "@/utils/rankingV2";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translateProfileText } from "@/utils/rankingI18n";
 
 interface Props {
   profile: Profile;
@@ -28,7 +29,7 @@ export default function ProfileRecommendationCard({ profile }: Props) {
   const label = t(`profile.${profile}.label`) || info.label;
   const desc = t(`profile.${profile}.desc`) || info.description;
 
-  const parsed = (rec?.guidelines ?? []).map((g) => ({ raw: g, p: parseGuideline(g) }));
+  const parsed = (rec?.guidelines ?? []).map((g) => translateProfileText(g, language)).map((g) => ({ raw: g, p: parseGuideline(g) }));
   const metrics = parsed.filter((g) => g.p) as { raw: string; p: { label: string; op: string; value: string } }[];
   const textGuidelines = parsed.filter((g) => !g.p);
 
@@ -56,11 +57,11 @@ export default function ProfileRecommendationCard({ profile }: Props) {
             <span className="inline-block text-[10px] uppercase tracking-[0.18em] font-bold text-blue-600 mb-3">
               {t('profileCard.target')}
             </span>
-            <p className="text-[15px] text-slate-800 leading-relaxed">{rec.who}</p>
+            <p className="text-[15px] text-slate-800 leading-relaxed">{translateProfileText(rec.who, language)}</p>
             {rec.source && (
               <div className="mt-5 pt-4 border-t border-slate-200/70 flex items-start gap-2">
                 <Info className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
-                <p className="text-[11px] italic text-slate-500 leading-relaxed">{rec.source}</p>
+                <p className="text-[11px] italic text-slate-500 leading-relaxed">{translateProfileText(rec.source, language)}</p>
               </div>
             )}
           </div>
@@ -106,7 +107,7 @@ export default function ProfileRecommendationCard({ profile }: Props) {
                 </h4>
                 <ul className="space-y-2">
                   {rec.avoid.map((a, i) => {
-                    const { title, detail } = parseAvoid(a);
+                    const { title, detail } = parseAvoid(translateProfileText(a, language));
                     return (
                       <li key={i} className="flex items-start gap-3 p-3 rounded-xl bg-amber-50/60 border border-amber-100">
                         <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
