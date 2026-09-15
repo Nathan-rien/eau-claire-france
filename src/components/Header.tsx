@@ -10,20 +10,16 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useRegion } from '@/contexts/RegionContext';
 import RegionSwitcher from '@/components/RegionSwitcher';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const Header = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const { language, setLanguage, t } = useLanguage();
+  const { t } = useLanguage();
   const { isEurope } = useRegion();
-
-  const handleLanguageChange = (newLanguage: string) => {
-    setLanguage(newLanguage as 'fr' | 'en');
-  };
 
   const mapsItems = isEurope
     ? [
@@ -293,31 +289,7 @@ const Header = () => {
               <RegionSwitcher />
             </div>
 
-            <Select value={language} onValueChange={handleLanguageChange}>
-              <SelectTrigger className="w-auto border-none bg-transparent px-2 py-1 h-auto">
-                <SelectValue>
-                  <div className="flex items-center space-x-1">
-                    <span className="text-lg">{language === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
-                    <span className="hidden sm:inline text-sm font-medium">{language === 'fr' ? 'FR' : 'EN'}</span>
-                    <ChevronDown className="h-3 w-3 opacity-50" />
-                  </div>
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent align="end">
-                <SelectItem value="fr">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg">🇫🇷</span>
-                    <span>Français</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="en">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg">🇬🇧</span>
-                    <span>English</span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <LanguageSwitcher />
 
             {/* Mobile Navigation */}
             <div className="xl:hidden">

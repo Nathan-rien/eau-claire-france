@@ -44,7 +44,7 @@ function countActiveFilters(f: RankingFilterState): number {
 }
 
 const Classement = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [profile, setProfile] = useState<Profile>("general");
   const [filters, setFilters] = useState<RankingFilterState>(DEFAULT_FILTERS);
   const [search, setSearch] = useState('');
@@ -203,7 +203,13 @@ const Classement = () => {
 
   return (
     <Layout>
-      <SEOHead {...seoData.classement} />
+      <SEOHead
+        {...seoData.classement}
+        title={t('rankPage.seo.title')}
+        description={t('rankPage.seo.description')}
+        keywords={t('rankPage.seo.keywords')}
+        schemaData={language === 'en' ? undefined : seoData.classement.schemaData}
+      />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         {/* Compact hero */}
         <section className="py-6 px-4">
@@ -211,11 +217,11 @@ const Classement = () => {
             <div className="text-center mb-4">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center justify-center gap-2 flex-wrap">
                 <Trophy className="w-6 h-6 md:w-7 md:h-7 text-yellow-600" />
-                <span>Classement & comparateur des eaux</span>
+                <span>{t('rankPage.h1')}</span>
                 <Dialog>
                   <DialogTrigger asChild>
                     <button
-                      aria-label="Comment fonctionne le score"
+                      aria-label={t('rankPage.scoreHelpAria')}
                       className="text-blue-600 hover:text-blue-800 transition"
                     >
                       <HelpCircle className="w-5 h-5" />
@@ -224,33 +230,28 @@ const Classement = () => {
                   <DialogContent className="max-w-lg">
                     <DialogHeader>
                       <DialogTitle className="flex items-center gap-2">
-                        <Info className="w-5 h-5 text-blue-600" /> Comment fonctionne le score ?
+                        <Info className="w-5 h-5 text-blue-600" /> {t('rankPage.scoreHelpTitle')}
                       </DialogTitle>
                     </DialogHeader>
                     <div className="text-sm text-gray-700 space-y-2">
-                      <p>Chaque eau est notée sur 80 points selon <strong>{criteriaCount} critères</strong> (minéralisation, nitrates, calcium, sodium, pH, etc.) pondérés en fonction du profil choisi.</p>
-                      <p>Le profil <strong>Pureté</strong> valorise les eaux ultra-pures comme Mont Roucous ou Montcalm. Le profil <strong>Os & calcium</strong> valorise au contraire les eaux fortement minéralisées.</p>
-                      <p className="text-amber-700 text-xs mt-2">Les eaux marquées « non recommandées » dépassent un seuil critique pour le profil sélectionné.</p>
+                      <p>{t('rankPage.scoreHelp1', { criteria: String(criteriaCount) })}</p>
+                      <p>{t('rankPage.scoreHelp2')}</p>
+                      <p className="text-amber-700 text-xs mt-2">{t('rankPage.scoreHelp3')}</p>
                     </div>
                   </DialogContent>
                 </Dialog>
               </h1>
               <p className="text-sm text-gray-600 mt-2 flex items-center justify-center gap-2 flex-wrap">
                 <Badge variant="outline" className={isFrance ? 'border-blue-300 text-blue-700 bg-blue-50' : 'border-green-300 text-green-700 bg-green-50'}>
-                  {isFrance ? 'Marché français' : 'Catalogue Europe'}
+                  {isFrance ? t('rankPage.marketFr') : t('rankPage.marketEu')}
                 </Badge>
-                <span><strong>{waters.length}</strong> eaux comparées · {ranked.length} affichées</span>
+                <span>{t('rankPage.counts', { total: String(waters.length), shown: String(ranked.length) })}</span>
               </p>
               {/* Bloc SEO/GEO : texte sémantique riche pour Google + moteurs IA (ChatGPT, Perplexity, Gemini) */}
               <div className="max-w-3xl mx-auto mt-4 text-sm text-gray-700 leading-relaxed">
-                <h2 className="sr-only">Comparateur des meilleures eaux minérales en bouteille en France</h2>
-                <p>
-                  <strong>Comparateur et classement</strong> des principales eaux en bouteille vendues en France :
-                  {' '}<em>Evian, Contrex, Hépar, Volvic, Mont Roucous, Badoit, Vittel, Cristaline, Wattwiller, Thonon, Montcalm, Sainte-Sophie, Quézac, Salvetat, Perrier</em> et bien d'autres.
-                  Chaque eau est notée sur 80 points selon 11 critères (résidu sec, calcium, magnésium, sodium, nitrates, fluorures, pH…)
-                  et 12 profils santé : Général, Pureté, Os & calcium, Sport, Bébé, Senior, Grossesse, Quotidien, Thé, Transit, Digestion, Régime pauvre en sodium.
-                  Trouvez en un clic la meilleure eau en bouteille adaptée à <strong>vos besoins</strong>.
-                </p>
+                <h2 className="sr-only">{t('rankPage.seoH2')}</h2>
+                <p>{t('rankPage.seoP1')}</p>
+                <p className="mt-2">{t('rankPage.seoP2')}</p>
               </div>
             </div>
           </div>
@@ -274,7 +275,7 @@ const Classement = () => {
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  placeholder="Rechercher une marque, source, région…"
+                  placeholder={t('rankPage.searchPlaceholder')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="pl-9"
@@ -286,20 +287,20 @@ const Classement = () => {
                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
               >
                 <Star className={`w-4 h-4 mr-1 ${showFavoritesOnly ? 'fill-current' : ''}`} />
-                Favoris ({favorites.size})
+                {t('rankPage.favorites')} ({favorites.size})
               </Button>
               <div className="flex gap-1 bg-white border rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('cards')}
                   className={`px-2 py-1.5 rounded text-xs flex items-center gap-1 transition ${viewMode === 'cards' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}
                 >
-                  <LayoutGrid className="w-3.5 h-3.5" /> Cartes
+                  <LayoutGrid className="w-3.5 h-3.5" /> {t('rankPage.cards')}
                 </button>
                 <button
                   onClick={() => setViewMode('table')}
                   className={`px-2 py-1.5 rounded text-xs flex items-center gap-1 transition ${viewMode === 'table' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}
                 >
-                  <TableIcon className="w-3.5 h-3.5" /> Tableau
+                  <TableIcon className="w-3.5 h-3.5" /> {t('rankPage.table')}
                 </button>
               </div>
             </div>
@@ -332,7 +333,7 @@ const Classement = () => {
                       {podium.length > 0 && (
                         <div className="mb-6">
                           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <Trophy className="w-4 h-4 text-yellow-600" /> Podium
+                            <Trophy className="w-4 h-4 text-yellow-600" /> {t('rankPage.podium')}
                           </h2>
                           <div className="grid md:grid-cols-3 gap-4">
                             {podium.map((r, i) =>
@@ -345,7 +346,7 @@ const Classement = () => {
                       {rest.length > 0 && (
                         <>
                           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                            Reste du classement
+                            {t('rankPage.rest')}
                           </h2>
                           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {rest.map((r, i) =>
@@ -369,9 +370,9 @@ const Classement = () => {
                   {ranked.length === 0 && (
                     <div className="text-center py-12">
                       <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <p className="text-lg text-gray-500">Aucune eau ne correspond à vos filtres</p>
+                      <p className="text-lg text-gray-500">{t('rankPage.empty')}</p>
                       <Button variant="outline" className="mt-4" onClick={() => setFilters(DEFAULT_FILTERS)}>
-                        Réinitialiser les filtres
+                        {t('rankPage.reset')}
                       </Button>
                     </div>
                   )}
@@ -385,11 +386,11 @@ const Classement = () => {
                 <Badge variant="default" className="bg-blue-600">
                   {selectedIds.size}/{MAX_COMPARE}
                 </Badge>
-                <span className="text-sm font-medium hidden sm:inline">eaux sélectionnées</span>
+                <span className="text-sm font-medium hidden sm:inline">{t('rankPage.selectedWaters')}</span>
                 <Button size="sm" onClick={() => setCompareOpen(true)} disabled={selectedIds.size < 2}>
-                  <GitCompare className="w-4 h-4 mr-1" /> Comparer
+                  <GitCompare className="w-4 h-4 mr-1" /> {t('rankPage.compare')}
                 </Button>
-                <button onClick={() => setSelectedIds(new Set())} className="text-gray-400 hover:text-gray-600" aria-label="Vider">
+                <button onClick={() => setSelectedIds(new Set())} className="text-gray-400 hover:text-gray-600" aria-label={t('rankPage.clear')}>
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -406,14 +407,14 @@ const Classement = () => {
         <section className="container mx-auto px-4 py-12 border-t border-border">
           <AffiliateComparisonTable
             category="filtration"
-            title="Filtrer plutôt que comparer les eaux en bouteille ?"
-            intro="Si votre objectif est de réduire le chlore, le calcaire ou certains contaminants, la filtration à domicile peut remplacer l'achat de bouteilles. Voici ce que chaque solution traite réellement."
+            title={t('rankPage.affiliateTitle')}
+            intro={t('rankPage.affiliateIntro')}
           />
           <Link
             to="/comparatif-filtres-eau"
             className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-blue-700 hover:underline"
           >
-            Comparatif complet des filtres à eau
+            {t('rankPage.filtersCta')}
           </Link>
 
           <aside className="rounded-xl border border-blue-200 bg-blue-50 p-5 mt-8">

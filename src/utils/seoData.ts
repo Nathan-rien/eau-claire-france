@@ -322,11 +322,9 @@ export const seoData = {
 
 
   prixEaux: {
-    title: "Prix eau bouteille : le moins cher par supermarché | InfoEau",
-    description: "16 000+ prix relevés en temps réel chez Leclerc, Carrefour, Auchan... Trouvez l'eau en bouteille la moins chère près de chez vous, comparée au litre.",
-
-
-    keywords: "prix eau bouteille, comparaison prix eau en bouteille, eau la moins chere, prix cristaline leclerc, prix eau mont roucous leclerc, comparateur eau",
+    title: "Eau la moins chère 2026 : comparaison des prix au litre | InfoEau",
+    description: "Quelle eau en bouteille est la moins chère ? Prix moyen au litre par type d'eau, top des références les moins chères et coût annuel comparé à l'eau du robinet.",
+    keywords: "eau la moins chere, prix eau bouteille, comparaison prix eau en bouteille, prix au litre eau, prix moyen eau bouteille, cout eau bouteille par an, comparateur eau",
     canonical: "/prix-eaux",
     schemaData: {
       "@context": "https://schema.org",
@@ -356,9 +354,9 @@ export const seoData = {
   // === Pages Europe ===
 
   carteEurope: {
-    title: "Carte qualité de l'eau en Europe - 27 pays UE",
-    description: "Explorez la qualité de l'eau potable dans les 27 pays de l'Union européenne. Données de conformité basées sur la Directive Eau Potable (DWD) de l'EEA.",
-    keywords: "carte eau Europe, qualité eau potable UE, directive eau potable Europe, EEA données eau 27 pays",
+    title: "Qualité de l'eau en Europe : carte des 27 pays de l'UE | InfoEau",
+    description: "Où l'eau du robinet est-elle la plus sûre en Europe ? Carte interactive des 27 pays de l'UE : conformité, nitrates, pesticides et polluants, données officielles EEA.",
+    keywords: "carte eau Europe, qualité eau potable Europe, eau du robinet europe potable, qualité eau pays européens, directive eau potable Europe",
     canonical: "/carte-europe",
     schemaData: {
       "@context": "https://schema.org",
@@ -385,8 +383,8 @@ export const seoData = {
   },
 
   classementEurope: {
-    title: "Classement qualité eau potable Europe - 27 pays UE",
-    description: "Classement des 27 pays de l'Union européenne par qualité de l'eau potable. Conformité réglementaire, nitrates, polluants et score global.",
+    title: "Quel pays a la meilleure eau du robinet en Europe ? Classement 2026",
+    description: "Classement des 27 pays de l'UE par qualité de l'eau du robinet : conformité, nitrates, polluants et score global. Découvrez où boire l'eau du robinet sans risque.",
     keywords: "classement eau Europe, meilleure eau potable Europe, conformité eau UE, ranking eau pays européens",
     canonical: "/classement-europe",
     schemaData: {
