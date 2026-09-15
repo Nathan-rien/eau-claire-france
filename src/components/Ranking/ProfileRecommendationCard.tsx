@@ -22,7 +22,10 @@ function parseAvoid(raw: string): { title: string; detail?: string } {
 export default function ProfileRecommendationCard({ profile }: Props) {
   const info = getProfileInfo(profile);
   const rec = info.recommendations;
-  const [open, setOpen] = useState(true);
+  const { t, language } = useLanguage();
+  const [open, setOpen] = useState(language !== 'en');
+  const label = t(`profile.${profile}.label`) || info.label;
+  const desc = t(`profile.${profile}.desc`) || info.description;
 
   const parsed = (rec?.guidelines ?? []).map((g) => ({ raw: g, p: parseGuideline(g) }));
   const metrics = parsed.filter((g) => g.p) as { raw: string; p: { label: string; op: string; value: string } }[];
