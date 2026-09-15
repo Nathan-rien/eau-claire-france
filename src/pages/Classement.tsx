@@ -203,7 +203,13 @@ const Classement = () => {
 
   return (
     <Layout>
-      <SEOHead {...seoData.classement} />
+      <SEOHead
+        {...seoData.classement}
+        title={t('rankPage.seo.title')}
+        description={t('rankPage.seo.description')}
+        keywords={t('rankPage.seo.keywords')}
+        schemaData={language === 'en' ? undefined : seoData.classement.schemaData}
+      />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         {/* Compact hero */}
         <section className="py-6 px-4">
@@ -211,11 +217,11 @@ const Classement = () => {
             <div className="text-center mb-4">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center justify-center gap-2 flex-wrap">
                 <Trophy className="w-6 h-6 md:w-7 md:h-7 text-yellow-600" />
-                <span>Classement & comparateur des eaux</span>
+                <span>{t('rankPage.h1')}</span>
                 <Dialog>
                   <DialogTrigger asChild>
                     <button
-                      aria-label="Comment fonctionne le score"
+                      aria-label={t('rankPage.scoreHelpAria')}
                       className="text-blue-600 hover:text-blue-800 transition"
                     >
                       <HelpCircle className="w-5 h-5" />
@@ -224,33 +230,28 @@ const Classement = () => {
                   <DialogContent className="max-w-lg">
                     <DialogHeader>
                       <DialogTitle className="flex items-center gap-2">
-                        <Info className="w-5 h-5 text-blue-600" /> Comment fonctionne le score ?
+                        <Info className="w-5 h-5 text-blue-600" /> {t('rankPage.scoreHelpTitle')}
                       </DialogTitle>
                     </DialogHeader>
                     <div className="text-sm text-gray-700 space-y-2">
-                      <p>Chaque eau est notée sur 80 points selon <strong>{criteriaCount} critères</strong> (minéralisation, nitrates, calcium, sodium, pH, etc.) pondérés en fonction du profil choisi.</p>
-                      <p>Le profil <strong>Pureté</strong> valorise les eaux ultra-pures comme Mont Roucous ou Montcalm. Le profil <strong>Os & calcium</strong> valorise au contraire les eaux fortement minéralisées.</p>
-                      <p className="text-amber-700 text-xs mt-2">Les eaux marquées « non recommandées » dépassent un seuil critique pour le profil sélectionné.</p>
+                      <p>{t('rankPage.scoreHelp1', { criteria: String(criteriaCount) })}</p>
+                      <p>{t('rankPage.scoreHelp2')}</p>
+                      <p className="text-amber-700 text-xs mt-2">{t('rankPage.scoreHelp3')}</p>
                     </div>
                   </DialogContent>
                 </Dialog>
               </h1>
               <p className="text-sm text-gray-600 mt-2 flex items-center justify-center gap-2 flex-wrap">
                 <Badge variant="outline" className={isFrance ? 'border-blue-300 text-blue-700 bg-blue-50' : 'border-green-300 text-green-700 bg-green-50'}>
-                  {isFrance ? 'Marché français' : 'Catalogue Europe'}
+                  {isFrance ? t('rankPage.marketFr') : t('rankPage.marketEu')}
                 </Badge>
-                <span><strong>{waters.length}</strong> eaux comparées · {ranked.length} affichées</span>
+                <span>{t('rankPage.counts', { total: String(waters.length), shown: String(ranked.length) })}</span>
               </p>
               {/* Bloc SEO/GEO : texte sémantique riche pour Google + moteurs IA (ChatGPT, Perplexity, Gemini) */}
               <div className="max-w-3xl mx-auto mt-4 text-sm text-gray-700 leading-relaxed">
-                <h2 className="sr-only">Comparateur des meilleures eaux minérales en bouteille en France</h2>
-                <p>
-                  <strong>Comparateur et classement</strong> des principales eaux en bouteille vendues en France :
-                  {' '}<em>Evian, Contrex, Hépar, Volvic, Mont Roucous, Badoit, Vittel, Cristaline, Wattwiller, Thonon, Montcalm, Sainte-Sophie, Quézac, Salvetat, Perrier</em> et bien d'autres.
-                  Chaque eau est notée sur 80 points selon 11 critères (résidu sec, calcium, magnésium, sodium, nitrates, fluorures, pH…)
-                  et 12 profils santé : Général, Pureté, Os & calcium, Sport, Bébé, Senior, Grossesse, Quotidien, Thé, Transit, Digestion, Régime pauvre en sodium.
-                  Trouvez en un clic la meilleure eau en bouteille adaptée à <strong>vos besoins</strong>.
-                </p>
+                <h2 className="sr-only">{t('rankPage.seoH2')}</h2>
+                <p>{t('rankPage.seoP1')}</p>
+                <p className="mt-2">{t('rankPage.seoP2')}</p>
               </div>
             </div>
           </div>
