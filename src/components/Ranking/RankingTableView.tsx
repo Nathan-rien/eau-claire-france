@@ -83,10 +83,10 @@ export default function RankingTableView({
             <th className="px-2 py-2 w-8"></th>
             <th className="px-2 py-2 w-8"></th>
             <SortHead k="rank" label="#" />
-            <SortHead k="name" label="Eau" />
-            <SortHead k="score" label="Score" />
-            <th className="px-2 py-2 text-left font-medium">Note</th>
-            <SortHead k="residu" label="Résidu" />
+            <SortHead k="name" label={t('rankUI.col.water')} />
+            <SortHead k="score" label={t('rankUI.col.score')} />
+            <th className="px-2 py-2 text-left font-medium">{t('rankUI.col.grade')}</th>
+            <SortHead k="residu" label={t('rankUI.col.residu')} />
             <SortHead k="calcium" label="Ca" />
             <SortHead k="magnesium" label="Mg" />
             <SortHead k="sodium" label="Na" />
@@ -102,13 +102,13 @@ export default function RankingTableView({
             return (
               <tr key={w.id} className={`border-b last:border-0 hover:bg-gray-50 ${row.excluded ? 'opacity-60' : ''}`}>
                 <td className="px-2 py-2">
-                  <button onClick={() => onToggleSelect(w.id)} aria-label="Sélectionner pour comparer"
+                  <button onClick={() => onToggleSelect(w.id)} aria-label={t('rankUI.selectToCompare')}
                     className={`w-6 h-6 rounded border-2 flex items-center justify-center transition ${isSelected ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-300 hover:border-blue-400'}`}>
                     {isSelected ? <Check className="w-3 h-3" /> : <Plus className="w-3 h-3 opacity-0 hover:opacity-50" />}
                   </button>
                 </td>
                 <td className="px-2 py-2">
-                  <button onClick={() => onToggleFavorite(w.id)} aria-label="Favori">
+                  <button onClick={() => onToggleFavorite(w.id)} aria-label={t('rankUI.favorite')}>
                     <Star className={`w-4 h-4 ${isFav ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300 hover:text-yellow-400'}`} />
                   </button>
                 </td>
