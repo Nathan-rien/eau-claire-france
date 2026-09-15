@@ -245,6 +245,13 @@ export default function CheapestWaterSummary() {
                   <td className="py-2 text-muted-foreground">{a.count}</td>
                 </tr>
               ))}
+              {mddComparison.map((g) => (
+                <tr key={g.label} className="border-t bg-muted/30">
+                  <td className="py-2 pr-4">{g.label}</td>
+                  <td className="py-2 pr-4 font-semibold">{formatPricePerL(g.avg)}</td>
+                  <td className="py-2 text-muted-foreground">{g.count}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
