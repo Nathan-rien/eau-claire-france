@@ -54,7 +54,7 @@ export default function ProfileRecommendationCard({ profile }: Props) {
         <div className="flex flex-col md:flex-row">
           <div className="md:w-2/5 p-5 sm:p-6 bg-slate-50/60 border-b md:border-b-0 md:border-r border-slate-100">
             <span className="inline-block text-[10px] uppercase tracking-[0.18em] font-bold text-blue-600 mb-3">
-              Cible prioritaire
+              {t('profileCard.target')}
             </span>
             <p className="text-[15px] text-slate-800 leading-relaxed">{rec.who}</p>
             {rec.source && (
@@ -69,7 +69,7 @@ export default function ProfileRecommendationCard({ profile }: Props) {
             <section>
               <h4 className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.18em] mb-3 flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-                Seuils recommandés
+                {t('profileCard.thresholds')}
               </h4>
 
               {metrics.length > 0 && (
@@ -102,7 +102,7 @@ export default function ProfileRecommendationCard({ profile }: Props) {
               <section>
                 <h4 className="text-[10px] font-bold text-amber-600 uppercase tracking-[0.18em] mb-3 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
-                  Contre-indications
+                  {t('profileCard.contraindications')}
                 </h4>
                 <ul className="space-y-2">
                   {rec.avoid.map((a, i) => {
