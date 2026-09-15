@@ -104,7 +104,7 @@ export default function BottleRankingCard({
             {isSparkling && (
               <Badge variant="outline" className="text-xs flex items-center gap-1">
                 <Sparkles className="w-3 h-3" />
-                Gazeuse
+                {t('rankUI.sparklingBadge')}
               </Badge>
             )}
           </div>
@@ -128,9 +128,9 @@ export default function BottleRankingCard({
         <div className="mb-3 p-2 bg-red-100 rounded-lg border border-red-200 flex items-start gap-2">
           <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-red-700">
-            <span className="font-medium">Non recommandé pour ce profil</span>
+            <span className="font-medium">{t('rankUI.notRecommended')}</span>
             <ul className="mt-1 text-xs">
-              {scored.exclusionReasons.map((r, i) => <li key={i}>• {r}</li>)}
+              {scored.exclusionReasons.map((r, i) => <li key={i}>• {translateReason(r, language)}</li>)}
             </ul>
           </div>
         </div>
@@ -151,7 +151,7 @@ export default function BottleRankingCard({
             <div key={criterion}>
               <div className="flex justify-between text-xs text-gray-600 mb-0.5">
                 <span className="flex items-center gap-1">
-                  {info.label}
+                  {criterionLabel(criterion, info.label, language)}
                   {value != null && (
                     <span className="text-gray-400">
                       ({formatMineralValue(value, criterion)}{info.unit ? ` ${info.unit}` : ''})
@@ -175,16 +175,16 @@ export default function BottleRankingCard({
       {availableData < 8 && (
         <div className="flex items-center gap-2 text-xs text-amber-600 mb-2">
           <Droplets className="w-3 h-3" />
-          <span>Données partielles: {availableData}/11 critères</span>
+          <span>{t('rankUI.partialData', { n: String(availableData) })}</span>
         </div>
       )}
 
       {/* Reasons */}
       {rsn.length > 0 && (
         <ul className="text-xs text-gray-600 space-y-1 border-t pt-2 mt-2">
-          {rsn.slice(0, 3).map((t, i) => (
-            <li key={i} className={t.startsWith('⚠️') ? 'text-red-600 font-medium' : t.startsWith('✓') ? 'text-green-600' : ''}>
-              {t}
+          {rsn.slice(0, 3).map((reason, i) => (
+            <li key={i} className={reason.startsWith('⚠️') ? 'text-red-600 font-medium' : reason.startsWith('✓') ? 'text-green-600' : ''}>
+              {translateReason(reason, language)}
             </li>
           ))}
         </ul>
