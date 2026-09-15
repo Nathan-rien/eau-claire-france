@@ -41,12 +41,12 @@ export default function ProfileRecommendationCard({ profile }: Props) {
       >
         <div className="flex items-center gap-3 min-w-0">
           <div className="min-w-0">
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">{info.label}</h2>
-            <p className="text-xs sm:text-sm text-slate-500 truncate">{info.description}</p>
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">{label}</h2>
+            <p className="text-xs sm:text-sm text-slate-500 truncate">{desc}</p>
           </div>
         </div>
         <span className="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 transition-colors">
-          {open ? (<>Masquer <ChevronUp className="w-4 h-4" /></>) : (<>Recommandations <ChevronDown className="w-4 h-4" /></>)}
+          {open ? (<>{t('profileCard.hide')} <ChevronUp className="w-4 h-4" /></>) : (<>{t('profileCard.recommendations')} <ChevronDown className="w-4 h-4" /></>)}
         </span>
       </button>
 
