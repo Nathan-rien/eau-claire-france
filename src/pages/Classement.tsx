@@ -275,7 +275,7 @@ const Classement = () => {
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  placeholder="Rechercher une marque, source, région…"
+                  placeholder={t('rankPage.searchPlaceholder')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="pl-9"
@@ -287,20 +287,20 @@ const Classement = () => {
                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
               >
                 <Star className={`w-4 h-4 mr-1 ${showFavoritesOnly ? 'fill-current' : ''}`} />
-                Favoris ({favorites.size})
+                {t('rankPage.favorites')} ({favorites.size})
               </Button>
               <div className="flex gap-1 bg-white border rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('cards')}
                   className={`px-2 py-1.5 rounded text-xs flex items-center gap-1 transition ${viewMode === 'cards' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}
                 >
-                  <LayoutGrid className="w-3.5 h-3.5" /> Cartes
+                  <LayoutGrid className="w-3.5 h-3.5" /> {t('rankPage.cards')}
                 </button>
                 <button
                   onClick={() => setViewMode('table')}
                   className={`px-2 py-1.5 rounded text-xs flex items-center gap-1 transition ${viewMode === 'table' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}
                 >
-                  <TableIcon className="w-3.5 h-3.5" /> Tableau
+                  <TableIcon className="w-3.5 h-3.5" /> {t('rankPage.table')}
                 </button>
               </div>
             </div>
