@@ -28,20 +28,33 @@ type Row = {
 
 const SPARKLING = ['perrier', 'badoit', 'san pellegrino', 'salvetat', 'quezac', 'quézac', 'vichy', 'saint-yorre', 'rozana', 'arvie', 'st-yorre'];
 const SPRING = ['cristaline', 'mont roucous', 'volvic', 'thonon', 'plancoet', 'plancoët', 'saint-amand', 'wattwiller'];
+const FLAVOURED = ['aromatis', 'saveur', 'citron', 'fraise', 'pêche', 'peche', 'menthe', 'framboise', 'agrume', 'zest'];
+const RETAILER_BRANDS = [
+  'carrefour', 'auchan', 'leclerc', 'eco+', 'repère', 'repere', 'u bio', 'marque u', 'casino',
+  'monoprix', 'lidl', 'aldi', 'intermarché', 'intermarche', 'cora', 'franprix', 'netto',
+  'dia', 'pouce', 'belle france', 'saint-alban', 'cristalline bio',
+];
 
-type Category = 'sparkling' | 'spring' | 'mineral';
+type Category = 'sparkling' | 'spring' | 'mineral' | 'flavoured';
 
 function categorize(row: Row): Category {
   const hay = `${row.brand} ${row.product_name}`.toLowerCase();
+  if (FLAVOURED.some((b) => hay.includes(b))) return 'flavoured';
   if (SPARKLING.some((b) => hay.includes(b)) || /gazeu|pétillan|petillan|sparkling/.test(hay)) return 'sparkling';
   if (SPRING.some((b) => hay.includes(b)) || /eau de source/.test(hay)) return 'spring';
   return 'mineral';
+}
+
+function isRetailerBrand(row: Row): boolean {
+  const hay = `${row.brand} ${row.product_name}`.toLowerCase();
+  return RETAILER_BRANDS.some((b) => hay.includes(b));
 }
 
 const CATEGORY_LABELS: Record<Category, string> = {
   spring: 'Eau de source',
   mineral: 'Eau minérale plate',
   sparkling: 'Eau minérale gazeuse',
+  flavoured: 'Eau aromatisée',
 };
 
 const LITERS_PER_PERSON_PER_YEAR = 1.5 * 365; // 1,5 L/jour
