@@ -48,7 +48,7 @@ export default function BottleCompareModal({ open, onClose, waters, profile }: P
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b">
-                <th className="text-left py-3 pr-4 font-medium text-gray-600">Critère</th>
+                <th className="text-left py-3 pr-4 font-medium text-gray-600">{t('rankUI.criterion')}</th>
                 {scored.map(s => (
                   <th key={s.water.id} className="text-left py-3 px-3 min-w-[140px]">
                     <div className="font-semibold text-gray-900 flex items-center gap-1">
@@ -63,7 +63,7 @@ export default function BottleCompareModal({ open, onClose, waters, profile }: P
             </thead>
             <tbody>
               <tr className="border-b bg-blue-50/50">
-                <td className="py-3 pr-4 font-medium">Score / 80</td>
+                <td className="py-3 pr-4 font-medium">{t('rankUI.scoreOutOf')}</td>
                 {scored.map(s => (
                   <td key={s.water.id} className="py-3 px-3">
                     <div className={`font-bold ${s.total === bestScore && !s.excluded ? 'text-green-700' : 'text-gray-900'}`}>
@@ -73,7 +73,7 @@ export default function BottleCompareModal({ open, onClose, waters, profile }: P
                 ))}
               </tr>
               <tr className="border-b">
-                <td className="py-3 pr-4 font-medium">Note</td>
+                <td className="py-3 pr-4 font-medium">{t('rankUI.col.grade')}</td>
                 {scored.map(s => (
                   <td key={s.water.id} className="py-3 px-3">
                     <span className={`inline-flex items-center justify-center w-8 h-8 rounded font-bold ${letterColor(s.letter)}`}>
@@ -95,7 +95,7 @@ export default function BottleCompareModal({ open, onClose, waters, profile }: P
                 return (
                   <tr key={criterion} className="border-b hover:bg-gray-50">
                     <td className="py-2 pr-4 text-gray-700">
-                      {info.label} <span className="text-xs text-gray-400">({info.unit})</span>
+                      {criterionLabel(criterion, info.label, language)} <span className="text-xs text-gray-400">({info.unit})</span>
                     </td>
                     {values.map((v, i) => (
                       <td key={i} className="py-2 px-3">
@@ -116,20 +116,20 @@ export default function BottleCompareModal({ open, onClose, waters, profile }: P
                 );
               })}
               <tr>
-                <td className="py-3 pr-4 font-medium text-gray-700 align-top">Recommandation</td>
+                <td className="py-3 pr-4 font-medium text-gray-700 align-top">{t('rankUI.recommendation')}</td>
                 {scored.map(s => (
                   <td key={s.water.id} className="py-3 px-3 text-xs">
                     {s.excluded ? (
                       <div className="text-red-600">
-                        <div className="font-medium mb-1">Non recommandée</div>
+                        <div className="font-medium mb-1">{t('rankUI.notRecommendedShort')}</div>
                         <ul className="space-y-0.5">
-                          {s.exclusionReasons.slice(0, 2).map((r, i) => <li key={i}>• {r}</li>)}
+                          {s.exclusionReasons.slice(0, 2).map((r, i) => <li key={i}>• {translateReason(r, language)}</li>)}
                         </ul>
                       </div>
                     ) : s.total === bestScore ? (
-                      <div className="text-green-700 font-medium">✓ Meilleur choix pour ce profil</div>
+                      <div className="text-green-700 font-medium">✓ {t('rankUI.bestChoice')}</div>
                     ) : (
-                      <div className="text-gray-500">Adaptée à ce profil</div>
+                      <div className="text-gray-500">{t('rankUI.suitable')}</div>
                     )}
                   </td>
                 ))}
