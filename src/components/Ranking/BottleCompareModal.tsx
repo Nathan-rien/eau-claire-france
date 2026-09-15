@@ -24,6 +24,7 @@ const letterColor = (l: string) => ({
 }[l] || 'bg-gray-100 text-gray-600');
 
 export default function BottleCompareModal({ open, onClose, waters, profile }: Props) {
+  const { t, language } = useLanguage();
   if (waters.length === 0) return null;
 
   const scored = waters.map(w => {
