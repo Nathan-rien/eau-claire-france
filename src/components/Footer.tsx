@@ -2,6 +2,7 @@
 import React from 'react';
 import { Droplets } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -50,6 +51,7 @@ const Footer = () => {
               <li><a href="/rgpd" className="hover:text-white transition-colors" rel="nofollow">{t('footer.gdpr')}</a></li>
               <li><a href="/accessibilite" className="hover:text-white transition-colors" rel="nofollow">{t('footer.accessibility')}</a></li>
               <li><a href="/open-data" className="hover:text-white transition-colors" rel="nofollow">{t('footer.openData')}</a></li>
+              <li><LanguageSwitcher variant="inline" /></li>
             </ul>
           </nav>
         </div>
