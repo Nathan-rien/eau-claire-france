@@ -114,6 +114,21 @@ export default function CheapestWaterSummary() {
       .sort((a, b) => (a.avg as number) - (b.avg as number));
   }, [valid]);
 
+  const mddComparison = useMemo(() => {
+    const groups: { label: string; prices: number[] }[] = [
+      { label: 'Marques de distributeur (MDD)', prices: [] },
+      { label: 'Marques nationales', prices: [] },
+    ];
+    valid.forEach((r) => groups[isRetailerBrand(r) ? 0 : 1].prices.push(r.price_per_l_eur as number));
+    return groups
+      .filter((g) => g.prices.length > 0)
+      .map((g) => ({
+        label: g.label,
+        count: g.prices.length,
+        avg: g.prices.reduce((a, b) => a + b, 0) / g.prices.length,
+      }));
+  }, [valid]);
+
   const lastUpdate = useMemo(() => {
     const dates = valid.map((r) => r.scraped_at || r.created_at).filter(Boolean) as string[];
     if (!dates.length) return null;
