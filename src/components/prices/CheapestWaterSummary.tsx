@@ -173,8 +173,17 @@ export default function CheapestWaterSummary() {
       q: 'Eau de source ou eau minérale : laquelle est la moins chère ?',
       a: "Les eaux de source (Cristaline, Mont Roucous, Thonon) sont généralement les moins chères au litre. Les eaux minérales gazeuses sont les plus coûteuses, en raison du conditionnement et du gaz carbonique.",
     });
+    if (mddComparison.length === 2) {
+      const [mdd, national] = mddComparison;
+      items.push({
+        q: 'Les marques de distributeur sont-elles vraiment moins chères ?',
+        a: `Sur notre dernier relevé, les marques de distributeur ressortent à ${formatPricePerL(
+          mdd.avg,
+        )} en moyenne contre ${formatPricePerL(national.avg)} pour les marques nationales.`,
+      });
+    }
     return items;
-  }, [cheapest, avgAll, annualAvg, annualTap]);
+  }, [cheapest, avgAll, annualAvg, annualTap, mddComparison]);
 
   if (loading || !valid.length) return null;
 
