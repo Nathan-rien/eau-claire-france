@@ -2,7 +2,10 @@
 import { X, Sparkles } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Composition, scoreBottle, letterGrade, Profile, CRITERION_LABELS, getCompositionForDisplay, formatMineralValue } from '@/utils/rankingV2';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { criterionLabel, translateReason } from '@/utils/rankingI18n';
 import type { WaterSource } from '@/hooks/useWaterCompositions';
+
 
 interface Props {
   open: boolean;
