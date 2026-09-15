@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, AlertTriangle, Info, CheckCircle2 } from "lucide-react";
 import { Profile, getProfileInfo } from "@/utils/rankingV2";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Props {
   profile: Profile;
