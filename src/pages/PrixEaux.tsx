@@ -25,6 +25,7 @@ import { extractSourceInfo, detectChannelType, getChannelDescription, ChannelTyp
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import BrandLinksSection from '@/components/BrandLinksSection';
 import RegionLinksSection from '@/components/RegionLinksSection';
+import CheapestWaterSummary from '@/components/prices/CheapestWaterSummary';
 
 interface PriceWithRetailer extends Price {
   retailer_name: string;
@@ -326,6 +327,9 @@ export default function PrixEaux() {
           <p className="text-muted-foreground mb-6">
             {t('prices.subtitle')}
           </p>
+
+          {/* Synthèse prix (requêtes larges : eau la moins chère, prix au litre, coût annuel) */}
+          <CheapestWaterSummary />
 
           {/* Légende des types de sources */}
           <Alert className="mb-6 bg-muted/50">
