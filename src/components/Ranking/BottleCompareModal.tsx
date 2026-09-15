@@ -40,7 +40,7 @@ export default function BottleCompareModal({ open, onClose, waters, profile }: P
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
-            <span>Comparaison côte-à-côte ({waters.length} eaux)</span>
+            <span>{t('rankUI.compareTitle', { n: String(waters.length) })}</span>
           </DialogTitle>
         </DialogHeader>
 
