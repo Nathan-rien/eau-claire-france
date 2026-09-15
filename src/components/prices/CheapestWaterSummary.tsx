@@ -184,10 +184,12 @@ export default function CheapestWaterSummary() {
               <p className="text-xs text-muted-foreground mb-1">#{i + 1} · {CATEGORY_LABELS[categorize(r)]}</p>
               <p className="font-semibold leading-tight">{r.brand}</p>
               <p className="text-2xl font-bold text-primary mt-1">{formatPricePerL(r.price_per_l_eur as number)}</p>
-              {r.price_total_eur && r.pack_count ? (
+              {r.price_total_eur ? (
                 <p className="text-xs text-muted-foreground mt-1">
-                  {formatEur(r.price_total_eur)} le pack de {r.pack_count}
-                  {r.unit_volume_l ? ` × ${r.unit_volume_l} L` : ''}
+                  {formatEur(r.price_total_eur)}{' '}
+                  {(r.pack_count ?? 1) > 1
+                    ? `le pack de ${r.pack_count}${r.unit_volume_l ? ` × ${r.unit_volume_l} L` : ''}`
+                    : `la bouteille${r.unit_volume_l ? ` de ${r.unit_volume_l} L` : ''}`}
                 </p>
               ) : null}
             </div>
