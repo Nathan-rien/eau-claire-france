@@ -44,7 +44,7 @@ function countActiveFilters(f: RankingFilterState): number {
 }
 
 const Classement = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [profile, setProfile] = useState<Profile>("general");
   const [filters, setFilters] = useState<RankingFilterState>(DEFAULT_FILTERS);
   const [search, setSearch] = useState('');
