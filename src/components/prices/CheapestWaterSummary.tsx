@@ -28,20 +28,33 @@ type Row = {
 
 const SPARKLING = ['perrier', 'badoit', 'san pellegrino', 'salvetat', 'quezac', 'quézac', 'vichy', 'saint-yorre', 'rozana', 'arvie', 'st-yorre'];
 const SPRING = ['cristaline', 'mont roucous', 'volvic', 'thonon', 'plancoet', 'plancoët', 'saint-amand', 'wattwiller'];
+const FLAVOURED = ['aromatis', 'saveur', 'citron', 'fraise', 'pêche', 'peche', 'menthe', 'framboise', 'agrume', 'zest'];
+const RETAILER_BRANDS = [
+  'carrefour', 'auchan', 'leclerc', 'eco+', 'repère', 'repere', 'u bio', 'marque u', 'casino',
+  'monoprix', 'lidl', 'aldi', 'intermarché', 'intermarche', 'cora', 'franprix', 'netto',
+  'dia', 'pouce', 'belle france', 'saint-alban', 'cristalline bio',
+];
 
-type Category = 'sparkling' | 'spring' | 'mineral';
+type Category = 'sparkling' | 'spring' | 'mineral' | 'flavoured';
 
 function categorize(row: Row): Category {
   const hay = `${row.brand} ${row.product_name}`.toLowerCase();
+  if (FLAVOURED.some((b) => hay.includes(b))) return 'flavoured';
   if (SPARKLING.some((b) => hay.includes(b)) || /gazeu|pétillan|petillan|sparkling/.test(hay)) return 'sparkling';
   if (SPRING.some((b) => hay.includes(b)) || /eau de source/.test(hay)) return 'spring';
   return 'mineral';
+}
+
+function isRetailerBrand(row: Row): boolean {
+  const hay = `${row.brand} ${row.product_name}`.toLowerCase();
+  return RETAILER_BRANDS.some((b) => hay.includes(b));
 }
 
 const CATEGORY_LABELS: Record<Category, string> = {
   spring: 'Eau de source',
   mineral: 'Eau minérale plate',
   sparkling: 'Eau minérale gazeuse',
+  flavoured: 'Eau aromatisée',
 };
 
 const LITERS_PER_PERSON_PER_YEAR = 1.5 * 365; // 1,5 L/jour
@@ -89,7 +102,7 @@ export default function CheapestWaterSummary() {
   }, [valid]);
 
   const averages = useMemo(() => {
-    const buckets: Record<Category, number[]> = { spring: [], mineral: [], sparkling: [] };
+    const buckets: Record<Category, number[]> = { spring: [], mineral: [], sparkling: [], flavoured: [] };
     valid.forEach((r) => buckets[categorize(r)].push(r.price_per_l_eur as number));
     return (Object.keys(buckets) as Category[])
       .map((c) => ({
@@ -99,6 +112,21 @@ export default function CheapestWaterSummary() {
       }))
       .filter((x) => x.count > 0)
       .sort((a, b) => (a.avg as number) - (b.avg as number));
+  }, [valid]);
+
+  const mddComparison = useMemo(() => {
+    const groups: { label: string; prices: number[] }[] = [
+      { label: 'Marques de distributeur (MDD)', prices: [] },
+      { label: 'Marques nationales', prices: [] },
+    ];
+    valid.forEach((r) => groups[isRetailerBrand(r) ? 0 : 1].prices.push(r.price_per_l_eur as number));
+    return groups
+      .filter((g) => g.prices.length > 0)
+      .map((g) => ({
+        label: g.label,
+        count: g.prices.length,
+        avg: g.prices.reduce((a, b) => a + b, 0) / g.prices.length,
+      }));
   }, [valid]);
 
   const lastUpdate = useMemo(() => {
@@ -145,8 +173,17 @@ export default function CheapestWaterSummary() {
       q: 'Eau de source ou eau minérale : laquelle est la moins chère ?',
       a: "Les eaux de source (Cristaline, Mont Roucous, Thonon) sont généralement les moins chères au litre. Les eaux minérales gazeuses sont les plus coûteuses, en raison du conditionnement et du gaz carbonique.",
     });
+    if (mddComparison.length === 2) {
+      const [mdd, national] = mddComparison;
+      items.push({
+        q: 'Les marques de distributeur sont-elles vraiment moins chères ?',
+        a: `Sur notre dernier relevé, les marques de distributeur ressortent à ${formatPricePerL(
+          mdd.avg,
+        )} en moyenne contre ${formatPricePerL(national.avg)} pour les marques nationales.`,
+      });
+    }
     return items;
-  }, [cheapest, avgAll, annualAvg, annualTap]);
+  }, [cheapest, avgAll, annualAvg, annualTap, mddComparison]);
 
   if (loading || !valid.length) return null;
 
@@ -215,6 +252,13 @@ export default function CheapestWaterSummary() {
                   <td className="py-2 pr-4">{CATEGORY_LABELS[a.category]}</td>
                   <td className="py-2 pr-4 font-semibold">{formatPricePerL(a.avg as number)}</td>
                   <td className="py-2 text-muted-foreground">{a.count}</td>
+                </tr>
+              ))}
+              {mddComparison.map((g) => (
+                <tr key={g.label} className="border-t bg-muted/30">
+                  <td className="py-2 pr-4">{g.label}</td>
+                  <td className="py-2 pr-4 font-semibold">{formatPricePerL(g.avg)}</td>
+                  <td className="py-2 text-muted-foreground">{g.count}</td>
                 </tr>
               ))}
             </tbody>
