@@ -102,7 +102,7 @@ export default function CheapestWaterSummary() {
   }, [valid]);
 
   const averages = useMemo(() => {
-    const buckets: Record<Category, number[]> = { spring: [], mineral: [], sparkling: [] };
+    const buckets: Record<Category, number[]> = { spring: [], mineral: [], sparkling: [], flavoured: [] };
     valid.forEach((r) => buckets[categorize(r)].push(r.price_per_l_eur as number));
     return (Object.keys(buckets) as Category[])
       .map((c) => ({
