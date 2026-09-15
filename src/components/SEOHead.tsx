@@ -40,7 +40,12 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   noindex = false,
 }) => {
   const siteUrl = "https://infoeau.fr";
-  const fullTitle = title.includes('InfoEau') ? title : `${title} | InfoEau.fr - Qualité de l'eau potable en France`;
+  const isEnPath = typeof window !== 'undefined'
+    && (window.location.pathname === '/en' || window.location.pathname.startsWith('/en/'));
+  const siteSuffix = isEnPath
+    ? 'InfoEau.fr - Drinking water quality in France'
+    : "InfoEau.fr - Qualité de l'eau potable en France";
+  const fullTitle = title.includes('InfoEau') ? title : `${title} | ${siteSuffix}`;
   // Canonical must always point to the production domain infoeau.fr — never to
   // preview/lovable.app hosts. When no explicit canonical prop is given, we
   // build it from the current pathname but force the infoeau.fr origin.
