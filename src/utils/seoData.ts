@@ -553,6 +553,62 @@ export const seoData = {
     }
   },
 
+  classementEn: {
+    title: "Best bottled water ranking 2026: minerals, pH, nitrates compared",
+    description: "Compare 50+ bottled mineral waters sold in France and Europe: dry residue, pH, calcium, magnesium, sodium and nitrates, scored for 12 health profiles.",
+    keywords: "best bottled water, bottled water comparison, mineral water ranking, low mineral water, bottled water pH, nitrates in bottled water, bottled water minerals",
+    canonical: "/en/classement",
+    schemaData: {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebPage",
+          "@id": "https://infoeau.fr/en/classement#webpage",
+          "name": "Bottled water ranking and comparison tool",
+          "description": "Interactive ranking and comparison of 50+ bottled waters across 11 criteria (mineralisation, nitrates, calcium, sodium, pH…) and 12 health profiles, using the thresholds of the EU Drinking Water Directive (2020/2184).",
+          "url": "https://infoeau.fr/en/classement",
+          "inLanguage": "en",
+          "isPartOf": { "@type": "WebSite", "name": "InfoEau.fr", "url": "https://infoeau.fr" },
+          "primaryImageOfPage": { "@type": "ImageObject", "url": "https://infoeau.fr/images/og-comparatif.jpg" }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://infoeau.fr/en" },
+            { "@type": "ListItem", "position": 2, "name": "Bottled water", "item": "https://infoeau.fr/en/classement" }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is the best bottled water?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Under the InfoEau score (11 criteria, 80 points), the best waters for the General profile are Sainte-Sophie, Evian, Thonon, Mont Roucous and Volvic. The best choice depends on your profile: Mont Roucous and Montcalm lead on purity, Contrex and Hépar on calcium and magnesium intake, Evian and Volvic for everyday drinking." }
+            },
+            {
+              "@type": "Question",
+              "name": "Which bottled water is lowest in minerals?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Mont Roucous, Montcalm and Volvic have the lowest dry residue (under 150 mg/L), which makes them suitable for infant bottles and low-sodium diets." }
+            },
+            {
+              "@type": "Question",
+              "name": "Which bottled water has the fewest nitrates?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Mont Roucous (below 1 mg/L), Montcalm, Volvic and Mont Blanc are among the lowest-nitrate waters on the French market, far below the 50 mg/L limit set by EU Directive 2020/2184." }
+            },
+            {
+              "@type": "Question",
+              "name": "How is the InfoEau score calculated?",
+              "acceptedAnswer": { "@type": "Answer", "text": "The score runs out of 80 points across 11 weighted criteria (dry residue, calcium, magnesium, sodium, potassium, bicarbonates, sulphates, nitrates, fluoride, pH, hardness). Weightings change across 12 health profiles (General, Purity, Bones & calcium, Sport, Baby, Senior, Pregnancy and more). Thresholds follow the EU Drinking Water Directive (2020/2184) and EU natural mineral water labelling rules." }
+            }
+          ]
+        }
+      ]
+    }
+  },
+
+
+
   diagnosticPrix: {
     title: "Diagnostic des prix - Audit et vérifications | InfoEau.fr",
     description: "Page de diagnostic technique des prix de l'eau : sources de données, méthodes de calcul, garde-fous et validations appliquées.",
