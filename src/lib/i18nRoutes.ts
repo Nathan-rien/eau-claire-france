@@ -38,6 +38,7 @@ export const localizePath = (path: string, lang: AppLanguage): string => {
  */
 export const INTERNATIONAL_PATHS: string[] = [
   '/',
+  '/classement',
   '/traiter-eau-robinet',
   '/guide/eau-calcaire',
   '/guide/gout-chlore',
