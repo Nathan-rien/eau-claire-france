@@ -3,6 +3,7 @@ import { Composition, scoreBottle, letterGrade, reasons, Profile, CRITERION_LABE
 import { AlertTriangle, Sparkles, Droplets } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { criterionLabel, translateReason } from "@/utils/rankingI18n";
 import { Link } from "@/components/LocalizedLink";
 import { brandToSlug } from "@/config/brands";
 import { isPricedBrandSlug } from "@/config/pricedBrands";
@@ -19,7 +20,7 @@ export default function BottleRankingCard({
   rank?: number;
   podium?: boolean;
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const candidateSlug = brand ? brandToSlug(brand) : undefined;
   const brandSlug = isPricedBrandSlug(candidateSlug) ? candidateSlug : undefined;
   const scored = scoreBottle(compos, profile);
