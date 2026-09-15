@@ -83,9 +83,9 @@ export default function RankingFilters({ filters, onChange, resultCount, activeC
         <div className="flex items-center gap-2 flex-wrap">
           <Filter className="w-4 h-4 text-gray-600" />
           <span className="font-medium text-sm">{t('ranking.advancedFilters')}</span>
-          <Badge variant="secondary">{resultCount} eaux</Badge>
+          <Badge variant="secondary">{resultCount} {t('rankUI.watersCount')}</Badge>
           {activeCount > 0 && (
-            <Badge variant="default" className="bg-blue-600">{activeCount} actif{activeCount > 1 ? 's' : ''}</Badge>
+            <Badge variant="default" className="bg-blue-600">{activeCount} {t('rankUI.activeFilters')}</Badge>
           )}
         </div>
         {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -110,7 +110,7 @@ export default function RankingFilters({ filters, onChange, resultCount, activeC
             </div>
             <div className="flex items-center gap-2">
               <Switch checked={filters.showMddOnly} onCheckedChange={(v) => update('showMddOnly', v)} id="f-mdd" />
-              <Label htmlFor="f-mdd" className="text-sm cursor-pointer">MDD uniquement</Label>
+              <Label htmlFor="f-mdd" className="text-sm cursor-pointer">{t('rankUI.mddOnly')}</Label>
             </div>
           </div>
 
@@ -146,7 +146,7 @@ export default function RankingFilters({ filters, onChange, resultCount, activeC
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
-                  {o === 'FR' ? 'France' : o === 'EU' ? 'Europe' : 'Monde'}
+                  {o === 'FR' ? 'France' : o === 'EU' ? 'Europe' : t('rankUI.originWorld')}
                 </button>
               ))}
             </div>
@@ -194,7 +194,7 @@ export default function RankingFilters({ filters, onChange, resultCount, activeC
             onClick={reset}
             className="text-xs text-blue-600 hover:underline"
           >
-            Réinitialiser tous les filtres
+            {t('rankUI.resetAll')}
           </button>
         </div>
       )}
