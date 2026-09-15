@@ -333,7 +333,7 @@ const Classement = () => {
                       {podium.length > 0 && (
                         <div className="mb-6">
                           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <Trophy className="w-4 h-4 text-yellow-600" /> Podium
+                            <Trophy className="w-4 h-4 text-yellow-600" /> {t('rankPage.podium')}
                           </h2>
                           <div className="grid md:grid-cols-3 gap-4">
                             {podium.map((r, i) =>
@@ -346,7 +346,7 @@ const Classement = () => {
                       {rest.length > 0 && (
                         <>
                           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                            Reste du classement
+                            {t('rankPage.rest')}
                           </h2>
                           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {rest.map((r, i) =>
@@ -370,9 +370,9 @@ const Classement = () => {
                   {ranked.length === 0 && (
                     <div className="text-center py-12">
                       <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <p className="text-lg text-gray-500">Aucune eau ne correspond à vos filtres</p>
+                      <p className="text-lg text-gray-500">{t('rankPage.empty')}</p>
                       <Button variant="outline" className="mt-4" onClick={() => setFilters(DEFAULT_FILTERS)}>
-                        Réinitialiser les filtres
+                        {t('rankPage.reset')}
                       </Button>
                     </div>
                   )}
@@ -386,11 +386,11 @@ const Classement = () => {
                 <Badge variant="default" className="bg-blue-600">
                   {selectedIds.size}/{MAX_COMPARE}
                 </Badge>
-                <span className="text-sm font-medium hidden sm:inline">eaux sélectionnées</span>
+                <span className="text-sm font-medium hidden sm:inline">{t('rankPage.selectedWaters')}</span>
                 <Button size="sm" onClick={() => setCompareOpen(true)} disabled={selectedIds.size < 2}>
-                  <GitCompare className="w-4 h-4 mr-1" /> Comparer
+                  <GitCompare className="w-4 h-4 mr-1" /> {t('rankPage.compare')}
                 </Button>
-                <button onClick={() => setSelectedIds(new Set())} className="text-gray-400 hover:text-gray-600" aria-label="Vider">
+                <button onClick={() => setSelectedIds(new Set())} className="text-gray-400 hover:text-gray-600" aria-label={t('rankPage.clear')}>
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -407,14 +407,14 @@ const Classement = () => {
         <section className="container mx-auto px-4 py-12 border-t border-border">
           <AffiliateComparisonTable
             category="filtration"
-            title="Filtrer plutôt que comparer les eaux en bouteille ?"
-            intro="Si votre objectif est de réduire le chlore, le calcaire ou certains contaminants, la filtration à domicile peut remplacer l'achat de bouteilles. Voici ce que chaque solution traite réellement."
+            title={t('rankPage.affiliateTitle')}
+            intro={t('rankPage.affiliateIntro')}
           />
           <Link
             to="/comparatif-filtres-eau"
             className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-blue-700 hover:underline"
           >
-            Comparatif complet des filtres à eau
+            {t('rankPage.filtersCta')}
           </Link>
 
           <aside className="rounded-xl border border-blue-200 bg-blue-50 p-5 mt-8">
