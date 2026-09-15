@@ -204,11 +204,10 @@ const Classement = () => {
   return (
     <Layout>
       <SEOHead
-        {...seoData.classement}
+        {...(language === 'en' ? seoData.classementEn : seoData.classement)}
         title={t('rankPage.seo.title')}
         description={t('rankPage.seo.description')}
         keywords={t('rankPage.seo.keywords')}
-        schemaData={language === 'en' ? undefined : seoData.classement.schemaData}
       />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         {/* Compact hero */}
