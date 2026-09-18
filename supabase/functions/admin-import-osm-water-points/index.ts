@@ -16,6 +16,8 @@ const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
 
 // France métropolitaine (approximatif)
 const DEFAULT_BBOX = { south: 41.0, west: -5.5, north: 51.5, east: 10.0 };
+const DEFAULT_GRID = 6; // 36 sous-zones : évite les timeouts Overpass
+const DEFAULT_TILES_PER_RUN = 4;
 
 interface OsmNode {
   id: number;
@@ -27,7 +29,7 @@ interface OsmNode {
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const buildQuery = (s: number, w: number, n: number, e: number) =>
-  `[out:json][timeout:90];node["amenity"="drinking_water"](${s},${w},${n},${e});out body;`;
+  `[out:json][timeout:120];node["amenity"="drinking_water"](${s},${w},${n},${e});out body;`;
 
 async function fetchTile(
   s: number,
@@ -36,20 +38,29 @@ async function fetchTile(
   e: number
 ): Promise<OsmNode[]> {
   for (let attempt = 0; attempt < 3; attempt++) {
-    const res = await fetch(OVERPASS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `data=${encodeURIComponent(buildQuery(s, w, n, e))}`,
-    });
-    if (res.ok) {
-      const data = await res.json();
-      return (data.elements || []).filter(
-        (el: OsmNode) => typeof el.lat === 'number' && typeof el.lon === 'number'
-      );
+    try {
+      const res = await fetch(OVERPASS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          // Overpass refuse les requêtes sans User-Agent identifiable (406)
+          'User-Agent': 'infoeau.fr water-points import/1.0',
+        },
+        body: `data=${encodeURIComponent(buildQuery(s, w, n, e))}`,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return (data.elements || []).filter(
+          (el: OsmNode) =>
+            typeof el.lat === 'number' && typeof el.lon === 'number'
+        );
+      }
+      console.warn(`Overpass ${res.status} on tile ${s},${w},${n},${e}`);
+    } catch (err) {
+      console.warn('Overpass fetch failed:', (err as Error)?.message);
     }
-    // 429 / 504 : respecter la limite d'usage de l'API publique
-    console.warn(`Overpass ${res.status} on tile ${s},${w},${n},${e}`);
-    await sleep(3000 * (attempt + 1));
+    // Respecte la limite d'usage de l'API publique avant de réessayer
+    await sleep(2000 * (attempt + 1));
   }
   return [];
 }
@@ -109,86 +120,100 @@ Deno.serve(async (req) => {
       body = {};
     }
     const bbox = { ...DEFAULT_BBOX, ...(body.bbox as object | undefined) };
-    const gridRaw = Number(body.grid ?? 4);
-    const grid = Number.isFinite(gridRaw)
-      ? Math.min(8, Math.max(1, Math.round(gridRaw)))
-      : 4;
+    const clamp = (v: unknown, def: number, min: number, max: number) => {
+      const n = Number(v ?? def);
+      return Number.isFinite(n) ? Math.min(max, Math.max(min, Math.round(n))) : def;
+    };
+    const grid = clamp(body.grid, DEFAULT_GRID, 1, 10);
+    const totalTiles = grid * grid;
+    const tileStart = clamp(body.tile_start, 0, 0, totalTiles - 1);
+    const tileCount = clamp(
+      body.tile_count,
+      DEFAULT_TILES_PER_RUN,
+      1,
+      totalTiles
+    );
+    const tileEnd = Math.min(totalTiles, tileStart + tileCount);
 
     const latStep = (bbox.north - bbox.south) / grid;
     const lngStep = (bbox.east - bbox.west) / grid;
 
-    const nodes = new Map<number, OsmNode>();
+    let totalReceived = 0;
+    let created = 0;
+    let updated = 0;
     let tilesQueried = 0;
 
-    for (let i = 0; i < grid; i++) {
-      for (let j = 0; j < grid; j++) {
-        const s = bbox.south + i * latStep;
-        const n = s + latStep;
-        const w = bbox.west + j * lngStep;
-        const e = w + lngStep;
+    for (let t = tileStart; t < tileEnd; t++) {
+      const i = Math.floor(t / grid);
+      const j = t % grid;
+      const s = bbox.south + i * latStep;
+      const n = s + latStep;
+      const w = bbox.west + j * lngStep;
+      const e = w + lngStep;
 
-        if (tilesQueried > 0) await sleep(1100); // >= 1s entre deux requêtes
-        const tileNodes = await fetchTile(s, w, n, e);
-        tilesQueried++;
-        tileNodes.forEach((el) => nodes.set(el.id, el));
-        console.log(
-          `Tile ${tilesQueried}/${grid * grid}: ${tileNodes.length} nodes (total ${nodes.size})`
-        );
+      if (tilesQueried > 0) await sleep(1100); // >= 1s entre deux requêtes
+      const nodes = await fetchTile(s, w, n, e);
+      tilesQueried++;
+      totalReceived += nodes.length;
+      console.log(`Tile ${t + 1}/${totalTiles}: ${nodes.length} nodes`);
+
+      if (nodes.length === 0) continue;
+
+      const rows = nodes.map((el) => {
+        const tags = el.tags || {};
+        return {
+          source_ref: `osm:${el.id}`,
+          type: 'fontaine_publique',
+          latitude: el.lat,
+          longitude: el.lon,
+          description: tags.name ? tags.name.slice(0, 1000) : null,
+          accessibilite: tags.opening_hours
+            ? tags.opening_hours.slice(0, 500)
+            : null,
+          statut_potabilite: potabilite(tags),
+          source_donnee: 'import_osm',
+          statut_moderation: 'valide',
+          derniere_verification_at: new Date().toISOString(),
+        };
+      });
+
+      // Points déjà connus (pour distinguer créés / mis à jour)
+      const existing = new Set<string>();
+      for (let k = 0; k < rows.length; k += 800) {
+        const refs = rows.slice(k, k + 800).map((r) => r.source_ref);
+        const { data, error } = await admin
+          .from('water_points')
+          .select('source_ref')
+          .in('source_ref', refs);
+        if (error) throw error;
+        (data || []).forEach((r) => r.source_ref && existing.add(r.source_ref));
       }
+
+      for (let k = 0; k < rows.length; k += 500) {
+        const chunk = rows.slice(k, k + 500);
+        const { error } = await admin
+          .from('water_points')
+          .upsert(chunk, { onConflict: 'source_ref' });
+        if (error) throw error;
+      }
+
+      const tileUpdated = rows.filter((r) => existing.has(r.source_ref)).length;
+      updated += tileUpdated;
+      created += rows.length - tileUpdated;
     }
 
-    const totalReceived = nodes.size;
-
-    // --- Points déjà connus (pour distinguer créés / mis à jour) ---
-    const refs = [...nodes.keys()].map((id) => `osm:${id}`);
-    const existing = new Set<string>();
-    for (let i = 0; i < refs.length; i += 1000) {
-      const chunk = refs.slice(i, i + 1000);
-      const { data, error } = await admin
-        .from('water_points')
-        .select('source_ref')
-        .in('source_ref', chunk);
-      if (error) throw error;
-      (data || []).forEach((r) => r.source_ref && existing.add(r.source_ref));
-    }
-
-    const rows = [...nodes.values()].map((el) => {
-      const tags = el.tags || {};
-      return {
-        source_ref: `osm:${el.id}`,
-        type: 'fontaine_publique',
-        latitude: el.lat,
-        longitude: el.lon,
-        description: tags.name ? tags.name.slice(0, 1000) : null,
-        accessibilite: tags.opening_hours
-          ? tags.opening_hours.slice(0, 500)
-          : null,
-        statut_potabilite: potabilite(tags),
-        source_donnee: 'import_osm',
-        statut_moderation: 'valide',
-        derniere_verification_at: new Date().toISOString(),
-      };
-    });
-
-    let upserted = 0;
-    for (let i = 0; i < rows.length; i += 500) {
-      const chunk = rows.slice(i, i + 500);
-      const { error } = await admin
-        .from('water_points')
-        .upsert(chunk, { onConflict: 'source_ref' });
-      if (error) throw error;
-      upserted += chunk.length;
-    }
-
-    const updated = rows.filter((r) => existing.has(r.source_ref)).length;
-    const created = upserted - updated;
+    const nextTile = tileEnd < totalTiles ? tileEnd : null;
 
     return json({
       ok: true,
       total_received: totalReceived,
       created,
       updated,
+      grid,
       tiles_queried: tilesQueried,
+      tile_start: tileStart,
+      next_tile: nextTile,
+      done: nextTile === null,
     });
   } catch (error) {
     console.error('OSM import error:', error);
