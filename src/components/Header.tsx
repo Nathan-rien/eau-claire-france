@@ -5,7 +5,7 @@ import {
   Droplets, Menu, ChevronDown, Search,
   Droplet, GlassWater, AlertTriangle, Truck, Route as RouteIcon,
   CloudRain, Wine, ShoppingCart, TrendingUp, Stethoscope,
-  HelpCircle, Trophy, Bell, Map as MapIcon, type LucideIcon,
+  HelpCircle, Trophy, Bell, Map as MapIcon, MapPinned, type LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -65,6 +65,11 @@ const Header = () => {
     { href: '/parcours-eau-bouteille', label: t('nav.journeyBottle') },
   ];
 
+  // Contribution communautaire — volontairement séparée du comparateur
+  const communityItems = isEurope
+    ? []
+    : [{ href: '/zone-eau', label: "Zone d'Eau" }];
+
   const isActive = (path: string) => location.pathname === path;
   const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
   const isActiveJourneySection = journeyItems.some(item => location.pathname === item.href);
@@ -94,6 +99,7 @@ const Header = () => {
     '/polluants-europe': AlertTriangle,
     '/alertes': Bell,
     '/alertes-europe': Bell,
+    '/zone-eau': MapPinned,
   };
 
   const mobileSections = [
@@ -101,6 +107,9 @@ const Header = () => {
     { id: 'journey', label: t('nav.journeyTab'), items: journeyItems },
     { id: 'prices', label: t('nav.prices'), items: pricesItems },
     { id: 'tools', label: t('nav.navigation'), items: navigationItems },
+    ...(communityItems.length
+      ? [{ id: 'community', label: 'Communauté', items: communityItems }]
+      : []),
   ];
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -281,6 +290,27 @@ const Header = () => {
                 {item.label}
               </Link>
             ))}
+
+            {/* Communauté — fonctionnalité distincte du comparateur */}
+            {!isEurope && (
+              <>
+                <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
+                {communityItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className={`h-9 px-3 text-sm font-medium rounded-md transition-colors whitespace-nowrap inline-flex items-center gap-1.5 ${
+                      isActive(item.href)
+                        ? 'bg-accent text-accent-foreground'
+                        : 'text-blue-600 hover:text-blue-700 hover:bg-accent'
+                    }`}
+                  >
+                    <MapPinned className="h-3.5 w-3.5" />
+                    {item.label}
+                  </Link>
+                ))}
+              </>
+            )}
           </nav>
 
           {/* Right Side - Region, Language & Mobile Menu */}
