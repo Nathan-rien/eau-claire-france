@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
-import { MapPin, RefreshCw, Trash2, Check, X } from 'lucide-react';
+import { MapPin, RefreshCw, Trash2, Check, X, Download, Loader2 } from 'lucide-react';
 import {
   WaterPoint,
   WaterPointModeration,
@@ -34,6 +34,7 @@ const WaterPointsAdmin: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('en_attente');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
+  const [importing, setImporting] = useState(false);
   const { toast } = useToast();
 
   const load = async () => {
@@ -106,6 +107,66 @@ const WaterPointsAdmin: React.FC = () => {
     load();
   };
 
+  const importOsm = async () => {
+    const ok = window.confirm(
+      "Lancer l'import des points d'eau OpenStreetMap pour la France ? " +
+        "L'opération peut prendre plusieurs minutes."
+    );
+    if (!ok) return;
+
+    setImporting(true);
+    toast({
+      title: 'Import OpenStreetMap lancé',
+      description: 'Cela peut prendre plusieurs minutes, ne fermez pas la page.',
+    });
+
+    let nextTile: number | null = 0;
+    let created = 0;
+    let updated = 0;
+    let received = 0;
+
+    // L'import est découpé en lots de sous-zones : chaque appel avance la grille.
+    while (nextTile !== null) {
+      const { data, error } = await supabase.functions.invoke(
+        'admin-import-osm-water-points',
+        { body: { tile_start: nextTile } }
+      );
+
+      if (error || !data?.ok) {
+        setImporting(false);
+        toast({
+          title: 'Import interrompu',
+          description:
+            (data as { error?: string })?.error ||
+            error?.message ||
+            'Erreur inconnue',
+          variant: 'destructive',
+        });
+        load();
+        return;
+      }
+
+      created += data.created ?? 0;
+      updated += data.updated ?? 0;
+      received += data.total_received ?? 0;
+      nextTile = data.next_tile ?? null;
+
+      if (nextTile !== null) {
+        toast({
+          title: 'Import en cours…',
+          description: `${created} créés, ${updated} mis à jour (zone ${nextTile}/${(data.grid ?? 6) ** 2}).`,
+        });
+      }
+    }
+
+    setImporting(false);
+    toast({
+      title: 'Import OpenStreetMap terminé',
+      description: `${created} point(s) créé(s), ${updated} mis à jour (${received} reçus d'Overpass).`,
+    });
+    load();
+  };
+
   const mapPoints = useMemo(
     () => points.filter((p) => Number.isFinite(p.latitude)),
     [points]
@@ -118,15 +179,31 @@ const WaterPointsAdmin: React.FC = () => {
           <MapPin className="w-5 h-5 text-blue-600" />
           Zone d&apos;Eau — modération des points d&apos;eau
         </CardTitle>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={load}
-          className="min-h-[44px] md:min-h-0"
-        >
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Rafraîchir
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={importOsm}
+            disabled={importing}
+            className="min-h-[44px] md:min-h-0"
+          >
+            {importing ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4 mr-2" />
+            )}
+            Importer depuis OpenStreetMap
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={load}
+            className="min-h-[44px] md:min-h-0"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Rafraîchir
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-5">
         {/* Filtres */}
