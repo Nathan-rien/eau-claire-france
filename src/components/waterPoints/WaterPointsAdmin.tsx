@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
-import { MapPin, RefreshCw, Trash2, Check, X } from 'lucide-react';
+import { MapPin, RefreshCw, Trash2, Check, X, Download, Loader2 } from 'lucide-react';
 import {
   WaterPoint,
   WaterPointModeration,
@@ -34,6 +34,7 @@ const WaterPointsAdmin: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('en_attente');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
+  const [importing, setImporting] = useState(false);
   const { toast } = useToast();
 
   const load = async () => {
@@ -106,6 +107,42 @@ const WaterPointsAdmin: React.FC = () => {
     load();
   };
 
+  const importOsm = async () => {
+    const ok = window.confirm(
+      "Lancer l'import des points d'eau OpenStreetMap pour la France ? " +
+        "L'opération peut prendre plusieurs minutes."
+    );
+    if (!ok) return;
+
+    setImporting(true);
+    toast({
+      title: 'Import OpenStreetMap lancé',
+      description: 'Cela peut prendre plusieurs minutes, ne fermez pas la page.',
+    });
+
+    const { data, error } = await supabase.functions.invoke(
+      'admin-import-osm-water-points',
+      { body: {} }
+    );
+
+    setImporting(false);
+
+    if (error || !data?.ok) {
+      toast({
+        title: 'Import impossible',
+        description: (data as { error?: string })?.error || error?.message,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    toast({
+      title: 'Import OpenStreetMap terminé',
+      description: `${data.created} point(s) créé(s), ${data.updated} mis à jour (${data.total_received} reçus d'Overpass).`,
+    });
+    load();
+  };
+
   const mapPoints = useMemo(
     () => points.filter((p) => Number.isFinite(p.latitude)),
     [points]
@@ -118,15 +155,31 @@ const WaterPointsAdmin: React.FC = () => {
           <MapPin className="w-5 h-5 text-blue-600" />
           Zone d&apos;Eau — modération des points d&apos;eau
         </CardTitle>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={load}
-          className="min-h-[44px] md:min-h-0"
-        >
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Rafraîchir
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={importOsm}
+            disabled={importing}
+            className="min-h-[44px] md:min-h-0"
+          >
+            {importing ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4 mr-2" />
+            )}
+            Importer depuis OpenStreetMap
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={load}
+            className="min-h-[44px] md:min-h-0"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Rafraîchir
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-5">
         {/* Filtres */}

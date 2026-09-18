@@ -764,6 +764,7 @@ export type Database = {
           photo_url: string | null
           soumis_par: string | null
           source_donnee: Database["public"]["Enums"]["water_point_source_donnee"]
+          source_ref: string | null
           statut_moderation: Database["public"]["Enums"]["water_point_moderation"]
           statut_potabilite: Database["public"]["Enums"]["water_point_potabilite"]
           type: Database["public"]["Enums"]["water_point_type"]
@@ -780,6 +781,7 @@ export type Database = {
           photo_url?: string | null
           soumis_par?: string | null
           source_donnee?: Database["public"]["Enums"]["water_point_source_donnee"]
+          source_ref?: string | null
           statut_moderation?: Database["public"]["Enums"]["water_point_moderation"]
           statut_potabilite?: Database["public"]["Enums"]["water_point_potabilite"]
           type: Database["public"]["Enums"]["water_point_type"]
@@ -796,6 +798,7 @@ export type Database = {
           photo_url?: string | null
           soumis_par?: string | null
           source_donnee?: Database["public"]["Enums"]["water_point_source_donnee"]
+          source_ref?: string | null
           statut_moderation?: Database["public"]["Enums"]["water_point_moderation"]
           statut_potabilite?: Database["public"]["Enums"]["water_point_potabilite"]
           type?: Database["public"]["Enums"]["water_point_type"]

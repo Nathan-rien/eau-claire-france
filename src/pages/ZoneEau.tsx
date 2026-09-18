@@ -150,6 +150,19 @@ const ZoneEau: React.FC = () => {
               </MapLoader>
             </div>
 
+            <p className="text-xs text-gray-500 text-center mb-2">
+              Données enrichies par les contributeurs{' '}
+              <a
+                href="https://www.openstreetmap.org/copyright"
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className="underline hover:text-blue-600"
+              >
+                OpenStreetMap
+              </a>
+              , sous licence ODbL.
+            </p>
+
             <p className="text-sm text-gray-600 flex items-center gap-2 justify-center">
               <MapPin className="w-4 h-4 text-blue-600" />
               {loading
