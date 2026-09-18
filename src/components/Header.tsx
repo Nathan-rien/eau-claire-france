@@ -99,6 +99,7 @@ const Header = () => {
     '/polluants-europe': AlertTriangle,
     '/alertes': Bell,
     '/alertes-europe': Bell,
+    '/zone-eau': MapPinned,
   };
 
   const mobileSections = [
