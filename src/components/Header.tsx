@@ -107,6 +107,9 @@ const Header = () => {
     { id: 'journey', label: t('nav.journeyTab'), items: journeyItems },
     { id: 'prices', label: t('nav.prices'), items: pricesItems },
     { id: 'tools', label: t('nav.navigation'), items: navigationItems },
+    ...(communityItems.length
+      ? [{ id: 'community', label: 'Communauté', items: communityItems }]
+      : []),
   ];
 
   const [searchQuery, setSearchQuery] = useState('');
