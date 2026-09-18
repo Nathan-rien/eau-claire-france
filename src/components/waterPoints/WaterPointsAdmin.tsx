@@ -120,25 +120,49 @@ const WaterPointsAdmin: React.FC = () => {
       description: 'Cela peut prendre plusieurs minutes, ne fermez pas la page.',
     });
 
-    const { data, error } = await supabase.functions.invoke(
-      'admin-import-osm-water-points',
-      { body: {} }
-    );
+    let nextTile: number | null = 0;
+    let created = 0;
+    let updated = 0;
+    let received = 0;
 
-    setImporting(false);
+    // L'import est découpé en lots de sous-zones : chaque appel avance la grille.
+    while (nextTile !== null) {
+      const { data, error } = await supabase.functions.invoke(
+        'admin-import-osm-water-points',
+        { body: { tile_start: nextTile } }
+      );
 
-    if (error || !data?.ok) {
-      toast({
-        title: 'Import impossible',
-        description: (data as { error?: string })?.error || error?.message,
-        variant: 'destructive',
-      });
-      return;
+      if (error || !data?.ok) {
+        setImporting(false);
+        toast({
+          title: 'Import interrompu',
+          description:
+            (data as { error?: string })?.error ||
+            error?.message ||
+            'Erreur inconnue',
+          variant: 'destructive',
+        });
+        load();
+        return;
+      }
+
+      created += data.created ?? 0;
+      updated += data.updated ?? 0;
+      received += data.total_received ?? 0;
+      nextTile = data.next_tile ?? null;
+
+      if (nextTile !== null) {
+        toast({
+          title: 'Import en cours…',
+          description: `${created} créés, ${updated} mis à jour (zone ${nextTile}/${(data.grid ?? 6) ** 2}).`,
+        });
+      }
     }
 
+    setImporting(false);
     toast({
       title: 'Import OpenStreetMap terminé',
-      description: `${data.created} point(s) créé(s), ${data.updated} mis à jour (${data.total_received} reçus d'Overpass).`,
+      description: `${created} point(s) créé(s), ${updated} mis à jour (${received} reçus d'Overpass).`,
     });
     load();
   };
