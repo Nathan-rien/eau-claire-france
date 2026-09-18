@@ -752,6 +752,92 @@ export type Database = {
         }
         Relationships: []
       }
+      water_points: {
+        Row: {
+          accessibilite: string | null
+          created_at: string
+          derniere_verification_at: string | null
+          description: string | null
+          id: string
+          latitude: number
+          longitude: number
+          photo_url: string | null
+          soumis_par: string | null
+          source_donnee: Database["public"]["Enums"]["water_point_source_donnee"]
+          statut_moderation: Database["public"]["Enums"]["water_point_moderation"]
+          statut_potabilite: Database["public"]["Enums"]["water_point_potabilite"]
+          type: Database["public"]["Enums"]["water_point_type"]
+          updated_at: string
+        }
+        Insert: {
+          accessibilite?: string | null
+          created_at?: string
+          derniere_verification_at?: string | null
+          description?: string | null
+          id?: string
+          latitude: number
+          longitude: number
+          photo_url?: string | null
+          soumis_par?: string | null
+          source_donnee?: Database["public"]["Enums"]["water_point_source_donnee"]
+          statut_moderation?: Database["public"]["Enums"]["water_point_moderation"]
+          statut_potabilite?: Database["public"]["Enums"]["water_point_potabilite"]
+          type: Database["public"]["Enums"]["water_point_type"]
+          updated_at?: string
+        }
+        Update: {
+          accessibilite?: string | null
+          created_at?: string
+          derniere_verification_at?: string | null
+          description?: string | null
+          id?: string
+          latitude?: number
+          longitude?: number
+          photo_url?: string | null
+          soumis_par?: string | null
+          source_donnee?: Database["public"]["Enums"]["water_point_source_donnee"]
+          statut_moderation?: Database["public"]["Enums"]["water_point_moderation"]
+          statut_potabilite?: Database["public"]["Enums"]["water_point_potabilite"]
+          type?: Database["public"]["Enums"]["water_point_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      water_points_reports: {
+        Row: {
+          commentaire: string | null
+          created_at: string
+          id: string
+          statut_moderation: Database["public"]["Enums"]["water_point_moderation"]
+          type_signalement: Database["public"]["Enums"]["water_point_report_type"]
+          water_point_id: string
+        }
+        Insert: {
+          commentaire?: string | null
+          created_at?: string
+          id?: string
+          statut_moderation?: Database["public"]["Enums"]["water_point_moderation"]
+          type_signalement: Database["public"]["Enums"]["water_point_report_type"]
+          water_point_id: string
+        }
+        Update: {
+          commentaire?: string | null
+          created_at?: string
+          id?: string
+          statut_moderation?: Database["public"]["Enums"]["water_point_moderation"]
+          type_signalement?: Database["public"]["Enums"]["water_point_report_type"]
+          water_point_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "water_points_reports_water_point_id_fkey"
+            columns: ["water_point_id"]
+            isOneToOne: false
+            referencedRelation: "water_points"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       prices_history_last: {
@@ -795,6 +881,21 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      water_point_moderation: "en_attente" | "valide" | "rejete"
+      water_point_potabilite:
+        | "non_verifie"
+        | "declare_potable"
+        | "declare_non_potable"
+      water_point_report_type:
+        | "hors_service"
+        | "information_incorrecte"
+        | "autre"
+      water_point_source_donnee: "citoyen" | "import_osm" | "officiel"
+      water_point_type:
+        | "fontaine_publique"
+        | "source"
+        | "point_recharge"
+        | "autre"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -923,6 +1024,24 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      water_point_moderation: ["en_attente", "valide", "rejete"],
+      water_point_potabilite: [
+        "non_verifie",
+        "declare_potable",
+        "declare_non_potable",
+      ],
+      water_point_report_type: [
+        "hors_service",
+        "information_incorrecte",
+        "autre",
+      ],
+      water_point_source_donnee: ["citoyen", "import_osm", "officiel"],
+      water_point_type: [
+        "fontaine_publique",
+        "source",
+        "point_recharge",
+        "autre",
+      ],
     },
   },
 } as const
