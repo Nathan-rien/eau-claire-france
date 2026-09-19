@@ -16,8 +16,10 @@ const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
 
 // France métropolitaine (approximatif)
 const DEFAULT_BBOX = { south: 41.0, west: -5.5, north: 51.5, east: 10.0 };
-const DEFAULT_GRID = 6; // 36 sous-zones : évite les timeouts Overpass
-const DEFAULT_TILES_PER_RUN = 4;
+const DEFAULT_GRID = 8; // 64 sous-zones : évite les timeouts Overpass
+// 1 seule sous-zone par appel : reste largement sous la limite de temps
+// de la passerelle Edge Function (sinon la requête est coupée côté client).
+const DEFAULT_TILES_PER_RUN = 1;
 
 interface OsmNode {
   id: number;
@@ -29,7 +31,7 @@ interface OsmNode {
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const buildQuery = (s: number, w: number, n: number, e: number) =>
-  `[out:json][timeout:120];node["amenity"="drinking_water"](${s},${w},${n},${e});out body;`;
+  `[out:json][timeout:50];node["amenity"="drinking_water"](${s},${w},${n},${e});out body;`;
 
 async function fetchTile(
   s: number,
@@ -37,7 +39,7 @@ async function fetchTile(
   n: number,
   e: number
 ): Promise<OsmNode[]> {
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const res = await fetch(OVERPASS_URL, {
         method: 'POST',
@@ -47,6 +49,7 @@ async function fetchTile(
           'User-Agent': 'infoeau.fr water-points import/1.0',
         },
         body: `data=${encodeURIComponent(buildQuery(s, w, n, e))}`,
+        signal: AbortSignal.timeout(55_000),
       });
       if (res.ok) {
         const data = await res.json();
