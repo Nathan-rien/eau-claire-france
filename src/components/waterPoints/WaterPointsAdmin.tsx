@@ -127,19 +127,34 @@ const WaterPointsAdmin: React.FC = () => {
 
     // L'import est découpé en lots de sous-zones : chaque appel avance la grille.
     while (nextTile !== null) {
-      const { data, error } = await supabase.functions.invoke(
-        'admin-import-osm-water-points',
-        { body: { tile_start: nextTile } }
-      );
+      let data: {
+        ok?: boolean;
+        created?: number;
+        updated?: number;
+        total_received?: number;
+        next_tile?: number | null;
+        grid?: number;
+        error?: string;
+      } | null = null;
+      let error: { message?: string } | null = null;
+
+      // Une zone peut échouer (réseau, Overpass saturé) : on réessaie.
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const res = await supabase.functions.invoke(
+          'admin-import-osm-water-points',
+          { body: { tile_start: nextTile } }
+        );
+        data = res.data;
+        error = res.error;
+        if (!error && data?.ok) break;
+        await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
+      }
 
       if (error || !data?.ok) {
         setImporting(false);
         toast({
           title: 'Import interrompu',
-          description:
-            (data as { error?: string })?.error ||
-            error?.message ||
-            'Erreur inconnue',
+          description: data?.error || error?.message || 'Erreur inconnue',
           variant: 'destructive',
         });
         load();
