@@ -39,7 +39,7 @@ async function fetchTile(
   n: number,
   e: number
 ): Promise<OsmNode[]> {
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const res = await fetch(OVERPASS_URL, {
         method: 'POST',
@@ -49,6 +49,7 @@ async function fetchTile(
           'User-Agent': 'infoeau.fr water-points import/1.0',
         },
         body: `data=${encodeURIComponent(buildQuery(s, w, n, e))}`,
+        signal: AbortSignal.timeout(55_000),
       });
       if (res.ok) {
         const data = await res.json();
