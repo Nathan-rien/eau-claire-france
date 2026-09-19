@@ -32,7 +32,7 @@ interface OsmNode {
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const buildQuery = (s: number, w: number, n: number, e: number) =>
-  `[out:json][timeout:50];node["amenity"="drinking_water"](${s},${w},${n},${e});out body;`;
+  `[out:json][timeout:8];node["amenity"="drinking_water"](${s},${w},${n},${e});out body;`;
 
 async function fetchTile(
   s: number,
@@ -40,33 +40,32 @@ async function fetchTile(
   n: number,
   e: number
 ): Promise<OsmNode[]> {
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const res = await fetch(OVERPASS_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          // Overpass refuse les requêtes sans User-Agent identifiable (406)
-          'User-Agent': 'infoeau.fr water-points import/1.0',
-        },
-        body: `data=${encodeURIComponent(buildQuery(s, w, n, e))}`,
-        signal: AbortSignal.timeout(55_000),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        return (data.elements || []).filter(
-          (el: OsmNode) =>
-            typeof el.lat === 'number' && typeof el.lon === 'number'
-        );
-      }
-      console.warn(`Overpass ${res.status} on tile ${s},${w},${n},${e}`);
-    } catch (err) {
-      console.warn('Overpass fetch failed:', (err as Error)?.message);
+  try {
+    const res = await fetch(OVERPASS_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        // Overpass refuse les requêtes sans User-Agent identifiable (406)
+        'User-Agent': 'infoeau.fr water-points import/1.0',
+      },
+      body: `data=${encodeURIComponent(buildQuery(s, w, n, e))}`,
+      // La plateforme arrête les fonctions longues sans leur laisser répondre.
+      // Une tentative courte laisse le client relancer proprement la zone.
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!res.ok) {
+      throw new Error(`Overpass HTTP ${res.status}`);
     }
-    // Respecte la limite d'usage de l'API publique avant de réessayer
-    await sleep(2000 * (attempt + 1));
+    const data = await res.json();
+    return (data.elements || []).filter(
+      (el: OsmNode) =>
+        typeof el.lat === 'number' && typeof el.lon === 'number'
+    );
+  } catch (err) {
+    const message = (err as Error)?.message || 'Unknown Overpass error';
+    console.error(`Overpass tile failed (${s},${w},${n},${e}): ${message}`);
+    throw new Error(`OpenStreetMap indisponible pour cette zone : ${message}`);
   }
-  return [];
 }
 
 function potabilite(tags: Record<string, string> = {}) {
