@@ -16,8 +16,10 @@ const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
 
 // France métropolitaine (approximatif)
 const DEFAULT_BBOX = { south: 41.0, west: -5.5, north: 51.5, east: 10.0 };
-const DEFAULT_GRID = 6; // 36 sous-zones : évite les timeouts Overpass
-const DEFAULT_TILES_PER_RUN = 4;
+const DEFAULT_GRID = 8; // 64 sous-zones : évite les timeouts Overpass
+// 1 seule sous-zone par appel : reste largement sous la limite de temps
+// de la passerelle Edge Function (sinon la requête est coupée côté client).
+const DEFAULT_TILES_PER_RUN = 1;
 
 interface OsmNode {
   id: number;
