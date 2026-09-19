@@ -31,7 +31,7 @@ interface OsmNode {
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const buildQuery = (s: number, w: number, n: number, e: number) =>
-  `[out:json][timeout:120];node["amenity"="drinking_water"](${s},${w},${n},${e});out body;`;
+  `[out:json][timeout:50];node["amenity"="drinking_water"](${s},${w},${n},${e});out body;`;
 
 async function fetchTile(
   s: number,
