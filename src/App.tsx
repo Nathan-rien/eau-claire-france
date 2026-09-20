@@ -13,6 +13,7 @@ import { RegionProvider } from "@/contexts/RegionContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import PageLoader from "@/components/PageLoader";
 import SecurityHeaders from "@/components/SecurityHeaders";
+import RouteTracker from "@/components/analytics/RouteTracker";
 import { EnhancedSecurityService } from "@/services/enhancedSecurityService";
 import OndineChat from "@/components/OndineChat";
 
