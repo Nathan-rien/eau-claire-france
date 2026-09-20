@@ -30,6 +30,10 @@ const letterColor = (l: string) => ({
   X: 'bg-red-100 text-red-700 border border-red-300',
 }[l] || 'bg-gray-100 text-gray-600');
 
+const formatPricePerL = (v: number) =>
+  `${v.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €/L`;
+
+
 export default function RankingTableView({
   waters, profile, favorites, selectedIds, onToggleFavorite, onToggleSelect
 }: Props) {
