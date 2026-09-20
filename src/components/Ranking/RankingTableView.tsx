@@ -36,6 +36,7 @@ export default function RankingTableView({
   const { t } = useLanguage();
   const [sortKey, setSortKey] = useState<SortKey>('rank');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const { minBySlug, loading: pricesLoading } = useBrandMinPrices();
 
   const scored = waters.map(w => {
     const s = scoreBottle(w.composition, profile);
@@ -67,8 +68,16 @@ export default function RankingTableView({
   });
 
   const toggleSort = (k: SortKey) => {
-    if (sortKey === k) setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
-    else { setSortKey(k); setSortDir(k === 'score' || k === 'rank' ? 'desc' : 'asc'); }
+    let dir: 'asc' | 'desc';
+    if (sortKey === k) {
+      dir = sortDir === 'asc' ? 'desc' : 'asc';
+      setSortDir(dir);
+    } else {
+      dir = k === 'score' || k === 'rank' ? 'desc' : 'asc';
+      setSortKey(k);
+      setSortDir(dir);
+    }
+    trackEvent('ranking_sort', { column: k, direction: dir, profile });
   };
 
   const SortHead = ({ k, label }: { k: SortKey; label: string }) => (
@@ -91,6 +100,7 @@ export default function RankingTableView({
             <SortHead k="name" label={t('rankUI.col.water')} />
             <SortHead k="score" label={t('rankUI.col.score')} />
             <th className="px-2 py-2 text-left font-medium">{t('rankUI.col.grade')}</th>
+            <th className="px-2 py-2 w-[86px] text-left font-medium">{t('rankUI.col.pricePerL')}</th>
             <SortHead k="residu" label={t('rankUI.col.residu')} />
             <SortHead k="calcium" label="Ca" />
             <SortHead k="magnesium" label="Mg" />
@@ -120,7 +130,17 @@ export default function RankingTableView({
                 <td className="px-2 py-2 font-medium text-gray-500">{row.excluded ? '—' : i + 1}</td>
                 <td className="px-2 py-2">
                   <div className="font-medium text-gray-900 flex items-center gap-1">
-                    {w.brand}
+                    {isPricedBrandSlug(brandToSlug(w.brand)) ? (
+                      <Link
+                        to={`/marque/${brandToSlug(w.brand)}`}
+                        onClick={() => trackEvent('ranking_brand_click', { brand: w.brand, rank: i + 1, profile, placement: 'brand_name' })}
+                        className="text-blue-700 hover:underline"
+                      >
+                        {w.brand}
+                      </Link>
+                    ) : (
+                      w.brand
+                    )}
                     {w.is_sparkling && <Sparkles className="w-3 h-3 text-blue-400" />}
                   </div>
                   <div className="text-xs text-gray-500">{w.source_name}</div>
@@ -137,6 +157,24 @@ export default function RankingTableView({
                   <span className={`inline-flex items-center justify-center w-7 h-7 rounded font-bold text-sm ${letterColor(row.letter)}`}>
                     {row.letter}
                   </span>
+                </td>
+                <td className="px-2 py-2 w-[86px] whitespace-nowrap text-gray-700">
+                  {(() => {
+                    const slug = brandToSlug(w.brand);
+                    const price = minBySlug[slug];
+                    if (!isPricedBrandSlug(slug) || typeof price !== 'number') {
+                      return <span className="text-xs text-gray-400">{pricesLoading ? '' : t('rankUI.priceUnknown')}</span>;
+                    }
+                    return (
+                      <Link
+                        to={`/marque/${slug}`}
+                        onClick={() => trackEvent('ranking_brand_click', { brand: w.brand, rank: i + 1, profile, placement: 'price_cell' })}
+                        className="font-medium text-blue-700 underline hover:no-underline"
+                      >
+                        {formatPricePerL(price)}
+                      </Link>
+                    );
+                  })()}
                 </td>
                 <td className="px-2 py-2 text-gray-700">{formatMineralValue(w.composition.residu_sec_180_mg_L, 'residu')}</td>
                 <td className="px-2 py-2 text-gray-700">{formatMineralValue(w.composition.Ca_mg_L, 'calcium')}</td>
