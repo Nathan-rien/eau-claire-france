@@ -25,7 +25,7 @@ export function useBrandMinPrices() {
       .then((res) => {
         if (cancelled) return;
         const map: Record<string, number> = {};
-        for (const row of (res?.data ?? []) as Array<{ brand?: string | null; price_per_l_eur?: number | null }>) {
+        for (const row of (res?.items ?? []) as Array<{ brand?: string | null; price_per_l_eur?: number | null }>) {
           const brand = row.brand;
           const price = row.price_per_l_eur;
           if (!brand || typeof price !== 'number' || !(price > 0)) continue;
