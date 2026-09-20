@@ -24,6 +24,10 @@ import { Link } from '@/components/LocalizedLink';
 import BrandLinksSection from '@/components/BrandLinksSection';
 import AffiliateComparisonTable from '@/components/affiliate/AffiliateComparisonTable';
 import RegionLinksSection from '@/components/RegionLinksSection';
+import RankingCrossLinks from '@/components/Ranking/RankingCrossLinks';
+import AlsoReadSection from '@/components/Ranking/AlsoReadSection';
+import MobileActionBar from '@/components/Ranking/MobileActionBar';
+import { trackEvent } from '@/utils/ga';
 
 const FAVORITES_KEY = 'ranking-water-favorites';
 const MAX_COMPARE = 5;
@@ -86,6 +90,15 @@ const Classement = () => {
       try { localStorage.setItem(FAVORITES_KEY, JSON.stringify([...next])); } catch {}
       return next;
     });
+  };
+
+  // Suivi d'engagement : on ne journalise que les filtres réellement modifiés.
+  const handleFiltersChange = (next: RankingFilterState) => {
+    const changed = (Object.keys(next) as (keyof RankingFilterState)[]).filter(
+      (k) => JSON.stringify(next[k]) !== JSON.stringify(filters[k])
+    );
+    setFilters(next);
+    if (changed.length) trackEvent('ranking_filter', { filter: changed.join(','), profile });
   };
 
   const toggleSelect = (id: string) => {
@@ -305,7 +318,7 @@ const Classement = () => {
             </div>
 
             {/* Filters */}
-            <RankingFilters filters={filters} onChange={setFilters} resultCount={ranked.length} activeCount={activeFilterCount} />
+            <RankingFilters filters={filters} onChange={handleFiltersChange} resultCount={ranked.length} activeCount={activeFilterCount} />
 
             {/* Results */}
             <div ref={resultsRef} className="scroll-mt-24">
@@ -341,6 +354,9 @@ const Classement = () => {
                           </div>
                         </div>
                       )}
+
+                      <RankingCrossLinks profile={profile} />
+
 
                       {rest.length > 0 && (
                         <>
@@ -433,9 +449,11 @@ const Classement = () => {
           </aside>
         </section>
         <div className="container mx-auto px-4">
+          <AlsoReadSection />
           <BrandLinksSection />
           <RegionLinksSection />
         </div>
+        <MobileActionBar hidden={selectedIds.size > 0} />
 
       </div>
     </Layout>
