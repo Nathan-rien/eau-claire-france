@@ -4,6 +4,11 @@ import { ArrowUpDown, ArrowUp, ArrowDown, Star, Plus, Check, Sparkles, AlertTria
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Composition, scoreBottle, letterGrade, Profile, getCompositionForDisplay, formatMineralValue, compareRanked } from '@/utils/rankingV2';
 import type { WaterSource } from '@/hooks/useWaterCompositions';
+import { Link } from '@/components/LocalizedLink';
+import { brandToSlug } from '@/config/brands';
+import { isPricedBrandSlug } from '@/config/pricedBrands';
+import { useBrandMinPrices } from '@/hooks/useBrandMinPrices';
+import { trackEvent } from '@/utils/ga';
 
 type SortKey = 'rank' | 'name' | 'score' | 'residu' | 'calcium' | 'magnesium' | 'sodium' | 'nitrates' | 'pH';
 
