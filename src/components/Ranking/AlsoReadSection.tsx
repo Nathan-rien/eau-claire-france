@@ -8,7 +8,7 @@ const LINKS: { to: string; key: string; dest: string }[] = [
   { to: '/marques', key: 'rankAlso.brands', dest: 'marques' },
   { to: '/durete-eau-france', key: 'rankAlso.hardness', dest: 'durete-eau-france' },
   { to: '/gout-eau', key: 'rankAlso.taste', dest: 'gout-eau' },
-  { to: '/comparatif-bouteilles', key: 'rankAlso.compare', dest: 'comparatif-bouteilles' },
+  { to: '/traiter-eau-robinet', key: 'rankAlso.treat', dest: 'traiter-eau-robinet' },
 ];
 
 /** Bloc « À lire aussi » en bas de page : liens internes réels, sans média. */
