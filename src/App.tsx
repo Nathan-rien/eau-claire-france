@@ -229,6 +229,7 @@ const App = () => {
             <RegionProvider>
             <TooltipProvider>
               <SecurityHeaders />
+              <RouteTracker />
             <Toaster />
             <Sonner />
             
