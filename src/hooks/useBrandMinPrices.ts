@@ -26,19 +26,28 @@ export function useBrandMinPrices() {
 
     (async () => {
       try {
-        const { data: latestRow } = await supabase
+        const { data: latestRow, error: latestRowError } = await supabase
           .from('prices_history')
           .select('run_id')
           .not('run_id', 'is', null)
           .order('scraped_at', { ascending: false })
           .limit(1)
           .maybeSingle();
+        if (latestRowError) {
+          console.warn('Failed to resolve latest run from prices_history, querying full history:', latestRowError);
+        }
 
+        // Mêmes filtres que getPrices (pricesApi) : exclure les lignes incomplètes
+        // pour ne pas afficher un minimum artificiellement bas.
         let query = supabase
           .from('prices_history')
           .select('brand, price_per_l_eur')
           .not('brand', 'is', null)
           .not('price_per_l_eur', 'is', null)
+          .not('product_name', 'is', null)
+          .not('unit_volume_l', 'is', null)
+          .not('retailer_id', 'is', null)
+          .not('price_total_eur', 'is', null)
           .order('price_per_l_eur', { ascending: true })
           .limit(5000);
 

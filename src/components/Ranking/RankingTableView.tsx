@@ -31,14 +31,14 @@ const letterColor = (l: string) => ({
 }[l] || 'bg-gray-100 text-gray-600');
 
 /** Valeur seule ; l'unité et le préfixe « dès » viennent de la traduction. */
-const formatPricePerL = (v: number) =>
-  v.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const formatPricePerL = (v: number, language: 'fr' | 'en') =>
+  v.toLocaleString(language === 'en' ? 'en-GB' : 'fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 
 export default function RankingTableView({
   waters, profile, favorites, selectedIds, onToggleFavorite, onToggleSelect
 }: Props) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [sortKey, setSortKey] = useState<SortKey>('rank');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const { minBySlug, loading: pricesLoading } = useBrandMinPrices();
@@ -108,7 +108,6 @@ export default function RankingTableView({
             <th
               className="px-2 py-2 w-[110px] text-left font-medium"
               title={t('rankUI.col.pricePerLHint')}
-              aria-label={t('rankUI.col.pricePerLHint')}
             >
               {t('rankUI.col.pricePerL')}
             </th>
@@ -182,9 +181,8 @@ export default function RankingTableView({
                         onClick={() => trackEvent('ranking_brand_click', { brand: w.brand, rank: i + 1, profile, placement: 'price_cell' })}
                         className="font-medium text-blue-700 underline hover:no-underline"
                         title={t('rankUI.col.pricePerLHint')}
-                        aria-label={t('rankUI.col.pricePerLHint')}
                       >
-                        {t('rankUI.pricePerLFrom').replace('{value}', formatPricePerL(price))}
+                        {t('rankUI.pricePerLFrom').replace('{value}', formatPricePerL(price, language))}
                       </Link>
                     );
                   })()}
