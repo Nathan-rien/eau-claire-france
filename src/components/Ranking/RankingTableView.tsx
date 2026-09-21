@@ -104,7 +104,13 @@ export default function RankingTableView({
             <SortHead k="name" label={t('rankUI.col.water')} />
             <SortHead k="score" label={t('rankUI.col.score')} />
             <th className="px-2 py-2 text-left font-medium">{t('rankUI.col.grade')}</th>
-            <th className="px-2 py-2 w-[86px] text-left font-medium">{t('rankUI.col.pricePerL')}</th>
+            <th
+              className="px-2 py-2 w-[110px] text-left font-medium"
+              title={t('rankUI.col.pricePerLHint')}
+              aria-label={t('rankUI.col.pricePerLHint')}
+            >
+              {t('rankUI.col.pricePerL')}
+            </th>
             <SortHead k="residu" label={t('rankUI.col.residu')} />
             <SortHead k="calcium" label="Ca" />
             <SortHead k="magnesium" label="Mg" />
@@ -162,7 +168,7 @@ export default function RankingTableView({
                     {row.letter}
                   </span>
                 </td>
-                <td className="px-2 py-2 w-[86px] whitespace-nowrap text-gray-700">
+                <td className="px-2 py-2 w-[110px] whitespace-nowrap text-gray-700">
                   {(() => {
                     const slug = brandToSlug(w.brand);
                     const price = minBySlug[slug];
@@ -174,8 +180,10 @@ export default function RankingTableView({
                         to={`/marque/${slug}`}
                         onClick={() => trackEvent('ranking_brand_click', { brand: w.brand, rank: i + 1, profile, placement: 'price_cell' })}
                         className="font-medium text-blue-700 underline hover:no-underline"
+                        title={t('rankUI.col.pricePerLHint')}
+                        aria-label={t('rankUI.col.pricePerLHint')}
                       >
-                        {formatPricePerL(price)}
+                        {t('rankUI.pricePerLFrom').replace('{value}', formatPricePerL(price))}
                       </Link>
                     );
                   })()}
