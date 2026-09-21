@@ -30,8 +30,9 @@ const letterColor = (l: string) => ({
   X: 'bg-red-100 text-red-700 border border-red-300',
 }[l] || 'bg-gray-100 text-gray-600');
 
+/** Valeur seule ; l'unité et le préfixe « dès » viennent de la traduction. */
 const formatPricePerL = (v: number) =>
-  `${v.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €/L`;
+  v.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 
 export default function RankingTableView({
