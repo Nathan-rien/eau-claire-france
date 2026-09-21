@@ -38,7 +38,7 @@ const formatPricePerL = (v: number, language: 'fr' | 'en') =>
 export default function RankingTableView({
   waters, profile, favorites, selectedIds, onToggleFavorite, onToggleSelect
 }: Props) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [sortKey, setSortKey] = useState<SortKey>('rank');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const { minBySlug, loading: pricesLoading } = useBrandMinPrices();
