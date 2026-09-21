@@ -108,7 +108,6 @@ export default function RankingTableView({
             <th
               className="px-2 py-2 w-[110px] text-left font-medium"
               title={t('rankUI.col.pricePerLHint')}
-              aria-label={t('rankUI.col.pricePerLHint')}
             >
               {t('rankUI.col.pricePerL')}
             </th>
