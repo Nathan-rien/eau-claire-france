@@ -54,6 +54,7 @@ export const staticEntries: SitemapEntry[] = [
   { path: "/comparatif-carafes", changefreq: "monthly", priority: "0.8" },
   { path: "/comparatif-filtres-eau", changefreq: "monthly", priority: "0.85" },
   { path: "/durete-eau-france", changefreq: "monthly", priority: "0.7" },
+  { path: "/eau-sans-chlore", changefreq: "monthly", priority: "0.8" },
   // Eaux minérales par région d'origine (contenu franco-français, hors /en)
   { path: "/eaux-minerales-alpes", changefreq: "monthly", priority: "0.6" },
   { path: "/eaux-minerales-vosges", changefreq: "monthly", priority: "0.6" },

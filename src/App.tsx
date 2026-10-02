@@ -85,6 +85,7 @@ const GuideQuelFiltreEau = React.lazy(() => import("./pages/traiter/GuideQuelFil
 const ComparatifFiltresEau = React.lazy(() => import("./pages/traiter/ComparatifFiltresEau"));
 const BouteilleOuFiltration = React.lazy(() => import("./pages/traiter/BouteilleOuFiltration"));
 const DureteEauFrance = React.lazy(() => import("./pages/DureteEauFrance"));
+const EauSansChlore = React.lazy(() => import("./pages/traiter/EauSansChlore"));
 const EauxMineralesRegion = React.lazy(() => import("./pages/EauxMineralesRegion"));
 const CalculateurHydratation = React.lazy(() => import("./pages/CalculateurHydratation"));
 const ZoneEau = React.lazy(() => import("./pages/ZoneEau"));
@@ -165,6 +166,7 @@ const appRoutes = (p: string) => (
                 <Route path={`${p}/comparatif-filtres-eau`} element={<ComparatifFiltresEau />} />
                 <Route path={`${p}/bouteille-ou-filtration`} element={<BouteilleOuFiltration />} />
                 <Route path={`${p}/durete-eau-france`} element={<DureteEauFrance />} />
+                <Route path={`${p}/eau-sans-chlore`} element={<EauSansChlore />} />
                 <Route path={`${p}/eaux-minerales-alpes`} element={<EauxMineralesRegion region="alpes" />} />
                 <Route path={`${p}/eaux-minerales-vosges`} element={<EauxMineralesRegion region="vosges" />} />
                 <Route path={`${p}/eaux-minerales-auvergne`} element={<EauxMineralesRegion region="auvergne" />} />
