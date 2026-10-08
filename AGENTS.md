@@ -1,0 +1,4 @@
+- Keep Zone d’Eau data separate from price/quality comparisons; its community moderation lifecycle is independent.
+- Mapbox load callbacks must read current water-point data from refs so network and map readiness cannot race.
+- Use the OSM mapping helper for imports; preserve source identifiers and distinguish import timestamps from inspections.
+- Paginate validated public water points in stable identifier order to avoid the API row limit silently hiding locations.
