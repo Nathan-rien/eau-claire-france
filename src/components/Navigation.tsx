@@ -25,7 +25,6 @@ interface NavItem {
 
 const Navigation = () => {
   const location = useLocation();
-  const [openMenu, setOpenMenu] = useState<string | null>(null);
   const { isEurope } = useRegion();
   const { t } = useLanguage();
 
