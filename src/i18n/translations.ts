@@ -20,6 +20,7 @@ export const translations = {
     'nav.alerts': 'Alertes',
     'nav.journey': 'Parcours de l\'eau',
     'nav.journeyTab': 'Infographies',
+    'nav.essentials': 'Essentiels',
     'nav.choose': 'Choisir mon eau',
     'nav.understand': 'Comprendre',
     'nav.journeyBottle': 'Parcours bouteille',

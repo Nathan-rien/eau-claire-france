@@ -283,7 +283,7 @@ const Header = () => {
                   <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b">
                     <div className="flex items-center space-x-2">
                       <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center">
-                        <Droplets className="w-4 w-4 text-white" />
+                        <Droplets className="w-4 h-4 text-white" />
                       </div>
                       <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
                         InfoEau.fr
