@@ -14,4 +14,6 @@
 - [x] Importer une première série de 100 points OpenStreetMap réels et enrichir les informations disponibles.
 - [x] Corriger le chargement exhaustif et la synchronisation de la carte.
 - [x] Vérifier le nombre en base et l’affichage public (100 points).
-- [ ] Étendre l’import national avec suivi des succès, classification des erreurs et reprise des zones échouées.
+- [x] Ajouter suivi des succès, classification des erreurs, pause et reprise persistée des zones échouées (256 zones).
+- [x] Reprendre l’import réel : Paris, 1 668 points traités ; 1 763 points publics vérifiés après dédoublonnage.
+- [ ] Achever le périmètre national : secteurs encore en échec HTTP 504, à reprendre ; contrôle du parcours admin connecté indisponible (Supabase externe).
