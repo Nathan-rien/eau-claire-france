@@ -14,4 +14,4 @@
 - [x] Importer une première série de 100 points OpenStreetMap réels et enrichir les informations disponibles.
 - [x] Corriger le chargement exhaustif et la synchronisation de la carte.
 - [x] Vérifier le nombre en base et l’affichage public (100 points).
-- [ ] Étendre l’import national : service Overpass saturé ; exécution admin authentifiée indisponible dans cet environnement.
+- [ ] Étendre l’import national avec suivi des succès, classification des erreurs et reprise des zones échouées.
