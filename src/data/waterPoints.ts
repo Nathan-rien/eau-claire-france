@@ -35,6 +35,7 @@ export interface WaterPoint {
   accessibilite: string | null;
   statut_potabilite: WaterPointPotabilite;
   source_donnee: WaterPointSourceDonnee;
+  source_ref?: string | null;
   statut_moderation: WaterPointModeration;
   soumis_par: string | null;
   created_at: string;

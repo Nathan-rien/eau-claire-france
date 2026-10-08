@@ -31,6 +31,8 @@ const WaterPointsMap: React.FC<WaterPointsMapProps> = ({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const loadedRef = useRef(false);
+  const latestData = useRef({ points, photoUrls });
+  latestData.current = { points, photoUrls };
 
   const toGeoJson = (list: WaterPoint[]) => ({
     type: 'FeatureCollection' as const,
@@ -48,7 +50,12 @@ const WaterPointsMap: React.FC<WaterPointsMapProps> = ({
         description: p.description ?? '',
         accessibilite: p.accessibilite ?? '',
         potabilite: POTABILITE_META[p.statut_potabilite]?.label ?? '',
-        photo: photoUrls[p.id] ?? '',
+        photo: latestData.current.photoUrls[p.id] ?? '',
+        sourceLabel: p.source_donnee === 'import_osm' ? 'OpenStreetMap' : p.source_donnee === 'officiel' ? 'Source officielle' : 'Contribution citoyenne',
+        sourceRef: p.source_ref ?? '',
+        importedAt: p.updated_at ? new Date(p.updated_at).toLocaleDateString('fr-FR') : '',
+        latitude: p.latitude,
+        longitude: p.longitude,
       },
     })),
   });
@@ -68,7 +75,7 @@ const WaterPointsMap: React.FC<WaterPointsMapProps> = ({
 
       map.current.addSource(SOURCE_ID, {
         type: 'geojson',
-        data: toGeoJson(points),
+        data: toGeoJson(latestData.current.points),
         cluster: true,
         clusterMaxZoom: 13,
         clusterRadius: 50,
@@ -123,12 +130,14 @@ const WaterPointsMap: React.FC<WaterPointsMapProps> = ({
 
       // Zoom into a cluster on click
       map.current.on('click', 'wp-clusters', (e) => {
-        const features = map.current!.queryRenderedFeatures(e.point, {
+        const currentMap = map.current;
+        if (!currentMap) return;
+        const features = currentMap.queryRenderedFeatures(e.point, {
           layers: ['wp-clusters'],
         });
         const clusterId = features[0]?.properties?.cluster_id;
         if (clusterId == null) return;
-        const source = map.current!.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource;
+        const source = currentMap.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource;
         source.getClusterExpansionZoom(clusterId, (err, zoom) => {
           if (err || !map.current) return;
           map.current.easeTo({
@@ -174,6 +183,9 @@ const WaterPointsMap: React.FC<WaterPointsMapProps> = ({
             <p style="font-size:11px;color:#64748b;margin:0">${escapeHtml(
               p.potabilite || ''
             )}</p>
+            <p style="font-size:11px;margin:6px 0 0">Coordonnées : ${escapeHtml(String(p.latitude))}, ${escapeHtml(String(p.longitude))}</p>
+            <p style="font-size:11px;margin:6px 0 0">Source : ${escapeHtml(p.sourceLabel || '')}${p.importedAt ? ` · Importé / mis à jour le ${escapeHtml(p.importedAt)}` : ''}</p>
+            ${/^osm:\d+$/.test(p.sourceRef || '') ? `<a href="https://www.openstreetmap.org/node/${p.sourceRef.slice(4)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:6px;text-decoration:underline">Voir la fiche OpenStreetMap</a>` : ''}
             <p style="font-size:10px;color:#94a3b8;margin:6px 0 0">Signalement communautaire, non vérifié officiellement.</p>
           </div>
         `;
@@ -184,11 +196,11 @@ const WaterPointsMap: React.FC<WaterPointsMapProps> = ({
       });
 
       ['wp-clusters', 'wp-unclustered'].forEach((layer) => {
-        map.current!.on('mouseenter', layer, () => {
-          map.current!.getCanvas().style.cursor = 'pointer';
+        map.current?.on('mouseenter', layer, () => {
+          if (map.current) map.current.getCanvas().style.cursor = 'pointer';
         });
-        map.current!.on('mouseleave', layer, () => {
-          map.current!.getCanvas().style.cursor = '';
+        map.current?.on('mouseleave', layer, () => {
+          if (map.current) map.current.getCanvas().style.cursor = '';
         });
       });
 
