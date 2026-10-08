@@ -1,11 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
+import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { osmWaterPoint, type OsmNode } from './osm.ts';
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -22,13 +17,6 @@ const DEFAULT_GRID = 8; // 64 sous-zones : évite les timeouts Overpass
 // de la passerelle Edge Function (sinon la requête est coupée côté client).
 const DEFAULT_TILES_PER_RUN = 1;
 
-interface OsmNode {
-  id: number;
-  lat: number;
-  lon: number;
-  tags?: Record<string, string>;
-}
-
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const buildQuery = (s: number, w: number, n: number, e: number) =>
@@ -41,14 +29,15 @@ async function fetchTile(
   e: number
 ): Promise<OsmNode[]> {
   try {
-    const res = await fetch(OVERPASS_URL, {
-      method: 'POST',
+    const url = new URL(OVERPASS_URL);
+    url.searchParams.set('data', buildQuery(s, w, n, e));
+    const res = await fetch(url, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         // Overpass refuse les requêtes sans User-Agent identifiable (406)
         'User-Agent': 'infoeau.fr water-points import/1.0',
       },
-      body: `data=${encodeURIComponent(buildQuery(s, w, n, e))}`,
       // La plateforme arrête les fonctions longues sans leur laisser répondre.
       // Une tentative courte laisse le client relancer proprement la zone.
       signal: AbortSignal.timeout(10_000),
@@ -57,6 +46,7 @@ async function fetchTile(
       throw new Error(`Overpass HTTP ${res.status}`);
     }
     const data = await res.json();
+    if (data.remark) throw new Error(`Overpass : ${data.remark}`);
     return (data.elements || []).filter(
       (el: OsmNode) =>
         typeof el.lat === 'number' && typeof el.lon === 'number'
@@ -162,23 +152,7 @@ Deno.serve(async (req) => {
 
       if (nodes.length === 0) continue;
 
-      const rows = nodes.map((el) => {
-        const tags = el.tags || {};
-        return {
-          source_ref: `osm:${el.id}`,
-          type: 'fontaine_publique',
-          latitude: el.lat,
-          longitude: el.lon,
-          description: tags.name ? tags.name.slice(0, 1000) : null,
-          accessibilite: tags.opening_hours
-            ? tags.opening_hours.slice(0, 500)
-            : null,
-          statut_potabilite: potabilite(tags),
-          source_donnee: 'import_osm',
-          statut_moderation: 'valide',
-          derniere_verification_at: new Date().toISOString(),
-        };
-      });
+      const rows = nodes.map(osmWaterPoint);
 
       // Points déjà connus (pour distinguer créés / mis à jour)
       const existing = new Set<string>();

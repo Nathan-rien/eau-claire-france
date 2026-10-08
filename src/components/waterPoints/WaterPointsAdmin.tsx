@@ -171,6 +171,7 @@ const WaterPointsAdmin: React.FC = () => {
           title: 'Import en cours…',
           description: `${created} créés, ${updated} mis à jour (zone ${nextTile}/${(data.grid ?? 6) ** 2}).`,
         });
+        await new Promise((r) => setTimeout(r, 1100));
       }
     }
 
