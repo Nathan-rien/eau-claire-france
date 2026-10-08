@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { osmWaterPoint, type OsmNode } from './osm.ts';
+import { ImportError, parseOverpass, httpImportError } from './overpass.ts';
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -8,7 +9,7 @@ const json = (body: unknown, status = 200) =>
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
 
-const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
+const OVERPASS_URLS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'];
 
 // France métropolitaine (approximatif)
 const DEFAULT_BBOX = { south: 41.0, west: -5.5, north: 51.5, east: 10.0 };
@@ -26,10 +27,11 @@ async function fetchTile(
   s: number,
   w: number,
   n: number,
-  e: number
+  e: number,
+  attempt = 0
 ): Promise<OsmNode[]> {
   try {
-    const url = new URL(OVERPASS_URL);
+    const url = new URL(OVERPASS_URLS[attempt % OVERPASS_URLS.length]);
     url.searchParams.set('data', buildQuery(s, w, n, e));
     const res = await fetch(url, {
       method: 'GET',
@@ -43,18 +45,16 @@ async function fetchTile(
       signal: AbortSignal.timeout(10_000),
     });
     if (!res.ok) {
-      throw new Error(`Overpass HTTP ${res.status}`);
+      throw httpImportError(res.status, res.headers.get('Retry-After'));
     }
-    const data = await res.json();
-    if (data.remark) throw new Error(`Overpass : ${data.remark}`);
-    return (data.elements || []).filter(
-      (el: OsmNode) =>
-        typeof el.lat === 'number' && typeof el.lon === 'number'
-    );
+    let data: unknown;
+    try { data = await res.json(); } catch { throw new ImportError('Réponse OpenStreetMap non JSON', 'invalid_response'); }
+    return parseOverpass(data);
   } catch (err) {
     const message = (err as Error)?.message || 'Unknown Overpass error';
     console.error(`Overpass tile failed (${s},${w},${n},${e}): ${message}`);
-    throw new Error(`OpenStreetMap indisponible pour cette zone : ${message}`);
+    if (err instanceof ImportError) throw err;
+    throw new ImportError(`OpenStreetMap : ${message}`, /timeout|abort/i.test(message) ? 'timeout' : 'network');
   }
 }
 
@@ -110,18 +110,22 @@ Deno.serve(async (req) => {
       body = {};
     }
     const bbox = { ...DEFAULT_BBOX, ...(body.bbox as object | undefined) };
+    if (![bbox.south, bbox.west, bbox.north, bbox.east].every(Number.isFinite) || bbox.south >= bbox.north || bbox.west >= bbox.east || bbox.south < -90 || bbox.north > 90 || bbox.west < -180 || bbox.east > 180) {
+      return json({ ok: false, error: 'Périmètre invalide', retryable: false }, 400);
+    }
     const clamp = (v: unknown, def: number, min: number, max: number) => {
       const n = Number(v ?? def);
       return Number.isFinite(n) ? Math.min(max, Math.max(min, Math.round(n))) : def;
     };
-    const grid = clamp(body.grid, DEFAULT_GRID, 1, 10);
+    const grid = clamp(body.grid, DEFAULT_GRID, 1, 20);
+    const attempt = clamp(body.attempt, 0, 0, 10);
     const totalTiles = grid * grid;
     const tileStart = clamp(body.tile_start, 0, 0, totalTiles - 1);
     const tileCount = clamp(
       body.tile_count,
       DEFAULT_TILES_PER_RUN,
       1,
-      totalTiles
+      1
     );
     const tileEnd = Math.min(totalTiles, tileStart + tileCount);
 
@@ -142,7 +146,7 @@ Deno.serve(async (req) => {
       const e = w + lngStep;
 
       if (tilesQueried > 0) await sleep(1100); // >= 1s entre deux requêtes
-      const nodes = await fetchTile(s, w, n, e);
+      const nodes = await fetchTile(s, w, n, e, attempt);
       tilesQueried++;
       totalReceived += nodes.length;
       console.log(`Tile ${t + 1}/${totalTiles}: ${nodes.length} nodes`);
@@ -159,7 +163,7 @@ Deno.serve(async (req) => {
           .from('water_points')
           .select('source_ref')
           .in('source_ref', refs);
-        if (error) throw error;
+        if (error) throw new ImportError(`Lecture des points existants : ${error.message}`, 'database', false);
         (data || []).forEach((r) => r.source_ref && existing.add(r.source_ref));
       }
 
@@ -168,7 +172,7 @@ Deno.serve(async (req) => {
         const { error } = await admin
           .from('water_points')
           .upsert(chunk, { onConflict: 'source_ref' });
-        if (error) throw error;
+        if (error) throw new ImportError(`Enregistrement des points : ${error.message}`, 'database', false);
       }
 
       const tileUpdated = rows.filter((r) => existing.has(r.source_ref)).length;
@@ -192,8 +196,8 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('OSM import error:', error);
     return json(
-      { ok: false, error: (error as Error)?.message || 'Unknown error' },
-      500
+      { ok: false, error: (error as Error)?.message || 'Unknown error', error_code: error instanceof ImportError ? error.code : 'internal', retryable: error instanceof ImportError && error.retryable, retry_after_ms: error instanceof ImportError ? error.retryAfterMs : 0 },
+      error instanceof ImportError && error.retryable ? 503 : 500
     );
   }
 });
