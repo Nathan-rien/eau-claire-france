@@ -11,10 +11,11 @@
 - Inspection GSC de /en/classement et /en/traiter-eau-robinet dans 2-3 semaines
 
 ## Zone d’Eau
-- [ ] Relancer les secteurs restants avec états par zone, affichage progressif et reprise automatique des erreurs temporaires.
+- [x] Ajouter les états des 256 secteurs, l’affichage progressif, la reprise automatique bornée et la reprise après rechargement dans le même navigateur ; 3 tests réussis.
+- [x] Relancer Bordeaux et Lyon : premier lot de 24 points traité, 12 nouveaux points après dédoublonnage ; 1 775 points publics vérifiés en SQL et sur la carte.
 - [x] Importer une première série de 100 points OpenStreetMap réels et enrichir les informations disponibles.
 - [x] Corriger le chargement exhaustif et la synchronisation de la carte.
 - [x] Vérifier le nombre en base et l’affichage public (100 points).
 - [x] Ajouter suivi des succès, classification des erreurs, pause et reprise persistée des zones échouées (256 zones).
 - [x] Reprendre l’import réel : Paris, 1 668 points traités ; 1 763 points publics vérifiés après dédoublonnage.
-- [ ] Achever le périmètre national : secteurs encore en échec HTTP 504, à reprendre ; contrôle du parcours admin connecté indisponible (Supabase externe).
+- [ ] Achever le périmètre national : lancement depuis le compte administrateur requis (appel protégé refusé en 401 ici) ; Lille échoue en HTTP 504. Bordeaux et Lyon disposent encore de points à importer. Vérification du suivi connecté indisponible (Supabase externe).
