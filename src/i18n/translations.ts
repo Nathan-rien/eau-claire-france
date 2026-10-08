@@ -2455,6 +2455,7 @@ export const translations = {
     'nav.alerts': 'Alerts',
     'nav.journey': 'Water journey',
     'nav.journeyTab': 'Infographics',
+    'nav.essentials': 'Essentials',
     'nav.choose': 'Choose my water',
     'nav.understand': 'Understand',
     'nav.journeyBottle': 'Bottle journey',
