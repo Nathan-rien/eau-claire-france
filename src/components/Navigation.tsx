@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link } from '@/components/LocalizedLink';
 import {
@@ -91,9 +91,6 @@ const Navigation = () => {
   ];
 
   const isDropdownActive = (items: NavItem[]) => items.some(item => location.pathname === item.href);
-
-  const handleMenuEnter = (id: string) => setOpenMenu(id);
-  const handleMenuLeave = () => setOpenMenu(null);
 
   const renderDropdown = (dropdown: { id: string; label: string; items: NavItem[] }) => (
     <NavigationMenuItem key={dropdown.id}>
