@@ -5,7 +5,7 @@ import {
   Droplets, Menu, ChevronDown, Search,
   Droplet, GlassWater, AlertTriangle, Truck, Route as RouteIcon,
   CloudRain, Wine, ShoppingCart, TrendingUp, Stethoscope,
-  HelpCircle, Trophy, Bell, Map as MapIcon, MapPinned, type LucideIcon,
+  HelpCircle, Trophy, Bell, Map as MapIcon, MapPinned, Newspaper, type LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,13 +15,18 @@ import { useRegion } from '@/contexts/RegionContext';
 import RegionSwitcher from '@/components/RegionSwitcher';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
+interface NavItem {
+  href: string;
+  label: string;
+}
+
 const Header = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useLanguage();
   const { isEurope } = useRegion();
 
-  const mapsItems = isEurope
+  const mapsItems: NavItem[] = isEurope
     ? [
         { href: '/carte-europe', label: t('nav.maps.europeQuality') },
         { href: '/carte-polluants-europe', label: t('nav.maps.europePollutants') },
@@ -30,11 +35,17 @@ const Header = () => {
         { href: '/carte', label: t('nav.maps.tap') },
         { href: '/sources-eau', label: t('nav.maps.bottles') },
         { href: '/carte-polluants', label: t('nav.maps.pollutants') },
-        { href: '/carte-parcours-eau', label: t('nav.maps.bottleJourney') },
-        { href: '/carte-parcours-robinet', label: t('nav.maps.tapJourney') },
+        { href: '/gout-eau', label: "Goût de l'eau par région" },
       ];
 
-  const pricesItems = isEurope
+  const journeyItems: NavItem[] = [
+    { href: '/parcours-eau', label: t('nav.journey') },
+    { href: '/parcours-eau-bouteille', label: t('nav.journeyBottle') },
+    { href: '/carte-parcours-eau', label: t('nav.maps.bottleJourney') },
+    { href: '/carte-parcours-robinet', label: t('nav.maps.tapJourney') },
+  ];
+
+  const pricesItems: NavItem[] = isEurope
     ? [
         { href: '/prix-eaux-europe', label: t('nav.prices') },
       ]
@@ -43,27 +54,27 @@ const Header = () => {
         { href: '/cours-eau', label: "Cours de l'eau" },
       ];
 
-  const navigationItems = isEurope
+  const chooseItems: NavItem[] = isEurope
     ? [
-        { href: '/diagnostic-europe', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
-        { href: '/classement-europe', label: t('nav.ranking') },
-        { href: '/polluants-europe', label: t('nav.pollutants') },
+        { href: '/diagnostic-europe', label: t('nav.diagnostic') },
         { href: '/alertes-europe', label: t('nav.alerts') },
       ]
     : [
-        { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
-        { href: '/gout-eau', label: "Goût de l'eau" },
-        { href: '/classement', label: t('nav.ranking') },
-        { href: '/polluants', label: t('nav.pollutants') },
+        { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/alertes', label: t('nav.alerts') },
       ];
 
-  const journeyItems = [
-    { href: '/parcours-eau', label: t('nav.journey') },
-    { href: '/parcours-eau-bouteille', label: t('nav.journeyBottle') },
-  ];
+  const understandItems: NavItem[] = isEurope
+    ? [
+        { href: '/polluants-europe', label: t('nav.pollutants') },
+      ]
+    : [
+        { href: '/polluants', label: t('nav.pollutants') },
+      ];
+
+  const rankingHref = isEurope ? '/classement-europe' : '/classement';
 
   // Contribution communautaire — volontairement séparée du comparateur
   const communityItems = isEurope
@@ -71,9 +82,15 @@ const Header = () => {
     : [{ href: '/zone-eau', label: "Zone d'Eau" }];
 
   const isActive = (path: string) => location.pathname === path;
-  const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
-  const isActiveJourneySection = journeyItems.some(item => location.pathname === item.href);
-  const isActivePricesSection = pricesItems.some(item => location.pathname === item.href);
+
+  const dropdowns: Array<{ id: string; label: string; items: NavItem[] }> = [
+    { id: 'prices', label: t('nav.prices'), items: pricesItems },
+    { id: 'choose', label: t('nav.choose'), items: chooseItems },
+    { id: 'maps', label: t('nav.maps'), items: mapsItems },
+    { id: 'journey', label: t('nav.journeyTab'), items: journeyItems },
+    { id: 'understand', label: t('nav.understand'), items: understandItems },
+  ];
+  const isDropdownActive = (items: NavItem[]) => items.some(item => location.pathname === item.href);
 
   // Icon mapping by route — used for the mobile grid
   const iconByHref: Record<string, LucideIcon> = {
@@ -100,13 +117,21 @@ const Header = () => {
     '/alertes': Bell,
     '/alertes-europe': Bell,
     '/zone-eau': MapPinned,
+    '/lettre-de-leau': Newspaper,
   };
 
+  const essentialItems: NavItem[] = [
+    { href: rankingHref, label: t('nav.ranking') },
+    { href: '/lettre-de-leau', label: "Lettre de l'eau" },
+  ];
+
   const mobileSections = [
+    { id: 'essential', label: t('nav.essentials'), items: essentialItems },
+    { id: 'prices', label: t('nav.prices'), items: pricesItems },
+    { id: 'choose', label: t('nav.choose'), items: chooseItems },
     { id: 'maps', label: t('nav.maps'), items: mapsItems },
     { id: 'journey', label: t('nav.journeyTab'), items: journeyItems },
-    { id: 'prices', label: t('nav.prices'), items: pricesItems },
-    { id: 'tools', label: t('nav.navigation'), items: navigationItems },
+    { id: 'understand', label: t('nav.understand'), items: understandItems },
     ...(communityItems.length
       ? [{ id: 'community', label: 'Communauté', items: communityItems }]
       : []),
@@ -121,40 +146,20 @@ const Header = () => {
     : [];
 
 
-  const [mapsMenuOpen, setMapsMenuOpen] = useState(false);
-  const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
-  const [pricesMenuOpen, setPricesMenuOpen] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const journeyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const pricesTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleMouseEnter = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setMapsMenuOpen(true);
+  const handleDropdownEnter = (id: string) => {
+    if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
+    setOpenDropdown(id);
   };
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => setMapsMenuOpen(false), 150);
-  };
-  const handleJourneyMouseEnter = () => {
-    if (journeyTimeoutRef.current) clearTimeout(journeyTimeoutRef.current);
-    setJourneyMenuOpen(true);
-  };
-  const handleJourneyMouseLeave = () => {
-    journeyTimeoutRef.current = setTimeout(() => setJourneyMenuOpen(false), 150);
-  };
-  const handlePricesMouseEnter = () => {
-    if (pricesTimeoutRef.current) clearTimeout(pricesTimeoutRef.current);
-    setPricesMenuOpen(true);
-  };
-  const handlePricesMouseLeave = () => {
-    pricesTimeoutRef.current = setTimeout(() => setPricesMenuOpen(false), 150);
+  const handleDropdownLeave = () => {
+    dropdownTimeoutRef.current = setTimeout(() => setOpenDropdown(null), 150);
   };
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (journeyTimeoutRef.current) clearTimeout(journeyTimeoutRef.current);
-      if (pricesTimeoutRef.current) clearTimeout(pricesTimeoutRef.current);
+      if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
     };
   }, []);
 
@@ -174,122 +179,64 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden xl:flex items-center space-x-1 flex-1 justify-center max-w-4xl" role="navigation" aria-label={t('nav.navigation')}>
-            {/* Cartes dropdown */}
-            <div
-              className="relative group"
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+            {/* Classement — accès direct, page la plus visitée */}
+            <Link
+              to={rankingHref}
+              className={`h-9 px-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap inline-flex items-center ${
+                isActive(rankingHref) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
-              <button
-                className={`h-9 px-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap inline-flex items-center gap-1 ${
-                  isActiveMapsSection ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {t('nav.maps')}
-                <ChevronDown className="h-3 w-3" />
-              </button>
-              {mapsMenuOpen && (
-                <div
-                  className="absolute left-0 top-full w-64 bg-background border border-border shadow-lg rounded-md z-50 mt-0"
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  {mapsItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      to={item.href}
-                      className={`block px-4 py-3 text-sm hover:bg-accent hover:text-accent-foreground transition-colors ${
-                        isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+              {t('nav.ranking')}
+            </Link>
 
-            {/* Parcours dropdown */}
-            <div
-              className="relative group"
-              onMouseEnter={handleJourneyMouseEnter}
-              onMouseLeave={handleJourneyMouseLeave}
-            >
-              <button
-                className={`h-9 px-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap inline-flex items-center gap-1 ${
-                  isActiveJourneySection ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
-                }`}
+            {dropdowns.map((dropdown) => (
+              <div
+                key={dropdown.id}
+                className="relative group"
+                onMouseEnter={() => handleDropdownEnter(dropdown.id)}
+                onMouseLeave={handleDropdownLeave}
               >
-                {t('nav.journeyTab')}
-                <ChevronDown className="h-3 w-3" />
-              </button>
-              {journeyMenuOpen && (
-                <div
-                  className="absolute left-0 top-full w-64 bg-background border border-border shadow-lg rounded-md z-50 mt-0"
-                  onMouseEnter={handleJourneyMouseEnter}
-                  onMouseLeave={handleJourneyMouseLeave}
+                <button
+                  className={`h-9 px-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap inline-flex items-center gap-1 ${
+                    isDropdownActive(dropdown.items) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                  aria-expanded={openDropdown === dropdown.id}
                 >
-                  {journeyItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      to={item.href}
-                      className={`block px-4 py-3 text-sm hover:bg-accent hover:text-accent-foreground transition-colors ${
-                        isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Prix des eaux dropdown */}
-            <div
-              className="relative group"
-              onMouseEnter={handlePricesMouseEnter}
-              onMouseLeave={handlePricesMouseLeave}
-            >
-              <button
-                className={`h-9 px-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap inline-flex items-center gap-1 ${
-                  isActivePricesSection ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {t('nav.prices')}
-                <ChevronDown className="h-3 w-3" />
-              </button>
-              {pricesMenuOpen && (
-                <div
-                  className="absolute left-0 top-full w-64 bg-background border border-border shadow-lg rounded-md z-50 mt-0"
-                  onMouseEnter={handlePricesMouseEnter}
-                  onMouseLeave={handlePricesMouseLeave}
-                >
-                  {pricesItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      to={item.href}
-                      className={`block px-4 py-3 text-sm hover:bg-accent hover:text-accent-foreground transition-colors ${
-                        isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {navigationItems.map((item) => (
-              <Link
-                key={item.href}
-                to={item.href}
-                className={`h-9 px-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap inline-flex items-center ${
-                  isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {item.label}
-              </Link>
+                  {dropdown.label}
+                  <ChevronDown className="h-3 w-3" />
+                </button>
+                {openDropdown === dropdown.id && (
+                  <div
+                    className="absolute left-0 top-full w-64 bg-background border border-border shadow-lg rounded-md z-50 mt-0"
+                    onMouseEnter={() => handleDropdownEnter(dropdown.id)}
+                    onMouseLeave={handleDropdownLeave}
+                  >
+                    {dropdown.items.map((item) => (
+                      <Link
+                        key={item.href}
+                        to={item.href}
+                        className={`block px-4 py-3 text-sm hover:bg-accent hover:text-accent-foreground transition-colors ${
+                          isActive(item.href) ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
+
+            {/* Lettre de l'eau — accès direct */}
+            <Link
+              to="/lettre-de-leau"
+              className={`h-9 px-3 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap inline-flex items-center gap-1.5 ${
+                isActive('/lettre-de-leau') ? 'bg-accent text-accent-foreground' : 'text-blue-600 hover:text-blue-700'
+              }`}
+            >
+              <Newspaper className="h-3.5 w-3.5" />
+              Lettre de l'eau
+            </Link>
 
             {/* Communauté — fonctionnalité distincte du comparateur */}
             {!isEurope && (
@@ -336,7 +283,7 @@ const Header = () => {
                   <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b">
                     <div className="flex items-center space-x-2">
                       <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center">
-                        <Droplets className="w-4 h-4 text-white" />
+                        <Droplets className="w-4 w-4 text-white" />
                       </div>
                       <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
                         InfoEau.fr
