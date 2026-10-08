@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +17,7 @@ import {
   signWaterPointPhotos,
 } from '@/data/waterPoints';
 import LazyWaterPointsMap from './LazyWaterPointsMap';
+import { OSM_IMPORT_GRID, OSM_IMPORT_STORAGE_KEY, readOsmImportProgress } from './osmImportProgress';
 
 type StatusFilter = WaterPointModeration | 'all';
 type TypeFilter = WaterPointType | 'all';
@@ -35,6 +36,9 @@ const WaterPointsAdmin: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('en_attente');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [importing, setImporting] = useState(false);
+  const [importProgress, setImportProgress] = useState(readOsmImportProgress);
+  const stopImport = useRef(false);
+  useEffect(() => () => { stopImport.current = true; }, []);
   const { toast } = useToast();
 
   const load = async () => {
@@ -114,73 +118,56 @@ const WaterPointsAdmin: React.FC = () => {
     );
     if (!ok) return;
 
+    stopImport.current = false;
     setImporting(true);
-    toast({
-      title: 'Import OpenStreetMap lancé',
-      description: 'Cela peut prendre plusieurs minutes, ne fermez pas la page.',
-    });
-
-    let nextTile: number | null = 0;
-    let created = 0;
-    let updated = 0;
-    let received = 0;
-
-    // L'import est découpé en lots de sous-zones : chaque appel avance la grille.
-    while (nextTile !== null) {
-      let data: {
-        ok?: boolean;
-        created?: number;
-        updated?: number;
-        total_received?: number;
-        next_tile?: number | null;
-        grid?: number;
-        error?: string;
-      } | null = null;
-      let error: { message?: string } | null = null;
-
-      // Une zone peut échouer (réseau, Overpass saturé) : on réessaie.
-      for (let attempt = 0; attempt < 3; attempt++) {
-        const res = await supabase.functions.invoke(
-          'admin-import-osm-water-points',
-          { body: { tile_start: nextTile } }
-        );
-        data = res.data;
-        error = res.error;
-        if (!error && data?.ok) break;
-        await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
+    const progress = { ...importProgress, completed: [...importProgress.completed], failed: { ...importProgress.failed } };
+    const persist = () => {
+      setImportProgress({ ...progress, completed: [...progress.completed], failed: { ...progress.failed } });
+      try { localStorage.setItem(OSM_IMPORT_STORAGE_KEY, JSON.stringify(progress)); } catch { /* UI progress still works without storage. */ }
+    };
+    try {
+      for (let tile = 0; tile < OSM_IMPORT_GRID ** 2 && !stopImport.current; tile++) {
+        if (progress.completed.includes(tile)) continue;
+        let succeeded = false;
+        for (let attempt = 0; attempt < 3 && !stopImport.current; attempt++) {
+          progress.requests++;
+          const res = await supabase.functions.invoke('admin-import-osm-water-points', { body: { grid: OSM_IMPORT_GRID, tile_start: tile, attempt } });
+          let data = res.data;
+          const context = res.error && 'context' in res.error ? res.error.context : undefined;
+          if (!data && context instanceof Response) {
+            try { data = await context.clone().json(); } catch { /* Keep the transport error below. */ }
+          }
+          if (!res.error && data?.ok) {
+            succeeded = true;
+            progress.requestSuccesses++;
+            progress.completed.push(tile);
+            delete progress.failed[String(tile)];
+            progress.created += data.created ?? 0;
+            progress.updated += data.updated ?? 0;
+            progress.received += data.total_received ?? 0;
+            persist();
+            break;
+          }
+          const status = context instanceof Response ? context.status : undefined;
+          progress.failed[String(tile)] = `${data?.error_code || (status ? `HTTP ${status}` : 'réseau')} : ${data?.error || res.error?.message || 'Erreur inconnue'}`;
+          persist();
+          if (status === 401 || status === 403 || data?.retryable === false) {
+            throw new Error(progress.failed[String(tile)]);
+          }
+          if (attempt < 2) await new Promise(r => setTimeout(r, Math.max(2000 * 2 ** attempt, data?.retry_after_ms ?? 0)));
+        }
+        // An exhausted zone remains in the queue; do not abort all other zones.
+        if (!succeeded) persist();
+        if (!stopImport.current) await new Promise(r => setTimeout(r, 1100));
       }
-
-      if (error || !data?.ok) {
-        setImporting(false);
-        toast({
-          title: 'Import interrompu',
-          description: data?.error || error?.message || 'Erreur inconnue',
-          variant: 'destructive',
-        });
-        load();
-        return;
-      }
-
-      created += data.created ?? 0;
-      updated += data.updated ?? 0;
-      received += data.total_received ?? 0;
-      nextTile = data.next_tile ?? null;
-
-      if (nextTile !== null) {
-        toast({
-          title: 'Import en cours…',
-          description: `${created} créés, ${updated} mis à jour (zone ${nextTile}/${(data.grid ?? 6) ** 2}).`,
-        });
-        await new Promise((r) => setTimeout(r, 1100));
-      }
+      toast({ title: stopImport.current ? 'Import en pause' : Object.keys(progress.failed).length ? 'Import partiel' : 'Import terminé', description: `${progress.completed.length}/${OSM_IMPORT_GRID ** 2} zones réussies, ${Object.keys(progress.failed).length} en échec. ${progress.created} créés, ${progress.updated} mis à jour.` });
+    } catch (error) {
+      toast({ title: 'Import interrompu', description: error instanceof Error ? error.message : 'Erreur inattendue', variant: 'destructive' });
+    } finally {
+      persist();
+      setImporting(false);
+      load();
     }
-
-    setImporting(false);
-    toast({
-      title: 'Import OpenStreetMap terminé',
-      description: `${created} point(s) créé(s), ${updated} mis à jour (${received} reçus d'Overpass).`,
-    });
-    load();
   };
 
   const mapPoints = useMemo(
@@ -208,8 +195,9 @@ const WaterPointsAdmin: React.FC = () => {
             ) : (
               <Download className="w-4 h-4 mr-2" />
             )}
-            Importer depuis OpenStreetMap
+            {importProgress.completed.length || Object.keys(importProgress.failed).length ? 'Reprendre l’import OpenStreetMap' : 'Importer depuis OpenStreetMap'}
           </Button>
+          {importing && <Button variant="outline" onClick={() => { stopImport.current = true; }}>Mettre en pause</Button>}
           <Button
             variant="outline"
             size="sm"
@@ -222,6 +210,13 @@ const WaterPointsAdmin: React.FC = () => {
         </div>
       </CardHeader>
       <CardContent className="space-y-5">
+        {(importing || importProgress.requests > 0) && (
+          <div role="status" className="text-sm text-muted-foreground space-y-2">
+            <p>{importProgress.completed.length}/{OSM_IMPORT_GRID ** 2} zones réussies ({Math.round(importProgress.completed.length / OSM_IMPORT_GRID ** 2 * 100)} % du périmètre) · {Object.keys(importProgress.failed).length} zones en échec</p>
+            <p>{importProgress.created} créés · {importProgress.updated} mis à jour · Succès des requêtes : {importProgress.requests ? Math.round(importProgress.requestSuccesses / importProgress.requests * 100) : 0} %</p>
+            {Object.keys(importProgress.failed).length > 0 && <details><summary>Erreurs à reprendre</summary><ul className="mt-2 space-y-1">{Object.entries(importProgress.failed).map(([tile, error]) => <li key={tile}>Zone {Number(tile) + 1} : {error}</li>)}</ul></details>}
+          </div>
+        )}
         {/* Filtres */}
         <div className="space-y-2">
           <div className="flex flex-wrap gap-2">
