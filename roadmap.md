@@ -11,6 +11,7 @@
 - Inspection GSC de /en/classement et /en/traiter-eau-robinet dans 2-3 semaines
 
 ## Zone d’Eau
+- [ ] Relancer les secteurs restants avec états par zone, affichage progressif et reprise automatique des erreurs temporaires.
 - [x] Importer une première série de 100 points OpenStreetMap réels et enrichir les informations disponibles.
 - [x] Corriger le chargement exhaustif et la synchronisation de la carte.
 - [x] Vérifier le nombre en base et l’affichage public (100 points).

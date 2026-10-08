@@ -17,7 +17,8 @@ import {
   signWaterPointPhotos,
 } from '@/data/waterPoints';
 import LazyWaterPointsMap from './LazyWaterPointsMap';
-import { OSM_IMPORT_GRID, OSM_IMPORT_STORAGE_KEY, readOsmImportProgress } from './osmImportProgress';
+import { OSM_IMPORT_GRID, OSM_IMPORT_STORAGE_KEY, readOsmImportProgress, remainingOsmTiles, osmRetryDelay, osmTileStatus } from './osmImportProgress';
+import { Progress } from '@/components/ui/progress';
 
 type StatusFilter = WaterPointModeration | 'all';
 type TypeFilter = WaterPointType | 'all';
@@ -38,7 +39,12 @@ const WaterPointsAdmin: React.FC = () => {
   const [importing, setImporting] = useState(false);
   const [importProgress, setImportProgress] = useState(readOsmImportProgress);
   const stopImport = useRef(false);
-  useEffect(() => () => { stopImport.current = true; }, []);
+  const importRunning = useRef(false);
+  const [now, setNow] = useState(Date.now);
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => { window.clearInterval(timer); stopImport.current = true; };
+  }, []);
   const { toast } = useToast();
 
   const load = async () => {
@@ -111,23 +117,41 @@ const WaterPointsAdmin: React.FC = () => {
     load();
   };
 
-  const importOsm = async () => {
-    const ok = window.confirm(
+  const importOsm = async (automatic = false) => {
+    if (importRunning.current) return;
+    const ok = automatic || window.confirm(
       "Lancer l'import des points d'eau OpenStreetMap pour la France ? " +
         "L'opération peut prendre plusieurs minutes."
     );
     if (!ok) return;
 
+    importRunning.current = true;
     stopImport.current = false;
     setImporting(true);
     const progress = { ...importProgress, completed: [...importProgress.completed], failed: { ...importProgress.failed } };
+    progress.autoResume = true;
     const persist = () => {
       setImportProgress({ ...progress, completed: [...progress.completed], failed: { ...progress.failed } });
       try { localStorage.setItem(OSM_IMPORT_STORAGE_KEY, JSON.stringify(progress)); } catch { /* UI progress still works without storage. */ }
     };
+    const wait = async (ms: number) => {
+      progress.retryAt = Date.now() + ms;
+      persist();
+      while (!stopImport.current && Date.now() < progress.retryAt) {
+        await new Promise(r => setTimeout(r, Math.min(250, progress.retryAt - Date.now())));
+      }
+      progress.retryAt = null;
+      persist();
+    };
     try {
-      for (let tile = 0; tile < OSM_IMPORT_GRID ** 2 && !stopImport.current; tile++) {
-        if (progress.completed.includes(tile)) continue;
+      persist();
+      if (progress.retryAt && progress.retryAt > Date.now()) await wait(progress.retryAt - Date.now());
+      // Initial pass plus three bounded automatic recovery passes.
+      for (let round = 0; round < 4 && !stopImport.current; round++) {
+      for (const tile of remainingOsmTiles(progress)) {
+        if (stopImport.current) break;
+        progress.currentTile = tile;
+        persist();
         let succeeded = false;
         for (let attempt = 0; attempt < 3 && !stopImport.current; attempt++) {
           progress.requests++;
@@ -154,21 +178,40 @@ const WaterPointsAdmin: React.FC = () => {
           if (status === 401 || status === 403 || data?.retryable === false) {
             throw new Error(progress.failed[String(tile)]);
           }
-          if (attempt < 2) await new Promise(r => setTimeout(r, Math.max(2000 * 2 ** attempt, data?.retry_after_ms ?? 0)));
+          if (attempt < 2) await wait(osmRetryDelay(attempt, data?.retry_after_ms ?? 0));
         }
         // An exhausted zone remains in the queue; do not abort all other zones.
         if (!succeeded) persist();
+        progress.currentTile = null;
+        persist();
+        // Refresh public-point preview after each successful sector.
+        if (succeeded && !stopImport.current) await load();
         if (!stopImport.current) await new Promise(r => setTimeout(r, 1100));
+      }
+      if (!remainingOsmTiles(progress).length) break;
+      if (round < 3 && !stopImport.current) await wait(30000 * 2 ** round);
       }
       toast({ title: stopImport.current ? 'Import en pause' : Object.keys(progress.failed).length ? 'Import partiel' : 'Import terminé', description: `${progress.completed.length}/${OSM_IMPORT_GRID ** 2} zones réussies, ${Object.keys(progress.failed).length} en échec. ${progress.created} créés, ${progress.updated} mis à jour.` });
     } catch (error) {
       toast({ title: 'Import interrompu', description: error instanceof Error ? error.message : 'Erreur inattendue', variant: 'destructive' });
     } finally {
+      progress.autoResume = false;
+      progress.currentTile = null;
+      progress.retryAt = null;
       persist();
+      importRunning.current = false;
       setImporting(false);
       load();
     }
   };
+
+  useEffect(() => {
+    if (importProgress.autoResume && !importRunning.current && remainingOsmTiles(importProgress).length) {
+      void importOsm(true);
+    }
+    // Resume only an import explicitly started previously in this browser.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const mapPoints = useMemo(
     () => points.filter((p) => Number.isFinite(p.latitude)),
@@ -186,8 +229,8 @@ const WaterPointsAdmin: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={importOsm}
-            disabled={importing}
+            onClick={() => void importOsm()}
+            disabled={importing || importProgress.completed.length === OSM_IMPORT_GRID ** 2}
             className="min-h-[44px] md:min-h-0"
           >
             {importing ? (
@@ -214,6 +257,18 @@ const WaterPointsAdmin: React.FC = () => {
           <div role="status" className="text-sm text-muted-foreground space-y-2">
             <p>{importProgress.completed.length}/{OSM_IMPORT_GRID ** 2} zones réussies ({Math.round(importProgress.completed.length / OSM_IMPORT_GRID ** 2 * 100)} % du périmètre) · {Object.keys(importProgress.failed).length} zones en échec</p>
             <p>{importProgress.created} créés · {importProgress.updated} mis à jour · Succès des requêtes : {importProgress.requests ? Math.round(importProgress.requestSuccesses / importProgress.requests * 100) : 0} %</p>
+            <Progress value={importProgress.completed.length / OSM_IMPORT_GRID ** 2 * 100} aria-label="Secteurs OpenStreetMap traités" />
+            <p>{importProgress.currentTile !== null ? `Zone ${importProgress.currentTile + 1} en cours` : importing ? 'Import en cours' : 'Import arrêté'}{importProgress.retryAt && importing ? ` · Reprise automatique dans ${Math.max(0, Math.ceil((importProgress.retryAt - now) / 1000))} s` : ''} · {remainingOsmTiles(importProgress).length - Object.keys(importProgress.failed).filter(tile => !importProgress.completed.includes(Number(tile))).length} zones en attente</p>
+            <div className="flex flex-wrap gap-3" aria-hidden="true"><span>✓ Traitée</span><span>↻ En cours</span><span>! En échec</span><span>· En attente</span></div>
+            <div className="grid grid-cols-8 sm:grid-cols-16 gap-1" aria-label="État des 256 secteurs">
+              {Array.from({ length: OSM_IMPORT_GRID ** 2 }, (_, tile) => {
+                const status = osmTileStatus(importProgress, tile);
+                const labels = { completed: 'Traitée', running: 'En cours', failed: 'En échec', pending: 'En attente' };
+                const symbols = { completed: '✓', running: '↻', failed: '!', pending: '·' };
+                const classes = { completed: 'bg-primary/15 text-primary border-primary/30', running: 'bg-secondary text-secondary-foreground border-primary', failed: 'bg-destructive/10 text-destructive border-destructive/30', pending: 'bg-muted text-muted-foreground border-border' };
+                return <div key={tile} title={`Zone ${tile + 1} — ${labels[status]}${importProgress.failed[String(tile)] ? ` : ${importProgress.failed[String(tile)]}` : ''}`} aria-label={`Zone ${tile + 1} : ${labels[status]}`} className={`aspect-square min-w-0 flex items-center justify-center rounded border text-xs ${classes[status]}`}>{symbols[status]}</div>;
+              })}
+            </div>
             {Object.keys(importProgress.failed).length > 0 && <details><summary>Erreurs à reprendre</summary><ul className="mt-2 space-y-1">{Object.entries(importProgress.failed).map(([tile, error]) => <li key={tile}>Zone {Number(tile) + 1} : {error}</li>)}</ul></details>}
           </div>
         )}

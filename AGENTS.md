@@ -2,4 +2,5 @@
 - Mapbox load callbacks must read current water-point data from refs so network and map readiness cannot race.
 - Use the OSM mapping helper for imports; preserve source identifiers and distinguish import timestamps from inspections.
 - Persist OSM tile progress locally (not authorization); retry transient failures with backoff, preserve failed tiles, and halt on authentication or database errors.
+- Resume explicitly started OSM imports in the same browser, skip completed sectors, and bound automatic recovery passes; this preserves progress without endless provider requests.
 - Paginate validated public water points in stable identifier order to avoid the API row limit silently hiding locations.
