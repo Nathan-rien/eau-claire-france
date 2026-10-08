@@ -9,3 +9,8 @@
 ## Suites possibles
 - Traduire le détail des recommandations par profil santé (seuils, contre-indications) pour /en/classement
 - Inspection GSC de /en/classement et /en/traiter-eau-robinet dans 2-3 semaines
+
+## Zone d’Eau
+- [ ] Importer des points OpenStreetMap réels et enrichir les informations disponibles.
+- [ ] Corriger le chargement exhaustif et la synchronisation de la carte.
+- [ ] Vérifier le nombre en base et l’affichage public.
