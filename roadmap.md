@@ -11,6 +11,7 @@
 - Inspection GSC de /en/classement et /en/traiter-eau-robinet dans 2-3 semaines
 
 ## Zone d’Eau
-- [ ] Importer des points OpenStreetMap réels et enrichir les informations disponibles.
-- [ ] Corriger le chargement exhaustif et la synchronisation de la carte.
-- [ ] Vérifier le nombre en base et l’affichage public.
+- [x] Importer une première série de 100 points OpenStreetMap réels et enrichir les informations disponibles.
+- [x] Corriger le chargement exhaustif et la synchronisation de la carte.
+- [x] Vérifier le nombre en base et l’affichage public (100 points).
+- [ ] Étendre l’import national : service Overpass saturé ; exécution admin authentifiée indisponible dans cet environnement.

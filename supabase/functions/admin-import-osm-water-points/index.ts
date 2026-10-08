@@ -58,21 +58,18 @@ async function fetchTile(
   }
 }
 
-function potabilite(tags: Record<string, string> = {}) {
-  if (tags.drinking_water === 'yes') return 'declare_potable';
-  if (tags.drinking_water === 'no') return 'declare_non_potable';
-  return 'non_verifie';
-}
-
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-    const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
+    const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (!SUPABASE_URL || !ANON_KEY || !SERVICE_KEY) {
+      return json({ ok: false, error: 'Import indisponible : configuration serveur manquante' }, 500);
+    }
 
     // --- Authentification : administrateur connecté uniquement ---
     const authHeader = req.headers.get('Authorization');
