@@ -193,17 +193,136 @@ async function uploadImage(base64DataUrl: string, slug: string): Promise<string 
   }
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function makeCover(prompt: string, slug: string, attempts = 3): Promise<string | null> {
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    const dataUrl = await generateCoverImage(prompt);
+    if (dataUrl) {
+      const url = await uploadImage(dataUrl, slug);
+      if (url) return url;
+      console.error(`Cover attempt ${attempt}/${attempts} failed (upload) for ${slug}`);
+    } else {
+      console.error(`Cover attempt ${attempt}/${attempts} failed (generation) for ${slug}`);
+    }
+    if (attempt < attempts) await sleep(1500 * attempt);
+  }
+  return null;
+}
+
+const VISUAL_ANGLES = [
+  "plan large d'un paysage de rivière ou de barrage à l'aube",
+  "gros plan sur des mains et un équipement de prélèvement ou de laboratoire",
+  "vue d'une station de traitement ou d'un château d'eau",
+  "scène de rue ou de village avec des habitants vus de loin",
+  "détail macro de tuyaux, de vannes ou d'une surface mouillée",
+  "zone agricole, champs et canaux d'irrigation",
+  "bord de mer ou de plage, ambiance de baignade",
+  "intérieur de cuisine ou de salle de bain, vue du quotidien",
+];
+
+function hashString(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  }
+  return h;
+}
+
+function angleFor(slug: string): string {
+  return VISUAL_ANGLES[hashString(slug) % VISUAL_ANGLES.length];
+}
+
+function buildCoverPrompt(base: string, slug: string): string {
+  return `Photographie éditoriale haute qualité, 16:9, lumineuse : ${base}. Angle de prise de vue : ${angleFor(slug)}. Éviter les clichés (goutte d'eau, robinet, verre d'eau) sauf si le sujet l'exige. Pas de texte, pas de logo, aucune personne reconnaissable. Ambiance journalistique.`;
+}
+
+const jsonHeaders = { ...corsHeaders, "Content-Type": "application/json" };
+
+async function handleBackfillCovers(req: Request, body: any): Promise<Response> {
+  if (req.headers.get("Authorization") !== `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`) {
+    return new Response(JSON.stringify({ success: false, error: "unauthorized" }), { status: 401, headers: jsonHeaders });
+  }
+  try {
+    const limit = Math.min(Math.max(Number(body?.limit) || 3, 1), 5);
+    const { data: rows, error } = await supabase
+      .from("blog_articles")
+      .select("id, slug, title, excerpt, category")
+      .eq("status", "published")
+      .is("cover_image_url", null)
+      .order("published_at", { ascending: false })
+      .limit(limit);
+    if (error) throw new Error(`Select: ${error.message}`);
+
+    const updated: { slug: string; url: string }[] = [];
+    const failed: { slug: string; reason: string }[] = [];
+
+    for (const row of rows ?? []) {
+      let reason: string | null = null;
+      try {
+        const base = `Sujet : ${row.title}. ${row.excerpt ?? ""}`.slice(0, 400);
+        const url = await makeCover(buildCoverPrompt(base, row.slug), row.slug);
+        if (!url) {
+          reason = "cover generation failed";
+        } else {
+          const { error: upErr } = await supabase
+            .from("blog_articles")
+            .update({ cover_image_url: url })
+            .eq("id", row.id)
+            .is("cover_image_url", null);
+          if (upErr) reason = `update: ${upErr.message}`;
+          else updated.push({ slug: row.slug, url });
+        }
+      } catch (e) {
+        reason = e instanceof Error ? e.message : String(e);
+      }
+      if (reason) failed.push({ slug: row.slug, reason });
+
+      try {
+        const { error: logErr } = await supabase.from("blog_generation_log").insert({
+          status: reason ? "error" : "success",
+          topic: row.title,
+          article_id: row.id,
+          payload: { mode: "backfill_covers" },
+          ...(reason ? { error: reason } : {}),
+        });
+        if (logErr) console.error("Backfill log insert error:", logErr.message);
+      } catch (e) {
+        console.error("Backfill log insert exception:", e);
+      }
+    }
+
+    return new Response(
+      JSON.stringify({ success: true, processed: (rows ?? []).length, updated, failed }),
+      { status: 200, headers: jsonHeaders }
+    );
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("backfill_covers error:", msg);
+    return new Response(JSON.stringify({ success: false, error: msg }), { status: 500, headers: jsonHeaders });
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const logPayload: any = { status: "started" };
 
   try {
+    // 0. Parse body first (needed to route the backfill mode)
+    const body = await req.json().catch(() => ({} as any));
+
     if (!LOVABLE_API_KEY && !GEMINI_API_KEY) throw new Error("Missing LOVABLE_API_KEY (and no GEMINI_API_KEY fallback)");
+
+    if (body?.mode === "backfill_covers") {
+      return await handleBackfillCovers(req, body);
+    }
+
     if (!FIRECRAWL_API_KEY) throw new Error("FIRECRAWL_API_KEY missing");
 
-    // 0. Parse optional forced topic
-    const body = await req.json().catch(() => ({} as any));
+    // Optional forced topic
     const forcedTopic: string | undefined = body?.topic;
     const skipDedupe: boolean = !!body?.skipDedupe || !!forcedTopic;
 
@@ -315,13 +434,13 @@ Si l'article contient des chiffres comparatifs intéressants (ex: contaminations
 
     const slug = slugify(article.slug || article.title);
 
-    // 5. Generate cover image
+    // 5. Generate cover image (with retries + title-based fallback prompt)
     let coverUrl: string | null = null;
     if (article.image_prompt) {
-      const dataUrl = await generateCoverImage(
-        `Photographie éditoriale haute qualité, 16:9, lumineuse: ${article.image_prompt}. Pas de texte. Ambiance journalistique.`
-      );
-      if (dataUrl) coverUrl = await uploadImage(dataUrl, slug);
+      coverUrl = await makeCover(buildCoverPrompt(article.image_prompt, slug), slug);
+      if (!coverUrl) {
+        coverUrl = await makeCover(buildCoverPrompt(`Sujet : ${article.title}`, slug), slug);
+      }
     }
 
     // 6. Insert article
@@ -352,7 +471,7 @@ Si l'article contient des chiffres comparatifs intéressants (ex: contaminations
       status: "success",
       topic: fresh.title,
       article_id: inserted.id,
-      payload: { query, sources_count: sources.length, has_cover: !!coverUrl },
+      payload: { query, sources_count: sources.length, has_cover: !!coverUrl, cover_failed: !coverUrl },
     });
 
     return new Response(

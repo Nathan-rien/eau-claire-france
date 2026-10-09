@@ -1,0 +1,34 @@
+name: Lettre de l'eau - backfill missing covers
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Number of articles to process (1-5)'
+        required: false
+        default: '3'
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Invoke generate-blog-article (backfill_covers)
+        env:
+          SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          LIMIT: ${{ github.event.inputs.limit }}
+        run: |
+          if ! [[ "$LIMIT" =~ ^[0-9]+$ ]]; then
+            LIMIT=3
+          fi
+          BODY=$(printf '{"mode":"backfill_covers","limit":%s}' "$LIMIT")
+          echo "Triggering cover backfill (limit=$LIMIT)..."
+          HTTP_CODE=$(curl -sS -o /tmp/resp.json -w "%{http_code}" \
+            -X POST "https://xblogttmomuogdhmaztf.supabase.co/functions/v1/generate-blog-article" \
+            -H "Authorization: Bearer $SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/json" \
+            --data "$BODY" \
+            --max-time 540)
+          echo "HTTP $HTTP_CODE"
+          cat /tmp/resp.json
+          [ "$HTTP_CODE" = "200" ] || exit 1
