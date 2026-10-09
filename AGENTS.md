@@ -4,3 +4,4 @@
 - Persist OSM tile progress locally (not authorization); retry transient failures with backoff, preserve failed tiles, and halt on authentication or database errors.
 - Resume explicitly started OSM imports in the same browser, skip completed sectors, and bound automatic recovery passes; this preserves progress without endless provider requests.
 - Paginate validated public water points in stable identifier order to avoid the API row limit silently hiding locations.
+- Keep crisis consumption calculations as pure exports alongside their React calculator, with local-only form state; this makes numeric assumptions testable without persisting household information.
