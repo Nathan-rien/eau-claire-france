@@ -143,9 +143,6 @@ export default function CrisisWaterCalculator() {
             </RadioGroup>
             {input.dishMode === 'machine' && <div className="mt-3">{numericField('dishes', 'Cycles de lave-vaisselle par semaine')}</div>}
           </fieldset>
-          <Label htmlFor="crisis-leak" className="mt-6 flex items-center gap-3 min-h-11">
-            <Checkbox id="crisis-leak" checked={input.leak} onCheckedChange={c => update({ leak: c === true })} />Une chasse d’eau fuit chez moi
-          </Label>
           <Button type="button" variant="ghost" className="mt-2 min-h-11" onClick={() => { setInput(DEFAULT_INPUTS); setLevers(NO_LEVERS); setTouched(false); }}>Réinitialiser</Button>
 
           <div className="mt-8 border-t border-border pt-6" aria-live="polite" aria-atomic="true">
@@ -215,7 +212,6 @@ export default function CrisisWaterCalculator() {
         <summary className="cursor-pointer font-medium min-h-11 flex items-center">Tester une fuite</summary>
         <div className="mt-3 space-y-3 text-sm">
           <p><strong>Test du compteur :</strong> fermez tous les robinets et arrêtez les appareils (lave-linge, lave-vaisselle, arrosage). Notez l’index du compteur, attendez quelques heures sans consommer d’eau (idéalement la nuit), puis relevez-le à nouveau : si l’index a bougé, il y a probablement une fuite.</p>
-          <p><strong>Chasse d’eau :</strong> versez quelques gouttes de colorant alimentaire dans le réservoir sans tirer la chasse. Attendez au moins 30 minutes à 1 heure : si la couleur apparaît dans la cuvette, le mécanisme fuit.</p>
           <p>En cas de doute, contactez votre service de l’eau ou un plombier.</p>
           <p className="text-muted-foreground">Méthodes courantes décrites par des guides pratiques, pas une consigne officielle.</p>
         </div>
@@ -226,7 +222,6 @@ export default function CrisisWaterCalculator() {
         <span aria-live="polite" className="text-sm text-muted-foreground">{copied ? 'Copié' : ''}</span>
       </div>
 
-      <p className="text-sm mt-6">Une fuite de chasse d’eau représente 30 à 250 m³ par an (ARS)</p>
       <p className="text-sm text-muted-foreground mt-4">Estimation indicative fondée sur des valeurs moyennes (ARS ; les ordres de grandeur varient selon les sources, ADEME et CIEAU donnent parfois des valeurs plus élevées pour la douche). Votre consommation réelle se lit sur votre compteur. Ne couvre ni jardin, ni voiture, ni piscine, ni fuites. Les consignes officielles priment.</p>
     </div>
     {shown !== null && <div aria-hidden="true" className="sticky bottom-0 z-10 rounded-b-lg border-t border-border bg-card py-3 pl-4 pr-24 text-sm font-semibold">

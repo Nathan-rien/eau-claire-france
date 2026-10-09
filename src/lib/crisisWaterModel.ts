@@ -4,9 +4,7 @@ export const FINISTERE_AVG = 112;
 export const TARGET = 56;
 // ARS Normandie, « Initier aux principaux usages domestiques de l'eau » :
 // https://www.normandie.ars.sante.fr/media/2763/download?inline
-// Débit de douche ≈12 L/min ; fuite de chasse 30 à 250 m³/an (ordre de grandeur très variable).
-export const LEAK_LOW = 30 * 1000 / 365;
-export const LEAK_HIGH = 250 * 1000 / 365;
+// Débit de douche ≈12 L/min.
 export const INPUT_BOUNDS = {
   people: [1, 8], showers: [0, 14], minutes: [1, 20], baths: [0, 14],
   flushes: [0, 10], laundry: [0, 14], dishes: [0, 14],
@@ -16,27 +14,26 @@ export type NumericKey = keyof typeof INPUT_BOUNDS;
 export interface CrisisInputs {
   people: number; showers: number; minutes: number; baths: number;
   flushes: number; laundry: number; dishes: number;
-  toilet: 'classic' | 'dual'; dishMode: 'machine' | 'hand'; leak: boolean;
+  toilet: 'classic' | 'dual'; dishMode: 'machine' | 'hand';
 }
-export type LeverId = 'shorterShower' | 'dualFlush' | 'bathToShower' | 'fewerLaundry' | 'fixLeak';
+export type LeverId = 'shorterShower' | 'dualFlush' | 'bathToShower' | 'fewerLaundry';
 export type Levers = Record<LeverId, boolean>;
-export const NO_LEVERS: Levers = { shorterShower: false, dualFlush: false, bathToShower: false, fewerLaundry: false, fixLeak: false };
+export const NO_LEVERS: Levers = { shorterShower: false, dualFlush: false, bathToShower: false, fewerLaundry: false };
 export const LEVER_LABELS: Record<LeverId, string> = {
   shorterShower: 'Raccourcir chaque douche de 2 minutes',
   dualFlush: 'Passer d’une chasse classique au double débit',
   bathToShower: 'Remplacer un bain par semaine par une douche',
   fewerLaundry: 'Faire une lessive de moins par semaine',
-  fixLeak: 'Réparer la fuite de chasse d’eau',
 };
 export const DEFAULT_INPUTS: CrisisInputs = {
   people: 2, showers: 7, minutes: 5, baths: 0, flushes: 4,
-  toilet: 'classic', laundry: 3, dishes: 4, dishMode: 'machine', leak: false,
+  toilet: 'classic', laundry: 3, dishes: 4, dishMode: 'machine',
 };
 // Hypothèses de départ à ajuster, pas des faits.
 export const PRESETS: { id: string; label: string; input: CrisisInputs }[] = [
-  { id: 'single', label: 'Une personne', input: { people: 1, showers: 7, minutes: 5, baths: 0, flushes: 4, toilet: 'classic', laundry: 2, dishMode: 'machine', dishes: 3, leak: false } },
+  { id: 'single', label: 'Une personne', input: { people: 1, showers: 7, minutes: 5, baths: 0, flushes: 4, toilet: 'classic', laundry: 2, dishMode: 'machine', dishes: 3 } },
   { id: 'couple', label: 'Couple', input: DEFAULT_INPUTS },
-  { id: 'family4', label: 'Famille de 4', input: { people: 4, showers: 6, minutes: 5, baths: 2, flushes: 4, toilet: 'classic', laundry: 5, dishMode: 'machine', dishes: 6, leak: false } },
+  { id: 'family4', label: 'Famille de 4', input: { people: 4, showers: 6, minutes: 5, baths: 2, flushes: 4, toilet: 'classic', laundry: 5, dishMode: 'machine', dishes: 6 } },
 ];
 export function boundInput(key: NumericKey, value: number): number {
   const [min, max] = INPUT_BOUNDS[key];
@@ -55,7 +52,6 @@ export function isLeverAvailable(input: CrisisInputs, id: LeverId): boolean {
     case 'dualFlush': return input.toilet === 'classic';
     case 'bathToShower': return input.baths >= 1;
     case 'fewerLaundry': return input.laundry >= 1;
-    case 'fixLeak': return input.leak;
   }
 }
 export function calculateConsumption(input: CrisisInputs, levers: Partial<Levers> = {}) {
@@ -66,16 +62,15 @@ export function calculateConsumption(input: CrisisInputs, levers: Partial<Levers
   const baths = on('bathToShower') ? input.baths - 1 : input.baths;
   const extraShower = on('bathToShower') ? 1 : 0;
   const laundry = on('fewerLaundry') ? input.laundry - 1 : input.laundry;
-  const leak = input.leak && !on('fixLeak');
   const shower = (p * input.showers + extraShower) / 7 * minutes * 12;
   const bath = baths / 7 * 150;
   const dish = input.dishMode === 'machine' ? input.dishes / 7 * 15 : p * 15;
   const shared = shower + bath + dish;
-  const low = shared + p * 11 + p * input.flushes * (toilet === 'classic' ? 10 : 3) + laundry / 7 * 40 + 5 + (leak ? LEAK_LOW : 0);
-  const high = shared + p * 12 + p * input.flushes * (toilet === 'classic' ? 10 : 6) + laundry / 7 * 80 + 10 + (leak ? LEAK_HIGH : 0);
+  const low = shared + p * 11 + p * input.flushes * (toilet === 'classic' ? 10 : 3) + laundry / 7 * 40 + 5;
+  const high = shared + p * 12 + p * input.flushes * (toilet === 'classic' ? 10 : 6) + laundry / 7 * 80 + 10;
   return { low, high, perPersonLow: low / p, perPersonHigh: high / p, central: (low + high) / (2 * p) };
 }
-export const LEVER_IDS: LeverId[] = ['shorterShower', 'dualFlush', 'bathToShower', 'fewerLaundry', 'fixLeak'];
+export const LEVER_IDS: LeverId[] = ['shorterShower', 'dualFlush', 'bathToShower', 'fewerLaundry'];
 export function allAvailableLevers(input: CrisisInputs): Levers {
   return Object.fromEntries(LEVER_IDS.map(id => [id, isLeverAvailable(input, id)])) as Levers;
 }
