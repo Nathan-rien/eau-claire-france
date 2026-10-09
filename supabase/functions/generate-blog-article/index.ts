@@ -442,7 +442,31 @@ Si l'article contient des chiffres comparatifs intéressants (ex: contaminations
         coverUrl = await makeCover(buildCoverPrompt(`Sujet : ${article.title}`, slug), slug);
       }
     }
-...
+
+    // 6. Insert article
+    const sources = scraped.map((s) => ({ url: s.url, title: s.title }));
+    const { data: inserted, error: insErr } = await supabase
+      .from("blog_articles")
+      .insert({
+        slug,
+        title: article.title,
+        excerpt: article.excerpt,
+        content_md: article.content_md,
+        cover_image_url: coverUrl,
+        category: article.category || "actualite",
+        sources,
+        infographic: article.infographic ?? null,
+        reading_time_min: article.reading_time_min || 7,
+        seo_title: article.seo_title,
+        seo_description: article.seo_description,
+        status: "published",
+        published_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (insErr) throw new Error(`Insert: ${insErr.message}`);
+
     await supabase.from("blog_generation_log").insert({
       status: "success",
       topic: fresh.title,
