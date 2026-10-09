@@ -12,7 +12,7 @@ const TITLE = "Crise de l'eau dans le Finistère : où en est-on, comment rédui
 const DESCRIPTION = "Crise de l'eau dans le Nord-Finistère : situation au 9 octobre 2026, consignes officielles et estimation indicative de la consommation de votre foyer.";
 const SOURCES = [
   { label: 'ICI, 8 octobre 2026', href: 'https://www.ici.fr/emissions/l-info-d-ici-ici-breizh-izel/nous-sommes-en-alerte-ecarlate-dans-le-nord-finistere-les-collectivites-appellent-a-reduire-la-consommation-d-eau-9596824' },
-  { label: 'France 3 Régions, 8 octobre 2026', href: 'https://france3-regions.franceinfo.fr/bretagne/finistere/brest/ce-n-est-plus-une-blague-places-en-alerte-ecarlate-les-maires-du-finistere-previennent-les-habitants-du-risque-imminent-de-coupure-d-eau-potable-3430515.html' },
+  { label: 'France 3 Régions, octobre 2026', href: 'https://france3-regions.franceinfo.fr/bretagne/finistere/brest/ce-n-est-plus-une-blague-places-en-alerte-ecarlate-les-maires-du-finistere-previennent-les-habitants-du-risque-imminent-de-coupure-d-eau-potable-3430515.html' },
   { label: 'ARS Normandie — « Initier aux principaux usages domestiques de l’eau »', href: 'https://www.normandie.ars.sante.fr/media/2763/download?inline' },
 ];
 export default function CriseEauFinistere() {
@@ -37,7 +37,7 @@ export default function CriseEauFinistere() {
         <h2 id="situation-title" className="text-2xl font-semibold mb-5">Où en est-on</h2>
         <ol className="space-y-5 border-l-2 border-[hsl(var(--warning)/0.4)] pl-5">
           <li><p className="font-semibold mb-1">8 octobre 2026 — Pays de Brest</p><p>Selon ICI et France 3 Régions, les élus du Pays de Brest ont déclaré l’« alerte écarlate » lors d’une conférence de presse à l’usine de Pont-Ar-Bled le 8 octobre 2026, notamment par la voix de Stéphane Roudaut, maire de Brest.</p></li>
-          <li><p className="font-semibold mb-1">Depuis le 7 août 2026 — Finistère</p><p>Selon ICI et France 3 Régions, le Finistère est au niveau « crise sécheresse », le plus élevé, depuis le 7 août 2026.</p></li>
+          <li><p className="font-semibold mb-1">Depuis le 7 août 2026 — Finistère</p><p>Selon France 3 Bretagne (15 août 2026), tout le Finistère est au niveau « crise sécheresse », le plus élevé, depuis le 7 août 2026. Selon ICI, le département est toujours à ce niveau le 8 octobre.</p></li>
           <li><p className="font-semibold mb-1">8 octobre 2026 — Pluviométrie</p><p>Selon ICI, le 8 octobre, la pluviométrie des trois derniers mois est inférieure de plus de 60 % à la moyenne des quarante dernières années.</p></li>
           <li><p className="font-semibold mb-1">8 octobre 2026 — Consommation</p><p>Selon ICI, la consommation moyenne dans le Finistère est de 112 L par personne et par jour.</p><p className="mt-2">Selon Philippe Rybski, du syndicat du bassin de l’Elorn, cité par France 3 Régions, les collectivités du Nord-Finistère demandent de la réduire d’environ moitié : cet objectif concerne le Nord-Finistère / Pays de Brest, pas tout le département.</p></li>
           <li><p className="font-semibold mb-1">9 octobre 2026 — Ressources et interconnexions</p><p>Selon Noémie Saint-Hilary, directrice générale d’Eau du Ponant, citée par Hit West le 9 octobre, il resterait environ 30 % des ressources du lac du Drennec, qui soutient l’Elorn ; l’usine de Pont-Ar-Bled, alimentée par l’Elorn, secourt le nord du département par interconnexion.</p></li>
@@ -45,7 +45,7 @@ export default function CriseEauFinistere() {
         </ol>
         <aside className="mt-6 border border-border rounded-lg bg-muted/40 p-4 flex gap-3">
           <Info className="h-5 w-5 shrink-0 mt-1 text-muted-foreground" aria-hidden="true" />
-          <p className="text-sm">Selon la nomenclature réglementaire rappelée par la préfecture, « alerte écarlate » n’est pas un niveau réglementaire : les niveaux sont vigilance, alerte, alerte renforcée et crise.</p>
+          <p className="text-sm">« Alerte écarlate » est le terme employé par les élus ; il ne correspond à aucun des quatre niveaux réglementaires du dispositif sécheresse (vigilance, alerte, alerte renforcée, crise).</p>
         </aside>
       </section>
       <section id="calculateur" className="mb-10 scroll-mt-24" aria-labelledby="calculator-title">
@@ -55,8 +55,8 @@ export default function CriseEauFinistere() {
       <section className="mb-10" aria-labelledby="tregarvan-title">
         <h2 id="tregarvan-title" className="text-2xl font-semibold mb-4">Ce que ça donne quand l’eau manque : l’exemple de Trégarvan (août 2026)</h2>
         <p>Selon France 3 Bretagne, le 15 août 2026, Trégarvan compte environ 300 habitants et connaît une production insuffisante depuis le 9 août.</p>
-        <p className="mt-3">Selon ce reportage de France 3 Bretagne, des camions-citernes de 30 m³ interviennent deux à trois fois par jour, un pack d’eau par foyer est distribué pour boire et cuisiner, et un effort de 12 L par jour et par personne est demandé.</p>
-        <p className="mt-3">Selon une élue interrogée par France 3 Bretagne, l’eau reste potable malgré des colorations ponctuelles : il s’agit de sa déclaration, et non d’un constat sanitaire établi par cette page.</p>
+        <p className="mt-3">Selon ce reportage de France 3 Bretagne, des camions-citernes de 30 m³ interviennent deux à trois fois par jour, un pack d’eau par famille, selon le nombre de personnes, est distribué pour boire et cuisiner, et un effort de 12 L par jour et par personne est demandé.</p>
+        <p className="mt-3">Selon Jean-Marc Cornillou, vice-président de la communauté de communes de Pleyben-Châteaulin-Porzay, interrogé par France 3 Bretagne, l’eau est potable malgré des colorations ponctuelles : il s’agit de sa déclaration, et non d’un constat sanitaire établi par cette page.</p>
       </section>
       <section className="mb-10" aria-labelledby="official-title">
         <h2 id="official-title" className="text-2xl font-semibold mb-4">Où trouver l’information officielle</h2>
