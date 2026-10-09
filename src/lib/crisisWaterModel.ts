@@ -52,7 +52,6 @@ export function isLeverAvailable(input: CrisisInputs, id: LeverId): boolean {
     case 'dualFlush': return input.toilet === 'classic';
     case 'bathToShower': return input.baths >= 1;
     case 'fewerLaundry': return input.laundry >= 1;
-    case 'fixLeak': return input.leak;
   }
 }
 export function calculateConsumption(input: CrisisInputs, levers: Partial<Levers> = {}) {
@@ -63,16 +62,15 @@ export function calculateConsumption(input: CrisisInputs, levers: Partial<Levers
   const baths = on('bathToShower') ? input.baths - 1 : input.baths;
   const extraShower = on('bathToShower') ? 1 : 0;
   const laundry = on('fewerLaundry') ? input.laundry - 1 : input.laundry;
-  const leak = input.leak && !on('fixLeak');
   const shower = (p * input.showers + extraShower) / 7 * minutes * 12;
   const bath = baths / 7 * 150;
   const dish = input.dishMode === 'machine' ? input.dishes / 7 * 15 : p * 15;
   const shared = shower + bath + dish;
-  const low = shared + p * 11 + p * input.flushes * (toilet === 'classic' ? 10 : 3) + laundry / 7 * 40 + 5 + (leak ? LEAK_LOW : 0);
-  const high = shared + p * 12 + p * input.flushes * (toilet === 'classic' ? 10 : 6) + laundry / 7 * 80 + 10 + (leak ? LEAK_HIGH : 0);
+  const low = shared + p * 11 + p * input.flushes * (toilet === 'classic' ? 10 : 3) + laundry / 7 * 40 + 5;
+  const high = shared + p * 12 + p * input.flushes * (toilet === 'classic' ? 10 : 6) + laundry / 7 * 80 + 10;
   return { low, high, perPersonLow: low / p, perPersonHigh: high / p, central: (low + high) / (2 * p) };
 }
-export const LEVER_IDS: LeverId[] = ['shorterShower', 'dualFlush', 'bathToShower', 'fewerLaundry', 'fixLeak'];
+export const LEVER_IDS: LeverId[] = ['shorterShower', 'dualFlush', 'bathToShower', 'fewerLaundry'];
 export function allAvailableLevers(input: CrisisInputs): Levers {
   return Object.fromEntries(LEVER_IDS.map(id => [id, isLeverAvailable(input, id)])) as Levers;
 }
