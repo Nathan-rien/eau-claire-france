@@ -246,6 +246,7 @@ async function handleBackfillCovers(req: Request, body: any): Promise<Response> 
     return new Response(JSON.stringify({ success: false, error: "unauthorized" }), { status: 401, headers: jsonHeaders });
   }
   try {
+    const startedAt = Date.now();
     const limit = Math.min(Math.max(Number(body?.limit) || 3, 1), 5);
     const { data: rows, error } = await supabase
       .from("blog_articles")
@@ -259,7 +260,11 @@ async function handleBackfillCovers(req: Request, body: any): Promise<Response> 
     const updated: { slug: string; url: string }[] = [];
     const failed: { slug: string; reason: string }[] = [];
 
+    let processed = 0;
+
     for (const row of rows ?? []) {
+      if (Date.now() - startedAt > 90_000) break;
+      processed++;
       let reason: string | null = null;
       try {
         const base = `Sujet : ${row.title}. ${row.excerpt ?? ""}`.slice(0, 400);
@@ -295,7 +300,7 @@ async function handleBackfillCovers(req: Request, body: any): Promise<Response> 
     }
 
     return new Response(
-      JSON.stringify({ success: true, processed: (rows ?? []).length, updated, failed }),
+      JSON.stringify({ success: true, processed, updated, failed }),
       { status: 200, headers: jsonHeaders }
     );
   } catch (e) {
@@ -309,6 +314,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const logPayload: any = { status: "started" };
+  const startedAt = Date.now();
 
   try {
     // 0. Parse body first (needed to route the backfill mode)
@@ -438,8 +444,8 @@ Si l'article contient des chiffres comparatifs intéressants (ex: contaminations
     let coverUrl: string | null = null;
     if (article.image_prompt) {
       coverUrl = await makeCover(buildCoverPrompt(article.image_prompt, slug), slug);
-      if (!coverUrl) {
-        coverUrl = await makeCover(buildCoverPrompt(`Sujet : ${article.title}`, slug), slug);
+      if (!coverUrl && Date.now() - startedAt < 80_000) {
+        coverUrl = await makeCover(buildCoverPrompt(`Sujet : ${article.title}`, slug), slug, 1);
       }
     }
 

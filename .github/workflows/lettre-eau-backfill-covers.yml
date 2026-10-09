@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       limit:
-        description: 'Number of articles to process (1-5)'
+        description: 'Number of articles to process (1-5, 2 recommended)'
         required: false
-        default: '3'
+        default: '2'
 
 jobs:
   backfill:
@@ -19,7 +19,7 @@ jobs:
           LIMIT: ${{ github.event.inputs.limit }}
         run: |
           if ! [[ "$LIMIT" =~ ^[0-9]+$ ]]; then
-            LIMIT=3
+            LIMIT=2
           fi
           BODY=$(printf '{"mode":"backfill_covers","limit":%s}' "$LIMIT")
           echo "Triggering cover backfill (limit=$LIMIT)..."
