@@ -53,6 +53,7 @@
 - [Guide des eaux riches en magnésium](/guide/eaux-riches-magnesium): Comparatif des eaux minérales riches en magnésium, avec teneurs et bienfaits.
 - [Lettre de l'eau](/lettre-de-leau): Blog hebdomadaire. RSS : /lettre-de-leau/rss.xml.
 - [Alerte pollution manganèse Vendée (juillet 2026)](/actualites/pollution-manganese-vendee-juillet-2026): Actualité — épisode de pollution au manganèse en Vendée.
+- [Crise de l'eau dans le Finistère (octobre 2026)](/actualites/crise-eau-finistere): Actualité — risque de coupure d'eau potable, situation au 9 octobre 2026, calculateur de consommation du foyer.
 
 ## Pages commune (dynamiques)
 

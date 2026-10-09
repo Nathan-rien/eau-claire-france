@@ -2,7 +2,8 @@ import Layout from '@/components/Layout';
 import SEOHead from '@/components/SEOHead';
 import InternalLinkHub from '@/components/InternalLinkHub';
 import CrisisWaterCalculator from '@/components/CrisisWaterCalculator';
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { AlertTriangle, ArrowLeft, ExternalLink, Info } from 'lucide-react';
 
 const CANONICAL = '/actualites/crise-eau-finistere';
@@ -15,16 +16,49 @@ const SOURCES = [
   { label: 'France 3 Régions, octobre 2026', href: 'https://france3-regions.franceinfo.fr/bretagne/finistere/brest/ce-n-est-plus-une-blague-places-en-alerte-ecarlate-les-maires-du-finistere-previennent-les-habitants-du-risque-imminent-de-coupure-d-eau-potable-3430515.html' },
   { label: 'ARS Normandie — « Initier aux principaux usages domestiques de l’eau »', href: 'https://www.normandie.ars.sante.fr/media/2763/download?inline' },
 ];
+const SEO_TITLE = "Finistère : risque de coupure d'eau, où en est-on ? | InfoEau.fr";
 export default function CriseEauFinistere() {
-  const schema = {
+  const location = useLocation();
+  useEffect(() => {
+    if (!location.hash) { window.scrollTo(0, 0); return; }
+    const id = decodeURIComponent(location.hash.slice(1));
+    const timers: number[] = [];
+    let interval: number | undefined;
+    const scroll = () => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ block: 'start' });
+      return !!el;
+    };
+    const finalPass = () => { timers.push(window.setTimeout(scroll, 300)); };
+    if (scroll()) {
+      finalPass();
+    } else {
+      let tries = 0;
+      interval = window.setInterval(() => {
+        tries += 1;
+        if (scroll()) { window.clearInterval(interval); finalPass(); }
+        else if (tries >= 20) window.clearInterval(interval);
+      }, 50);
+    }
+    return () => { if (interval) window.clearInterval(interval); timers.forEach((t) => window.clearTimeout(t)); };
+  }, [location.pathname, location.hash]);
+  const schema = [{
     '@context': 'https://schema.org', '@type': 'NewsArticle', headline: TITLE, description: DESCRIPTION,
     datePublished: PUBLISHED, dateModified: UPDATED, inLanguage: 'fr-FR',
+    image: ['https://infoeau.fr/images/og-image.png'],
     author: { '@type': 'Organization', name: 'InfoEau.fr' },
     publisher: { '@type': 'Organization', name: 'InfoEau.fr', logo: { '@type': 'ImageObject', url: 'https://infoeau.fr/favicon.svg' } },
     mainEntityOfPage: `https://infoeau.fr${CANONICAL}`,
-  };
+  }, {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://infoeau.fr/' },
+      { '@type': 'ListItem', position: 2, name: 'Alertes', item: 'https://infoeau.fr/alertes' },
+      { '@type': 'ListItem', position: 3, name: "Crise de l'eau dans le Finistère", item: 'https://infoeau.fr/actualites/crise-eau-finistere' },
+    ],
+  }];
   return <Layout>
-    <SEOHead title={TITLE} description={DESCRIPTION} canonical={CANONICAL} schemaData={schema}
+    <SEOHead title={SEO_TITLE} description={DESCRIPTION} canonical={CANONICAL} schemaData={schema}
       ogType="article" articlePublishedTime={PUBLISHED} articleModifiedTime={UPDATED} />
     <article className="container mx-auto max-w-3xl px-4 py-8 sm:py-12">
       <Link to="/alertes" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Toutes les alertes</Link>
