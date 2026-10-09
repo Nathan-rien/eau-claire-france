@@ -63,18 +63,9 @@ describe('Finistère household consumption rules', () => {
     expect(result.perPersonHigh).toBeCloseTo(138.428571429);
     expect(result.central).toBeCloseTo(132.392857143);
   });
-  test('a leaking toilet adds 82.19 to 684.93 litres daily, removed by fixLeak', () => {
-    const base = calculateConsumption(DEFAULT_INPUTS);
-    const leak = calculateConsumption({ ...DEFAULT_INPUTS, leak: true });
-    expect(Number((leak.low - base.low).toFixed(2))).toBe(82.19);
-    expect(Number((leak.high - base.high).toFixed(2))).toBe(684.93);
-    const fixed = calculateConsumption({ ...DEFAULT_INPUTS, leak: true }, { fixLeak: true });
-    expect(fixed.low).toBeCloseTo(base.low);
-    expect(fixed.high).toBeCloseTo(base.high);
-  });
   test('all available levers are recalculated together, not summed', () => {
     const levers = allAvailableLevers(DEFAULT_INPUTS);
-    expect(levers).toEqual({ shorterShower: true, dualFlush: true, bathToShower: false, fewerLaundry: true, fixLeak: false });
+    expect(levers).toEqual({ shorterShower: true, dualFlush: true, bathToShower: false, fewerLaundry: true });
     const r = calculateConsumption(DEFAULT_INPUTS, levers);
     expect(r.low).toBeCloseTo(143);
     expect(r.high).toBeCloseTo(185.4285714);
