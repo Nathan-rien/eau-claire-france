@@ -7,7 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 const DISMISS_PREFIX = 'ticker-dismissed-';
 
 const NewsTicker = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -29,6 +29,7 @@ const NewsTicker = () => {
     const now = Date.now();
     const eligible = SITE_ALERTS.filter(
       (a) =>
+        (!a.languages || a.languages.includes(language)) &&
         (!a.displayUntil || new Date(a.displayUntil).getTime() >= now) &&
         // Non-dismissible alerts ignore any previously stored dismissal.
         (a.dismissible === false || !dismissedIds.has(a.id)),
@@ -37,7 +38,7 @@ const NewsTicker = () => {
     return eligible.sort(
       (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
     )[0];
-  }, [dismissedIds]);
+  }, [dismissedIds, language]);
 
   if (!alert) return null;
 

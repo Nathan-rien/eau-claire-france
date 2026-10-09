@@ -1,5 +1,10 @@
 # Roadmap SEO (plan validé 15/09)
 
+## Crise de l’eau — Finistère
+- [x] Ajouter l’article FR sourcé, sa route et son entrée partagée sitemap/prérendu ; inclusion FR uniquement vérifiée.
+- [x] Ajouter le calculateur indicatif et tester les formules, bornes et gains : 23 tests réussis avec les règles d’alerte.
+- [x] Ajouter l’alerte FR et l’encadré d’accueil ; parcours mobile et bureau vérifié, sans erreur JavaScript ni débordement à 320px ; compilation automatique réussie.
+
 - [x] P1 — Liens de langue crawlables (Header + Footer)
 - [x] P2 — Version anglaise de /classement (routes, seoData, traductions)
 - [x] Régénérer le sitemap après P1/P2 (147 URLs, /en/classement inclus)
