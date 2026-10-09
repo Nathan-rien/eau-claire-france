@@ -202,20 +202,12 @@ export default function CrisisWaterCalculator() {
             {measured !== null ? <>
               <p className="text-xl font-bold mb-5">Consommation mesurée : {number(measured)} L par personne et par jour</p>
               <Comparisons value={measured} />
-              {touched && measured > estimateBase.perPersonHigh && <p className="text-sm font-medium mt-4">Votre mesure dépasse votre estimation : une fuite ou des usages non comptés sont possibles. Faites le test ci-dessous.</p>}
+              {touched && measured > estimateBase.perPersonHigh && <p className="text-sm font-medium mt-4">Votre mesure dépasse votre estimation : des usages non comptés ou une fuite sont possibles.</p>}
             </> : <p className="text-sm text-muted-foreground">Renseignez vos relevés pour afficher votre consommation mesurée.</p>}
           </div>
         </TabsContent>
       </Tabs>
 
-      <details className="mt-6 rounded-md border border-border p-4">
-        <summary className="cursor-pointer font-medium min-h-11 flex items-center">Tester une fuite</summary>
-        <div className="mt-3 space-y-3 text-sm">
-          <p><strong>Test du compteur :</strong> fermez tous les robinets et arrêtez les appareils (lave-linge, lave-vaisselle, arrosage). Notez l’index du compteur, attendez quelques heures sans consommer d’eau (idéalement la nuit), puis relevez-le à nouveau : si l’index a bougé, il y a probablement une fuite.</p>
-          <p>En cas de doute, contactez votre service de l’eau ou un plombier.</p>
-          <p className="text-muted-foreground">Méthodes courantes décrites par des guides pratiques, pas une consigne officielle.</p>
-        </div>
-      </details>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <Button type="button" className="min-h-11" onClick={copy} disabled={shown === null}>Copier mon résultat</Button>

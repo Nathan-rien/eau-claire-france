@@ -61,7 +61,7 @@ const NewsTicker = () => {
 
   return (
     <div
-      className="sticky top-0 z-[100] w-full bg-slate-900 text-white shadow-sm"
+      className="relative z-[100] w-full bg-slate-900 text-white shadow-sm"
       role="region"
       aria-label={t('ticker.ariaLabel')}
     >
