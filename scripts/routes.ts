@@ -67,6 +67,7 @@ export const staticEntries: SitemapEntry[] = [
   { path: "/guide/quel-filtre-eau", changefreq: "monthly", priority: "0.8" },
   { path: "/calculateur-hydratation", changefreq: "monthly", priority: "0.7" },
   // Actualités / alertes détaillées
+  { path: "/actualites/crise-eau-finistere", lastmod: "2026-10-09", changefreq: "daily", priority: "0.8" },
   { path: "/actualites/pollution-manganese-vendee-juillet-2026", lastmod: "2026-07-09", changefreq: "monthly", priority: "0.7" },
   // Europe
   { path: "/carte-europe", changefreq: "weekly", priority: "0.8" },

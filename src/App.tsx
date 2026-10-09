@@ -18,6 +18,7 @@ import { EnhancedSecurityService } from "@/services/enhancedSecurityService";
 import OndineChat from "@/components/OndineChat";
 
 import CookieConsent from "@/components/CookieConsent";
+import NewsTicker from "@/components/NewsTicker";
 
 // Lazy load all pages for code splitting
 const Index = React.lazy(() => import("./pages/Index"));
@@ -75,6 +76,7 @@ const GuideEauxMagnesium = React.lazy(() => import("./pages/GuideEauxMagnesium")
 const GuideMaCommune = React.lazy(() => import("./pages/GuideMaCommune"));
 const AlerteEauVendee = React.lazy(() => import("./pages/actualites/AlerteEauVendee"));
 const AlerteUraniumSavoie = React.lazy(() => import("./pages/actualites/AlerteUraniumSavoie"));
+const CriseEauFinistere = React.lazy(() => import("./pages/actualites/CriseEauFinistere"));
 const TraiterEauRobinet = React.lazy(() => import("./pages/TraiterEauRobinet"));
 const GuideEauCalcaire = React.lazy(() => import("./pages/traiter/GuideEauCalcaire"));
 const GuideGoutChlore = React.lazy(() => import("./pages/traiter/GuideGoutChlore"));
@@ -155,6 +157,7 @@ const appRoutes = (p: string) => (
                 <Route path={`${p}/guide/ma-commune`} element={<GuideMaCommune />} />
                 <Route path={`${p}/actualites/pollution-manganese-vendee-juillet-2026`} element={<AlerteEauVendee />} />
                 <Route path={`${p}/actualites/uranium-eau-robinet-savoie-maurienne-aout-2026`} element={<AlerteUraniumSavoie />} />
+                {!p && <Route path="/actualites/crise-eau-finistere" element={<CriseEauFinistere />} />}
                 <Route path={`${p}/traiter-eau-robinet`} element={<TraiterEauRobinet />} />
                 <Route path={`${p}/guide/eau-calcaire`} element={<GuideEauCalcaire />} />
                 <Route path={`${p}/guide/gout-chlore`} element={<GuideGoutChlore />} />
@@ -231,6 +234,7 @@ const App = () => {
             <TooltipProvider>
               <SecurityHeaders />
               <RouteTracker />
+              <NewsTicker />
             <Toaster />
             <Sonner />
             

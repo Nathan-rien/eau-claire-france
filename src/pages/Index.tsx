@@ -12,10 +12,12 @@ import SEOHead from '@/components/SEOHead';
 import { seoData } from '@/utils/seoData';
 import HomeBlogTeaser from '@/components/blog/HomeBlogTeaser';
 import InternalLinkHub from '@/components/InternalLinkHub';
+import CrisisEauFinistereTeaser from '@/components/CrisisEauFinistereTeaser';
+import { getActiveAlert } from '@/data/alerts';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Index = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   return (
     <Layout>
@@ -74,6 +76,8 @@ const Index = () => {
             </div>
           </div>
         </section>
+
+        {language === 'fr' && getActiveAlert('crise-eau-finistere-2026') && <CrisisEauFinistereTeaser />}
 
         {/* Section 1 — Quelle eau boire ? */}
         <section className="relative pt-3 pb-6 md:pt-4 md:pb-10 lg:pt-6 lg:pb-12 px-4 bg-cover bg-center" style={{ backgroundImage: `url(${waterBg})` }} role="region" aria-labelledby="diagnostic-title">

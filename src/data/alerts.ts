@@ -1,3 +1,5 @@
+import type { AppLanguage } from '@/lib/i18nRoutes';
+
 export interface SiteAlert {
   id: string;
   title: string;
@@ -7,9 +9,24 @@ export interface SiteAlert {
   displayUntil?: string; // ISO date (optional)
   /** Defaults to true when absent: the alert can be dismissed and stays dismissed. */
   dismissible?: boolean;
+  languages?: AppLanguage[];
+}
+
+export function getActiveAlert(id: string): SiteAlert | null {
+  return SITE_ALERTS.find(alert => alert.id === id && alert.status === 'active' &&
+    (!alert.displayUntil || new Date(alert.displayUntil).getTime() >= Date.now())) ?? null;
 }
 
 export const SITE_ALERTS: SiteAlert[] = [
+  {
+    id: 'crise-eau-finistere-2026',
+    title: "Finistère, alerte écarlate : risque de coupure d'eau potable — réduisez votre consommation, cliquez pour voir toutes les infos",
+    status: 'active',
+    articleSlug: 'crise-eau-finistere',
+    publishedAt: '2026-10-09',
+    dismissible: false,
+    languages: ['fr'],
+  },
   {
     id: 'uranium-eau-savoie-aout-2026',
     title:
