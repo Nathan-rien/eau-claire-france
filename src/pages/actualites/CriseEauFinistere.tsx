@@ -103,7 +103,6 @@ export default function CriseEauFinistere() {
       <section className="mb-10" aria-labelledby="sources-title">
         <h2 id="sources-title" className="text-2xl font-semibold mb-4">Sources</h2>
         <ul className="space-y-3">{SOURCES.map(source => <li key={source.href}><a href={source.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2 text-primary underline break-words">{source.label}<ExternalLink className="h-4 w-4 shrink-0 mt-1" aria-hidden="true" /></a></li>)}
-          <li>Hit West, 9 octobre 2026</li><li>France 3 Bretagne, 15 août 2026</li>
         </ul>
       </section>
       <section className="border-t border-border pt-6" aria-labelledby="further-title">
