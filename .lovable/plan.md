@@ -1,80 +1,94 @@
-# Affiliation : suivi des clics sortants, puis placement sur /classement et /prix-eaux
+# Plan : CLS /prix-eaux + page calculateur de consommation d'eau
 
-## Constats vérifiés dans le code (à lire avant de valider)
+## 1) Correctif CLS sur /prix-eaux
 
-- **/classement contient déjà de l'affiliation.** `src/pages/Classement.tsx` (l. 422-450) affiche `AffiliateComparisonTable` (catégorie `filtration`, avec `AffiliateDisclosure` intégrée) dans une section sous le classement, avant « À lire aussi », les marques et les régions. Il n'y a pas d'`AffiliateProductPick`, mais des liens Amazon sont déjà présents.
-- **/prix-eaux n'a aucune affiliation.** Seul l'encadré vert « traiter l'eau du robinet » (l. 692-706) renvoie vers /traiter-eau-robinet, avant `BrandLinksSection` et `RegionLinksSection`.
-- **Les produits ne correspondent pas aux marques du classement.** `affiliateProducts.ts` ne contient que 9 produits de filtration et de goût (carafes, filtres robinet, osmoseur, gourde, charbon, perles). Aucune eau en bouteille (Evian, Volvic, etc.). On ne peut donc pas associer un produit à un rang du classement, et une colonne « acheter » dans le tableau est impossible sans inventer de produits : je l'écarte.
-- **Aucun lien Amazon n'est mesuré** aujourd'hui, ni dans `AffiliateProductPick` ni dans `AffiliateComparisonTable`. Tous les liens passent par `getAmazonUrl()`, en `rel="nofollow sponsored"`.
-- `trackEvent` (`src/utils/ga.ts`) n'envoie rien sans `cookie_consent === 'granted'`. C'est la même garde que RouteTracker.
+### Constat (lu dans le code)
+Haut de page de `src/pages/PrixEaux.tsx`, dans l'ordre :
+1. `CheapestWaterSummary` (`src/components/prices/CheapestWaterSummary.tsx`) : renvoie `null` tant que `loading` ou sans données (ligne 188), puis apparaît d'un coup avec sa carte de résultats → décale tout le contenu en dessous.
+2. Encadré « sources » (statique, ne bouge pas).
+3. `DataBanner` (`src/components/DataBanner.tsx`) : affiche un état de chargement (l. 87), puis `null` ou un bandeau de taille différente (l. 98/140) → hauteur qui change.
+4. `DataWarmupBanner` : rendu conditionnel (`showDataBanner`, défini après les stats) + son propre état de chargement puis `null`.
+5. Zone liste : `common.loading` en texte simple (l. 520), remplacé par le tableau.
 
-## Volet 1 : événement `affiliate_click` (à faire en premier)
+Hypothèse non confirmée : la répartition exacte du 0,54 entre ces éléments. Première étape = mesurer les `layout-shift` (PerformanceObserver via Playwright) à 390 et 1280 px pour attribuer chaque décalage à son élément, avant de modifier.
 
-**Fonctionnement**
-- Nouvelle fonction `trackAffiliateClick(product, { placement, position })` dans `src/utils/ga.ts`. Elle passe par `trackEvent`, donc respecte le consentement.
-- Paramètres envoyés :
-  - `page_path` : page d'origine, sans l'URL Amazon et sans le tag ;
-  - `product_slug` et `product_name` ;
-  - `product_tier` : entrée, standard ou premium ;
-  - `product_category` ;
-  - `placement` : nom du bloc, par exemple `classement_comparatif`, `prix_eaux_picks`, `guide_nitrates`, `comparatif_filtres` ;
-  - `position` : 1, 2, 3… dans le bloc affiché, après tri ;
-  - `language`.
-- Le rang dans le classement des eaux n'a pas de sens ici, puisque les produits ne sont pas liés aux eaux. La position est donc celle du produit dans son bloc.
-- On écoute `onClick` sur le lien (sans `preventDefault`). Le lien s'ouvre dans un nouvel onglet, donc la page d'origine reste ouverte et l'envoi n'est pas perdu. On ajoute `transport_type: 'beacon'` par sécurité.
-- Une nouvelle prop optionnelle `placement` sur `AffiliateProductPick` et `AffiliateComparisonTable`. Si elle manque, on utilise le chemin de la page.
+### Correctif proposé
+- `CheapestWaterSummary` : pendant le chargement, rendre un squelette de même structure (titre + cartes `Skeleton`) avec un `min-height` égal à la hauteur réelle mesurée (mobile / desktop via classes `min-h-[...] md:min-h-[...]`). Sans données après chargement : garder un message court « aucune donnée » dans le même espace réservé plutôt que `null` (conforme à la règle « aucune donnée » au lieu de mocks).
+- `DataBanner` : état de chargement aux mêmes dimensions que le bandeau final ; si le bandeau final est `null`, ne rien afficher dès le départ quand c'est prévisible, sinon conteneur à hauteur réservée.
+- `DataWarmupBanner` : ne plus afficher son état de chargement intermédiaire (rendre `null` jusqu'à décision), car il apparaît rarement ; à valider par la mesure.
+- Zone liste : squelette de lignes de tableau avec `min-height` au lieu du texte « Chargement ».
+- Aucun changement au contenu, au H1, au title, aux données structurées ni au bloc affiliation.
 
-**Fichiers touchés** : `src/utils/ga.ts`, `src/components/affiliate/AffiliateProductPick.tsx`, `src/components/affiliate/AffiliateComparisonTable.tsx`. Ajout optionnel de la prop `placement` dans `Classement.tsx`, `ComparatifFiltresEau.tsx` et les 4 guides. Diagnostic utilise déjà `AffiliateProductPick` : il est couvert automatiquement.
+### Vérification
+Script Playwright mesurant le CLS cumulé sur /prix-eaux uniquement, avant/après, à 390 px et 1280 px (3 chargements chacun, cache vide). Objectif < 0,1. Typage et build.
 
-**Test** : un petit test Jest sur la fonction. Sans consentement, aucun appel à `gtag`. Avec consentement, un appel avec les bons paramètres.
+### Fichiers
+`CheapestWaterSummary.tsx`, `DataBanner.tsx`, `DataWarmupBanner.tsx`, `PrixEaux.tsx` (zone liste uniquement).
 
-**Risques**
-- SEO, CLS et LCP : aucun, rien ne change à l'affichage.
-- Accessibilité : aucune.
-- Hypothèses :
-  - Il faut déclarer les dimensions personnalisées (`placement`, `product_slug`, `position`) dans GA4 pour les voir dans les rapports. Je n'ai pas accès à GA4, ce réglage est de votre côté.
-  - Les clics de visiteurs qui refusent les cookies ne sont pas comptés. Les volumes seront donc sous-estimés.
+### Risques
+- SEO : nul (texte identique). Le prerendering capturera le squelette au lieu de rien : neutre.
+- LCP : léger gain possible (espace stable). Risque : un `min-height` trop grand laisse un vide si la donnée est plus courte.
+- Accessibilité : squelettes marqués `aria-hidden`, conteneur `aria-busy` pendant le chargement.
+- `DataBanner` est aussi utilisé ailleurs ? À vérifier en début de build ; si oui, la réservation d'espace passera par une prop pour ne pas changer les autres pages.
 
-**Rollback** : retirer les `onClick`. La fonction peut rester sans effet.
+### Rollback
+Revenir aux quatre fichiers ; aucune donnée ni route touchée.
 
-## Volet 2 : placement
+---
 
-### /classement : réutiliser l'existant, ne rien ajouter dans le tableau
-- **Option recommandée (A)** : garder le bloc `AffiliateComparisonTable` à sa place actuelle et seulement le mesurer (volet 1, `placement="classement_comparatif"`). Il ne touche ni le haut de page ni le tableau. Avec une semaine de données, on saura si le bloc convertit avant d'en ajouter un autre.
-- **Option B, si vous voulez plus visible** : remplacer ce tableau par `AffiliateProductPick category="filtration"` (3 cartes, une par budget, plus lisibles sur mobile, qui fait 80 % des clics), au **même emplacement**. Pas d'ajout sous le top 3 : `RankingCrossLinks` y est déjà, et un bloc de plus repousserait le reste du classement, ce que vous voulez éviter.
-- **Écarté** : une colonne dans le tableau ou un lien par rang. Aucun produit ne correspond à une eau, ce serait trompeur.
-- Fichiers : `src/pages/Classement.tsx`, une ligne pour l'option A, un remplacement de composant pour l'option B.
-- Risques :
-  - CLS : nul. Le bloc est très en dessous du premier écran et s'affiche sans attendre de chargement (données statiques).
-  - LCP : inchangé.
-  - SEO : le title, le H1, la meta description et les données structurées ne bougent pas, et les liens restent en `nofollow sponsored`.
+## 2) Page dédiée : calculateur de consommation d'eau du foyer
 
-### /prix-eaux : nouveau bloc après les résultats
-- Insérer `AffiliateProductPick category="filtration" placement="prix_eaux_picks"` juste après l'encadré vert « traiter l'eau du robinet » (l. 706), avant `BrandLinksSection`. C'est la suite logique de la comparaison « bouteille ou robinet » déjà présente sur la page. La mention d'affiliation est incluse, en tête du bloc.
-- Pas de bloc dans la synthèse du haut (`CheapestWaterSummary`) ni dans la liste des prix : ce sont des contenus qui se chargent après coup, un ajout à côté créerait des décalages et ferait concurrence aux prix réels.
-- Fichiers : `src/pages/PrixEaux.tsx` (import et insertion).
-- Risques :
-  - CLS : le bloc est placé sous une liste qui se charge après coup, il peut donc se déplacer quand elle arrive. Mais il est hors de l'écran au chargement, donc l'effet mesuré est probablement nul. C'est une hypothèse, à vérifier avec Playwright à 390 px.
-  - SEO : du contenu commercial ajouté sur une page au CTR déjà faible (1,30 %). Pas d'effet attendu sur le classement Google, mais le texte du bloc doit rester factuel.
-  - Accessibilité : le composant a déjà un `aria-label` et des boutons d'au moins 44 px.
-  - Hypothèse : le bloc est en `px-4 container` alors que la page a son propre conteneur. Les marges devront peut-être être ajustées avec `className`, sans changer le composant.
+### Identification (vérifiée)
+- Calculateur de la page Finistère : `CrisisWaterCalculator` (`src/components/CrisisWaterCalculator.tsx`), modèle pur `src/lib/crisisWaterModel.ts`, tests `src/components/__tests__/crisisWaterCalculator.test.ts`.
+- Différent de `/calculateur-hydratation` (`CalculateurHydratation.tsx`, quantité d'eau à boire).
+- Entrées : aucune prop ; état local (personnes, douches, durée, bains, chasses, type de chasse, lessives, vaisselle, mode habitudes/compteur, relevés compteur). Sorties : estimation L/pers/jour (fourchette), leviers d'économie, texte à copier, événements GA4.
 
-### Commun aux deux pages
-- Le tag `infoeau-PLACEHOLDER-21` reste tel quel : les clics seront mesurés, mais **aucune commission** ne sera perçue tant que le vrai tag ne l'aura pas remplacé.
-- Aucun nouveau produit.
-- Version anglaise (`/en/...`) : le composant est déjà bilingue, mais les liens vont vers amazon.fr. Je les laisse identiques en anglais (hypothèse à valider).
+### Dépendances à la crise Finistère (à rendre génériques)
+- Constantes `FINISTERE_AVG = 112` et `TARGET = 56` (source ICI) et barres de comparaison « moyenne du Finistère » / « objectif Nord-Finistère ».
+- Phrases d'objectif (« ces gestes ne suffisent pas à atteindre 56 L »), texte de partage mentionnant le Nord-Finistère, `SHARE_URL` pointant vers l'article.
+- `resultBucket` basé sur 56/112.
+- Événements `crisis_calc_*`.
+- Textes FR en dur (pas d'EN).
 
-**Rollback** : retirer l'insertion sur /prix-eaux et, pour l'option B, remettre `AffiliateComparisonTable` sur /classement.
+Proposition : ajouter une prop `context?: 'finistere' | 'generic'` (défaut `finistere`, comportement actuel inchangé). En mode `generic` : pas de barres Finistère, pas d'objectif ; affichage de la fourchette, du volume foyer par jour/an (m³) et des leviers ; texte de partage et URL vers la nouvelle page ; événements `water_calc_*` (ou même nom avec paramètre `context`, à choisir). Le modèle de calcul reste identique (valeurs de contrôle inchangées) ; tests complétés pour le mode générique.
 
-## Vérifications prévues
-- Typage, build et test Jest de `trackAffiliateClick`.
-- Playwright à 390 et 1280 px sur /classement et /prix-eaux :
-  - le bloc est visible au bon endroit ;
-  - pas de décalage avant le premier écran ;
-  - avec consentement simulé, un clic Amazon envoie `affiliate_click` avec la page, le produit et la position ;
-  - sans consentement, rien n'est envoyé.
-- Non vérifiable par moi : les rapports GA4 (pas d'accès) et les Core Web Vitals réels en production (seulement après publication).
+Donnée absente : une référence nationale de consommation par personne. Je n'en ajoute aucune sans source que vous fournissez ; sinon aucune comparaison n'est affichée.
 
-## Choix à faire avant de commencer
-1. /classement : option A (on mesure l'existant) ou option B (3 cartes au même endroit) ?
-2. /prix-eaux : d'accord pour l'emplacement après l'encadré vert ?
+### Page proposée
+- URL FR : `/calculateur-consommation-eau` ; EN : `/en/calculateur-consommation-eau` (pattern actuel : même slug préfixé `/en`).
+- Title FR : « Calculateur de consommation d'eau du foyer (litres par jour) » ; meta : « Estimez en 2 minutes la consommation d'eau de votre foyer : douches, chasses, lessives, vaisselle. Gestes pour la réduire, mesure au compteur. »
+- Title EN : « Household water usage calculator (litres per day) » + meta équivalente.
+- H1 FR : « Calculer la consommation d'eau de son foyer ».
+- Intro (3 courts paragraphes) : budget/facture, restrictions sécheresse, sensibilisation ; mention « estimation indicative, hors jardin, voiture, piscine et fuites ».
+- Le calculateur (mode `generic`).
+- FAQ (4 questions, FAQPage) : comment lire son compteur ; pourquoi l'estimation diffère de la facture ; quels gestes économisent le plus (renvoi vers les leviers du calculateur) ; mes données sont-elles enregistrées (non). Réponses sans chiffre non sourcé.
+- Schémas : `WebApplication` ou `Article` (selon pattern existant des guides), `FAQPage`, `BreadcrumbList` (Accueil → Calculateur), via `SEOHead` qui accepte un tableau.
+
+### Maillage
+- Page Finistère : garder le calculateur intégré (contexte crise, objectif 56 L utile localement) et ajouter sous le calculateur un lien « Version générale du calculateur, valable partout en France ». Option alternative : remplacer l'inclusion par un lien ; déconseillé car le teaser de l'accueil pointe vers `#calculateur`.
+- Sortants depuis la nouvelle page : `/traiter-eau-robinet` (pertinent pour l'eau du robinet) et `/qualite-eau` ; `/diagnostic` non retenu (sujet différent : choix d'eau à boire).
+- Entrant supplémentaire possible : lien depuis `/calculateur-hydratation` (« vous cherchez votre consommation domestique ? ») — à confirmer.
+
+### Symétrie FR/EN
+- Route FR + EN dans `src/App.tsx` (lazy), ajout à `INTERNATIONAL_PATHS` (`src/lib/i18nRoutes.ts`) pour hreflang et sitemap bilingue, entrée dans `scripts/routes.ts`, régénération de `public/sitemap.xml`, prerendering.
+- Textes : la page et le mode générique ont besoin de textes EN. Deux options : (a) clés dans `src/i18n/translations.ts` (pattern du site), (b) dictionnaire FR/EN local au composant. Je propose (a) pour la page et (b) pour le calculateur, afin de ne pas toucher les textes de crise. À valider.
+- `public/llms.txt` : ajout d'une ligne pour la nouvelle page.
+
+### Fichiers
+Nouveau `src/pages/CalculateurConsommationEau.tsx` ; modifiés `CrisisWaterCalculator.tsx`, `crisisWaterModel.ts` (si besoin, sans changer les calculs), test associé, `App.tsx`, `i18nRoutes.ts`, `scripts/routes.ts`, `public/sitemap.xml`, `src/i18n/translations.ts`, `CriseEauFinistere.tsx` (un lien), `public/llms.txt`, éventuellement `src/utils/seoData.ts`.
+
+### Risques
+- SEO : cannibalisation faible avec l'article (intentions différentes) ; la page doit être prerendue pour être indexée.
+- CLS/LCP : calculateur sans données distantes, faible risque.
+- Accessibilité : reprise des libellés et `aria-valuetext` existants ; cibles ≥ 44 px.
+- Régression page Finistère : protégée par le défaut `context='finistere'` et les tests existants.
+
+### Rollback
+Retirer la route, l'entrée sitemap/INTERNATIONAL_PATHS et le lien ; la prop `context` est sans effet en défaut.
+
+---
+
+## Questions ouvertes
+1. Nommage des événements : nouveaux `water_calc_*` ou `crisis_calc_*` + paramètre `context` ?
+2. Avez-vous une référence nationale sourcée (L/pers/jour) à afficher en comparaison ? Sinon aucune.
+3. Ajouter le lien depuis `/calculateur-hydratation` ?
