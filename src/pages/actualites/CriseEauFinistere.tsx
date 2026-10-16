@@ -85,6 +85,7 @@ export default function CriseEauFinistere() {
       <section id="calculateur" className="mb-10 scroll-mt-24" aria-labelledby="calculator-title">
         <h2 id="calculator-title" className="text-2xl font-semibold mb-5">Calculez votre consommation</h2>
         <CrisisWaterCalculator />
+        <p className="text-sm mt-4">Hors Finistère ? <Link to="/calculateur-consommation-eau" className="text-primary underline">Version générale du calculateur, valable partout en France</Link>, comparée à la moyenne nationale.</p>
       </section>
       <section className="mb-10" aria-labelledby="tregarvan-title">
         <h2 id="tregarvan-title" className="text-2xl font-semibold mb-4">Ce que ça donne quand l’eau manque : l’exemple de Trégarvan (août 2026)</h2>

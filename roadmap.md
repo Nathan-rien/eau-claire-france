@@ -24,3 +24,5 @@
 - [x] Ajouter suivi des succès, classification des erreurs, pause et reprise persistée des zones échouées (256 zones).
 - [x] Reprendre l’import réel : Paris, 1 668 points traités ; 1 763 points publics vérifiés après dédoublonnage.
 - [ ] Achever le périmètre national : lancement depuis le compte administrateur requis (appel protégé refusé en 401 ici) ; Lille échoue en HTTP 504. Bordeaux et Lyon disposent encore de points à importer. Vérification du suivi connecté indisponible (Supabase externe).
+- [x] CLS /prix-eaux < 0,1
+- [x] Page /calculateur-consommation-eau FR/EN (mode generic, 145 L SISPEA, liens)

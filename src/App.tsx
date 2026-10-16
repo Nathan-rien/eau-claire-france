@@ -89,6 +89,7 @@ const BouteilleOuFiltration = React.lazy(() => import("./pages/traiter/Bouteille
 const DureteEauFrance = React.lazy(() => import("./pages/DureteEauFrance"));
 const EauxMineralesRegion = React.lazy(() => import("./pages/EauxMineralesRegion"));
 const CalculateurHydratation = React.lazy(() => import("./pages/CalculateurHydratation"));
+const CalculateurConsommationEau = React.lazy(() => import("./pages/CalculateurConsommationEau"));
 const ZoneEau = React.lazy(() => import("./pages/ZoneEau"));
 const AdminZoneEau = React.lazy(() => import("./pages/AdminZoneEau"));
 
@@ -174,6 +175,7 @@ const appRoutes = (p: string) => (
                 <Route path={`${p}/eaux-minerales-pyrenees`} element={<EauxMineralesRegion region="pyrenees" />} />
                 <Route path={`${p}/eaux-minerales-mediterranee`} element={<EauxMineralesRegion region="mediterranee" />} />
                 <Route path={`${p}/calculateur-hydratation`} element={<CalculateurHydratation />} />
+                <Route path={`${p}/calculateur-consommation-eau`} element={<CalculateurConsommationEau />} />
                 <Route path={`${p}/zone-eau`} element={<ZoneEau />} />
                 <Route
                   path={`${p}/admin/zone-eau`}
