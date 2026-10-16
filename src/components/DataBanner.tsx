@@ -84,16 +84,8 @@ export const DataBanner = ({ onDataUpdate }: DataBannerProps) => {
     fetchStats();
   }, []);
 
-  if (loading) {
-    return (
-      <Alert className="mb-4">
-        <Loader2 className="h-4 w-4 animate-spin" />
-        <AlertDescription>
-          Vérification des données disponibles...
-        </AlertDescription>
-      </Alert>
-    );
-  }
+  // Rien pendant la vérification : le bandeau n'apparaît qu'en cas de problème (évite le CLS).
+  if (loading) return null;
 
   if (!stats) return null;
 
