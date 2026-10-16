@@ -306,7 +306,7 @@ export default function ComparatifFiltresEau() {
         {/* TABLEAU COMPARATIF */}
         <section className="px-4 py-12 md:py-16">
           <div className="container mx-auto max-w-6xl">
-            <AffiliateComparisonTable title={C.tableTitle} intro={C.tableIntro} />
+            <AffiliateComparisonTable title={C.tableTitle} intro={C.tableIntro} placement="comparatif_filtres" />
           </div>
         </section>
 

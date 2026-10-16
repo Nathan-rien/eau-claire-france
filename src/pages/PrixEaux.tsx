@@ -25,6 +25,7 @@ import { extractSourceInfo, detectChannelType, getChannelDescription, ChannelTyp
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import BrandLinksSection from '@/components/BrandLinksSection';
 import RegionLinksSection from '@/components/RegionLinksSection';
+import AffiliateProductPick from '@/components/affiliate/AffiliateProductPick';
 import CheapestWaterSummary from '@/components/prices/CheapestWaterSummary';
 
 interface PriceWithRetailer extends Price {
@@ -705,6 +706,8 @@ export default function PrixEaux() {
               </div>
             </div>
           </aside>
+
+          <AffiliateProductPick category="filtration" placement="prix_eaux_picks" className="px-0" />
 
           <BrandLinksSection />
           <RegionLinksSection />

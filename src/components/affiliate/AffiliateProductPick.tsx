@@ -9,6 +9,7 @@ import {
   type ProductTier,
 } from '@/config/affiliateProducts';
 import AffiliateDisclosure from './AffiliateDisclosure';
+import { trackAffiliateClick } from '@/utils/ga';
 import { Link } from '@/components/LocalizedLink';
 
 interface Props {
@@ -17,6 +18,8 @@ interface Props {
   problemContext?: string;
   showDisclosure?: boolean;
   className?: string;
+  /** Nom du bloc pour le suivi affiliate_click (défaut : chemin de la page). */
+  placement?: string;
 }
 
 const LABELS = {
@@ -57,6 +60,7 @@ export default function AffiliateProductPick({
   problemContext,
   showDisclosure = true,
   className = '',
+  placement,
 }: Props) {
   const { language } = useLanguage();
   const L = language === 'en' ? LABELS.en : LABELS.fr;
@@ -74,7 +78,7 @@ export default function AffiliateProductPick({
         {showDisclosure && <AffiliateDisclosure className="mb-8 max-w-3xl" />}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {picks.map((p) => (
+          {picks.map((p, idx) => (
             <div key={p.slug} className="flex flex-col">
               <Card className="border-border h-full flex flex-col">
                 <CardContent className="p-5 flex flex-col h-full">
@@ -129,6 +133,7 @@ export default function AffiliateProductPick({
                         href={getAmazonUrl(p)}
                         target="_blank"
                         rel="nofollow sponsored noopener noreferrer"
+                      onClick={() => trackAffiliateClick(p, { placement, position: idx + 1, language })}
                       >
                         {L.cta}
                         <ExternalLink className="w-4 h-4 ml-1" />

@@ -205,7 +205,7 @@ export default function GuideGoutChlore() {
         </section>
 
         {/* RECOMMANDATIONS PRODUITS (liens affiliés) */}
-        <AffiliateProductPick category="filtration" problemContext="chlore" />
+        <AffiliateProductPick category="filtration" problemContext="chlore" placement="guide_chlore" />
 
         {/* FAQ */}
         <section className="px-4 py-12 md:py-16 bg-muted/30 border-y border-border">

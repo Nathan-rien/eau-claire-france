@@ -207,7 +207,7 @@ export default function GuideEauCalcaire() {
         </section>
 
         {/* RECOMMANDATIONS PRODUITS (liens affiliés) */}
-        <AffiliateProductPick category="filtration" problemContext="calcaire" />
+        <AffiliateProductPick category="filtration" problemContext="calcaire" placement="guide_calcaire" />
 
         {/* FAQ */}
         <section className="px-4 py-12 md:py-16 bg-muted/30 border-y border-border">

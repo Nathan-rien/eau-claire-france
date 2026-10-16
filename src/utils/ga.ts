@@ -33,3 +33,22 @@ export function trackPageView(path: string) {
     page_title: typeof document !== 'undefined' ? document.title : undefined,
   });
 }
+
+/** Clic sur un lien affilié (Amazon). Même garde de consentement que trackEvent. */
+export function trackAffiliateClick(
+  product: { slug: string; name: string; tier: string; category: string },
+  opts: { placement?: string; position: number; language?: string },
+) {
+  const path = typeof window !== 'undefined' ? window.location.pathname : undefined;
+  trackEvent('affiliate_click', {
+    page_path: path,
+    placement: opts.placement || path,
+    product_slug: product.slug,
+    product_name: product.name,
+    product_tier: product.tier,
+    product_category: product.category,
+    position: opts.position,
+    language: opts.language,
+    transport_type: 'beacon',
+  });
+}

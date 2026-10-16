@@ -226,7 +226,7 @@ export default function GuideNitratesEau() {
         </section>
 
         {/* RECOMMANDATIONS PRODUITS (liens affiliés) */}
-        <AffiliateProductPick category="filtration" problemContext="nitrates" />
+        <AffiliateProductPick category="filtration" problemContext="nitrates" placement="guide_nitrates" />
 
         {/* FAQ */}
         <section className="px-4 py-12 md:py-16">
