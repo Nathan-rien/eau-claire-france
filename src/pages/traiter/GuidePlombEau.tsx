@@ -226,7 +226,7 @@ export default function GuidePlombEau() {
         </section>
 
         {/* RECOMMANDATIONS PRODUITS (liens affiliés) */}
-        <AffiliateProductPick category="filtration" problemContext="plomb" />
+        <AffiliateProductPick category="filtration" problemContext="plomb" placement="guide_plomb" />
 
         {/* FAQ */}
         <section className="px-4 py-12 md:py-16">

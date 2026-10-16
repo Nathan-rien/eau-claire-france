@@ -134,6 +134,7 @@ const Diagnostic = () => {
               category="filtration"
               problemContext={searchParams.get('probleme') ?? undefined}
               className="px-0"
+              placement="diagnostic_picks"
             />
           </div>
         </section>

@@ -424,6 +424,7 @@ const Classement = () => {
             category="filtration"
             title={t('rankPage.affiliateTitle')}
             intro={t('rankPage.affiliateIntro')}
+            placement="classement_comparatif"
           />
           <Link
             to="/comparatif-filtres-eau"
