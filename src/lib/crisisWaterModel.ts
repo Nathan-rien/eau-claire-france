@@ -2,6 +2,16 @@
 // ICI, 8 octobre 2026 : moyenne départementale ; moitié demandée dans le Nord-Finistère.
 export const FINISTERE_AVG = 112;
 export const TARGET = 56;
+// Mode générique : moyenne nationale SISPEA 2025 (Office français de la biodiversité,
+// données 2023, communiqué du 7 juillet 2025) : 145 L/jour/personne (53 m³/an).
+export const NATIONAL_AVG = 145;
+export const NATIONAL_SOURCE = {
+  fr: 'SISPEA 2025, Office français de la biodiversité, données 2023',
+  en: 'SISPEA 2025, French Biodiversity Agency (OFB), 2023 data',
+} as const;
+export function nationalBucket(central: number): 'lt145' | 'gte145' {
+  return central < NATIONAL_AVG ? 'lt145' : 'gte145';
+}
 // ARS Normandie, « Initier aux principaux usages domestiques de l'eau » :
 // https://www.normandie.ars.sante.fr/media/2763/download?inline
 // Débit de douche ≈12 L/min.
