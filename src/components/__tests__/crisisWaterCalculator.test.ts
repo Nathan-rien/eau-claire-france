@@ -1,4 +1,4 @@
-import { boundInput, boundMeter, calculateConsumption, calculateLevers, DEFAULT_INPUTS, FINISTERE_AVG, TARGET, INPUT_BOUNDS, METER_BOUNDS, PRESETS, volumeFromIndexes, measuredPerPersonPerDay, allAvailableLevers } from '../../lib/crisisWaterModel';
+import { boundInput, boundMeter, calculateConsumption, calculateLevers, DEFAULT_INPUTS, FINISTERE_AVG, TARGET, INPUT_BOUNDS, METER_BOUNDS, PRESETS, volumeFromIndexes, measuredPerPersonPerDay, allAvailableLevers, NATIONAL_AVG, nationalBucket } from '../../lib/crisisWaterModel';
 
 describe('Finistère household consumption rules', () => {
   test('references department average 112 and northern target 56', () => {
@@ -108,5 +108,10 @@ describe('Finistère household consumption rules', () => {
       expect(v).toBeGreaterThanOrEqual(min);
       expect(v).toBeLessThanOrEqual(max);
     }
+  });
+  test('generic mode uses national average 145 L (SISPEA 2025)', () => {
+    expect(NATIONAL_AVG).toBe(145);
+    expect(nationalBucket(144.9)).toBe('lt145');
+    expect(nationalBucket(145)).toBe('gte145');
   });
 });
