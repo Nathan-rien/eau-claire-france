@@ -10,7 +10,7 @@ import { NATIONAL_AVG } from '@/lib/crisisWaterModel';
 
 const CANONICAL = '/calculateur-consommation-eau';
 const PUBLISHED = '2026-10-16';
-const SOURCE_URL = 'https://www.ofb.gouv.fr/';
+const SOURCE_URL = 'https://www.ofb.gouv.fr/sites/default/files/Fichiers/Presse/CP_SISPEA_2025_VF.pdf';
 
 const COPY = {
   fr: {
