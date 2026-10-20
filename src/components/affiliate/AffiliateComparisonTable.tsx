@@ -9,6 +9,7 @@ import {
   type ProductCategory,
 } from '@/config/affiliateProducts';
 import AffiliateDisclosure from './AffiliateDisclosure';
+import { trackAffiliateClick } from '@/utils/ga';
 
 interface Props {
   /** Limite le tableau à une catégorie. Omis = filtration + goût avec filtre. */
@@ -17,6 +18,8 @@ interface Props {
   intro?: string;
   showDisclosure?: boolean;
   className?: string;
+  /** Nom du bloc pour le suivi affiliate_click (défaut : chemin de la page). */
+  placement?: string;
 }
 
 const LABELS = {
@@ -64,6 +67,7 @@ export default function AffiliateComparisonTable({
   intro,
   showDisclosure = true,
   className = '',
+  placement,
 }: Props) {
   const { language } = useLanguage();
   const L = language === 'en' ? LABELS.en : LABELS.fr;
@@ -135,7 +139,7 @@ export default function AffiliateComparisonTable({
             </tr>
           </thead>
           <tbody>
-            {rows.map((p) => (
+            {rows.map((p, idx) => (
               <tr key={p.slug} className="border-t border-border align-top">
                 <td className="px-4 py-4 max-w-[240px]">
                   <span className="block font-medium text-foreground">{p.name}</span>
@@ -187,6 +191,7 @@ export default function AffiliateComparisonTable({
                       href={getAmazonUrl(p)}
                       target="_blank"
                       rel="nofollow sponsored noopener noreferrer"
+                      onClick={() => trackAffiliateClick(p, { placement, position: idx + 1, language })}
                     >
                       {L.cta}
                       <ExternalLink className="w-3.5 h-3.5 ml-1" />

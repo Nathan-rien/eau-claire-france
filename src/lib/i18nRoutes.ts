@@ -50,6 +50,7 @@ export const INTERNATIONAL_PATHS: string[] = [
   '/guide/quel-filtre-eau',
   '/bouteille-ou-filtration',
   '/calculateur-hydratation',
+  '/calculateur-consommation-eau',
   '/carte-europe',
   '/carte-polluants-europe',
   '/classement-europe',

@@ -1,11 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
+import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { osmWaterPoint, type OsmNode } from './osm.ts';
+import { ImportError, parseOverpass, httpImportError } from './overpass.ts';
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -13,7 +9,7 @@ const json = (body: unknown, status = 200) =>
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
 
-const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
+const OVERPASS_URLS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'];
 
 // France métropolitaine (approximatif)
 const DEFAULT_BBOX = { south: 41.0, west: -5.5, north: 51.5, east: 10.0 };
@@ -21,13 +17,6 @@ const DEFAULT_GRID = 8; // 64 sous-zones : évite les timeouts Overpass
 // 1 seule sous-zone par appel : reste largement sous la limite de temps
 // de la passerelle Edge Function (sinon la requête est coupée côté client).
 const DEFAULT_TILES_PER_RUN = 1;
-
-interface OsmNode {
-  id: number;
-  lat: number;
-  lon: number;
-  tags?: Record<string, string>;
-}
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -38,40 +27,35 @@ async function fetchTile(
   s: number,
   w: number,
   n: number,
-  e: number
+  e: number,
+  attempt = 0
 ): Promise<OsmNode[]> {
   try {
-    const res = await fetch(OVERPASS_URL, {
-      method: 'POST',
+    const url = new URL(OVERPASS_URLS[attempt % OVERPASS_URLS.length]);
+    url.searchParams.set('data', buildQuery(s, w, n, e));
+    const res = await fetch(url, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         // Overpass refuse les requêtes sans User-Agent identifiable (406)
         'User-Agent': 'infoeau.fr water-points import/1.0',
       },
-      body: `data=${encodeURIComponent(buildQuery(s, w, n, e))}`,
       // La plateforme arrête les fonctions longues sans leur laisser répondre.
       // Une tentative courte laisse le client relancer proprement la zone.
       signal: AbortSignal.timeout(10_000),
     });
     if (!res.ok) {
-      throw new Error(`Overpass HTTP ${res.status}`);
+      throw httpImportError(res.status, res.headers.get('Retry-After'));
     }
-    const data = await res.json();
-    return (data.elements || []).filter(
-      (el: OsmNode) =>
-        typeof el.lat === 'number' && typeof el.lon === 'number'
-    );
+    let data: unknown;
+    try { data = await res.json(); } catch { throw new ImportError('Réponse OpenStreetMap non JSON', 'invalid_response'); }
+    return parseOverpass(data);
   } catch (err) {
     const message = (err as Error)?.message || 'Unknown Overpass error';
     console.error(`Overpass tile failed (${s},${w},${n},${e}): ${message}`);
-    throw new Error(`OpenStreetMap indisponible pour cette zone : ${message}`);
+    if (err instanceof ImportError) throw err;
+    throw new ImportError(`OpenStreetMap : ${message}`, /timeout|abort/i.test(message) ? 'timeout' : 'network');
   }
-}
-
-function potabilite(tags: Record<string, string> = {}) {
-  if (tags.drinking_water === 'yes') return 'declare_potable';
-  if (tags.drinking_water === 'no') return 'declare_non_potable';
-  return 'non_verifie';
 }
 
 Deno.serve(async (req) => {
@@ -80,9 +64,12 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-    const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
+    const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (!SUPABASE_URL || !ANON_KEY || !SERVICE_KEY) {
+      return json({ ok: false, error: 'Import indisponible : configuration serveur manquante' }, 500);
+    }
 
     // --- Authentification : administrateur connecté uniquement ---
     const authHeader = req.headers.get('Authorization');
@@ -123,18 +110,22 @@ Deno.serve(async (req) => {
       body = {};
     }
     const bbox = { ...DEFAULT_BBOX, ...(body.bbox as object | undefined) };
+    if (![bbox.south, bbox.west, bbox.north, bbox.east].every(Number.isFinite) || bbox.south >= bbox.north || bbox.west >= bbox.east || bbox.south < -90 || bbox.north > 90 || bbox.west < -180 || bbox.east > 180) {
+      return json({ ok: false, error: 'Périmètre invalide', retryable: false }, 400);
+    }
     const clamp = (v: unknown, def: number, min: number, max: number) => {
       const n = Number(v ?? def);
       return Number.isFinite(n) ? Math.min(max, Math.max(min, Math.round(n))) : def;
     };
-    const grid = clamp(body.grid, DEFAULT_GRID, 1, 10);
+    const grid = clamp(body.grid, DEFAULT_GRID, 1, 20);
+    const attempt = clamp(body.attempt, 0, 0, 10);
     const totalTiles = grid * grid;
     const tileStart = clamp(body.tile_start, 0, 0, totalTiles - 1);
     const tileCount = clamp(
       body.tile_count,
       DEFAULT_TILES_PER_RUN,
       1,
-      totalTiles
+      1
     );
     const tileEnd = Math.min(totalTiles, tileStart + tileCount);
 
@@ -155,30 +146,14 @@ Deno.serve(async (req) => {
       const e = w + lngStep;
 
       if (tilesQueried > 0) await sleep(1100); // >= 1s entre deux requêtes
-      const nodes = await fetchTile(s, w, n, e);
+      const nodes = await fetchTile(s, w, n, e, attempt);
       tilesQueried++;
       totalReceived += nodes.length;
       console.log(`Tile ${t + 1}/${totalTiles}: ${nodes.length} nodes`);
 
       if (nodes.length === 0) continue;
 
-      const rows = nodes.map((el) => {
-        const tags = el.tags || {};
-        return {
-          source_ref: `osm:${el.id}`,
-          type: 'fontaine_publique',
-          latitude: el.lat,
-          longitude: el.lon,
-          description: tags.name ? tags.name.slice(0, 1000) : null,
-          accessibilite: tags.opening_hours
-            ? tags.opening_hours.slice(0, 500)
-            : null,
-          statut_potabilite: potabilite(tags),
-          source_donnee: 'import_osm',
-          statut_moderation: 'valide',
-          derniere_verification_at: new Date().toISOString(),
-        };
-      });
+      const rows = nodes.map(osmWaterPoint);
 
       // Points déjà connus (pour distinguer créés / mis à jour)
       const existing = new Set<string>();
@@ -188,7 +163,7 @@ Deno.serve(async (req) => {
           .from('water_points')
           .select('source_ref')
           .in('source_ref', refs);
-        if (error) throw error;
+        if (error) throw new ImportError(`Lecture des points existants : ${error.message}`, 'database', false);
         (data || []).forEach((r) => r.source_ref && existing.add(r.source_ref));
       }
 
@@ -197,7 +172,7 @@ Deno.serve(async (req) => {
         const { error } = await admin
           .from('water_points')
           .upsert(chunk, { onConflict: 'source_ref' });
-        if (error) throw error;
+        if (error) throw new ImportError(`Enregistrement des points : ${error.message}`, 'database', false);
       }
 
       const tileUpdated = rows.filter((r) => existing.has(r.source_ref)).length;
@@ -221,8 +196,8 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('OSM import error:', error);
     return json(
-      { ok: false, error: (error as Error)?.message || 'Unknown error' },
-      500
+      { ok: false, error: (error as Error)?.message || 'Unknown error', error_code: error instanceof ImportError ? error.code : 'internal', retryable: error instanceof ImportError && error.retryable, retry_after_ms: error instanceof ImportError ? error.retryAfterMs : 0 },
+      error instanceof ImportError && error.retryable ? 503 : 500
     );
   }
 });

@@ -23,21 +23,30 @@ const ZoneEau: React.FC = () => {
   ]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   const load = async () => {
-    const { data, error } = await supabase
-      .from('water_points')
-      .select('*')
-      .eq('statut_moderation', 'valide')
-      .order('created_at', { ascending: false })
-      .limit(2000);
+    setLoading(true);
+    setLoadError(false);
+    const list: WaterPoint[] = [];
+    const pageSize = 1000;
+    for (let offset = 0; ; offset += pageSize) {
+      const { data, error } = await supabase
+        .from('water_points')
+        .select('*')
+        .eq('statut_moderation', 'valide')
+        .order('id', { ascending: true })
+        .range(offset, offset + pageSize - 1);
 
-    if (error) {
-      console.error('Water points load error:', error);
-      setLoading(false);
-      return;
+      if (error) {
+        console.error('Water points load error:', error);
+        setLoadError(true);
+        setLoading(false);
+        return;
+      }
+      list.push(...((data || []) as WaterPoint[]));
+      if ((data?.length ?? 0) < pageSize) break;
     }
-    const list = (data || []) as WaterPoint[];
     setPoints(list);
     setPhotoUrls(await signWaterPointPhotos(list));
     setLoading(false);
@@ -171,6 +180,19 @@ const ZoneEau: React.FC = () => {
                     filtered.length > 1 ? 's' : ''
                   } d\u2019eau affiché${filtered.length > 1 ? 's' : ''}`}
             </p>
+            {loadError && (
+              <div role="alert" className="mt-3 text-center text-sm text-destructive">
+                <p>Les points d’eau n’ont pas pu être chargés.</p>
+                <Button variant="outline" onClick={load} className="mt-2">Réessayer</Button>
+              </div>
+            )}
+            {!loading && !loadError && filtered.length === 0 && (
+              <p role="status" className="mt-3 text-center text-sm text-muted-foreground">
+                {points.length === 0
+                  ? 'Aucune donnée disponible pour le moment. Les contributions apparaissent après validation.'
+                  : 'Aucun point d’eau ne correspond aux types sélectionnés.'}
+              </p>
+            )}
           </div>
         </section>
       </div>

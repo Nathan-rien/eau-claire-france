@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link } from '@/components/LocalizedLink';
-import { 
+import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
@@ -17,13 +17,18 @@ import { useRegion } from '@/contexts/RegionContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Badge } from '@/components/ui/badge';
 
+interface NavItem {
+  href: string;
+  label: string;
+  featured?: boolean;
+}
+
 const Navigation = () => {
   const location = useLocation();
-  const [mapsMenuOpen, setMapsMenuOpen] = useState(false);
   const { isEurope } = useRegion();
   const { t } = useLanguage();
 
-  const mapsItems = isEurope
+  const mapsItems: NavItem[] = isEurope
     ? [
         { href: '/carte-europe', label: t('nav.maps.europeQuality') },
         { href: '/carte-polluants-europe', label: t('nav.maps.europePollutants') },
@@ -33,12 +38,16 @@ const Navigation = () => {
         { href: '/sources-eau', label: t('nav.maps.bottles') },
         { href: '/carte-polluants', label: t('nav.maps.pollutants') },
         { href: '/gout-eau', label: "Goût de l'eau par région" },
-        { href: '/carte-parcours-eau', label: t('nav.maps.bottleJourney') },
-        { href: '/carte-parcours-robinet', label: t('nav.maps.tapJourney') },
       ];
 
+  const journeyItems: NavItem[] = [
+    { href: '/parcours-eau', label: t('nav.journey') },
+    { href: '/parcours-eau-bouteille', label: t('nav.journeyBottle') },
+    { href: '/carte-parcours-eau', label: t('nav.maps.bottleJourney') },
+    { href: '/carte-parcours-robinet', label: t('nav.maps.tapJourney') },
+  ];
 
-  const pricesItems = isEurope
+  const pricesItems: NavItem[] = isEurope
     ? [
         { href: '/prix-eaux-europe', label: t('nav.prices') },
       ]
@@ -47,28 +56,77 @@ const Navigation = () => {
         { href: '/cours-eau', label: "Cours de l'eau" },
       ];
 
-  const directNavigationItems: Array<{ href: string; label: string; featured?: boolean }> = isEurope
+  const chooseItems: NavItem[] = isEurope
     ? [
-        { href: '/lettre-de-leau', label: "Lettre de l'eau", featured: true },
-        { href: '/diagnostic-europe', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
-        { href: '/classement-europe', label: t('nav.ranking') },
-        { href: '/polluants-europe', label: t('nav.pollutants') },
+        { href: '/diagnostic-europe', label: t('nav.diagnostic') },
         { href: '/alertes-europe', label: t('nav.alerts') },
-        { href: '/parcours-eau', label: t('nav.journey') },
       ]
     : [
-        { href: '/lettre-de-leau', label: "Lettre de l'eau", featured: true },
-        { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
-        { href: '/classement', label: t('nav.ranking') },
-        { href: '/polluants', label: t('nav.pollutants') },
+        { href: '/diagnostic', label: t('nav.diagnostic') },
         { href: '/alertes', label: t('nav.alerts') },
-        { href: '/parcours-eau', label: t('nav.journey') },
       ];
 
-  const isActiveMapsSection = mapsItems.some(item => location.pathname === item.href);
-  const isActivePricesSection = pricesItems.some(item => location.pathname === item.href);
+  const understandItems: NavItem[] = isEurope
+    ? [
+        { href: '/polluants-europe', label: t('nav.pollutants') },
+      ]
+    : [
+        { href: '/polluants', label: t('nav.pollutants') },
+      ];
+
+  const rankingHref = isEurope ? '/classement-europe' : '/classement';
+
+  const directNavigationItems: Array<{ href: string; label: string; featured?: boolean }> = [
+    { href: '/lettre-de-leau', label: "Lettre de l'eau", featured: true },
+  ];
+
+  const dropdowns: Array<{ id: string; label: string; items: NavItem[] }> = [
+    { id: 'prices', label: t('nav.prices'), items: pricesItems },
+    { id: 'choose', label: t('nav.choose'), items: chooseItems },
+    { id: 'maps', label: t('nav.maps'), items: mapsItems },
+    { id: 'journey', label: t('nav.journeyTab'), items: journeyItems },
+    { id: 'understand', label: t('nav.understand'), items: understandItems },
+  ];
+
+  const isDropdownActive = (items: NavItem[]) => items.some(item => location.pathname === item.href);
+
+  const renderDropdown = (dropdown: { id: string; label: string; items: NavItem[] }) => (
+    <NavigationMenuItem key={dropdown.id}>
+      <NavigationMenuTrigger
+        className={cn(
+          "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-2 py-2 text-xs md:text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none",
+          isDropdownActive(dropdown.items) && "bg-accent text-accent-foreground"
+        )}
+      >
+        <span className="flex items-center gap-1">
+          {dropdown.label}
+          <ChevronDown className="h-3 w-3" />
+        </span>
+      </NavigationMenuTrigger>
+      <NavigationMenuContent
+        className="absolute left-0 top-0 w-full data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 md:w-auto z-50 bg-popover border border-border shadow-md rounded-md"
+      >
+        <div className="w-64 p-2">
+          {dropdown.items.map((item) => (
+            <NavigationMenuLink
+              key={item.href}
+              asChild
+              className={cn(
+                "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground text-sm",
+                location.pathname === item.href && "bg-accent text-accent-foreground"
+              )}
+            >
+              <Link to={item.href}>
+                {item.label}
+              </Link>
+            </NavigationMenuLink>
+          ))}
+        </div>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+  );
 
   return (
     <div className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -89,77 +147,20 @@ const Navigation = () => {
             <NavigationMenu>
               <NavigationMenuList className="flex-wrap gap-1">
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger
+                  <NavigationMenuLink
+                    asChild
                     className={cn(
                       "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-2 py-2 text-xs md:text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none",
-                      isActiveMapsSection && "bg-accent text-accent-foreground"
+                      location.pathname === rankingHref && "bg-accent text-accent-foreground"
                     )}
-                    onMouseEnter={() => setMapsMenuOpen(true)}
-                    onMouseLeave={() => setMapsMenuOpen(false)}
                   >
-                    <span className="flex items-center gap-1">
-                      {t('nav.maps')}
-                      <ChevronDown className="h-3 w-3" />
-                    </span>
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent
-                    className="absolute left-0 top-0 w-full data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 md:w-auto z-50 bg-popover border border-border shadow-md rounded-md"
-                    onMouseEnter={() => setMapsMenuOpen(true)}
-                    onMouseLeave={() => setMapsMenuOpen(false)}
-                  >
-                    <div className="w-64 p-2">
-                      {mapsItems.map((item) => (
-                        <NavigationMenuLink
-                          key={item.href}
-                          asChild
-                          className={cn(
-                            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground text-sm",
-                            location.pathname === item.href && "bg-accent text-accent-foreground"
-                          )}
-                        >
-                          <Link to={item.href}>
-                            {item.label}
-                          </Link>
-                        </NavigationMenuLink>
-                      ))}
-                    </div>
-                  </NavigationMenuContent>
+                    <Link to={rankingHref}>
+                      {t('nav.ranking')}
+                    </Link>
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
 
-                {/* Prix des eaux dropdown */}
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger
-                    className={cn(
-                      "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-2 py-2 text-xs md:text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none",
-                      isActivePricesSection && "bg-accent text-accent-foreground"
-                    )}
-                  >
-                    <span className="flex items-center gap-1">
-                      {t('nav.prices')}
-                      <ChevronDown className="h-3 w-3" />
-                    </span>
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent
-                    className="absolute left-0 top-0 w-full data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out md:w-auto z-50 bg-popover border border-border shadow-md rounded-md"
-                  >
-                    <div className="w-64 p-2">
-                      {pricesItems.map((item) => (
-                        <NavigationMenuLink
-                          key={item.href}
-                          asChild
-                          className={cn(
-                            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground text-sm",
-                            location.pathname === item.href && "bg-accent text-accent-foreground"
-                          )}
-                        >
-                          <Link to={item.href}>
-                            {item.label}
-                          </Link>
-                        </NavigationMenuLink>
-                      ))}
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
+                {dropdowns.map(renderDropdown)}
 
                 {directNavigationItems.map((item) => (
                   <NavigationMenuItem key={item.href}>

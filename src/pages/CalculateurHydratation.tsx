@@ -33,6 +33,11 @@ export default function CalculateurHydratation() {
     { to: "/traiter-eau-robinet", title: t("hydration.links.treat"), desc: t("hydration.links.treat.desc") },
     { to: "/comparatif-carafes", title: t("hydration.links.carafes"), desc: t("hydration.links.carafes.desc") },
     { to: "/qualite-eau", title: t("hydration.links.quality"), desc: t("hydration.links.quality.desc") },
+    {
+      to: "/calculateur-consommation-eau",
+      title: language === "en" ? "Household water usage calculator" : "Calculer la consommation d’eau du foyer",
+      desc: language === "en" ? "Showers, toilets, laundry: estimate the water used at home." : "Douches, toilettes, lessives : estimez l’eau utilisée chez vous.",
+    },
   ];
 
   const schemas = [

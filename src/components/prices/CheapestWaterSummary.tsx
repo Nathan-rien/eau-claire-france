@@ -1,3 +1,4 @@
+import { Skeleton } from '@/components/ui/skeleton';
 /**
  * Bloc SEO haut de page pour /prix-eaux : capte les requêtes larges
  * ("eau la moins chère", "comparaison prix eau en bouteille", "prix pack d'eau")
@@ -185,7 +186,19 @@ export default function CheapestWaterSummary() {
     return items;
   }, [cheapest, avgAll, annualAvg, annualTap, mddComparison]);
 
-  if (loading || !valid.length) return null;
+  // Réserve l'espace pendant le chargement pour éviter le décalage visuel (CLS).
+  if (loading) {
+    return (
+      <section className="mb-8 min-h-[2040px] md:min-h-[1130px] space-y-6" aria-busy="true">
+        <div aria-hidden="true" className="space-y-6">
+          <Skeleton className="h-48 w-full rounded-xl" />
+          <Skeleton className="h-64 w-full rounded-xl" />
+          <Skeleton className="h-64 w-full rounded-xl" />
+        </div>
+      </section>
+    );
+  }
+  if (!valid.length) return null;
 
   return (
     <section className="mb-8 space-y-6">

@@ -1,5 +1,5 @@
 import { Link } from '@/components/LocalizedLink';
-import { Clock, ArrowRight, Droplets } from "lucide-react";
+import { Clock, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CATEGORY_LABELS, type BlogArticle } from "@/services/blogApi";
 
@@ -17,11 +17,11 @@ export default function BlogCard({ article, variant = "default" }: Props) {
     <article className="h-full">
       <Link
         to={`/lettre-de-leau/${article.slug}`}
-        className="group flex flex-col bg-card rounded-xl overflow-hidden border border-border hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 h-full"
+        className={`group flex flex-col bg-card rounded-xl overflow-hidden border border-border hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 h-full${!article.cover_image_url ? " border-t-4 border-t-sky-400" : ""}`}
         aria-label={article.title}
       >
-        <div className={`${isFeatured ? "aspect-[16/10]" : "aspect-[16/9]"} overflow-hidden bg-muted relative`}>
-          {article.cover_image_url ? (
+        {article.cover_image_url && (
+          <div className={`${isFeatured ? "aspect-[16/10]" : "aspect-[16/9]"} overflow-hidden bg-muted relative`}>
             <img
               src={article.cover_image_url}
               alt={article.title}
@@ -29,12 +29,8 @@ export default function BlogCard({ article, variant = "default" }: Props) {
               decoding="async"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-blue-500 via-sky-400 to-green-500 flex items-center justify-center">
-              <Droplets className="w-16 h-16 text-white/40" strokeWidth={1.5} aria-hidden="true" />
-            </div>
-          )}
-        </div>
+          </div>
+        )}
         <div className={`flex flex-col flex-1 ${isFeatured ? "p-6" : "p-5"}`}>
           <div className="flex items-center gap-3 mb-3 text-xs text-muted-foreground">
             <Badge variant="secondary" className="text-xs">

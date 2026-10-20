@@ -386,6 +386,30 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://infoeau.fr/calculateur-consommation-eau</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/calculateur-consommation-eau" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/calculateur-consommation-eau" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/calculateur-consommation-eau" />
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/en/calculateur-consommation-eau</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://infoeau.fr/calculateur-consommation-eau" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://infoeau.fr/en/calculateur-consommation-eau" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://infoeau.fr/calculateur-consommation-eau" />
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/actualites/crise-eau-finistere</loc>
+    <lastmod>2026-10-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://infoeau.fr/actualites/pollution-manganese-vendee-juillet-2026</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
@@ -848,6 +872,32 @@
     <loc>https://infoeau.fr/qualite-eau/nancy-54000</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/lettre-de-leau/nestle-waters-amende-2-millions-euros-action-publique-eteinte</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+    <image:image>
+      <image:loc>https://xblogttmomuogdhmaztf.supabase.co/storage/v1/object/public/blog-images/2026-10-19/nestle-waters-amende-2-millions-euros-action-publique-eteinte-1792420277930.png</image:loc>
+      <image:title>Nestlé Waters : 2 millions d&apos;euros d&apos;amende payés, l&apos;action publique éteinte</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/lettre-de-leau/nestle-waters-scandale-eaux-marche-financier</loc>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://infoeau.fr/lettre-de-leau/pfas-etat-mis-en-cause-face-menace-polluants-eternels</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+    <image:image>
+      <image:loc>https://xblogttmomuogdhmaztf.supabase.co/storage/v1/object/public/blog-images/2026-10-05/pfas-etat-mis-en-cause-face-menace-polluants-eternels-1791215207001.png</image:loc>
+      <image:title>PFAS : L&apos;État mis en cause face à la menace des polluants éternels</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://infoeau.fr/lettre-de-leau/guadeloupe-scandale-eau-detournee-repercussions-nationales</loc>
