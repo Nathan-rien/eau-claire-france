@@ -63,9 +63,9 @@ const Header = () => {
     : [
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
         { href: '/diagnostic', label: t('nav.diagnostic') },
+        { href: '/alertes', label: t('nav.alerts') },
         { href: '/calculateur-hydratation', label: t('nav.hydrationCalc') },
         { href: '/calculateur-consommation-eau', label: t('nav.waterCalc') },
-        { href: '/alertes', label: t('nav.alerts') },
       ];
 
   const understandItems: NavItem[] = isEurope
