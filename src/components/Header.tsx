@@ -5,7 +5,7 @@ import {
   Droplets, Menu, ChevronDown, Search,
   Droplet, GlassWater, AlertTriangle, Truck, Route as RouteIcon,
   CloudRain, Wine, ShoppingCart, TrendingUp, Stethoscope,
-  HelpCircle, Trophy, Bell, Map as MapIcon, MapPinned, Newspaper, type LucideIcon,
+  HelpCircle, Trophy, Bell, Map as MapIcon, MapPinned, Newspaper, Calculator, type LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -63,6 +63,8 @@ const Header = () => {
     : [
         { href: '/quelle-eau-boire', label: t('nav.which-water') },
         { href: '/diagnostic', label: t('nav.diagnostic') },
+        { href: '/calculateur-hydratation', label: t('nav.hydrationCalc') },
+        { href: '/calculateur-consommation-eau', label: t('nav.waterCalc') },
         { href: '/alertes', label: t('nav.alerts') },
       ];
 
@@ -109,6 +111,8 @@ const Header = () => {
     '/diagnostic': Stethoscope,
     '/diagnostic-europe': Stethoscope,
     '/quelle-eau-boire': HelpCircle,
+    '/calculateur-hydratation': Droplet,
+    '/calculateur-consommation-eau': Calculator,
     '/gout-eau': GlassWater,
     '/classement': Trophy,
     '/classement-europe': Trophy,

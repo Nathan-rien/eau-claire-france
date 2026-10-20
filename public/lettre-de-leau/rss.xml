@@ -6,7 +6,16 @@
     <atom:link href="https://infoeau.fr/lettre-de-leau/rss.xml" rel="self" type="application/rss+xml" />
     <description>Actualités, scandales, réglementation et enquêtes sur la qualité de l'eau en France.</description>
     <language>fr-FR</language>
-    <lastBuildDate>Sat, 17 Oct 2026 11:38:38 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 20 Oct 2026 12:03:15 GMT</lastBuildDate>
+    <item>
+      <title>Nestlé Waters : 2 millions d&apos;euros d&apos;amende payés, l&apos;action publique éteinte</title>
+      <link>https://infoeau.fr/lettre-de-leau/nestle-waters-amende-2-millions-euros-action-publique-eteinte</link>
+      <guid isPermaLink="true">https://infoeau.fr/lettre-de-leau/nestle-waters-amende-2-millions-euros-action-publique-eteinte</guid>
+      <pubDate>Mon, 19 Oct 2026 14:31:19 GMT</pubDate>
+      <category>reglementation</category>
+      <description>Nestlé Waters a rempli ses obligations suite à une convention judiciaire d&apos;intérêt public signée en 2024, éteignant ainsi l&apos;action publique dans les enquêtes pour forages illégaux et traitements non autorisés de ses eaux minérales. La multinationale a versé une amende de 2 millions d&apos;euros et indemnisé des associations.</description>
+      <enclosure url="https://xblogttmomuogdhmaztf.supabase.co/storage/v1/object/public/blog-images/2026-10-19/nestle-waters-amende-2-millions-euros-action-publique-eteinte-1792420277930.png" type="image/jpeg" />
+    </item>
     <item>
       <title>Nestlé Waters : le scandale des eaux trouble le marché financier</title>
       <link>https://infoeau.fr/lettre-de-leau/nestle-waters-scandale-eaux-marche-financier</link>
