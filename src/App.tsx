@@ -15,7 +15,7 @@ import PageLoader from "@/components/PageLoader";
 import SecurityHeaders from "@/components/SecurityHeaders";
 import RouteTracker from "@/components/analytics/RouteTracker";
 import { EnhancedSecurityService } from "@/services/enhancedSecurityService";
-import OndineChat from "@/components/OndineChat";
+const OndineChat = React.lazy(() => import("@/components/OndineChat"));
 
 import CookieConsent from "@/components/CookieConsent";
 import NewsTicker from "@/components/NewsTicker";
@@ -221,8 +221,16 @@ const App = () => {
     analyticsService.trackPageView();
     
     // Initialize basic security monitoring (network monitoring removed)
-    EnhancedSecurityService.startSecurityMonitoring();
+    // Différé hors du chemin critique (perf TBT)
+    const startSecurity = () => EnhancedSecurityService.startSecurityMonitoring();
+    const w = window as any;
+    let idleId: any; let timeoutId: any;
+    if (w.requestIdleCallback) idleId = w.requestIdleCallback(startSecurity, { timeout: 4000 });
+    else timeoutId = setTimeout(startSecurity, 2000);
+    const t = setTimeout(() => setShowChat(true), 2500);
+    return () => { if (idleId) w.cancelIdleCallback?.(idleId); clearTimeout(timeoutId); clearTimeout(t); };
   }, []);
+  const [showChat, setShowChat] = React.useState(false);
 
   return (
     <HelmetProvider>
@@ -246,7 +254,11 @@ const App = () => {
                 {appRoutes("/en")}
               </Routes>
             </Suspense>
-            <OndineChat />
+            {showChat && (
+              <Suspense fallback={null}>
+                <OndineChat />
+              </Suspense>
+            )}
             <CookieConsent />
             </TooltipProvider>
             </RegionProvider>

@@ -38,6 +38,8 @@ interface PriceWithRetailer extends Price {
   channel_type?: ChannelType;
 }
 
+const INITIAL_VISIBLE = 50;
+
 export default function PrixEaux() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
@@ -47,7 +49,18 @@ export default function PrixEaux() {
   const [brands, setBrands] = useState<string[]>([]);
   const [brandRetailerMapping, setBrandRetailerMapping] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  // Perf : n'afficher qu'une version (mobile OU desktop) et un premier lot de lignes.
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 767px)');
+    const onChange = () => setIsMobile(mql.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
+  const visiblePrices = useMemo(() => prices.slice(0, visibleCount), [prices, visibleCount]);
+  useEffect(() => { setVisibleCount(INITIAL_VISIBLE); }, [prices]);
   const retailersRef = useRef<Retailer[]>([]);
   const brandRetailerMappingRef = useRef<any[]>([]);
   const [showDataBanner, setShowDataBanner] = useState(false);
@@ -100,22 +113,18 @@ export default function PrixEaux() {
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        // Vérifier si la base a des données
-        const dataStats = await hasData();
+        // Appels indépendants lancés en parallèle (perf LCP)
+        const [dataStats, retailersData, brandsData, mappingData] = await Promise.all([
+          hasData(),
+          listActiveRetailers(),
+          listDistinctBrands(),
+          getBrandRetailerMapping(),
+        ]);
         setShowDataBanner(!dataStats.hasPrices);
         setNoActiveRetailers((dataStats as any).activeRetailersCount === 0);
-        
-        // Charger les enseignes actives
-        const retailersData = await listActiveRetailers();
         setRetailers(retailersData as Retailer[]);
         retailersRef.current = retailersData as Retailer[];
-
-        // Charger les marques distinctes
-        const brandsData = await listDistinctBrands();
         setBrands(brandsData);
-
-        // Charger le mapping marques-enseignes
-        const mappingData = await getBrandRetailerMapping();
         setBrandRetailerMapping(mappingData);
         brandRetailerMappingRef.current = mappingData;
 
@@ -530,8 +539,9 @@ export default function PrixEaux() {
           ) : (
             <>
             {/* Mobile: liste compacte e-commerce */}
+            {isMobile && (
             <div className="md:hidden space-y-0 divide-y divide-border rounded-lg border border-border bg-card overflow-hidden">
-              {prices.map((price) => {
+              {visiblePrices.map((price) => {
                 const getChannelIcon = () => {
                   switch (price.channel_type) {
                     case 'retail': return <Store className="h-3.5 w-3.5" />;
@@ -587,8 +597,10 @@ export default function PrixEaux() {
                 );
               })}
             </div>
+            )}
 
             {/* Desktop: tableau classique */}
+            {!isMobile && (
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full border-collapse border border-border">
                 <thead>
@@ -612,7 +624,7 @@ export default function PrixEaux() {
                   </tr>
                 </thead>
                 <tbody>
-                  {prices.map((price) => {
+                  {visiblePrices.map((price) => {
                     const getChannelIcon = () => {
                       switch (price.channel_type) {
                         case 'retail': return <Store className="h-4 w-4" />;
@@ -688,6 +700,14 @@ export default function PrixEaux() {
                 </tbody>
               </table>
             </div>
+            )}
+            {prices.length > visibleCount && (
+              <div className="flex justify-center mt-4">
+                <Button variant="outline" className="min-h-[44px]" onClick={() => setVisibleCount((c) => c + INITIAL_VISIBLE)}>
+                  Voir plus ({prices.length - visibleCount})
+                </Button>
+              </div>
+            )}
             </>
           )}
 
