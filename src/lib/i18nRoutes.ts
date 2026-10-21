@@ -42,6 +42,7 @@ export const INTERNATIONAL_PATHS: string[] = [
   '/traiter-eau-robinet',
   '/guide/eau-calcaire',
   '/guide/gout-chlore',
+  '/eau-sans-chlore',
   '/guide/nitrates-eau',
   '/guide/plomb-eau',
   '/comparatif-carafes',

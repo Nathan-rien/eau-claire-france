@@ -44,6 +44,7 @@ export default function DureteEauFrance() {
     { to: "/comparatif-carafes", title: t("durete.links.carafes"), desc: t("durete.links.carafes.desc") },
     { to: "/qualite-eau", title: t("durete.links.quality"), desc: t("durete.links.quality.desc") },
     { to: "/diagnostic", title: t("durete.links.diagnostic"), desc: t("durete.links.diagnostic.desc") },
+    { to: "/eau-sans-chlore", title: t("durete.links.nochlore"), desc: t("durete.links.nochlore.desc") },
   ];
 
   const schemas = [

@@ -283,6 +283,9 @@ export default function TraiterEauRobinet() {
               <Button asChild variant="ghost">
                 <Link to="/polluants">{t("tr.need.cta.pollutants")}</Link>
               </Button>
+              <Button asChild variant="ghost">
+                <Link to="/eau-sans-chlore">{t("tr.need.cta.nochlore")}</Link>
+              </Button>
             </div>
           </div>
         </section>
