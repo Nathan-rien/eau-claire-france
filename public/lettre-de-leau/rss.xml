@@ -6,7 +6,16 @@
     <atom:link href="https://infoeau.fr/lettre-de-leau/rss.xml" rel="self" type="application/rss+xml" />
     <description>Actualités, scandales, réglementation et enquêtes sur la qualité de l'eau en France.</description>
     <language>fr-FR</language>
-    <lastBuildDate>Tue, 20 Oct 2026 12:10:31 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 27 Oct 2026 06:54:26 GMT</lastBuildDate>
+    <item>
+      <title>Deux-Sèvres : le géant Terrena épinglé pour des rejets menaçant l&apos;eau potable</title>
+      <link>https://infoeau.fr/lettre-de-leau/deux-sevres-terrena-ovalis-pollution-eau-potable</link>
+      <guid isPermaLink="true">https://infoeau.fr/lettre-de-leau/deux-sevres-terrena-ovalis-pollution-eau-potable</guid>
+      <pubDate>Mon, 26 Oct 2026 14:03:38 GMT</pubDate>
+      <category>scandale</category>
+      <description>Dans les Deux-Sèvres, l&apos;État met en cause le groupe agroalimentaire Terrena et sa filiale Ovalis. Un rapport judiciaire révèle des rejets illégaux d&apos;eaux non traitées vers la nappe phréatique, faisant peser un risque direct sur les ressources en eau potable du secteur.</description>
+      <enclosure url="https://xblogttmomuogdhmaztf.supabase.co/storage/v1/object/public/blog-images/2026-10-26/deux-sevres-terrena-ovalis-pollution-eau-potable-1793023417954.png" type="image/jpeg" />
+    </item>
     <item>
       <title>Nestlé Waters : 2 millions d&apos;euros d&apos;amende payés, l&apos;action publique éteinte</title>
       <link>https://infoeau.fr/lettre-de-leau/nestle-waters-amende-2-millions-euros-action-publique-eteinte</link>

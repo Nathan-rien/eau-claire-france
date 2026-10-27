@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, TrendingUp, Clock, Store, Truck, Package, ShoppingCart, Info } from 'lucide-react';
 import { Price, Retailer, PriceFilters, PaginatedResponse } from '@/types/pricing';
-import { getPrices } from '@/services/pricesApi';
+import { getPrices, getLatestPriceRun } from '@/services/pricesApi';
+import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/ui/use-toast';
 import DataWarmupBanner from '@/components/DataWarmupBanner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -44,6 +45,7 @@ export default function PrixEaux() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const queryClient = useQueryClient();
   const [prices, setPrices] = useState<PriceWithRetailer[]>([]);
   const [retailers, setRetailers] = useState<Retailer[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
@@ -51,7 +53,10 @@ export default function PrixEaux() {
   const [loading, setLoading] = useState(true);
   // Perf : n'afficher qu'une version (mobile OU desktop) et un premier lot de lignes.
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
-  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  const [extraPages, setExtraPages] = useState({ key: '', count: 0 });
+  const rawPricesRef = useRef<any[]>([]);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   useEffect(() => {
     const mql = window.matchMedia('(max-width: 767px)');
     const onChange = () => setIsMobile(mql.matches);
@@ -59,8 +64,7 @@ export default function PrixEaux() {
     return () => mql.removeEventListener('change', onChange);
   }, []);
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
-  const visiblePrices = useMemo(() => prices.slice(0, visibleCount), [prices, visibleCount]);
-  useEffect(() => { setVisibleCount(INITIAL_VISIBLE); }, [prices]);
+  const visiblePrices = prices;
   const retailersRef = useRef<Retailer[]>([]);
   const brandRetailerMappingRef = useRef<any[]>([]);
   const [showDataBanner, setShowDataBanner] = useState(false);
@@ -68,7 +72,7 @@ export default function PrixEaux() {
   const [dataSource, setDataSource] = useState<string>('prices');
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 500,
+    pageSize: INITIAL_VISIBLE,
     total: 0,
     totalPages: 0
   });
@@ -86,8 +90,10 @@ export default function PrixEaux() {
     sort_by: searchParams.get('sort_by') || 'price_per_l_eur',
     sort_order: (searchParams.get('sort_order') as 'asc' | 'desc') || 'asc',
     page: parseInt(searchParams.get('page') || '1'),
-    limit: parseInt(searchParams.get('pageSize') || '500')
+    limit: parseInt(searchParams.get('pageSize') || String(INITIAL_VISIBLE))
   }), [searchParams]);
+  const filterKey = searchParams.toString();
+  const extraPageCount = extraPages.key === filterKey ? extraPages.count : 0;
 
   // Update URL when filters change
   const updateFilters = (newFilters: Partial<PriceFilters>) => {
@@ -114,12 +120,17 @@ export default function PrixEaux() {
     const loadInitialData = async () => {
       try {
         // Appels indépendants lancés en parallèle (perf LCP)
-        const [dataStats, retailersData, brandsData, mappingData] = await Promise.all([
-          hasData(),
-          listActiveRetailers(),
-          listDistinctBrands(),
-          getBrandRetailerMapping(),
-        ]);
+        const [dataStats, retailersData, brandsData, mappingData] = await queryClient.fetchQuery({
+          queryKey: ['prix-eaux', 'initial-data'],
+          staleTime: 2 * 60 * 1000,
+          queryFn: () => Promise.all([
+            hasData(),
+            listActiveRetailers(),
+            listDistinctBrands(),
+            getBrandRetailerMapping(),
+            getLatestPriceRun(),
+          ]),
+        });
         setShowDataBanner(!dataStats.hasPrices);
         setNoActiveRetailers((dataStats as any).activeRetailersCount === 0);
         setRetailers(retailersData as Retailer[]);
@@ -141,7 +152,7 @@ export default function PrixEaux() {
     };
 
     loadInitialData();
-  }, [toast]);
+  }, [toast, queryClient]);
 
   const handleDataAvailable = () => {
     setShowDataBanner(false);
@@ -156,11 +167,22 @@ export default function PrixEaux() {
   // Charger les prix avec filtres
   useEffect(() => {
     if (!initialDataLoaded) return;
+    let cancelled = false;
 
     const loadPrices = async () => {
-      setLoading(true);
+      if (extraPageCount === 0) {
+        setLoading(true);
+        rawPricesRef.current = [];
+      } else {
+        setLoadingMore(true);
+      }
       try {
-        const result = await getPrices(filters);
+        const offset = ((filters.page || 1) - 1) * (filters.limit || INITIAL_VISIBLE)
+          + (extraPageCount > 0 ? rawPricesRef.current.length : 0);
+        const result = await getPrices(filters, offset);
+        if (cancelled) return;
+        rawPricesRef.current = [...rawPricesRef.current, ...result.items];
+        setHasMore(offset + result.items.length < result.total);
         
         const currentRetailers = retailersRef.current;
         const currentMapping = brandRetailerMappingRef.current;
@@ -180,7 +202,7 @@ export default function PrixEaux() {
           );
         };
 
-        let pricesWithRetailer = result.items.map(price => {
+        let pricesWithRetailer = rawPricesRef.current.map(price => {
           const retailerObj = resolveRetailer(price);
           const brandMapping = currentMapping.find(m => 
             m.brand_name.toLowerCase() === price.brand?.toLowerCase() && 
@@ -267,8 +289,8 @@ export default function PrixEaux() {
         setPagination({
           page: result.page,
           pageSize: result.pageSize,
-          total: pricesWithRetailer.length,
-          totalPages: Math.ceil(pricesWithRetailer.length / result.pageSize)
+          total: result.total,
+          totalPages: result.totalPages
         });
         
         // Set data source for badge
@@ -276,6 +298,7 @@ export default function PrixEaux() {
           setDataSource(result.items[0].source || 'prices');
         }
       } catch (error) {
+        if (cancelled) return;
         console.error('Erreur lors du chargement des prix:', error);
         toast({
           title: "Erreur",
@@ -283,12 +306,16 @@ export default function PrixEaux() {
           variant: "destructive"
         });
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          setLoadingMore(false);
+        }
       }
     };
 
     loadPrices();
-  }, [filters, toast, initialDataLoaded]);
+    return () => { cancelled = true; };
+  }, [filters, toast, initialDataLoaded, extraPageCount]);
 
   const updateFilter = (key: string, value: string | null) => {
     const newParams = new URLSearchParams(searchParams);
@@ -518,10 +545,10 @@ export default function PrixEaux() {
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" disabled={pagination.page <= 1}
-                onClick={() => updateFilter('page', (pagination.page - 1).toString())}
+                onClick={() => updateFilters({ page: pagination.page - 1 })}
               >{t('prices.previous')}</Button>
               <Button variant="outline" size="sm" disabled={pagination.page >= pagination.totalPages}
-                onClick={() => updateFilter('page', (pagination.page + 1).toString())}
+                onClick={() => updateFilters({ page: pagination.page + 1 })}
               >{t('prices.next')}</Button>
             </div>
           </div>
@@ -701,15 +728,15 @@ export default function PrixEaux() {
               </table>
             </div>
             )}
-            {prices.length > visibleCount && (
+            </>
+          )}
+            {!loading && !showDataBanner && hasMore && (
               <div className="flex justify-center mt-4">
-                <Button variant="outline" className="min-h-[44px]" onClick={() => setVisibleCount((c) => c + INITIAL_VISIBLE)}>
-                  Voir plus ({prices.length - visibleCount})
+                <Button variant="outline" className="min-h-[44px]" disabled={loadingMore} onClick={() => setExtraPages({ key: filterKey, count: extraPageCount + 1 })}>
+                  {loadingMore ? t('common.loading') : 'Voir plus'}
                 </Button>
               </div>
             )}
-            </>
-          )}
 
           <aside className="rounded-xl border border-green-200 bg-green-50 p-5 my-8">
             <div className="flex items-start gap-3">

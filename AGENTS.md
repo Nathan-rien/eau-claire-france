@@ -5,3 +5,5 @@
 - Resume explicitly started OSM imports in the same browser, skip completed sectors, and bound automatic recovery passes; this preserves progress without endless provider requests.
 - Paginate validated public water points in stable identifier order to avoid the API row limit silently hiding locations.
 - Keep crisis consumption calculations as pure exports alongside their React calculator, with local-only form state; this makes numeric assumptions testable without persisting household information.
+- Resolve and briefly cache the latest price run once for concurrent price consumers; use stable identifier ordering and explicit offsets for incremental price batches to avoid duplicate requests and overlapping pages.
+- Start optional global widgets after the initial route commits and the browser is idle; keep the news ticker's responsive slot reserved to prevent layout shifts.
