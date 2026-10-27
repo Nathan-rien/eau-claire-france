@@ -32,4 +32,5 @@
 - [x] Charger les prix par lots de 50 (pageSize explicite respecté), avec une seule présentation selon l’écran.
 - [x] Paralléliser les références et le dernier relevé, avec cache court et mutualisation.
 - [x] Différer Ondine, les actualités et la surveillance sécurité, en réservant la hauteur du bandeau.
-- [ ] Vérifier tests, compilation automatique, HTML prérendu, parcours mobile/bureau et Lighthouse après modification.
+- [x] Vérifier 3 tests, compilation automatique OK, parcours mobile/bureau et Lighthouse après modification (CLS 0, TBT réduit, LCP non amélioré).
+- [ ] Contrôler l’artefact HTML prérendu de production et le résultat de typage distinct : artefact dist et rapport de typage non exposés dans cet environnement ; H1, FAQ, 21 liens marques et 5 liens régions vérifiés dans le HTML rendu local.
