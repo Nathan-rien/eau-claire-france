@@ -1,6 +1,34 @@
 import { supabase } from '@/integrations/supabase/client';
 import { PriceFilters, PaginatedResponse, BrandPriceStats, MedianPriceStats } from '@/types/pricing';
 
+const LATEST_RUN_CACHE_MS = 2 * 60 * 1000;
+let latestRunCache: { value: string | null; expiresAt: number } | undefined;
+let latestRunRequest: Promise<string | null> | undefined;
+
+export const getLatestPriceRun = (): Promise<string | null> => {
+  if (latestRunCache && latestRunCache.expiresAt > Date.now()) {
+    return Promise.resolve(latestRunCache.value);
+  }
+  if (latestRunRequest) return latestRunRequest;
+  latestRunRequest = (async () => {
+    const { data, error } = await supabase
+      .from('prices_history')
+      .select('run_id, scraped_at')
+      .not('run_id', 'is', null)
+      .order('scraped_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) {
+      console.warn('Failed to resolve latest run from prices_history, querying full history:', error);
+      return null;
+    }
+    const value = data?.run_id ?? null;
+    latestRunCache = { value, expiresAt: Date.now() + LATEST_RUN_CACHE_MS };
+    return value;
+  })().finally(() => { latestRunRequest = undefined; });
+  return latestRunRequest;
+};
+
 // GET /api/retailers
 export const getRetailers = async () => {
   const { data, error } = await supabase
@@ -28,7 +56,7 @@ export const getBrands = async () => {
 };
 
 // GET /api/prices - reads from latest view for freshness
-export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedResponse<any>> => {
+export const getPrices = async (filters: PriceFilters = {}, startOffset?: number): Promise<PaginatedResponse<any>> => {
   const {
     brand,
     retailer,
@@ -43,19 +71,7 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
     page = 1
   } = filters;
 
-  const { data: latestHistoryRow, error: latestHistoryRowError } = await supabase
-    .from('prices_history')
-    .select('run_id, scraped_at')
-    .not('run_id', 'is', null)
-    .order('scraped_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (latestHistoryRowError) {
-    console.warn('Failed to resolve latest run from prices_history, querying full history:', latestHistoryRowError);
-  }
-
-  const latestRunId = latestHistoryRow?.run_id ?? null;
+  const latestRunId = await getLatestPriceRun();
 
   let query = supabase
     .from('prices_history')
@@ -114,7 +130,7 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
   }
 
   // Apply pagination
-  const offset = (page - 1) * limit;
+  const offset = startOffset ?? (page - 1) * limit;
   
   // Apply sorting
   const sortAscending = sort_order === 'asc';
@@ -172,7 +188,7 @@ export const getPrices = async (filters: PriceFilters = {}): Promise<PaginatedRe
     if (is_promo !== undefined) query = query.eq('is_promo', is_promo);
     if (availability && availability !== 'all') query = query.eq('availability', availability);
 
-    const offset = (page - 1) * limit;
+    const offset = startOffset ?? (page - 1) * limit;
     
     // Apply sorting for fallback
     const sortAscending = sort_order === 'asc';

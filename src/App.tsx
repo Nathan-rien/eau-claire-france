@@ -14,11 +14,10 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import PageLoader from "@/components/PageLoader";
 import SecurityHeaders from "@/components/SecurityHeaders";
 import RouteTracker from "@/components/analytics/RouteTracker";
-import { EnhancedSecurityService } from "@/services/enhancedSecurityService";
 const OndineChat = React.lazy(() => import("@/components/OndineChat"));
 
 import CookieConsent from "@/components/CookieConsent";
-import NewsTicker from "@/components/NewsTicker";
+const NewsTicker = React.lazy(() => import("@/components/NewsTicker"));
 
 // Lazy load all pages for code splitting
 const Index = React.lazy(() => import("./pages/Index"));
@@ -215,22 +214,47 @@ const queryClient = new QueryClient({
   },
 });
 
+// This effect commits only once the initial route has left its Suspense fallback.
+const DeferredReady = ({ onReady }: { onReady: () => void }) => {
+  useEffect(() => {
+    let idleId: number | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let secondFrame: number | undefined;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => {
+        if ('requestIdleCallback' in window) {
+          idleId = window.requestIdleCallback(onReady, { timeout: 2000 });
+        } else {
+          timeoutId = setTimeout(onReady, 1000);
+        }
+      });
+    });
+    return () => {
+      cancelAnimationFrame(firstFrame);
+      if (secondFrame !== undefined) cancelAnimationFrame(secondFrame);
+      if (idleId !== undefined) window.cancelIdleCallback(idleId);
+      if (timeoutId !== undefined) clearTimeout(timeoutId);
+    };
+  }, [onReady]);
+  return null;
+};
+
 const App = () => {
+  const [showDeferred, setShowDeferred] = React.useState(false);
+  const onDeferredReady = React.useCallback(() => setShowDeferred(true), []);
   useEffect(() => {
     // Initialize tracking on app start
     analyticsService.trackPageView();
     
-    // Initialize basic security monitoring (network monitoring removed)
-    // Différé hors du chemin critique (perf TBT)
-    const startSecurity = () => EnhancedSecurityService.startSecurityMonitoring();
-    const w = window as any;
-    let idleId: any; let timeoutId: any;
-    if (w.requestIdleCallback) idleId = w.requestIdleCallback(startSecurity, { timeout: 4000 });
-    else timeoutId = setTimeout(startSecurity, 2000);
-    const t = setTimeout(() => setShowChat(true), 2500);
-    return () => { if (idleId) w.cancelIdleCallback?.(idleId); clearTimeout(timeoutId); clearTimeout(t); };
   }, []);
-  const [showChat, setShowChat] = React.useState(false);
+  useEffect(() => {
+    if (!showDeferred) return;
+    let cancelled = false;
+    import('@/services/enhancedSecurityService').then(({ EnhancedSecurityService }) => {
+      if (!cancelled) EnhancedSecurityService.startSecurityMonitoring();
+    });
+    return () => { cancelled = true; };
+  }, [showDeferred]);
 
   return (
     <HelmetProvider>
@@ -244,7 +268,9 @@ const App = () => {
             <TooltipProvider>
               <SecurityHeaders />
               <RouteTracker />
-              <NewsTicker />
+              <div className="h-9 sm:h-10">
+                {showDeferred && <Suspense fallback={null}><NewsTicker /></Suspense>}
+              </div>
             <Toaster />
             <Sonner />
             
@@ -253,8 +279,9 @@ const App = () => {
                 {appRoutes("")}
                 {appRoutes("/en")}
               </Routes>
+              <DeferredReady onReady={onDeferredReady} />
             </Suspense>
-            {showChat && (
+            {showDeferred && (
               <Suspense fallback={null}>
                 <OndineChat />
               </Suspense>
