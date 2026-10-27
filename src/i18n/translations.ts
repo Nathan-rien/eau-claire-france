@@ -1230,6 +1230,7 @@ export const translations = {
     'common.error': 'Erreur',
     'common.loading': 'Chargement...',
     'common.free': 'Gratuit',
+    'common.showMore': 'Voir plus ({count})',
 
     // News ticker
     'ticker.ariaLabel': 'Alerte d\'actualité',
@@ -3648,6 +3649,7 @@ export const translations = {
     'common.error': 'Error',
     'common.loading': 'Loading...',
     'common.free': 'Free',
+    'common.showMore': 'Show more ({count})',
 
     // Bottle Journey Map
     'bottleJourney.title': 'Bottled Water Journey: source → store',

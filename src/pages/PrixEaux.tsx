@@ -94,6 +94,8 @@ export default function PrixEaux() {
   }), [searchParams]);
   const filterKey = searchParams.toString();
   const extraPageCount = extraPages.key === filterKey ? extraPages.count : 0;
+  // Libellé « Voir plus (n) » : prix restants, même base de calcul que hasMore.
+  const remainingCount = Math.max(0, pagination.total - rawPricesRef.current.length);
 
   // Update URL when filters change
   const updateFilters = (newFilters: Partial<PriceFilters>) => {
@@ -733,7 +735,7 @@ export default function PrixEaux() {
             {!loading && !showDataBanner && hasMore && (
               <div className="flex justify-center mt-4">
                 <Button variant="outline" className="min-h-[44px]" disabled={loadingMore} onClick={() => setExtraPages({ key: filterKey, count: extraPageCount + 1 })}>
-                  {loadingMore ? t('common.loading') : 'Voir plus'}
+                  {loadingMore ? t('common.loading') : t('common.showMore', { count: String(remainingCount) })}
                 </Button>
               </div>
             )}
