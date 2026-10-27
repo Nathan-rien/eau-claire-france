@@ -26,3 +26,10 @@
 - [ ] Achever le périmètre national : lancement depuis le compte administrateur requis (appel protégé refusé en 401 ici) ; Lille échoue en HTTP 504. Bordeaux et Lyon disposent encore de points à importer. Vérification du suivi connecté indisponible (Supabase externe).
 - [x] CLS /prix-eaux < 0,1
 - [x] Page /calculateur-consommation-eau FR/EN (mode generic, 145 L SISPEA, liens)
+
+## Accélération /prix-eaux — étapes 0 à 3 uniquement
+- [x] Mesurer la référence Lighthouse mobile locale sur /prix-eaux, /classement et / avant modification.
+- [x] Charger les prix par lots de 50 (pageSize explicite respecté), avec une seule présentation selon l’écran.
+- [x] Paralléliser les références et le dernier relevé, avec cache court et mutualisation.
+- [x] Différer Ondine, les actualités et la surveillance sécurité, en réservant la hauteur du bandeau.
+- [ ] Vérifier tests, compilation automatique, HTML prérendu, parcours mobile/bureau et Lighthouse après modification.

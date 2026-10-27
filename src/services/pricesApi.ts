@@ -149,7 +149,7 @@ export const getPrices = async (filters: PriceFilters = {}, startOffset?: number
     query = query.order('scraped_at', { ascending: false });
   }
   
-  query = query.range(offset, offset + limit - 1);
+  query = query.order('id', { ascending: true }).range(offset, offset + limit - 1);
 
   const { data, error, count } = await query;
 
@@ -206,7 +206,7 @@ export const getPrices = async (filters: PriceFilters = {}, startOffset?: number
       query = query.order('scraped_at', { ascending: false });
     }
     
-    query = query.range(offset, offset + limit - 1);
+    query = query.order('id', { ascending: true }).range(offset, offset + limit - 1);
 
     const { data: fallbackData, error: fallbackError, count: fallbackCount } = await query;
     
