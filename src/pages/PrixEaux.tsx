@@ -177,7 +177,8 @@ export default function PrixEaux() {
         setLoadingMore(true);
       }
       try {
-        const offset = ((filters.page || 1) - 1 + extraPageCount) * (filters.limit || INITIAL_VISIBLE);
+        const offset = ((filters.page || 1) - 1) * (filters.limit || INITIAL_VISIBLE)
+          + (extraPageCount > 0 ? rawPricesRef.current.length : 0);
         const result = await getPrices(filters, offset);
         if (cancelled) return;
         rawPricesRef.current = [...rawPricesRef.current, ...result.items];
@@ -727,15 +728,15 @@ export default function PrixEaux() {
               </table>
             </div>
             )}
-            {hasMore && (
+            </>
+          )}
+            {!loading && !showDataBanner && hasMore && (
               <div className="flex justify-center mt-4">
                 <Button variant="outline" className="min-h-[44px]" disabled={loadingMore} onClick={() => setExtraPages({ key: filterKey, count: extraPageCount + 1 })}>
                   {loadingMore ? t('common.loading') : 'Voir plus'}
                 </Button>
               </div>
             )}
-            </>
-          )}
 
           <aside className="rounded-xl border border-green-200 bg-green-50 p-5 my-8">
             <div className="flex items-start gap-3">
