@@ -143,6 +143,9 @@ async function renderRoute(browser: Browser, route: string): Promise<{ route: st
   const page = await browser.newPage({ viewport: { width: 1280, height: 1200 } });
   try {
     page.setDefaultTimeout(RENDER_TIMEOUT);
+    await page.addInitScript(() => {
+      (window as Window & { __PRERENDER__?: boolean }).__PRERENDER__ = true;
+    });
     await page.goto(`${ORIGIN}${route}`, { waitUntil: "networkidle", timeout: NAV_TIMEOUT }).catch(async () => {
       // networkidle can never settle (polling/maps): fall back to DOM ready.
       await page.goto(`${ORIGIN}${route}`, { waitUntil: "domcontentloaded", timeout: NAV_TIMEOUT });
@@ -182,6 +185,16 @@ async function renderRoute(browser: Browser, route: string): Promise<{ route: st
 
     await normalizeHead(page);
 
+    await page.evaluate(() => {
+      const snapshot = (window as Window & { __PRIX_SNAPSHOT__?: { rows: unknown[]; generatedAt: string } }).__PRIX_SNAPSHOT__;
+      if (!snapshot) return;
+      const script = document.createElement('script');
+      script.type = 'application/json';
+      script.id = 'prix-snapshot';
+      script.textContent = JSON.stringify({ rows: snapshot.rows, generatedAt: snapshot.generatedAt }).replace(/</g, '\\u003c');
+      document.getElementById('prix-snapshot')?.remove();
+      document.body.appendChild(script);
+    }).catch(() => { /* snapshot capture is best effort */ });
     const rawHtml = await page.content();
     // The local prerender origin must never leak into the published HTML
     // (inline styles, data-* attributes, srcset…): rewrite it to relative paths.

@@ -29,6 +29,40 @@ export const getLatestPriceRun = (): Promise<string | null> => {
   return latestRunRequest;
 };
 
+// Summary-only payload: same history rows as getPrices({ limit: 300 }), without a count.
+export const getPriceSummaryRows = async () => {
+  const latestRunId = await getLatestPriceRun();
+  const columns = 'brand, product_name, price_per_l_eur, price_total_eur, pack_count, unit_volume_l, scraped_at, created_at';
+  let query = supabase
+    .from('prices_history')
+    .select(columns)
+    .not('brand', 'is', null)
+    .not('product_name', 'is', null)
+    .not('unit_volume_l', 'is', null)
+    .not('retailer_id', 'is', null)
+    .not('price_total_eur', 'is', null)
+    .not('price_per_l_eur', 'is', null);
+  if (latestRunId) query = query.eq('run_id', latestRunId);
+  const { data, error } = await query
+    .order('price_per_l_eur', { ascending: true })
+    .order('scraped_at', { ascending: false })
+    .order('id', { ascending: true })
+    .limit(300);
+  if (!error) return data || [];
+
+  console.warn('Failed to read from prices_history, falling back to prices table:', error);
+  // Preserve getPrices' fallback semantics (no essential-field filters on prices).
+  let fallback = supabase.from('prices').select(columns);
+  if (latestRunId) fallback = fallback.eq('run_id', latestRunId);
+  const { data: fallbackData, error: fallbackError } = await fallback
+    .order('price_per_l_eur', { ascending: true })
+    .order('scraped_at', { ascending: false })
+    .order('id', { ascending: true })
+    .limit(300);
+  if (fallbackError) throw fallbackError;
+  return fallbackData || [];
+};
+
 // GET /api/retailers
 export const getRetailers = async () => {
   const { data, error } = await supabase

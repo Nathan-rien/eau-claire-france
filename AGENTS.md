@@ -6,4 +6,5 @@
 - Paginate validated public water points in stable identifier order to avoid the API row limit silently hiding locations.
 - Keep crisis consumption calculations as pure exports alongside their React calculator, with local-only form state; this makes numeric assumptions testable without persisting household information.
 - Resolve and briefly cache the latest price run once for concurrent price consumers; use stable identifier ordering and explicit offsets for incremental price batches to avoid duplicate requests and overlapping pages.
+- Price summaries use a narrow uncounted query and a prerender JSON snapshot outside the React root; refresh silently and fetch table rows alongside reference data to avoid loading cascades without hydration.
 - Start optional global widgets after the initial route commits and the browser is idle; keep the news ticker's responsive slot reserved to prevent layout shifts.
