@@ -49,7 +49,6 @@ export default function PrixEaux() {
   const [prices, setPrices] = useState<PriceWithRetailer[]>([]);
   const [retailers, setRetailers] = useState<Retailer[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
-  const [brandRetailerMapping, setBrandRetailerMapping] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   // Perf : n'afficher qu'une version (mobile OU desktop) et un premier lot de lignes.
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
@@ -63,10 +62,7 @@ export default function PrixEaux() {
     mql.addEventListener('change', onChange);
     return () => mql.removeEventListener('change', onChange);
   }, []);
-  const [initialDataLoaded, setInitialDataLoaded] = useState(false);
   const visiblePrices = prices;
-  const retailersRef = useRef<Retailer[]>([]);
-  const brandRetailerMappingRef = useRef<any[]>([]);
   const [showDataBanner, setShowDataBanner] = useState(false);
   const [noActiveRetailers, setNoActiveRetailers] = useState(false);
   const [dataSource, setDataSource] = useState<string>('prices');
@@ -117,45 +113,6 @@ export default function PrixEaux() {
     setSearchParams(params);
   };
 
-  // Charger les données initiales
-  useEffect(() => {
-    const loadInitialData = async () => {
-      try {
-        // Appels indépendants lancés en parallèle (perf LCP)
-        const [dataStats, retailersData, brandsData, mappingData] = await queryClient.fetchQuery({
-          queryKey: ['prix-eaux', 'initial-data'],
-          staleTime: 2 * 60 * 1000,
-          queryFn: () => Promise.all([
-            hasData(),
-            listActiveRetailers(),
-            listDistinctBrands(),
-            getBrandRetailerMapping(),
-            getLatestPriceRun(),
-          ]),
-        });
-        setShowDataBanner(!dataStats.hasPrices);
-        setNoActiveRetailers((dataStats as any).activeRetailersCount === 0);
-        setRetailers(retailersData as Retailer[]);
-        retailersRef.current = retailersData as Retailer[];
-        setBrands(brandsData);
-        setBrandRetailerMapping(mappingData);
-        brandRetailerMappingRef.current = mappingData;
-
-        setInitialDataLoaded(true);
-      } catch (error) {
-        console.error('Erreur lors du chargement des données:', error);
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les données",
-          variant: "destructive"
-        });
-        setLoading(false);
-      }
-    };
-
-    loadInitialData();
-  }, [toast, queryClient]);
-
   const handleDataAvailable = () => {
     setShowDataBanner(false);
     // Reload page data when data becomes available
@@ -168,8 +125,32 @@ export default function PrixEaux() {
 
   // Charger les prix avec filtres
   useEffect(() => {
-    if (!initialDataLoaded) return;
     let cancelled = false;
+
+    const loadInitialData = async () => {
+      try {
+        return await queryClient.fetchQuery({
+          queryKey: ['prix-eaux', 'initial-data'],
+          staleTime: 2 * 60 * 1000,
+          queryFn: () => Promise.all([
+            hasData(),
+            listActiveRetailers(),
+            listDistinctBrands(),
+            getBrandRetailerMapping(),
+            getLatestPriceRun(),
+          ]),
+        });
+      } catch (error) {
+        if (cancelled) return null;
+        console.error('Erreur lors du chargement des données:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les données",
+          variant: "destructive"
+        });
+        return null;
+      }
+    };
 
     const loadPrices = async () => {
       if (extraPageCount === 0) {
@@ -181,13 +162,21 @@ export default function PrixEaux() {
       try {
         const offset = ((filters.page || 1) - 1) * (filters.limit || INITIAL_VISIBLE)
           + (extraPageCount > 0 ? rawPricesRef.current.length : 0);
-        const result = await getPrices(filters, offset);
-        if (cancelled) return;
+        const [initialData, result] = await Promise.all([
+          loadInitialData(),
+          getPrices(filters, offset),
+        ]);
+        if (cancelled || !initialData) return;
+        const [dataStats, retailersData, brandsData, mappingData] = initialData;
+        setShowDataBanner(!dataStats.hasPrices);
+        setNoActiveRetailers((dataStats as any).activeRetailersCount === 0);
+        setRetailers(retailersData as Retailer[]);
+        setBrands(brandsData);
         rawPricesRef.current = [...rawPricesRef.current, ...result.items];
         setHasMore(offset + result.items.length < result.total);
         
-        const currentRetailers = retailersRef.current;
-        const currentMapping = brandRetailerMappingRef.current;
+        const currentRetailers = retailersData as Retailer[];
+        const currentMapping = mappingData;
 
         // Résoudre l'enseigne même si l'ID ne correspond pas (slug/URL/unique_hash)
         const resolveRetailer = (price: any) => {
@@ -317,7 +306,7 @@ export default function PrixEaux() {
 
     loadPrices();
     return () => { cancelled = true; };
-  }, [filters, toast, initialDataLoaded, extraPageCount]);
+  }, [filters, toast, queryClient, extraPageCount]);
 
   const updateFilter = (key: string, value: string | null) => {
     const newParams = new URLSearchParams(searchParams);

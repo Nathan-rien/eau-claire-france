@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingDown, Droplets, Calendar } from 'lucide-react';
-import { getPrices } from '@/services/pricesApi';
+import { getPriceSummaryRows } from '@/services/pricesApi';
 
 type Row = {
   brand: string;
@@ -26,6 +26,32 @@ type Row = {
   scraped_at?: string;
   created_at?: string;
 };
+
+type PriceSnapshot = { rows: Row[]; generatedAt: string };
+
+declare global {
+  interface Window {
+    __PRERENDER__?: boolean;
+    __PRIX_SNAPSHOT__?: PriceSnapshot;
+  }
+}
+
+function readPriceSnapshot(): PriceSnapshot | null {
+  if (typeof document === 'undefined') return null;
+  try {
+    const snapshot = JSON.parse(document.getElementById('prix-snapshot')?.textContent || 'null');
+    if (!snapshot || !Array.isArray(snapshot.rows) || !snapshot.rows.length) return null;
+    if (!snapshot.rows.every((row: unknown) => {
+      if (!row || typeof row !== 'object') return false;
+      const value = row as Row;
+      return typeof value.price_per_l_eur === 'number' && Number.isFinite(value.price_per_l_eur)
+        && typeof value.brand === 'string' && typeof value.product_name === 'string';
+    })) return null;
+    return snapshot;
+  } catch {
+    return null;
+  }
+}
 
 const SPARKLING = ['perrier', 'badoit', 'san pellegrino', 'salvetat', 'quezac', 'quézac', 'vichy', 'saint-yorre', 'rozana', 'arvie', 'st-yorre'];
 const SPRING = ['cristaline', 'mont roucous', 'volvic', 'thonon', 'plancoet', 'plancoët', 'saint-amand', 'wattwiller'];
@@ -70,14 +96,19 @@ function formatEur(v: number) {
 }
 
 export default function CheapestWaterSummary() {
-  const [rows, setRows] = useState<Row[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [rows, setRows] = useState<Row[]>(() => readPriceSnapshot()?.rows ?? []);
+  const [loading, setLoading] = useState(() => rows.length === 0);
 
   useEffect(() => {
     let cancelled = false;
-    getPrices({ sort_by: 'price_per_l_eur', sort_order: 'asc', limit: 300, page: 1 })
-      .then((res) => {
-        if (!cancelled) setRows((res.items || []) as Row[]);
+    getPriceSummaryRows()
+      .then((loadedRows) => {
+        if (cancelled) return;
+        const nextRows = loadedRows as Row[];
+        if (window.__PRERENDER__) {
+          window.__PRIX_SNAPSHOT__ = { rows: nextRows, generatedAt: new Date().toISOString() };
+        }
+        setRows(nextRows);
       })
       .catch(() => undefined)
       .finally(() => !cancelled && setLoading(false));
